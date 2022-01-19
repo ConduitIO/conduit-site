@@ -1,13 +1,12 @@
 {
-  "name": "meroxa-docs",
+  "name": "conduit-docs",
   "version": "0.0.0",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
     "dev": "docusaurus start",
-    "dev-func": "netlify dev",
     "start": "docusaurus start",
-    "build": "prisma generate && docusaurus build",
+    "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
@@ -25,8 +24,6 @@
     "@headlessui/react": "^1.4.3",
     "@heroicons/react": "^1.0.5",
     "@mdx-js/react": "^1.6.21",
-    "@netlify/functions": "^0.10.0",
-    "@prisma/client": "^3.8.1",
     "@tailwindcss/forms": "^0.4.0",
     "@tailwindcss/typography": "^0.5.0",
     "@types/node": "^17.0.10",
@@ -57,10 +54,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "netlify-cli": "^8.9.10",
-    "prisma": "3.8.1"
   },
   "engines": {
     "node": "14.x"
