@@ -1,0 +1,4 @@
+---
+title: "Architcture"
+slug: "Architcture"
+---

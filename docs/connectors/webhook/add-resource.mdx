@@ -1,0 +1,46 @@
+---
+title: "Add Webhook Resource"
+sidebar_label: "Add Resource"
+sidebar_position: 3
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+This guide will walkthrough adding a Webhook resource to Meroxa.
+
+## Credentials
+
+To add a Webhook resource, you will need the following credentials:
+
+- URL of the Webhook
+
+## Adding Resource
+<Tabs
+  defaultValue="cli"
+  values={[
+    {label: 'CLI', value: 'cli'},
+    {label: 'Dashboard', value: 'dashboard'},
+  ]}>
+<TabItem value="dashboard">
+
+1. Navigate to the [Add Resource](https://dashboard.meroxa.io/resources/new) page.
+2. Configure "Access URL" with the URL of the Webhook.
+3. Select "Add".
+
+</TabItem>
+<TabItem value="cli">
+
+Using the [CLI](/cli/installation-guide), you can run the following command to add a new resource:
+
+```shell
+meroxa resource add my-webhook \
+--type webhook \
+--url https://example.com/webhook
+```
+
+</TabItem>
+</Tabs>
+ 
+
+You can view your resource with [`meroxa resource ls`](/cli/cmd/meroxa-resources-list) or in the [Dashboard](https://dashboard.meroxa.io/resources).

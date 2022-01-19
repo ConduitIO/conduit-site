@@ -1,0 +1,68 @@
+{
+  "name": "meroxa-docs",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "docusaurus": "docusaurus",
+    "dev": "docusaurus start",
+    "dev-func": "netlify dev",
+    "start": "docusaurus start",
+    "build": "prisma generate && docusaurus build",
+    "swizzle": "docusaurus swizzle",
+    "deploy": "docusaurus deploy",
+    "clear": "docusaurus clear",
+    "serve": "docusaurus serve",
+    "write-translations": "docusaurus write-translations",
+    "write-heading-ids": "docusaurus write-heading-ids"
+  },
+  "dependencies": {
+    "@docusaurus/core": "^2.0.0-beta.10",
+    "@docusaurus/plugin-client-redirects": "^2.0.0-beta.10",
+    "@docusaurus/plugin-google-analytics": "^2.0.0-beta.10",
+    "@docusaurus/plugin-google-gtag": "^2.0.0-beta.10",
+    "@docusaurus/preset-classic": "^2.0.0-beta.10",
+    "@docusaurus/theme-classic": "^2.0.0-beta.10",
+    "@headlessui/react": "^1.4.3",
+    "@heroicons/react": "^1.0.5",
+    "@mdx-js/react": "^1.6.21",
+    "@netlify/functions": "^0.10.0",
+    "@prisma/client": "^3.8.1",
+    "@tailwindcss/forms": "^0.4.0",
+    "@tailwindcss/typography": "^0.5.0",
+    "@types/node": "^17.0.10",
+    "@xstate/react": "^1.6.3",
+    "clsx": "^1.1.1",
+    "mdx-observable": "^0.2.0",
+    "next-mdx-remote": "^3.0.8",
+    "postcss-import": "^14.0.2",
+    "postcss-preset-env": "^7.2.3",
+    "react": "^17.0.1",
+    "react-confetti": "^6.0.1",
+    "react-dom": "^17.0.1",
+    "react-use": "^17.3.2",
+    "swr": "^1.1.2",
+    "tailwindcss": "^3.0.15",
+    "was-this-helpful-react": "^0.0.2",
+    "xstate": "^4.28.0",
+    "yup": "^0.32.11"
+  },
+  "browserslist": {
+    "production": [
+      ">0.5%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "netlify-cli": "^8.9.10",
+    "prisma": "3.8.1"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}

@@ -1,0 +1,85 @@
+/* stylelint-disable docusaurus/copyright-header */
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* You can override the default Infima variables here. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, system-ui,
+        'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
+}
+
+:root {
+  --ifm-color-primary: #10616f;
+  --ifm-color-primary-dark: #0e5764;
+  --ifm-color-primary-darker: #0e525e;
+  --ifm-color-primary-darkest: #0b444e;
+  --ifm-color-primary-light: #126b7a;
+  --ifm-color-primary-lighter: #127080;
+  --ifm-color-primary-lightest: #157e90;
+}
+
+html[data-theme='dark'] {
+    --ifm-color-primary: #20bed9;
+    --ifm-color-primary-dark: #1dabc3;
+    --ifm-color-primary-darker: #1ba1b8;
+    --ifm-color-primary-darkest: #168598;
+    --ifm-color-primary-light: #31c7e1;
+    --ifm-color-primary-lighter: #3ccae2;
+    --ifm-color-primary-lightest: #5dd3e7;
+    /* any other colors you wish to overwrite */
+}
+
+.navbar__logo {
+    width: 146px;
+}
+
+.docusaurus-highlight-code-line {
+    background-color: rgb(72, 77, 91);
+    display: block;
+    margin: 0 calc(-1 * var(--ifm-pre-padding));
+    padding: 0 var(--ifm-pre-padding);
+}
+
+:not(br:has(.Terminal-prompt)) {
+    color: green;
+}
+
+was-this-helpful {
+    --was-this-helpful-main-color: rgb(28, 30, 33);
+    --was-this-helpful-font-family: 'Inter', sans-serif;
+}
+
+html[data-theme='dark'] was-this-helpful {
+    --was-this-helpful-main-color: white;
+}
+
+a > span > svg {
+    display: inline;
+    margin-left: 0.3em;
+    vertical-align: baseline;
+}
+
+a {
+    color: var(--ifm-link-color);
+    text-decoration: var(--ifm-link-decoration);
+    transition: color var(--ifm-transition-fast)
+        var(--ifm-transition-timing-default);
+}
+
+.prose pre {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.prose .avatar__photo img {
+    margin-top: 0;
+}
