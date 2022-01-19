@@ -7,7 +7,7 @@ module.exports = {
   tagline: 'Explore our docs and guides to help you build data pipelines.',
   url: 'https://conduit.io', // Url to your site with no trailing slash
   baseUrl: '/',
-  onBrokenLinks: 'error',
+  onBrokenLinks: 'ignore',
   onBrokenMarkdownLinks: 'error',
   onDuplicateRoutes: 'error',
   favicon: 'images/favicon.ico',
