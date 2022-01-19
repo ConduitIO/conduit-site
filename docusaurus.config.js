@@ -138,7 +138,7 @@ module.exports = {
       },
     ],
   ],
-  plugins: ['./plugins/plugin-was-this-helpful', './plugins/postcss-tailwindcss-loader', [
+  plugins: [ './plugins/postcss-tailwindcss-loader', [
       '@docusaurus/plugin-content-blog',
       {
         /**
