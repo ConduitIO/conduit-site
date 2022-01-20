@@ -1,47 +1,9 @@
 ---
-title: "Overview"
+title: "Postgres Connector"
 sidebar_label: "Overview"
 sidebar_position: 1
 ---
 
-import Tabs from "@theme/Tabs";
-import TabItem from "@theme/TabItem";
-import { Init, State, Observe } from "mdx-observable";
+import BetaAlert from "../../src/components/specific-alerts/beta-alert";
 
-# Destinations
-
-Resources can be configured as a **destination**. As a destination, you to capture data from any [source](/docs/sources/overview) and stream to a destination resource.
-
-![Pipeline with Destination Highlighted](/images/docs/pipelines/pipeline-destination.png)
-
-<State initialState={{ count: 0, src: {}, dest: {} }}>
-
-Here are the Destinations you can add to your pipeline. **Select a resource to learn more:**
-
-
-:::note Source Information
-
-<Observe>
-  {({ ...state }) => {
-    return (
-      <>
-        <div style={{ textAlign: "center" }}>
-          <img style={{ maxWidth: "200px" }} src={state.dest.logo} />
-        </div>
-        <p>
-          The {state.dest.title} Connector gives you the ability to {state.dest.useCase}.
-        </p>
-        <p>
-          You can view the{" "}
-          <a target="_blank" href={state.dest.link}>
-            {state.dest.title} Connector Documentation
-          </a>{" "}
-          to learn more about changing behavior or advanced configuration.
-        </p>
-      </>
-    );
-  }}
-</Observe>
-:::
-
-</State>
+<BetaAlert />
