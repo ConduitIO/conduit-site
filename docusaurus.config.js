@@ -58,7 +58,7 @@ module.exports = {
           label: 'Documentation',
         },
         { to: '/docs/connectors/overview', label: 'Connectors', position: 'left' },
-        { to: 'https://discord.meroxa.io', label: 'Join Community', position: 'left' },
+        { to: 'https://discord.meroxa.com', label: 'Join Community', position: 'left' },
         
       ],
     },
