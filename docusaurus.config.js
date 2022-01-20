@@ -82,11 +82,11 @@ module.exports = {
             },
             {
               label: 'Issues',
-              to: 'TODO_LINK',
+              to: 'https://github.com/ConduitIO/conduit/issues',
             },
             {
               label: 'GitHub Discussions',
-              to: 'TODO_LINK',
+              to: 'https://github.com/ConduitIO/conduit/discussions',
             },
           ],
         },
