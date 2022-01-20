@@ -58,7 +58,7 @@ module.exports = {
           label: 'Documentation',
         },
         { to: '/docs/connectors/overview', label: 'Connectors', position: 'left' },
-        { to: 'https://discord.meroxa.io', label: 'Join Community', position: 'left' },
+        { to: 'https://discord.meroxa.com', label: 'Join Community', position: 'left' },
         
       ],
     },
@@ -78,15 +78,15 @@ module.exports = {
             },
             {
               label: 'Join our Discord',
-              to: '/community',
+              to: 'https://discord.meroxa.com',
             },
             {
               label: 'Issues',
-              to: 'TODO_LINK',
+              to: 'https://github.com/ConduitIO/conduit/issues',
             },
             {
               label: 'GitHub Discussions',
-              to: 'TODO_LINK',
+              to: 'https://github.com/ConduitIO/conduit/discussions',
             },
           ],
         },
