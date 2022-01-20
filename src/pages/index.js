@@ -34,7 +34,6 @@ export default function Home() {
   const { siteConfig } = useDocusaurusContext();
   return (
     <Layout
-      title="Conduit Documentation"
       description={siteConfig.tagline}
     >
       <HomepageHeader />
