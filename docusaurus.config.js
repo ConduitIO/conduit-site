@@ -58,7 +58,7 @@ module.exports = {
           label: 'Documentation',
         },
         { to: '/docs/connectors/overview', label: 'Connectors', position: 'left' },
-        { to: '/community', label: 'Join Community', position: 'left' },
+        { to: 'https://discord.meroxa.io', label: 'Join Community', position: 'left' },
         
       ],
     },
@@ -120,7 +120,7 @@ module.exports = {
           docItemComponent: '@theme/CustomDocItem',
           // Please change this to your repo.
           editUrl:
-            'https://github.com/meroxa/conduit-site/edit/main/',
+            'https://github.com/conduitio/conduit-site/edit/main/',
         },
         blog: {
           showReadingTime: true,
