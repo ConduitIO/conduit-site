@@ -25,7 +25,7 @@ function classNames(...classes) {
 
 const navLinks = [
     {
-        label: 'Docs',
+        label: 'Documentation',
         href: '/docs/introduction/what-is-conduit',
     },
     {
@@ -38,13 +38,13 @@ const navLinks = [
     },
     {
         label: 'Community',
-        href: '/community',
+        href: 'http://discord.meroxa.com/',
     },
 ]
 
 export default function NavBar() {
     return (
-        <Disclosure as="nav" className="bg-transparent pt-5">
+        <Disclosure as="nav" className="max-w-screen-lg bg-transparent mx-auto pt-5">
             {({ open }) => (
                 <>
                     <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
@@ -64,19 +64,19 @@ export default function NavBar() {
                                         />
                                     </a>
                                 </div>
-                                <div className="hidden lg:ml-10 lg:flex lg:space-x-4">
-                                    {/* Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-600" */}
+                            </div>
+                            <div className="mt-6 lg:ml-10 lg:flex lg:space-x-4 ">
+                                    {/* Current: "border-sky-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-600" */}
                                     {navLinks.map(({ label, href }) => (
                                         <a
                                             href={href}
-                                            className="text-white inline-flex items-center px-1 pt-1 text-sm font-medium"
+                                            className="text-white inline-flex items-center px-1 pt-1 text-xs md:text-sm font-medium"
                                         >
                                             {label}
                                         </a>
                                     ))}
                                 </div>
-                            </div>
-                            <div className="flex-1 flex items-center justify-center px-2 lg:justify-end bg-transparent">
+                            {/* <div className="flex-1 flex items-center justify-center px-2 lg:justify-end bg-transparent">
                                 <div className="max-w-lg w-full lg:max-w-xs">
                                     <label htmlFor="search" className="sr-only">
                                         Search
@@ -97,18 +97,18 @@ export default function NavBar() {
                                         />
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
 
                     <Disclosure.Panel className="lg:hidden">
                         <div className="pt-2 pb-3 space-y-1">
-                            {/* Current: "bg-indigo-50 border-indigo-500 text-indigo-600", Default: "border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800" */}
+                            {/* Current: "bg-sky-50 border-sky-500 text-sky-600", Default: "border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800" */}
                             {navLinks.map(({ label, href }) => (
                                 <Disclosure.Button
                                     as="a"
                                     href={href}
-                                    className="bg-indigo-50 border-indigo-500 text-indigo-600 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+                                    className="bg-sky-50 border-sky-500 text-sky-600 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
                                 >
                                     {label}
                                 </Disclosure.Button>

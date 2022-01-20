@@ -39,8 +39,8 @@ const Feature = ({ img, title, description, link }) => (<li key={title} classNam
 export default function HomepageFeatures() {
   return (
     <div className="pb-10 mt-10">
-      <h2 className=' text-2xl font-bold pb-10 text-forest-100'> Deliver real-time event-based data in no time </h2>
-      <ul className="gap-3 grid grid-cols-2">
+      <h2 className='text-2xl font-bold pb-10 text-forest-100'> Deliver real-time event-based data in no time </h2>
+      <ul className="gap-3 grid grid-cols-1 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
         {FeatureList.map((feature) => (
           <Feature title={feature.title} img={feature.img} description={feature.description} link={feature.link} />
         ))}

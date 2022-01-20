@@ -53,9 +53,9 @@ module.exports = {
         { to: '/', label: 'Home', position: 'left', activeBaseRegex: `///` },
         {
           type: 'doc',
-          docId: 'introduction/what-is-meroxa',
+          docId: 'introduction/what-is-conduit',
           position: 'left',
-          label: 'Docs',
+          label: 'Documentation',
         },
         { to: '/docs/connectors/overview', label: 'Connectors', position: 'left' },
         { to: '/guides', label: 'Build', position: 'left' },
