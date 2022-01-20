@@ -1,6 +1,6 @@
 ---
-title: "Architcture"
-slug: "Architcture"
+title: "Architecture"
+slug: "Architecture"
 ---
 
 <!-- [![Component diagram](data/component_diagram_full.svg)](https://github.com/ConduitIO/conduit/blob/main/docs/data/component_diagram_full.svg) -->
