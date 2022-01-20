@@ -58,7 +58,6 @@ module.exports = {
           label: 'Documentation',
         },
         { to: '/docs/connectors/overview', label: 'Connectors', position: 'left' },
-        { to: '/guides', label: 'Build', position: 'left' },
         { to: '/community', label: 'Join Community', position: 'left' },
         
       ],

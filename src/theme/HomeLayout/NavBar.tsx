@@ -33,10 +33,6 @@ const navLinks = [
         href: '/docs/connectors/overview',
     },
     {
-        label: 'Build',
-        href: '/guides',
-    },
-    {
         label: 'Community',
         href: 'http://discord.meroxa.com/',
     },
