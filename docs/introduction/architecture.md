@@ -1,9 +1,11 @@
 ---
-title: "Architecture"
+title: "Conduit Architecture"
 slug: "Architecture"
 ---
 
-<!-- [![Component diagram](data/component_diagram_full.svg)](https://github.com/ConduitIO/conduit/blob/main/docs/data/component_diagram_full.svg) -->
+Here is an overview of the Conduit Architecture.
+
+![Conduit Architecture](/images/conduit/conduit-diagram.svg)
 
 Conduit is split in the following layers:
 * **API layer** - exposes the public APIs used to communicate with Conduit. It exposes 2 types of APIs:
