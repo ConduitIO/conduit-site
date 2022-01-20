@@ -82,7 +82,7 @@ function DocItem(props: Props): JSX.Element {
                 {shouldAddTitle && <MainHeading>{title}</MainHeading>}
 
                 <DocContent />
-                <WasThisHelpful feedbackStyle="other"/>
+                {/* <WasThisHelpful feedbackStyle="other"/> */}
                 <ViewCounter slug={location.pathname} invisible />
               </div>
 

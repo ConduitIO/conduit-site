@@ -45,7 +45,7 @@ function BlogPostPage(props): JSX.Element {
                   isBlogPostPage
                 >
                   <BlogPostContents />
-                  <WasThisHelpful feedbackStyle="other" />
+                  {/* <WasThisHelpful feedbackStyle="other" /> */}
                 </BlogPostItem>
               </div>
               {(nextItem || prevItem) && (
