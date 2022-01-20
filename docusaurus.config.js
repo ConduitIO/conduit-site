@@ -78,7 +78,7 @@ module.exports = {
             },
             {
               label: 'Join our Discord',
-              to: '/community',
+              to: 'https://discord.meroxa.com',
             },
             {
               label: 'Issues',
