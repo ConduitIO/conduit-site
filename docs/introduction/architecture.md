@@ -1,6 +1,6 @@
 ---
-title: "Conduit Architecture"
-slug: "Architecture"
+title: "Architecture"
+slug: "architecture"
 ---
 
 Here is an overview of the Conduit Architecture.

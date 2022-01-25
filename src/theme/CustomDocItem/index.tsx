@@ -84,11 +84,9 @@ function DocItem(props: Props): JSX.Element {
                 <DocContent />
                 {/* <WasThisHelpful feedbackStyle="other"/> */}
                 <ViewCounter slug={location.pathname} invisible />
-              </div>
-
-              {(editUrl || lastUpdatedAt || lastUpdatedBy) && (
+                {(editUrl || lastUpdatedAt || lastUpdatedBy) && (
                 <footer className="row docusaurus-mt-lg">
-                  <div className="col">
+                  <div className="col inline-block">
                     {editUrl && <EditThisPage editUrl={editUrl} />}
                   </div>
 
@@ -103,6 +101,9 @@ function DocItem(props: Props): JSX.Element {
                   </div>
                 </footer>
               )}
+              </div>
+
+              
             </article>
 
             <DocPaginator metadata={metadata} />
