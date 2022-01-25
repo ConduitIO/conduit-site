@@ -17,6 +17,7 @@ module.exports = {
         'https://platform.twitter.com/widgets.js',
       async: true,
     },
+    "https://unpkg.com/rapidoc/dist/rapidoc-min.js"
   ],
   organizationName: 'conduitio', // Usually your GitHub org/user name.
   projectName: 'conduit-site', // Usually your repo name.

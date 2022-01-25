@@ -1,0 +1,31 @@
+---
+title: "Deploying Conduit"
+sidebar_label: "Overview"
+sidebar_position: 1
+---
+
+# Deploying Conduit
+
+Where can you deploy conduit?
+- Locally on your machine.
+- In a cloud environment.
+- In a private cloud environment.
+- In a private cloud environment with a custom network.
+- Anywhere, you can run a [Go](https://go.dev/) binary.
+
+## Docker
+
+[Docker](https://docs.docker.com/) enables you to run Conduit as in a container. Conduit's Docker images are hosted on [GitHub](https://github.com/ConduitIO/conduit/pkgs/container/conduit). You can find the `Dockerfile` [here](https://github.com/ConduitIO/conduit/blob/main/Dockerfile).
+
+After you install Docker, you can pull the Conduit image by running the following command:
+
+```shell
+docker pull ghcr.io/conduitio/conduit:latest
+```
+Then, you can run Conduit by running the following command:
+
+```shell
+docker run -d -p 8080:8080 ghcr.io/conduitio/conduit
+```
+
+**Helpful Tip:** If you're using Docker, check out [Watchtower](https://containrrr.dev/watchtower/). After we push an update, Watchtower will keep your Conduit container updated by gracefully shutting down your existing container and restarting it with the same options used when initially deployed.
