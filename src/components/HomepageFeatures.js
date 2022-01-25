@@ -3,22 +3,22 @@ import React from 'react';
 const FeatureList = [
   {
     title: 'Simple',
-    img: '/images/home/documentation.png',
+    img: '/images/simple.png',
     description: "Eliminate the multi-step process you go through today. Just download the binary and start building.",
   },
   {
     title: 'Scaleable',
-    img: '/images/home/cli.png',
+    img: '/images/scalable.png',
     description: "Conduit connectors give you the ability to pull and push data to any production datastore you need. If a datastore is missing, the simple SDK allows you to extend Conduit where you need it.",
   },
   {
     title: 'Real-Time',
-    img: '/images/home/guides.png',
+    img: '/images/realtime.png',
     description: "Conduit pipelines listen for changes to a database, data warehouse, etc., and allows your data applications to act upon those changes in real-time.",
   },
   {
     title: 'Flexible',
-    img: '/images/home/changelog.png',
+    img: '/images/flexible.png',
     description: "Run it in a way that works for you; use it as a standalone service or orchestrate it within your infrastructure.",
   },
 ];
