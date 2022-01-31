@@ -3,8 +3,8 @@
 const path = require('path')
 
 module.exports = {
-  title: 'Conduit',
-  tagline: 'Explore our docs and guides to help you build data pipelines.',
+  title: 'Conduit | Data Integration for Production Data Stores',
+  tagline: 'Sync data between your production systems using an extensible, event-first experience with minimal dependencies that fit within your existing workflow for free.',
   url: 'https://conduit.io', // Url to your site with no trailing slash
   baseUrl: '/',
   onBrokenLinks: 'ignore',
