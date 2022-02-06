@@ -25,15 +25,19 @@ function classNames(...classes) {
 
 const navLinks = [
     {
-        label: 'Documentation',
-        href: '/docs/introduction/what-is-conduit',
-    },
-    {
         label: 'Connectors',
         href: '/docs/connectors/overview',
     },
     {
-        label: 'Community',
+        label: 'Documentation',
+        href: '/docs/introduction/what-is-conduit',
+    },
+    {
+        label: 'Github',
+        href: 'http://github.com/ConduitIO/',
+    },
+    {
+        label: 'Discord',
         href: 'http://discord.meroxa.com/',
     },
 ]
@@ -44,7 +48,7 @@ export default function NavBar() {
             {({ open }) => (
                 <>
                     <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-                        <div className="flex justify-between h-16">
+                        <div className="flex items-center justify-between h-16">
                             <div className="flex px-2 lg:px-0">
                                 <div className="flex-shrink-0 flex items-center">
                                     <a href="/">
@@ -61,12 +65,12 @@ export default function NavBar() {
                                     </a>
                                 </div>
                             </div>
-                            <div className="mt-6 lg:ml-10 lg:flex lg:space-x-4 ">
+                            <div className="lg:ml-10 lg:flex lg:space-x-4 ">
                                     {/* Current: "border-sky-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-600" */}
                                     {navLinks.map(({ label, href }) => (
                                         <a
                                             href={href}
-                                            className="text-white inline-flex items-center px-1 pt-1 text-xs md:text-sm font-medium"
+                                            className="text-white inline-flex items-center px-1 pt-1 text-sm md:text-lg font-extrabold"
                                         >
                                             {label}
                                         </a>
