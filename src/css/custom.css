@@ -83,3 +83,117 @@ a {
 .prose .avatar__photo img {
     margin-top: 0;
 }
+
+/* Composition Classes */
+.box {
+  padding: var(--s-0);
+}
+
+.box[data-variant='canary'] {
+  background-color: var(--color-canary-60);
+  border-radius: var(--s-0);
+  color: var(--color-dark);
+  position: relative;
+  padding-bottom: var(--s-12);
+}
+
+.box[data-variant='canary'] .button[data-variant='canary'] {
+  position: absolute;
+  bottom: var(--base-size);
+  left: var(--base-size);
+}
+
+.wrapper {
+  padding-left: var(--flow-space);
+  padding-right: var(--flow-space);
+  max-width: 76rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.stack > * + * {
+  margin-top: var(--flow-space) !important;
+}
+
+.split-pair {
+  margin: calc(var(--flow-space) * -1);
+}
+
+.split-pair > * {
+  margin: var(--flow-space);
+}
+
+@media screen and (min-width: 40em) {
+  .split-pair {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .split-pair > * {
+    flex-basis: 50%;
+  }
+
+  .split-pair[data-align-start] {
+    align-items: start;
+  }
+
+  .split-pair[data-skewed] > :first-child {
+    flex-basis: 30%;
+  }
+
+  .split-pair[data-skewed] > :nth-child(2) {
+    flex-basis: 70%;
+  }
+
+  .split-pair[data-reversed] {
+    flex-direction: row-reverse;
+  }
+}
+
+.cluster {
+  overflow: hidden;
+  --flow-space: 1.5rem;
+}
+
+.cluster > * {
+  display: flex;
+  flex-wrap: wrap;
+  margin: calc(var(--flow-space) / 2 * -1);
+}
+
+.cluster > * > * {
+  margin: calc(var(--flow-space) / 2);
+}
+
+.switcher {
+  --threshold: 40rem;
+  --flow-space: 1.5rem;
+  overflow: hidden;
+}
+
+.switcher > * {
+  display: flex;
+  flex-wrap: wrap;
+  margin: calc(var(--flow-space) / 2 * -1);
+}
+
+.switcher > * > * {
+  flex-grow: 1;
+  flex-basis: calc((var(--threshold) - (100% - var(--flow-space))) * 999);
+  margin: calc(var(--flow-space) / 2);
+}
+
+.center\:md {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+@media screen and (min-width: 40em) {
+  .center\:md {
+    margin-left: unset;
+    margin-right: unset;
+    text-align: unset;
+  }
+}
