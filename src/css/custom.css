@@ -25,6 +25,8 @@ body {
   --ifm-color-primary-light: #126b7a;
   --ifm-color-primary-lighter: #127080;
   --ifm-color-primary-lightest: #157e90;
+  --base-size: 1rem;
+  --flow-space: 1.5rem;
 }
 
 html[data-theme='dark'] {
@@ -86,15 +88,15 @@ a {
 
 /* Composition Classes */
 .box {
-  padding: var(--s-0);
+  padding: var(--base-size);
 }
 
 .box[data-variant='canary'] {
   background-color: var(--color-canary-60);
-  border-radius: var(--s-0);
+  border-radius: var(--base-size);
   color: var(--color-dark);
   position: relative;
-  padding-bottom: var(--s-12);
+  padding-bottom: 48px;
 }
 
 .box[data-variant='canary'] .button[data-variant='canary'] {
@@ -196,4 +198,9 @@ a {
     margin-right: unset;
     text-align: unset;
   }
+}
+
+.bg-transparent-200 {
+   --tw-bg-opacity: .2;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
