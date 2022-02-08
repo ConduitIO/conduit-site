@@ -179,7 +179,7 @@
                       <a href="https://discord.meroxa.com" className="text-gray-600 hover:text-gray-600">Join our Discord</a>
                     </li>
                     <li>
-                      <a href="https://github.com/ConduitIO/conduitwdiscussions" className="text-gray-600 hover:text-gray-600">Github Discussions</a>
+                      <a href="https://github.com/ConduitIO/conduit/discussions" className="text-gray-600 hover:text-gray-600">Github Discussions</a>
                     </li>
                   </ul>
                 </div>

@@ -4,7 +4,7 @@ import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import HomepageFeatures from "../components/HomepageFeatures";
 import Connectors from "@theme/HomeLayout/Connectors";
 import Navbar from '@theme/HomeLayout/NavBar';
-import { MailIcon } from '@heroicons/react/solid'
+import SplitPair from './../containers/SplitPair';
 
 function HomepageHeader() {
   return (
@@ -12,10 +12,7 @@ function HomepageHeader() {
       <div style={{ 'background': 'linear-gradient(289.62deg, #20BED9 -11.02%, #0B525D 97.11%)' }} className="max-w-full">
         <Navbar />
         <div className="max-w-screen-lg  mx-auto py-2 pb-10 mt-10">
-          <div className="flex items-center">
-            <div className="basis-2/5 flex-1 items-center flex p-10">
-              <img className="w-full h-46 md:h-96 mx-auto" src="/images/conduit/server-illustration.svg" alt="Data Transformation Visual" />
-            </div>
+          <SplitPair data-reversed>
             <div className="basis-3/5 flex flex-col p-10">
               <h1 className="font-bold text-2xl lg:text-5xl md:text-5xl leading-6 text-white">
                 Data Integration for Production Data Stores
@@ -39,7 +36,10 @@ function HomepageHeader() {
                 </a>
               </div>
             </div>
-          </div>
+            <div className="basis-2/5 flex-1 items-center flex p-10">
+              <img className="w-full h-46 md:h-96 mx-auto" src="/images/conduit/server-illustration.svg" alt="Data Transformation Visual" />
+            </div>
+          </SplitPair>
 
         </div>
 
@@ -111,7 +111,7 @@ export default function Home() {
       <section className="bg-orange-700 pt-10" >
         <div className=" max-w-screen-lg  mx-auto px-10">
           <div className="max-w-screen-lg  mx-auto py-2 pb-10 mt-10">
-            <div className="flex flex-row">
+            <SplitPair>
               <div className="flex-1 items-start flex flex-col">
                 <h1 className="pb-10 font-bold text-2xl lg:text-5xl md:text-5xl text-white leading-4">Get up.<br />Get involved. <br />Get into it.</h1>
                 <p className="pb-10 text-md text-white">The Conduit Community is the ultimate resource of information to help you get started and optimize your infrastructure to build and deploy connectors.</p>
@@ -134,7 +134,7 @@ export default function Home() {
               <div className="flex-1 items-center flex">
                 <img className="w-full h-46 md:h-96 mx-auto" src="/images/conduit/big-data-storage.svg" alt="Data Transformation Visual" />
               </div>
-            </div>
+            </SplitPair>
 
           </div>
         </div>
