@@ -43,7 +43,7 @@
  
        {!noFooter &&
           <footer className='main-wrapper'>
-            <div className="max-w-screen-lg mx-auto py-12 switcher">
+            <div className="container container-fluid max-w-screen-lg mx-auto py-12 switcher">
               <div>
                 <div>
                   <a href="/" className="text-black hover:text-gray-600">
