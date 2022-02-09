@@ -5,15 +5,17 @@ import HomepageFeatures from "../components/HomepageFeatures";
 import Connectors from "@theme/HomeLayout/Connectors";
 import Navbar from '@theme/HomeLayout/NavBar';
 import SplitPair from './../containers/SplitPair';
+import Stack from './../containers/Stack';
+import Wrapper from './../containers/Wrapper';
 
 function HomepageHeader() {
   return (
     <>
       <div style={{ 'background': 'linear-gradient(289.62deg, #20BED9 -11.02%, #0B525D 97.11%)' }} className="max-w-full">
         <Navbar />
-        <div className="max-w-screen-lg  mx-auto py-2 pb-10 mt-10">
+        <Wrapper className='py-12'>
           <SplitPair data-reversed>
-            <div className="basis-3/5 flex flex-col p-10">
+            <Stack className="basis-3/5">
               <h1 className="font-bold text-5xl lg:text-5xl md:text-5xl text-white">
                 Data Integration for Production Data Stores
               </h1>
@@ -35,13 +37,12 @@ function HomepageHeader() {
                   <span>Documentation</span>
                 </a>
               </div>
-            </div>
-            <div className="basis-2/5 flex-1 items-center flex p-10">
+            </Stack>
+            <div className="basis-2/5">
               <img className="w-full h-46 md:h-96 mx-auto" src="/images/conduit/server-illustration.svg" alt="Data Transformation Visual" />
             </div>
           </SplitPair>
-
-        </div>
+        </Wrapper>
 
         <div role="presentation" aria-hidden="true" className="text-white -mb-2">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1662 141">
