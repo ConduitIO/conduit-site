@@ -14,7 +14,7 @@ function HomepageHeader() {
         <div className="max-w-screen-lg  mx-auto py-2 pb-10 mt-10">
           <SplitPair data-reversed>
             <div className="basis-3/5 flex flex-col p-10">
-              <h1 className="font-bold text-2xl lg:text-5xl md:text-5xl leading-6 text-white">
+              <h1 className="font-bold text-5xl lg:text-5xl md:text-5xl text-white">
                 Data Integration for Production Data Stores
               </h1>
 
@@ -113,7 +113,7 @@ export default function Home() {
           <div className="max-w-screen-lg  mx-auto py-2 pb-10 mt-10">
             <SplitPair>
               <div className="flex-1 items-start flex flex-col">
-                <h1 className="pb-10 font-bold text-2xl lg:text-5xl md:text-5xl text-white leading-4">Get up.<br />Get involved. <br />Get into it.</h1>
+                <h2 className='text-4xl font-bold pb-10 text-white'>Get up.<br />Get involved. <br />Get into it.</h2>
                 <p className="pb-10 text-md text-white">The Conduit Community is the ultimate resource of information to help you get started and optimize your infrastructure to build and deploy connectors.</p>
                 <div>
                   <a href="https://github.com/ConduitIO/conduit"
