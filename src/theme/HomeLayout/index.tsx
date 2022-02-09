@@ -184,7 +184,7 @@
                   </ul>
                 </div>
                 <div className="stack">
-                  <h3 className="text-forest-100 font-bold">Community</h3>
+                  <h3 className="text-forest-100 font-bold">Company</h3>
                   <ul role="list" className="stack">
                     <li>
                       <a href="https://meroxa.com/about" className="text-gray-600 hover:text-gray-600">About Meroxa</a>
@@ -194,7 +194,7 @@
                     </li>
                     <li>
                       <a href="https://twitter.com/meroxadata" className="text-gray-600 hover:text-gray-600">
-                        Meroxa Twitter
+                        Meroxa on Twitter
                       </a>
                     </li>
                   </ul>
