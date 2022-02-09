@@ -23,7 +23,7 @@ const FeatureList = [
   },
 ];
 
-const Feature = ({ img, title, description, link }) => (<li key={title} className="h-full bg-forest-60 cursor-pointer py-5 px-6 shadow rounded-lg text-white">
+const Feature = ({ img, title, description, link }) => (<li key={title} className="h-full bg-forest-60 py-5 px-6 shadow rounded-lg text-white">
   <div className="space-y-6">
 
     <img className="h-8 w-8" src={img} alt="" />
