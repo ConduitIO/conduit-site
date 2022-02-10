@@ -140,7 +140,15 @@ a {
     align-items: start;
   }
 
+  .split-pair[data-skewed][data-reversed] > :first-child {
+    flex-basis: 60%;
+  }
+
   .split-pair[data-skewed] > :first-child {
+    flex-basis: 40%;
+  }
+
+  .split-pair[data-skewed][data-reversed] > :nth-child(2) {
     flex-basis: 40%;
   }
 
