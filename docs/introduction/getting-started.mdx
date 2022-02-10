@@ -1,14 +1,23 @@
 ---
-title: 'Getting Started'
-sidebar_position: 1
+title: 'Getting Started with Conduit'
+sidebar_position: 0
 slug: 'getting-started'
+hide_title: true
+sidebar_label: "Getting Started"
 ---
 
-Conduit is written in [Go](https://go.dev/), and is designed to be easy to use and [deploy](https://docs.conduit.io/docs/Deploy/overview).
+<div style={{ textAlign: "center" }}>
+  <img alt="Conduit Logo" style={{ maxWidth: "400px", marginTop: 0 }} src="/images/conduit/on-white-conduit-logo.png" />
+</div>
 
-To get started,
 
-1. Download Conduit Binary.
+Conduit is a data integration tool for software engineers. It's purpose is to help you move data from A to B. You can use Conduit to send data from Kafka to Postgres, between files and APIs, between [supported connectors](/docs/connectors/overview), and [any datastore you can build a plugin for](/docs/introduction/plugins).
+
+It's written in [GoLang](https://go.dev/), compiles to a binary and is designed to be easy to use and [deploy](https://docs.conduit.io/docs/Deploy/overview).
+
+To get started:
+
+1. [Download the latest Conduit release](https://github.com/ConduitIO/conduit/releases).
 2. Unzip:
 
 If you’re on Mac, it will look something like this:
@@ -20,8 +29,10 @@ tar zxvf conduit_0.1.0_Darwin_x86_64.tar.gz
 3. Start Conduit:
 
 ```shell
-$ ./conduit
+./conduit
 ```
+
+**Tip**: Depending on your operating system, you may need to run `chmod +x conduit` before running the binary.
 
 4. Navigate to `http://localhost:8080/ui/`:
 

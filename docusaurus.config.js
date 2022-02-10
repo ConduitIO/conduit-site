@@ -36,17 +36,14 @@ module.exports = {
     },
     prism: {
       theme: require('prism-react-renderer/themes/dracula'),
-      additionalLanguages: ['hcl'],
+      additionalLanguages: ['hcl', 'yaml'],
     },
     // Relative to "static" directory.
     image: 'images/generic-social-image.png',
-    googleAnalytics: {
-      trackingID: '',
-    },
     navbar: {
       logo: {
         alt: 'Conduit Logo',
-        src: 'images/conduit/conduit-dark-logo.svg',
+        src: 'images/conduit/on-white-conduit-logo.png',
         href: 'https://conduit.io',
         srcDark: 'images/conduit-logo-dark.svg',
       },
@@ -54,12 +51,14 @@ module.exports = {
         { to: '/', label: 'Home', position: 'left', activeBaseRegex: `///` },
         {
           type: 'doc',
-          docId: 'introduction/what-is-conduit',
+          docId: 'introduction/getting-started',
           position: 'left',
           label: 'Documentation',
         },
-        { to: '/docs/connectors/overview', label: 'Connectors', position: 'left' },
-        { to: 'https://discord.meroxa.com', label: 'Join Community', position: 'left' },
+        { to: '/guides', label: 'Guides', position: 'left' },
+        { to: '/api', label: 'HTTP API', position: 'left' },
+        { to: 'https://github.com/ConduitIO/conduit/discussions', label: 'GitHub Discussions', position: 'right' },
+        { to: 'https://discord.meroxa.com', label: 'Discord Community', position: 'right' },
         
       ],
     },
@@ -147,6 +146,7 @@ module.exports = {
         id: 'guides',
         showReadingTime: true,
         blogPostComponent: '@theme/GuidePostPage',
+        blogListComponent: '@theme/BlogList',
         feedOptions: {
           type: 'all',
           copyright: `Copyright © ${new Date().getFullYear()} Meroxa, Inc.`,
