@@ -31,7 +31,7 @@ function HomepageHeader() {
                   <span>Download</span>
                 </a>
 
-                <a href="/docs/introduction/what-is-conduit"
+                <a href="/docs/introduction/getting-started"
                   className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-transparent-200 hover:text-gray-600 hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   <span>Documentation</span>
