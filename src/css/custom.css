@@ -108,7 +108,7 @@ a {
 .wrapper {
   padding-left: var(--flow-space);
   padding-right: var(--flow-space);
-  max-width: 76rem;
+  max-width: 60rem;
   margin-left: auto;
   margin-right: auto;
 }
@@ -141,11 +141,11 @@ a {
   }
 
   .split-pair[data-skewed] > :first-child {
-    flex-basis: 30%;
+    flex-basis: 40%;
   }
 
   .split-pair[data-skewed] > :nth-child(2) {
-    flex-basis: 70%;
+    flex-basis: 60%;
   }
 
   .split-pair[data-reversed] {
