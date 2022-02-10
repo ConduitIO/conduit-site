@@ -71,7 +71,7 @@ export default function NavBar() {
                                 {navLinks.map(({ label, href }) => (
                                     <a
                                         href={href}
-                                        className="text-white hover:text-white inline-flex items-center px-1 pt-1 text-sm md:text-lg font-extrabold"
+                                        className="text-white hover:text-white inline-flex items-center px-3 pt-1 text-sm md:text-lg font-bold"
                                     >
                                         {label}
                                     </a>
