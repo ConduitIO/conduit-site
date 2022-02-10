@@ -4,30 +4,22 @@ sidebar_label: "Overview"
 sidebar_position: 1
 ---
 
-import { InformationCircleIcon } from '@heroicons/react/solid';
+The generator plugin is able to generate sample records with its source.
+It has no destination and trying to use it will result in an error.
 
-<div className="rounded-md bg-blue-50 p-4">
-    <div className="flex">
-        <div className="flex-shrink-0">
-            <InformationCircleIcon
-                className="h-5 w-5 text-blue-400"
-                aria-hidden="true"
-            />
-        </div>
-        <div className="ml-3">
-            <h3 className="text-sm font-medium text-blue-800 mt-0.5">
-                While in 0.1, the documentation will live in{' '}
-                <a href="https://github.com/ConduitIO/conduit">GitHub</a> as we
-                quickly push new features.
-            </h3>
-            <p>
-                View{' '}
-                <a
-                    href={`https://github.com/ConduitIO/conduit/tree/main/pkg/plugins/generator`}
-                >
-                    Generator Documentation
-                </a>
-            </p>
-        </div>
-    </div>
-</div>
+The data is generated in JSON format. The JSON objects themselves are generated using a field specification, which is 
+explained in more details in the [Configuration section](#Configuration) below.
+
+The plugin is great for getting started with Conduit but also for certain types of performance tests.
+
+
+### Configuration
+`recordCount`
+The number of records to be generated.
+If a negative value is used, the source will generate records until stopped.
+
+`readTime`
+The time it takes to 'read' a record. It can be used to simulate latency and, for example, simulate slow or fast sources.
+
+`fields`
+A comma-separated list of name:type tokens, where type can be: int, string, time, bool. An example is: `id:int,name:string,joined:time,admin:bool`.

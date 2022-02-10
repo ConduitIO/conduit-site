@@ -1,5 +1,5 @@
 ---
-title: "Architecture"
+title: "Conduit Architecture"
 slug: "architecture"
 ---
 

@@ -26,7 +26,7 @@ function classNames(...classes) {
 const navLinks = [
     {
         label: 'Documentation',
-        href: '/docs/introduction/what-is-conduit',
+        href: '/docs/introduction/getting-started',
     },
     {
         label: 'Connectors',
