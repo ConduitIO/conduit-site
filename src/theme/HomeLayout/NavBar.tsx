@@ -18,6 +18,7 @@ import React, { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { SearchIcon } from '@heroicons/react/solid'
 import Cluster from './../../containers/Cluster';
+import Wrapper from './../../containers/Wrapper';
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -44,42 +45,41 @@ const navLinks = [
 
 export default function NavBar() {
     return (
-        <Disclosure as="nav" className="max-w-screen-lg bg-transparent mx-auto pt-5">
+      <Wrapper>
+        <Disclosure as="nav" className="bg-transparent pt-5">
             {({ open }) => (
                 <>
-                    <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-                      <Cluster>
-                        <div className='justify-between'>
-                          <div>
-                              <div className="flex-shrink-0 flex items-center">
-                                  <a href="/">
-                                      <img
-                                          className="block lg:hidden h-10 w-auto"
-                                          src="/images/conduit/conduit-logo.svg"
-                                          alt="Conduit Logo"
-                                      />
-                                      <img
-                                          className="hidden lg:block h-16 w-auto"
-                                          src="/images/conduit/conduit-logo.svg"
-                                          alt="Conduit Logo"
-                                      />
-                                  </a>
-                              </div>
-                            </div>
-                            <div className='flex items-center'>
-                                    {/* Current: "border-sky-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-600" */}
-                                {navLinks.map(({ label, href }) => (
-                                    <a
-                                        href={href}
-                                        className="text-white hover:text-white inline-flex items-center px-3 pt-1 text-sm md:text-lg font-bold"
-                                    >
-                                        {label}
-                                    </a>
-                                ))}
-                            </div>
+                  <Cluster>
+                    <div className='justify-between items-center'>
+                      <div>
+                          <div className="flex-shrink-0 flex items-center">
+                              <a href="/">
+                                  <img
+                                      className="block lg:hidden h-10 w-auto"
+                                      src="/images/conduit/conduit-logo.svg"
+                                      alt="Conduit Logo"
+                                  />
+                                  <img
+                                      className="hidden lg:block h-16 w-auto"
+                                      src="/images/conduit/conduit-logo.svg"
+                                      alt="Conduit Logo"
+                                  />
+                              </a>
                           </div>
-                        </Cluster>
+                        </div>
+                        <div>
+                                {/* Current: "border-sky-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-600" */}
+                            {navLinks.map(({ label, href }) => (
+                                <a
+                                    href={href}
+                                    className="text-white hover:text-white inline-flex items-center px-1 pt-1 text-sm md:text-lg font-extrabold"
+                                >
+                                    {label}
+                                </a>
+                            ))}
+                        </div>
                       </div>
+                    </Cluster>
                             {/* <div className="flex-1 flex items-center justify-center px-2 lg:justify-end bg-transparent">
                                 <div className="max-w-lg w-full lg:max-w-xs">
                                     <label htmlFor="search" className="sr-only">
@@ -120,5 +120,6 @@ export default function NavBar() {
                 </>
             )}
         </Disclosure>
+      </Wrapper>
     )
 }
