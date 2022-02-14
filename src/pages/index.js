@@ -8,6 +8,7 @@ import SplitPair from './../containers/SplitPair';
 import Stack from './../containers/Stack';
 import Wrapper from './../containers/Wrapper';
 import {Redirect} from '@docusaurus/router';
+import { window } from 'ssr-window';
 
 function HomepageHeader() {
   
@@ -77,7 +78,7 @@ function HomepageHeader() {
 export default function Home() {
   const { siteConfig } = useDocusaurusContext();
 
-  if (window.location.hostname.match("docs\.conduit\.io")) {
+  if (window && window.location.hostname.match("docs\.conduit\.io")) {
     return <Redirect to="/docs/introduction/getting-started" />;
   }
 
