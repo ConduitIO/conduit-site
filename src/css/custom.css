@@ -86,6 +86,14 @@ a {
     margin-top: 0;
 }
 
+h1 {
+  max-width: 20ch;
+}
+
+p {
+  max-width: 60ch;
+}
+
 /* Composition Classes */
 .box {
   padding: var(--base-size);
@@ -108,7 +116,7 @@ a {
 .wrapper {
   padding-left: var(--flow-space);
   padding-right: var(--flow-space);
-  max-width: 60rem;
+  max-width: 80rem;
   margin-left: auto;
   margin-right: auto;
 }
@@ -194,18 +202,10 @@ a {
   margin: calc(var(--flow-space) / 2);
 }
 
-.center\:md {
+.center {
   margin-left: auto;
   margin-right: auto;
   text-align: center;
-}
-
-@media screen and (min-width: 40em) {
-  .center\:md {
-    margin-left: unset;
-    margin-right: unset;
-    text-align: unset;
-  }
 }
 
 .bg-transparent-200 {
