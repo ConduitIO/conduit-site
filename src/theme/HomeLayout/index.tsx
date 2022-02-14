@@ -203,7 +203,7 @@
                   </div>
                 </div>
               </div>
-              <p className="text-center py-10">
+              <p className="center text-center py-10">
                 © {fullYear} Meroxa, Inc. All rights reserved.
               </p>
             </Wrapper>
