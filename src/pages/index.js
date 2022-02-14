@@ -7,8 +7,10 @@ import Navbar from '@theme/HomeLayout/NavBar';
 import SplitPair from './../containers/SplitPair';
 import Stack from './../containers/Stack';
 import Wrapper from './../containers/Wrapper';
+import {Redirect} from '@docusaurus/router';
 
 function HomepageHeader() {
+  
   return (
     <>
       <div style={{ 'background': 'linear-gradient(289.62deg, #20BED9 -11.02%, #0B525D 97.11%)' }} className="max-w-full">
@@ -74,6 +76,11 @@ function HomepageHeader() {
 
 export default function Home() {
   const { siteConfig } = useDocusaurusContext();
+
+  if (window.location.hostname.match("docs\.conduit\.io")) {
+    return <Redirect to="/docs/introduction/getting-started" />;
+  }
+
   return (
     <Layout
       description={siteConfig.tagline}
