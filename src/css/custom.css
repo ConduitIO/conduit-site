@@ -86,13 +86,6 @@ a {
     margin-top: 0;
 }
 
-h1 {
-  max-width: 20ch;
-}
-
-p {
-  max-width: 60ch;
-}
 
 /* Composition Classes */
 .box {

@@ -1,0 +1,66 @@
+---
+title: "How to add Conduit to your Path"
+slug: how-to-add-conduit-to-your-path
+author: '@anaptfox'
+author_url: https://twitter.com/anaptfox
+author_image_url: https://pbs.twimg.com/profile_images/1004707739405205504/BpvzOr9X_400x400.jpg
+tag: ['File Connector']
+description: Learn how to move data between files with Conduit.
+keywords: ['data', 'file', 'conduit', 'move', 'copy']
+---
+
+# How to add Conduit to your Path
+
+Adding Conduit to your [path](https://zwbetz.com/how-to-add-a-binary-to-your-path-on-macos-linux-windows/) makes it easy to start Conduit locally on your machine. From anywhere in your terminal, you’ll be able to run:
+
+```jsx
+$ conduit
+```
+
+<!--truncate-->
+
+These instructions are specific to unix-based machines. However, you may find instructions for other operating systems here: [How to Add a Binary (or Executable, or Program) to Your PATH on macOS, Linux, or Windows](https://zwbetz.com/how-to-add-a-binary-to-your-path-on-macos-linux-windows/).
+
+To accomplish this, it’s best practice to place a `bin` folder in your home directory and add it to your path:
+
+```jsx
+mkdir ${HOME}/bin
+```
+
+If you’d prefer to add the binary to an existing path, you may see what currently in your [$PATH](https://askubuntu.com/questions/551990/what-does-path-mean) with the following command:
+
+```jsx
+echo $PATH
+```
+
+## Adding to Environment
+
+Next, you’ll want to make sure your new folder is in your `$PATH`. You can do this by updating your shell profile. 
+
+### Zsh
+
+```jsx
+vi ${HOME}/.zshrc
+```
+
+### Bash
+
+```jsx
+vi ${HOME}/.bashrc
+```
+
+In your shell profile, add the following line:
+
+```jsx
+export PATH="${PATH}:${HOME}/bin"
+```
+
+Next, restart your terminal.
+
+## Downloading the Conduit binary
+
+You may download the binary for your machine architecture here: [Releases · ConduitIO/conduit](https://github.com/ConduitIO/conduit/releases)
+
+After downloading, place your binary in the directory you created earler: `${HOME}/bin` .
+
+Now, in your session, you should be able to run the `conduit` command. Enjoy ☕
