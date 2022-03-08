@@ -13,11 +13,11 @@ keywords: ['data', 'file', 'conduit', 'move', 'copy']
 
 Adding Conduit to your [path](https://zwbetz.com/how-to-add-a-binary-to-your-path-on-macos-linux-windows/) makes it easy to start Conduit locally on your machine. From anywhere in your terminal, you’ll be able to run:
 
-```jsx
-$ conduit
-```
+<img className="rounded-md" src="/images/guides/how-to-add-conduit-to-your-path/conduit-in-terminal.png" alt="Conduit in Terminal" />
 
 <!--truncate-->
+
+## Adding to Environment
 
 These instructions are specific to unix-based machines. However, you may find instructions for other operating systems here: [How to Add a Binary (or Executable, or Program) to Your PATH on macOS, Linux, or Windows](https://zwbetz.com/how-to-add-a-binary-to-your-path-on-macos-linux-windows/).
 
@@ -33,7 +33,6 @@ If you’d prefer to add the binary to an existing path, you may see what curren
 echo $PATH
 ```
 
-## Adding to Environment
 
 Next, you’ll want to make sure your new folder is in your `$PATH`. You can do this by updating your shell profile. 
 
@@ -55,12 +54,12 @@ In your shell profile, add the following line:
 export PATH="${PATH}:${HOME}/bin"
 ```
 
-Next, restart your terminal.
+Lastly, restart your terminal.
 
 ## Downloading the Conduit binary
 
-You may download the binary for your machine architecture here: [Releases · ConduitIO/conduit](https://github.com/ConduitIO/conduit/releases)
+You may download the binary for your machine architecture here: [Releases · ConduitIO/conduit](https://github.com/ConduitIO/conduit/releases).
 
-After downloading, place your binary in the directory you created earler: `${HOME}/bin` .
+After downloading, place your binary in the directory you created earler: `${HOME}/bin` . Now, in your session, you should be able to run the `conduit` command.
 
-Now, in your session, you should be able to run the `conduit` command. Enjoy ☕
+Enjoy ☕.
