@@ -51,10 +51,6 @@ html[data-theme='dark'] {
     padding: 0 var(--ifm-pre-padding);
 }
 
-:not(br:has(.Terminal-prompt)) {
-    color: green;
-}
-
 was-this-helpful {
     --was-this-helpful-main-color: rgb(28, 30, 33);
     --was-this-helpful-font-family: 'Inter', sans-serif;
