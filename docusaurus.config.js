@@ -21,8 +21,8 @@ module.exports = {
   ],
   organizationName: 'conduitio', // Usually your GitHub org/user name.
   projectName: 'conduit-site', // Usually your repo name.
-  metadata: [{ name: 'facebook-domain-verification', content: '0aq4u2ydyv4axal6x65gslmidlhc7j' }],
   themeConfig: {
+    metadata: [{ name: 'facebook-domain-verification', content: '0aq4u2ydyv4axal6x65gslmidlhc7j' }],
     colorMode: {
       // "light" | "dark"
       defaultMode: 'light',
