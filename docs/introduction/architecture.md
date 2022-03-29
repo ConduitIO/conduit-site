@@ -55,4 +55,4 @@ Conduit is split in the following layers:
   [plugins.proto](https://github.com/ConduitIO/conduit/blob/main/pkg/plugins/proto/plugins.proto) and provides the
   read/write functionality for a specific resource (e.g. a database).
 
-  For more see [Github](https://github.com/ConduitIO/conduit/blob/main/docs/architecture.md).
+  For more see [GitHub](https://github.com/ConduitIO/conduit/blob/main/docs/architecture.md).
