@@ -34,7 +34,7 @@ const navLinks = [
         href: '/docs/introduction/getting-started',
     },
     {
-        label: 'Github',
+        label: 'GitHub',
         href: 'http://github.com/ConduitIO/',
     },
     {
