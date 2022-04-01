@@ -258,13 +258,8 @@ This will compile our connector to a binary.
 
 To use your new connector, perform the following steps:
 
-<<<<<<< HEAD
 1. [Start Conduit](https://github.com/ConduitIO/conduit#installation-guide).
 2. Create Pipeline: 
-=======
-1. Start Conduit.
-2. Create a Pipeline:
->>>>>>> 7dd86ac94bbc0cdf0383101ff8daec345f765fca
 
 ```curl
 curl -X 'POST' \
@@ -283,7 +278,6 @@ curl -X 'POST' \
 Since this is a Destination, we need to create a source. In this case, we can use the generator connector. It's a connector you can use for testing that will produce random records every 5 seconds.
 
 ```json
-<<<<<<< HEAD
 curl -X 'POST' \
   'http://localhost:8080/v1/connectors' \
   -H 'accept: application/json' \
@@ -291,11 +285,6 @@ curl -X 'POST' \
   -d '{
 	"type": "TYPE_SOURCE",
 	"plugin": "builtin:generator",
-=======
-{
-    "type": "TYPE_SOURCE",
-    "plugin": "builtin:generator",
->>>>>>> 7dd86ac94bbc0cdf0383101ff8daec345f765fca
     "config": {
         "readTime": "5s",
         "fields": "id:int",
@@ -330,11 +319,7 @@ After, starting the pipeline, you should see the following in the Algolia:
 
 ## What's Next
 
-<<<<<<< HEAD
 In this guide, we have covered the basics of how to build a connector for Conduit. The best way to learn more about what's possible with Conduit is to check out the [Conduit documentation](https://www.conduit.io/docs/introduction/getting-started), the [Conduit API documentation](https://docs.conduit.io/api/), and the [Conduit SDK](/).
-=======
-In this guide, we have covered the basics of how to build a connector for Conduit. The best way to learn more about what's possible with Conduit is to check out the [Conduit documentation](https://docs.conduit.io/), the [Conduit API documentation](https://docs.conduit.io/api/), and the [Conduit Connector SDK](https://github.com/conduitio/conduit-connector-sdk).
->>>>>>> 7dd86ac94bbc0cdf0383101ff8daec345f765fca
 
 You may also see examples of the methods above within the following connectors:
 
