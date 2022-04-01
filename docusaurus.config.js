@@ -111,6 +111,21 @@ module.exports = {
       ],
       copyright: `Copyright © ${new Date().getFullYear()} Meroxa, Inc.`,
     },
+    announcementBar: {
+      id: 'announcement-banner',
+      content: `
+        <div class='wrapper announcement-banner'>
+          <p class='content'>
+            Now you&rsquo;re able to contribute to the Conduit connector ecosystem.&nbsp;
+            <a class='cta' href='https://github.com/ConduitIO/conduit-connector-sdk' target='_blank' rel='noreferrer noopener'>Conduit Connector SDK</a>&nbsp;
+            makes building connectors painless
+          </p>
+        </div>
+      `,
+      backgroundColor: '#E3C9C3',
+      textColor: '#3C3C3C',
+      isCloseable: false,
+    },
   },
   presets: [
     [
