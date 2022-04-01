@@ -221,6 +221,7 @@ a {
   align-items: center;
   color: #6E2312;
   font-weight: extra-bold;
+  text-decoration: underline;
 }
 
 .announcement-banner .content > * + * {

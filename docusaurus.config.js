@@ -116,9 +116,9 @@ module.exports = {
       content: `
         <div class='wrapper announcement-banner'>
           <p class='content'>
-            Now you&rsquo;re able to contribute to the Conduit connector ecosystem.&nbsp;
+            Now you&rsquo;re able to contribute to the Conduit Connector ecosystem.&nbsp;
             <a class='cta' href='https://github.com/ConduitIO/conduit-connector-sdk' target='_blank' rel='noreferrer noopener'>Conduit Connector SDK</a>&nbsp;
-            makes building connectors painless
+            makes building connectors painless.
           </p>
         </div>
       `,
