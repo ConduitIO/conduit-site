@@ -11,9 +11,7 @@ keywords: ['data', 'connector', 'algolia', 'conduit']
 
 # How to build a Conduit Algolia Connector
 
-In this article we are going to walkthrough step by step how to build a Conduit connector. 
-
-Conduit connectors are ... Conduit Connectors can be a source, destination, or both. 
+In this article we are going to walkthrough step by step how to build a Conduit connector. Conduit connectors are ... Conduit Connectors can be a source, destination, or both. 
 
 For this example, we are going to build an Algolia destination connector. The goal of this connector is to give the user the ability to send data to Algolia. In the search engine world, this is called indexing. Since Conduit is a generic tool to move data between data infrastructure, with this new connector we can index data from any Conduit Source (PostgreSQL, Kafka, etc.).
 
@@ -36,7 +34,7 @@ Learn more about the connector lifecycle in [The Guide to the Conduit Connector 
 
 Connectors can be created in many programming languages because Conduit Plugins leverage GRPC. For this example, we are going to use the Golang SDK. 
 
-Also, for this example, the datastore we are building the connector for is Algolia. Algola is TODO. As a destination, this connector allows for real-time syncing between any Conduit Source and Algolia.
+Also, for this example, the datastore we are building the connector for is Algolia. Algola is a fully managed search engine. As a destination, this connector allows for real-time syncing between any Conduit Source and Algolia.
 
 To communicate with Algolia, we can use the [Algolia Golang library](https://www.algolia.com/doc/api-client/getting-started/install/go/?client=go).
 
@@ -117,29 +115,6 @@ func Specification() sdk.Specification {
 }
 ```
 
-## Entrypoint
-
-Next, let's look at `cmd/algolia/main.go`. This is our entrypoint. 
-
-```go
-package main
-
-import (
-	algolia "github.com/conduitio/conduit-connector-algolia"
-	sdk "github.com/conduitio/conduit-connector-sdk"
-)
-
-func main() {
-	sdk.Serve(
-		algolia.Specification,
-		nil,
-		algolia.NewDestination,
-		)
-}
-```
-
-`sdk.Serve` is TODO. Notice `nil` as the second parameter. This is due to this connector being just a Destination.
-
 ## Destination
 
 The `destination.go` implements the connector lifecycle methods. 
@@ -172,7 +147,6 @@ First we define two structs:
 `Configure` is always the first function to be called in a connector and is used to store and validate the connector configuration. 
 
 ```go
-
 func (d *Destination) Configure(ctx context.Context, cfg map[string]string) error {
 	destCfg := DestinationConfig{
 		APIKey:        cfg[DestinationConfigAPIKey],
@@ -202,7 +176,6 @@ start producing records. If needed, the plugin should open connections in
 this function. 
 
 ```go
-
 func (d *Destination) Open(ctx context.Context) error {
 	client := search.NewClient(d.config.ApplicationID, d.config.APIKey)
 	index := client.InitIndex(d.config.IndexName)
@@ -215,8 +188,8 @@ func (d *Destination) Open(ctx context.Context) error {
 
 `Write` receives a Record and is supposed to write the record to the
 destination right away.
-```go
 
+```go
 func (d *Destination) Write(ctx context.Context, record sdk.Record) error {
 	 , err := d.index.SaveObject(Object(record))
 	if err != nil {
@@ -230,15 +203,14 @@ func (d *Destination) Write(ctx context.Context, record sdk.Record) error {
 
 	return nil
 }
-
 ```
-
-The `Object` methods serializes the record. This is implemented in `object.go`.
+The `Object` type serializes the record. This is implemented in `object.go`.
 
 ### Teardown
 
 `Teardown` signals to the plugin that there will be no more calls to any
 other function. 
+
 ```go
 
 func (d *Destination) Teardown(ctx context.Context) error {
@@ -246,6 +218,30 @@ func (d *Destination) Teardown(ctx context.Context) error {
 	return nil
 }
 ```
+
+## Entrypoint
+
+Next, let's look at `cmd/algolia/main.go`. This is our entrypoint. 
+
+```go
+package main
+
+import (
+	algolia "github.com/conduitio/conduit-connector-algolia"
+	sdk "github.com/conduitio/conduit-connector-sdk"
+)
+
+func main() {
+	sdk.Serve(
+		algolia.Specification,
+		nil,
+		algolia.NewDestination,
+		)
+}
+```
+
+`sdk.Serve` starts the plugin and takes care of its whole lifecycle. Notice `nil` as the second parameter. This is due to this connector being just a Destination.
+
 
 ## Building
 
@@ -261,29 +257,50 @@ This will compile our connector to binary.
 
 To use your new connector, perform the following steps:
 
-1. Start Conduit.
+1. [Start Conduit](https://github.com/ConduitIO/conduit#installation-guide).
 2. Create Pipeline: 
 
 ```curl
-curl 
+curl -X 'POST' \
+  'http://localhost:8080/v1/pipelines' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "config": {
+    "name": "my-pipeline",
+    "description": "This pipeline is for testing",
+  }
+}'
 ```
-3. Create Source
+3. Create Source:
+
+Since this is a Destination, we need to create a source. In this case, we can use the generator connector. It's a connector you can use for testing that will produce random records every 5 seconds.
 
 ```json
-{
+curl -X 'POST' \
+  'http://localhost:8080/v1/connectors' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
 	"type": "TYPE_SOURCE",
 	"plugin": "builtin:generator",
     "config": {
         "readTime": "5s",
         "fields": "id:int",
     }
-}
+}'
 ```
 
-4. Create Destination
+Note: The `plugin` field can take either a path to the compiled connector binary or a name of a builtin plugin like `builtin:generator`.
+
+4. Create Algolia Destination:
 
 ```json
-{
+curl -X 'POST' \
+  'http://localhost:8080/v1/connectors' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
 	"type": "TYPE_DESTINATION",
 	"plugin": "/path/to/algoila",
     "config": {
@@ -291,18 +308,17 @@ curl
         "application_id": "",
         "index_name": ""
     }
-}
+}'
 ```
 
 5. Start pipeline
 
 After, starting the pipeline, you should see the following in the Algolia:
 
-SCREENSHOT
 
 ## What's Next
 
-In this guide, we have covered the basics of how to build a connector for Conduit. The best way to learn more about what's possible with Conduit is to check out the [Conduit documentation](https://docs.conduit.io/), the [Conduit API documentation](https://docs.conduit.io/api/), and the [Conduit SDK](/).
+In this guide, we have covered the basics of how to build a connector for Conduit. The best way to learn more about what's possible with Conduit is to check out the [Conduit documentation](https://www.conduit.io/docs/introduction/getting-started), the [Conduit API documentation](https://docs.conduit.io/api/), and the [Conduit SDK](/).
 
 You may also see examples of the methods above within the following connectors:
 

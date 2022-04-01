@@ -5,71 +5,98 @@ author: '@anaptfox'
 author_url: https://twitter.com/anaptfox
 author_image_url: https://pbs.twimg.com/profile_images/1004707739405205504/BpvzOr9X_400x400.jpg
 tag: ['File Connector']
-description: Learn how to build a Conduit Algolia Connector
-keywords: ['data', 'connector', 'algolia', 'conduit']
+description: Learn how to use Kafka Connect Connectors with Conduit
+keywords: ['data', 'connector', 'Kafka Connect', 'conduit']
 ---
 
 # Using Kafka Connect Connectors with Conduit
 
-The Conduit Kafka Connect Wapper connector is a special connector that allows you to use Kafka Connect connectors with Conduit. 
+The [Conduit Kafka Connect Wrapper connector](https://github.com/ConduitIO/conduit-kafka-connect-wrapper) is a special connector that allows you to use [Kafka Connect](https://docs.confluent.io/platform/current/connect/index.html) connectors with Conduit. Conduit doesn't come bundled with Kafka Connect connectors, but you can use it to bring any Kafka Connect connector with Conduit.
 
-This gives you the ability to: 
-- Use a datastore if Conduit doesn't have a native connector.
-- Remove Kafka as a dependency to simply move data from one place to another.
+This connector gives you the ability to: 
+
 - Easily migrate from Kafka Connect to Conduit.
+- Remove Kafka as a dependency to move data between data infrastructure.
+- Leverage a datastore if Conduit doesn't have a native connector.
 
-Since the Conduit Kafka Connect Wapper itself is written in Java, but most of Conduit's connectors are written in Golang, it also serves as a good example of the flexbilty of the Conduit Plugin SDK.
-
-At a high level, to use the Kafka Connect Wapper, you'll need to:
-
-1. Download the Wapper Connector.
-1. Build the Connector.
-1. Download the Kafka Connect JARs and any dependencies.
-1. Create Pipeline
-1. Add the Kafka Connect Connector to Pipeline.
+Since the Conduit Kafka Connect Wrapper itself is written in Java, but most of Conduit's connectors are written in Go, it also serves as a good example of the flexbilty of the Conduit Plugin SDK.
 
 Let's begin.
+
+## How it works
+
+To use the Kafka Connect wrapper connector, you'll need to:
+
+1. Clone the [`conduit-kafka-connect-wrapper`](https://github.com/ConduitIO/conduit-kafka-connect-wrapper) repository.
+1. Build the Connector.
+1. Download Kafka Connect JARs and any dependencies.
+1. Create a Conduit Pipeline.
+1. Add the Connector to Pipeline.
 
 <!--truncate-->
 
 ## Setup
 
-To begin, let's run the setup script.
+The Kafka Connect wrapper connector is written in Java so it needs to be compiled. 
+
+To begin, clone the connector:
 
 ```
+git clone git@github.com:ConduitIO/conduit-kafka-connect-wrapper.git
+```
+
+Then, build the connector:
+
+```bash
 ./scripts/dist.sh
 ```
 
-This script will creates a directory called `dist` with following contents:
+This script will:
 
-1. The connector JAR itself
-1. Directory `libs` with Aiven's JDBC connector (but no JDBC drivers). 
+1. Create a directory called `dist`.
+1. Compile the connector and place the JAR in `dist`.
+1. Create `dist/libs` directory.
 
-The `libs` directory is where you put the Kafka Connect connector JARs and their dependencies (if any). The wapper plugin will automatically load connectors and all the other dependencies from a `libs` directory.
+Now that we have everything setup, we can add the Kafka Connect connectors. 
 
 ## Adding Kafka Connect Connector
 
-Now that we have everything setup, we can add the Kafka Connect JARS. For this example, we will use the PostgreSQL Kafka Connect JDBC Connector. To install, add the following:
+The `libs` directory is where you put the Kafka Connect connector JARs and their dependencies (if any). The wrapper plugin will automatically load connectors and all the other dependencies from a `libs` directory.
 
-- Add JDBC JAR
-- Add Postgres JAR
+To make things easy, we have included [Aiven's Kafka Connect JDBC Connectors](https://github.com/aiven/jdbc-connector-for-apache-kafka). This connector allows you to connect to any [JDBC database](https://en.wikipedia.org/wiki/Java_Database_Connectivity#:~:text=Java%20Database%20Connectivity%20(JDBC)%20is,Edition%20platform%2C%20from%20Oracle%20Corporation.). 
 
+For this example, we will use the PostgreSQL Kafka Connect JDBC Connector. To install, add the following:
+
+- [Postgres Connector JAR](https://repo1.maven.org/maven2/org/postgresql/postgresql/42.3.3/postgresql-42.3.3.jar)
 
 ## Adding Connector to Pipeline
 
-Now that our connector is set up, and the Kafka Connect connector is installed, we can use the connector in a pipeline.
+Now that our connector is setup, and with Kafka Connect connectors is included in `lib`, we can use the connector within a pipeline.
 
-1. Start Conduit.
+1. [Start Conduit](https://github.com/ConduitIO/conduit#installation-guide).
 2. Create Pipeline: 
 
 ```curl
-curl 
+curl -X 'POST' \
+  'http://localhost:8080/v1/pipelines' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "config": {
+    "name": "my-pipeline",
+    "description": "This pipeline is for testing",
+  }
+}'
 ```
 
 3. Add Connector to Pipeline:
 
-```json
-{
+```curl
+curl -X 'POST' \
+  'http://localhost:8080/v1/connectors' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
   "type": "TYPE_SOURCE",
   "plugin": "/path/to/conduit-kafka-connect-wrapper/dist/conduit-kafka-connect-wrapper",
   "pipeline_id": "f24c4a70-8664-4f80-9c27-204825442943",
@@ -86,7 +113,7 @@ curl
       "topic.prefix": "my_topic_prefix"
     }
   }
-}
+}'
 ```
 
 When creating a Conduit connector, the `plugin` you need to use is the path to `dist/conduit-kafka-connect-wrapper`. 
@@ -94,15 +121,14 @@ When creating a Conduit connector, the `plugin` you need to use is the path to `
 Note that the `wrapper.connector.class` should be a class which is present on the classpath, i.e. in one of the JARs in
 the `libs` directory. 
 
-For more information, theck the [Configuration](#configuration) section.
+For more information, theck the [Configuration](https://github.com/ConduitIO/conduit-kafka-connect-wrapper#configuration) section.
 
 ### What's next? 
 
-Using the Kafka Connect Wapper you can now migrate to Conduit with less friction. 
+Using the Kafka Connect Wrapper you can now migrate to Conduit with less friction. 
 
 Here are some guides to help you learn more:
 
-- Building Kafka Connenct vs Conduit Connectors
-- The Guide to the Conduit Connector Lifecyle
-- How to build a Conduit Connector
+- [The Guide to the Conduit Connector Lifecyle](/guides/build-a-conduit-connector)
+- [How to build a Conduit Connector](/guides/build-a-conduit-connector)
 
