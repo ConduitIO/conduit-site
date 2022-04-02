@@ -209,19 +209,27 @@ a {
 }
 
 .announcement-banner .content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   padding: .75rem;
   font-weight: bold;
 }
 
 .announcement-banner .cta {
-  display: flex;
-  align-items: center;
   color: #6E2312;
   font-weight: extra-bold;
   text-decoration: underline;
+}
+
+@media screen and (min-width: 45em) {
+  .announcement-banner .content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .announcement-banner .cta {
+    display: flex;
+    align-items: center;
+  }
 }
 
 .announcement-banner .content > * + * {
