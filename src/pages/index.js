@@ -86,6 +86,26 @@ export default function Home() {
     <Layout
       description={siteConfig.tagline}
     >
+      <div className='announcement-banner bg-orange-kj'>
+        <Wrapper>
+          <p className='content'>
+            Now you&rsquo;re able to contribute to the Conduit Connector ecosystem.&nbsp;
+            <a className='cta' href='https://github.com/ConduitIO/conduit-connector-sdk' target='_blank' rel='noreferrer noopener'>Conduit Connector SDK</a>&nbsp;
+            makes building connectors painless.
+          </p>
+
+          {/*
+            <p className='color-saffron-100 font-weight:bold'>
+              <a className='cta' href={ announcement.url } target='_blank' rel='noreferrer noopener'>
+                { announcement.cta }
+                <svg aria-hidden="true" width="25" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M7 12h11m0 0-4.588-4M18 12l-4.588 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                </svg>
+              </a>
+            </p>
+          */}
+        </Wrapper>
+      </div>
       <HomepageHeader />
       <section className="bg-slate-100 pt-10" >
         <Wrapper className='py-10'>
