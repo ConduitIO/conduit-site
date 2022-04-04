@@ -30,14 +30,12 @@ To use the Kafka Connect wrapper connector, you'll need to:
 1. Clone the [`conduit-kafka-connect-wrapper`](https://github.com/ConduitIO/conduit-kafka-connect-wrapper) repository.
 1. Build the Connector.
 1. Download Kafka Connect JARs and any dependencies.
-1. Create a Conduit Pipeline.
-1. Add the Connector to Pipeline.
+1. Create a Conduit pipeline.
+1. Add the Connector to pipeline.
 
 <!--truncate-->
 
 ## Setup
-
-The Kafka Connect wrapper connector is written in Java so it needs to be compiled. 
 
 To begin, clone the connector:
 
@@ -45,7 +43,8 @@ To begin, clone the connector:
 git clone git@github.com:ConduitIO/conduit-kafka-connect-wrapper.git
 ```
 
-Then, build the connector:
+Then, we need to build the connector. The Kafka Connect wrapper connector is written in Java so it needs to be compiled. 
+
 
 ```bash
 cd conduit-kafka-connect-wrapper
@@ -65,18 +64,19 @@ Now that we have everything setup, we can add the Kafka Connect connectors.
 
 The `libs` directory is where you put the Kafka Connect connector JARs and their dependencies (if any). The wrapper plugin will automatically load connectors and all the other dependencies from a `libs` directory.
 
-To make things easy, we have included [Aiven's Kafka Connect JDBC Connectors](https://github.com/aiven/jdbc-connector-for-apache-kafka). This connector allows you to connect to any [JDBC database](https://en.wikipedia.org/wiki/Java_Database_Connectivity#:~:text=Java%20Database%20Connectivity%20(JDBC)%20is,Edition%20platform%2C%20from%20Oracle%20Corporation.). 
-
 For this example, we will use the PostgreSQL Kafka Connect JDBC Connector. To install, add the following:
 
+- [Aiven's Kafka Connect JDBC Connectors](https://github.com/aiven/jdbc-connector-for-apache-kafka)
 - [Postgres Connector JAR](https://repo1.maven.org/maven2/org/postgresql/postgresql/42.3.3/postgresql-42.3.3.jar)
+
+This connector allows you to connect to any [JDBC database](https://en.wikipedia.org/wiki/Java_Database_Connectivity#:~:text=Java%20Database%20Connectivity%20(JDBC)%20is,Edition%20platform%2C%20from%20Oracle%20Corporation.).
 
 ## Adding Connector to Pipeline
 
-Now that our connector is setup, and with Kafka Connect connectors is included in `lib`, we can use the connector within a pipeline.
+Now that the Kafka Connect connectors included in `lib`, we can add this connector to a pipeline.
 
 1. [Start Conduit](https://github.com/ConduitIO/conduit#installation-guide).
-2. Create Pipeline: 
+2. Create a pipeline: 
 
 ```curl
 curl -X 'POST' \
@@ -91,7 +91,7 @@ curl -X 'POST' \
 }'
 ```
 
-3. Add Connector to Pipeline:
+3. Add connector to your pipeline:
 
 ```curl
 curl -X 'POST' \
@@ -118,12 +118,12 @@ curl -X 'POST' \
 }'
 ```
 
-When creating a Conduit connector, the `plugin` you need to use is the path to `dist/conduit-kafka-connect-wrapper`. 
+When creating a Conduit connector, the `plugin` you need to use is the path to where `conduit-kafka-connect-wrapper` is on your system. 
 
 Note that the `wrapper.connector.class` should be a class which is present on the classpath, i.e. in one of the JARs in
 the `libs` directory. 
 
-For more information, theck the [Configuration](https://github.com/ConduitIO/conduit-kafka-connect-wrapper#configuration) section.
+For more information, check the [Wrapper Configuration](https://github.com/ConduitIO/conduit-kafka-connect-wrapper#configuration) section.
 
 ### What's next? 
 
