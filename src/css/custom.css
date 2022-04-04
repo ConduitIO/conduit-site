@@ -201,3 +201,39 @@ a {
    --tw-bg-opacity: .2;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
+
+.announcement-banner,
+#announcement-banner {
+  background-color: #E3C9C3; /* var(--color-dark); */
+  color: var(--color-slate-20);
+}
+
+.announcement-banner .content {
+  padding: .75rem;
+  font-weight: bold;
+}
+
+.announcement-banner .cta {
+  color: #6E2312;
+  font-weight: extra-bold;
+  text-decoration: underline;
+}
+
+@media screen and (min-width: 45em) {
+  .announcement-banner .content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .announcement-banner .cta {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.announcement-banner .content > * + * {
+  border-left: 1px solid var(--color-slate-20);
+  margin-left: .5rem;
+  padding-left: .5rem;
+}
