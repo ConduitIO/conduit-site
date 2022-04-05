@@ -11,9 +11,11 @@ keywords: ['data', 'connector', 'algolia', 'conduit']
 
 # How to build a Conduit Algolia Connector
 
-In this article we are going to walkthrough step by step how to build a Conduit connector. Conduit connectors communicates with Conduit by either writing records into the pipeline (source connector) and/or the other way around (destination connector). 
+In this article, we are going to walk through, step by step, how to build a Conduit connector. 
 
-For this example, we are going to build an Algolia destination connector. The goal of this connector is to give the user the ability to send data to Algolia. In the search engine world, this is called indexing. Since Conduit is a generic tool to move data between data infrastructure, with this new connector we can index data from any Conduit Source (PostgreSQL, Kafka, etc.).
+Conduit connectors communicate with Conduit by either writing records into the pipeline (source connector) and/or the other way around (destination connector). 
+
+For this example, we are going to build an Algolia destination connector. The goal of this connector is to give the user the ability to send data to Algolia. In the context of [search engines](https://www.algolia.com/doc/guides/getting-started/how-algolia-works/), this is called indexing. Since Conduit is a generic tool to move data between data infrastructure, with this new connector we can index data from any Conduit Source ([PostgreSQL](https://github.com/ConduitIO/conduit-connector-postgres), [Kafka](https://github.com/ConduitIO/conduit-connector-kafka), etc.).
 
 You may find this full example on [GitHub](https://github.com/ConduitIO/conduit-connector-algolia).
 
@@ -23,29 +25,29 @@ Let's build!
 
 ## How it works
 
-In order to implement a Conduit connector. We need to write four methods:
+We are implmenting a Conduit connector that will be able to index data into Algolia. This will allow users to move data from any [Conduit Source](/docs/connectors/overview) to Algolia. This connector will be a destination connector.
 
-1. Configure - Initialize and validate parameters
-2. Open - Open connection to datastores, which is Algolia in this case.
-3. Write - Write record to datastore.
-4. Teardown - Clean up and close connection.
+In order to implement a Conduit destination connector. We need to write four methods:
 
-Learn more about the connector lifecycle in [The Guide to the Conduit Connector Lifecyle](/guides/guide-to-conduit-connector-lifecycle).
+1. `Configure` - Initialize and validate parameters. We'll need our Algolia application ID and API key, which we can get from [Algolia](https://www.algolia.com/doc/guides/security/api-keys/).
+2. `Open` -  We'll open our connection. We'll use the Algolia client to create an index. An index is like a database table in Algolia.
+3. `Write` -  We'll take our records and write them to our Algolia index.
+4. `Teardown` - We'll close our connection and clean up any resources we've used.
 
 Connectors can be created in many programming languages because Conduit Connectors leverage gRPC. For this example, we are going to use the Go [Connector SDK](https://github.com/conduitio/conduit-connector-sdk).
 
-Also, for this example, the datastore we are building the connector for is Algolia. Algola is a fully managed search engine. As a destination, this connector allows for real-time syncing between any Conduit Source and Algolia.
+Also, for this example, the datastore we are building the connector for is Algolia. Algolia is a fully managed search engine. As a destination, this connector allows for real-time syncing between any Conduit Source and Algolia.
 
 To communicate with Algolia, we can use the [Algolia Go library](https://www.algolia.com/doc/api-client/getting-started/install/go/?client=go).
 
 ### Connector File Structure
 
-Next, let's take a look at an example connector file structure:
+Next, let's take a look at an example connector [file structure](https://github.com/ConduitIO/conduit-connector-algolia):
 
-- `destination.go` - The main destination code.
-- `object.go` - Helper functions to serialize records into JSON for Algolia
+- `destination.go` - The main destination code and where you interact with Algolia.
+- `object.go` - Helper functions to serialize records into JSON for Algolia.
 - `spec.go` - The specification defines connector metadata and parameters.
-- `cmd/algolia/main.go` - Entrypoint
+- `cmd/algolia/main.go` - The entrypoint for the connector.
 
 ## Setup
 
@@ -68,11 +70,13 @@ go mod init
 ```
 mkdir cmd/algolia && touch cmd/algolia/main.go
 ```
-4. Create 
+4. Create more connector files:
 
 ```
-touch destination.go spec.go
+touch destination.go spec.go object.co
 ```
+
+These are the files that we will be working with to build our connector.
 
 5. Install Go dependencies
 
@@ -81,9 +85,13 @@ go get github.com/conduitio/conduit-connector-sdk
 go get github.com/algolia/algoliasearch-client-go/v3
 ```
 
+These dependencies are required for the connector to run. Here is where you can learn more:
+- [Conduit Connector SDK](http://github.com/conduitio/conduit-connector-sdk)
+- [Algolia Go SDK](https://www.algolia.com/doc/api-client/getting-started/install/go/?client=go)
+
 ## Specification
 
-First, let's build `spec.go`. The Specification
+First, let's build `spec.go`. The Specification defines the metadata for your connector.
 
 ```go
 package algolia
@@ -94,7 +102,7 @@ func Specification() sdk.Specification {
 	return sdk.Specification{
 		Name:        "algolia",
 		Summary:     "A destination connector for Algolia",
-		Description: "TBD",
+		Description: "This connector allows for real-time syncing between any Conduit Source and Algolia.",
 		Version:     "v0.1.0",
 		Author:      "Meroxa, Inc.",
 		DestinationParams: map[string]sdk.Parameter{
@@ -116,9 +124,16 @@ func Specification() sdk.Specification {
 }
 ```
 
+Here's what the above file is doing:
+1. It imports the [`conduit-connector-sdk`](https://github.com/ConduitIO/conduit-connector-sdk) package.
+2. It defines a function called `Specification` that returns a [`sdk.Specification`](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#Specification) struct.
+
+This function defines the metadata for the connector. It defines the name, summary, description, version, author and the parameters that the user can configure for the connector.
+
 ## Destination
 
-The `destination.go` implements the connector lifecycle methods. 
+The `destination.go` implements the connector lifecycle methods and is where you interact with Algolia.
+
 
 ```go
 ...
@@ -138,10 +153,10 @@ type DestinationConfig struct {
 ...
 ```
 
-First we define two structs:
+First, we define two structs:
 
-- Destination - This is the "storage" struct of your connector.
-- DestinationConfig - This makes it easy to access connector config.
+- `Destination` - implements the `sdk.Destination` interface. This is the "storage" struct of your connector.
+- `DestinationConfig` - contains the configuration for the destination.
 
 ### Configure
 
@@ -170,11 +185,12 @@ func (d *Destination) Configure(ctx context.Context, cfg map[string]string) erro
 }
 ```
 
+In the above example, we are validating the configuration and storing it in the `Destination` struct.
+
 ### Open
 
-`Open` is called after Configure to signal the plugin it can prepare to
-start producing records. If needed, the plugin should open connections in
-this function. 
+The `Open` method is called after `Configure`. It is used to open the connection to the destination.
+
 
 ```go
 func (d *Destination) Open(ctx context.Context) error {
@@ -185,10 +201,11 @@ func (d *Destination) Open(ctx context.Context) error {
 }
 ```
 
+In the above code, we are [initializing the Algolia client](https://www.algolia.com/doc/api-client/getting-started/instantiate-client-index/go/?client=go) and index. 
+
 ### Write
 
-`Write` receives a Record and is supposed to write the record to the
-destination right away.
+The `Write` method is called when a record is received from the Conduit Source. It is used to write the record to the destination.
 
 ```go
 func (d *Destination) Write(ctx context.Context, record sdk.Record) error {
@@ -205,12 +222,14 @@ func (d *Destination) Write(ctx context.Context, record sdk.Record) error {
 	return nil
 }
 ```
-The `Object` type serializes the record. This is implemented in `object.go`.
+
+Here, we are [saving the record to Algolia](https://www.algolia.com/doc/api-client/getting-started/save-objects/go/?client=go).
+
+Note: The `Object` type serializes the record. This is implemented in [`object.go`](https://github.com/ConduitIO/conduit-connector-algolia/blob/main/object.go). 
 
 ### Teardown
 
-`Teardown` signals to the plugin that there will be no more calls to any
-other function. 
+The `Teardown` method is called when the connector is being stopped. It is used to close the connection to the destination.
 
 ```go
 
@@ -220,9 +239,11 @@ func (d *Destination) Teardown(ctx context.Context) error {
 }
 ```
 
+Here no action is required.
+
 ## Entrypoint
 
-Next, let's look at `cmd/algolia/main.go`. This is our entrypoint. 
+Next, let's look at `cmd/algolia/main.go`. This is the entrypoint for the connector.
 
 ```go
 package main
@@ -241,12 +262,12 @@ func main() {
 }
 ```
 
-`sdk.Serve` starts the plugin and takes care of its whole lifecycle. Notice `nil` as the second parameter. This is due to this connector being just a Destination.
+[`sdk.Serve`](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#Serve) starts the plugin and takes care of its entire lifecycle. Notice `nil` as the second parameter. This is due to this connector being just a Destination. 
 
 
 ## Building
 
-Now that we have all the needed methods implmented, we can build our new connector:
+Now that we have all the required methods implmented, we can build our new connector:
 
 ```
 go build -o algolia cmd/algolia/main.go
@@ -256,7 +277,9 @@ This will compile our connector to a binary.
 
 ## Creating Pipeline with a new Connector
 
-To use your new connector, perform the following steps:
+Now that we have our connector built, we can create a new pipeline using the Generator Source as our Conduit source. The Generator Source is a simple source that generates records. Our pipeline will then send the records to our connector to be written to Algolia.
+
+To use your new connector within a pipline, perform the following steps:
 
 1. [Start Conduit](https://github.com/ConduitIO/conduit#installation-guide).
 2. Create Pipeline: 
@@ -273,9 +296,9 @@ curl -X 'POST' \
   }
 }'
 ```
-3. Create Source:
+3. Create [Generator Source](https://github.com/ConduitIO/conduit-connector-generator):
 
-Since this is a Destination, we need to create a source. In this case, we can use the generator connector. It's a connector you can use for testing that will produce random records every 5 seconds.
+This source will produce random records every 5 seconds.
 
 ```json
 curl -X 'POST' \
@@ -294,7 +317,7 @@ curl -X 'POST' \
 
 Note: The `plugin` field can take either a path to the compiled connector binary or a name of a builtin plugin like `builtin:generator`.
 
-4. Create Algolia Destination:
+4. Create Algolia Destination (your new connector):
 
 ```json
 curl -X 'POST' \
@@ -314,12 +337,11 @@ curl -X 'POST' \
 
 5. Start pipeline
 
-After, starting the pipeline, you should see the following in the Algolia:
-
+Now, you should be able to see the records being generated and written to Algolia.
 
 ## What's Next
 
-In this guide, we have covered the basics of how to build a connector for Conduit. The best way to learn more about what's possible with Conduit is to check out the [Conduit documentation](https://www.conduit.io/docs/introduction/getting-started), the [Conduit API documentation](https://docs.conduit.io/api/), and the [Conduit SDK](/).
+In this guide, we have covered the basics of how to build a connector for Conduit. The best way to learn more about what's possible with Conduit is to check out the [Conduit documentation](https://www.conduit.io/docs/introduction/getting-started), the [Conduit API documentation](https://docs.conduit.io/api/), and the [Conduit SDK](https://github.com/ConduitIO/conduit-connector-sdk).
 
 You may also see examples of the methods above within the following connectors:
 
