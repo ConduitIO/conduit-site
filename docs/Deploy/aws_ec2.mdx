@@ -10,16 +10,65 @@ Before you get started, Conduit should not be listening on any ports that are ac
 
 ![AWS EC2 Topology](/images/guides/aws-ec2-deployment.png)
 
+## Create a new VPC
+
+Start by logging into the AWS console, in your region of choice, and navigate to the VPC service. Click the `Create VPC` button at the top of the page.
+
+-- TODO Insert image
+
+We'll select the `Create VPC and More` option within the page. You'll need to add at least one `NAT Gateway` to the VPC. If you don't, you will not be able to access the instance via SSH.
+
+-- TODO Insert image
+
+You can leave the rest of the defaults and click `Create VPC`. Make sure that once you've completed the VPC setup, you get a copy of the VPC ID. We'll need this in the rest of the setup. We'll use `vpc-1234` as a placeholder value in this guide.
+
 ## Launch a new EC2 Instance in your VPC
 
-We recommend using the Amazon Linux 2 AMI, SSD Volume Type as the base for your instance. A t2.medium instance is sufficient for most production setups.
+With the VPC set up, it's time to launch an instance that'll run Conduit. Navigate to the EC2 Service in the AWS console and create a new instance:
+
+-- TODO Insert image
+
+We recommend using the Amazon Linux 2 AMI, SSD Volume Type as the base for your instance. The AMI should be selected by default. A `t2.medium` instance is sufficient for most production setups. Your resource requirements might be higher depending on how many systems you'll need to connect.
+
+-- TODO Insert image
+
+In the setup of the EC2 instance, you'll want to click on the `Create new key pair` button. This will create a new SSH key for access to the instance. Don't forget to give it a name to be able to identify it within AWS.
+
+-- TODO Insert image
+
+After you hit create, you'll download a `.pem` file for use on your machine. From here, you'll want to select the VPC that you just created in the previous step:
+
+-- TODO Insert image
+
+Now you're ready to launch the instance
+
+
+-- TODO Show the create image
+
 
 ## Install Conduit on the Instance
 
-First we're going to need to download the latest released version of Conduit. You can go the releases page on the Conduit repo in GitHub and find the version that you need, or you can copy and paste this command on the machine to do it for you:
+Before we can begin installing Conduit, we need to be able to SSH into the newly created instance. Grab the `Public IPv4 DNS` address from the EC2 Instance detail page.
+
+-- TODO Insert Image
+
+Let's SSH into the instance. With the newly created Key Pair, follow these commands. Don't forget to change `PUBLIC_IP_V4_ADDRESS` to the address that you got from the EC2 instance page:
+
+```bash
+$ export SSH_KEY=~/Downloads/conduit.pem
+$ chmod 400 $SSH_KEY
+$ ssh -i $SSH_KEY ec2-user@PUBLIC_IP_V4_ADDRESS
+```
+
+We're going to need to download the latest released version of Conduit. You can go the releases page on the Conduit repo in GitHub and find the version that you need, or you can copy and paste this command on the machine to do it for you:
 
 ```shell
 $ TAG=$(curl -s https://api.github.com/repos/ConduitIO/conduit/releases/latest | grep "tag_name\": \"v[0-9.]*" | grep -oE '[.0-9]+') && curl -o conduit.tgz -L "https://github.com/ConduitIO/conduit/releases/download/v${TAG}/conduit_${TAG}_Linux_x86_64.tar.gz"
+
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+100 16.1M  100 16.1M    0     0  11.7M      0  0:00:01  0:00:01 --:--:-- 26.3M
 ```
 
 ### What's going on in that command
@@ -50,41 +99,61 @@ x conduit
 Then we can copy the `conduit` binary to a place where it can be accessed by the system. We'll put it in `/usr/bin`.
 
 ```bash
-$ cp conduit /usr/bin
+$ sudo cp conduit /usr/bin
+```
+
+Next we'll create a place for Conduit to store all of it's temporary files:
+
+```bash
+$ sudo mkdir -p /var/lib/conduit
+$ sudo chown -R ec2-user /usr/local/lib/systemd/system
 ```
 
 Conduit has now been installed on your EC2 instance but we're not quite done. Let's set up a few more configuration items before we start running pipelines.
 
 
-## Add Conduit to Systemd
+## Add Conduit to Systemd and Start it!
 
-Any time the machine needs to restart or if the process fails, you'll want the machine to restart Conduit. Let's add some configuration to `systemd` to make sure that this happens. First, we'll want to add a startup script to the machine. Assuming, you have a terminal session connected to the instance, you can run this command:
+Any time the machine needs to restart or if the process fails, you'll want the machine to restart Conduit. We'll want to add a startup script to the machine. Make sure that you've created an SSH connection to the instance first. Now you're ready to create the appropriate systemd folders and create the unit file:
 
 ```bash
-$ echo
+$ sudo mkdir -p /usr/local/lib/systemd/system
+$ sudo chown -R ec2-user /usr/local/lib/systemd/system
+
+$ printf "[Unit]\nDescription=Conduit daemon\n\n[Service]\nType=simple\nUser=ec2-user\nWorkingDirectory=/var/lib/conduit\nExecStart=/usr/bin/conduit\n\n[Install]\nWantedBy=multi-user.target" >> /usr/local/lib/systemd/system/conduit.service
 ```
+
+An [example](https://github.com/ConduitIO/conduit/blob/main/scripts/conduit.service) of a systemd script can also be found in the Conduit repo itself in the `/scripts` directory.
 
 Now that we have the script ready to go, we can add Conduit to `systemd`:
 
 ```bash
-$ systemctl
+$ sudo systemctl enable conduit.service
 ```
 
 Great! Conduit is now being managed by the operating system. Any time you have a restart or something else, Conduit will automatically be restarted.
 
 If you are choosing to use a different Linux distro than the one provided by Amazon, you may be working with a different init and system manager. How to add Conduit to other managers is outside the scope of this guide.
 
+Finally, start up Conduit!
+
+```bash
+$ sudo systemctl start conduit.service
+```
+
 ## Connect to Conduit
 
 Now that Conduit is running on the EC2 instance within your VPC, you'll need to connect to it via SSH and the forward a port from your machine to the Conduit instance.
 
-Let's start by connecting to the instance:
+Let's start by connecting to the instance. Don't forget to change the `PUBLIC_IP_V4_ADDRESS` to the one that you got from the EC2 Instance detail page:
 
 ```shell
-$
+$ ssh -i $SSH_KEY -L 8080:localhost:8080 -N ec2-user@PUBLIC_IP_V4_ADDRESS
 ```
 
 You're now able to create pipelines!
+
+-- TODO Insert image
 
 ## Troubleshooting
 
