@@ -8,54 +8,53 @@ sidebar_position: 2
 
 Before you get started, Conduit should not be listening on any ports that are accessible to the public Internet. In this guide will we'll set up a Conduit instance that can be reached through the public Internet via SSH. We'll start at the top with a fresh AWS Account. In the end, the topology will look like this:
 
-![AWS EC2 Topology](/images/guides/aws-ec2-deployment.png)
+![AWS EC2 Topology](/images/guides/aws-ec2-deployment/aws_ec2_conduit_setup.png)
 
 ## Create a new VPC
 
 Start by logging into the AWS console, in your region of choice, and navigate to the VPC service. Click the `Create VPC` button at the top of the page.
 
--- TODO Insert image
+![Create VPC](/images/guides/aws-ec2-deployment/create-vpc.png)
 
-We'll select the `Create VPC and More` option within the page. You'll need to add at least one `NAT Gateway` to the VPC. If you don't, you will not be able to access the instance via SSH.
+We'll select the `Create VPC and More` option within the page. This option will create all the default networking needed to create a VPC that can route traffic internally to it and reach out to the internet. But, the VPC will not be able to accept connections from outside the VPC to it. You'll need to add at least one `NAT Gateway` to the VPC to make that possible. If you don't, you will not be able to access the instance via SSH.
 
--- TODO Insert image
+![Select NAT Gateway](/images/guides/aws-ec2-deployment/select-nat-gateway.png)
 
 You can leave the rest of the defaults and click `Create VPC`. Make sure that once you've completed the VPC setup, you get a copy of the VPC ID. We'll need this in the rest of the setup. We'll use `vpc-1234` as a placeholder value in this guide.
 
 ## Launch a new EC2 Instance in your VPC
 
-With the VPC set up, it's time to launch an instance that'll run Conduit. Navigate to the EC2 Service in the AWS console and create a new instance:
+With the VPC set up, it's time to launch an instance that'll run Conduit. Navigate to the EC2 Service in the AWS console and create a new instance:\
 
--- TODO Insert image
+![Launch EC2](/images/guides/aws-ec2-deployment/launch-ec2-instance.png)
 
 We recommend using the Amazon Linux 2 AMI, SSD Volume Type as the base for your instance. The AMI should be selected by default. A `t2.medium` instance is sufficient for most production setups. Your resource requirements might be higher depending on how many systems you'll need to connect.
 
--- TODO Insert image
+![T2 Medium](/images/guides/aws-ec2-deployment/t2-medium-instance.png)
 
 In the setup of the EC2 instance, you'll want to click on the `Create new key pair` button. This will create a new SSH key for access to the instance. Don't forget to give it a name to be able to identify it within AWS.
 
--- TODO Insert image
+![Create Key Pair](/images/guides/aws-ec2-deployment/create-key-pair.png)
 
 After you hit create, you'll download a `.pem` file for use on your machine. From here, you'll want to select the VPC that you just created in the previous step:
 
--- TODO Insert image
+![Select VPC](/images/guides/aws-ec2-deployment/select-vpc.png)
 
-Now you're ready to launch the instance
+Now you're ready to launch the instance.
 
-
--- TODO Show the create image
+![Launch Successful](/images/guides/aws-ec2-deployment/launch-ec2-success.png)
 
 
 ## Install Conduit on the Instance
 
 Before we can begin installing Conduit, we need to be able to SSH into the newly created instance. Grab the `Public IPv4 DNS` address from the EC2 Instance detail page.
 
--- TODO Insert Image
+![EC2 Instance](/images/guides/aws-ec2-deployment/ec2-public-dns.png)
 
-Let's SSH into the instance. With the newly created Key Pair, follow these commands. Don't forget to change `PUBLIC_IP_V4_ADDRESS` to the address that you got from the EC2 instance page:
+Let's SSH into the instance. With the newly created Key Pair, follow these commands. Don't forget to change `PUBLIC_IP_V4_ADDRESS` to the address that you got from the EC2 instance page and change `LOCATION_OF_PEM_FILE` to place where it exists on your machine:
 
 ```bash
-$ export SSH_KEY=~/Downloads/conduit.pem
+$ export SSH_KEY=LOCATION_OF_PEM_FILE
 $ chmod 400 $SSH_KEY
 $ ssh -i $SSH_KEY ec2-user@PUBLIC_IP_V4_ADDRESS
 ```
