@@ -15,7 +15,7 @@ Before you get started, you will need to decide on which method of installation 
 
 ## Binary Download (Recommended)
 
-Start by downloading the binary for the [latest release](https://github.com/ConduitIO/conduit/releases/latest) on Conduit's Release page. Make sure that you pick the installation that matches the architecture of your machine.
+Start by downloading the binary for the [latest release](https://github.com/ConduitIO/conduit/releases/latest) on Conduit's Release page. Make sure that you pick the installation that matches the architecture of your machine. Conduit does have nightly releases. If new features exist that aren't yet in a supported version, you'll need to go to the [releases page](https://github.com/ConduitIO/conduit/releases) to find the appropriate nightly release. The Conduit team does its best to make sure nightly releases are deployable.
 
 Using an M1 Mac and Conduit v0.2.1 as an example, find the binary that matches `Darwin_arm64` and download that to your machine. Once it's downloaded to your machine, expand the file and then start Conduit:
 
@@ -70,9 +70,16 @@ Now build the project:
 $ make
 ```
 
+If you want to build conduit without the UI, instead of running `make`, you can run the following command:
+
+```shell
+$ make build-server
+```
+
 You will have a new binary built for your architecture and machine. All that's left is to run it!
 
 ```shell
 ./conduit
 ```
+
 
