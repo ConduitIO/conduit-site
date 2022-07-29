@@ -71,7 +71,7 @@ module.exports = {
           items: [
             {
               label: 'Connectors',
-              to: '/docs/connectors/overview',
+              to: 'https://github.com/ConduitIO/conduit/blob/main/docs/connectors.md',
             },
             {
               label: 'Documentation',
