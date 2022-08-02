@@ -82,6 +82,13 @@ a {
     margin-top: 0;
 }
 
+.prose :where(code):not(:where([class~=not-prose] *)):before {
+    display:none;
+}
+
+.prose :where(code):not(:where([class~=not-prose] *)):after {
+    display:none;
+} 
 
 /* Composition Classes */
 .box {
