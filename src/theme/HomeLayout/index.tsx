@@ -172,7 +172,7 @@
                     <h3 className="text-forest-100 font-bold">Resources</h3>
                     <ul role="list" className="stack">
                       <li>
-                        <a href="/docs/connectors/overview" className="text-gray-600 hover:text-gray-600">Connectors</a>
+                        <a href="https://github.com/ConduitIO/conduit/blob/main/docs/connectors.md" className="text-gray-600 hover:text-gray-600">Connectors</a>
                       </li>
                       <li>
                         <a href="/docs/introduction/what-is-conduit" className="text-gray-600 hover:text-gray-600">Documentation</a>
