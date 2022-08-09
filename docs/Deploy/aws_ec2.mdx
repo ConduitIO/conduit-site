@@ -24,7 +24,7 @@ You can leave the rest of the defaults and click `Create VPC`. Make sure that on
 
 ## Launch a new EC2 Instance in your VPC
 
-With the VPC set up, it's time to launch an instance that'll run Conduit. Navigate to the EC2 Service in the AWS console and create a new instance:\
+With the VPC set up, it's time to launch an instance that'll run Conduit. Navigate to the EC2 Service in the AWS console and create a new instance:
 
 ![Launch EC2](/images/guides/aws-ec2-deployment/launch-ec2-instance.png)
 
@@ -36,7 +36,7 @@ In the setup of the EC2 instance, you'll want to click on the `Create new key pa
 
 ![Create Key Pair](/images/guides/aws-ec2-deployment/create-key-pair.png)
 
-After you hit create, you'll download a `.pem` file for use on your machine. From here, you'll want to select the VPC that you just created in the previous step:
+After you hit create, you'll download a `.pem` file for use on your machine. From here, you'll want to select the VPC that you just created in the previous step. Also, make sure you select a public subnet:
 
 ![Select VPC](/images/guides/aws-ec2-deployment/select-vpc.png)
 
@@ -105,7 +105,7 @@ Next we'll create a place for Conduit to store all of it's temporary files:
 
 ```bash
 $ sudo mkdir -p /var/lib/conduit
-$ sudo chown -R ec2-user /usr/local/lib/systemd/system
+$ sudo chown -R ec2-user /var/lib/conduit
 ```
 
 Conduit has now been installed on your EC2 instance but we're not quite done. Let's set up a few more configuration items before we start running pipelines.
