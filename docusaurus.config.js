@@ -8,8 +8,8 @@ module.exports = {
   url: 'https://conduit.io', // Url to your site with no trailing slash
   baseUrl: '/',
   onBrokenLinks: 'ignore',
-  onBrokenMarkdownLinks: 'error',
-  onDuplicateRoutes: 'error',
+  onBrokenMarkdownLinks: 'warn',
+  onDuplicateRoutes: 'warn',
   favicon: 'images/favicon.ico',
   scripts: [
     {
@@ -45,14 +45,13 @@ module.exports = {
       logo: {
         alt: 'Conduit Logo',
         src: 'images/conduit/on-white-conduit-logo.png',
-        href: 'https://conduit.io',
         srcDark: 'images/conduit-logo-dark.svg',
       },
       items: [
         { to: '/', label: 'Home', position: 'left', activeBaseRegex: `///` },
         {
           type: 'doc',
-          docId: 'introduction/getting-started',
+          docId: 'introduction/index',
           position: 'left',
           label: 'Documentation',
         },
