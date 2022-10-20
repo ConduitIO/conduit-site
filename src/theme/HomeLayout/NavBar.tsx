@@ -31,7 +31,7 @@ const navLinks = [
     },
     {
         label: 'Documentation',
-        href: '/docs/introduction',
+        href: '/docs/introduction/getting-started',
     },
     {
         label: 'GitHub',

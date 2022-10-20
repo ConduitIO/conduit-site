@@ -51,7 +51,7 @@ module.exports = {
         { to: '/', label: 'Home', position: 'left', activeBaseRegex: `///` },
         {
           type: 'doc',
-          docId: 'introduction/index',
+          docId: 'introduction/getting-started',
           position: 'left',
           label: 'Documentation',
         },

@@ -4,4 +4,18 @@ sidebar_label: "Behavior"
 slug: "behavior"
 ---
 
-TBD
+This document provides insights on how Conduit communicates with a connector,
+what is expected from the connector and the guarantees that Conduit provides.
+
+## Conduit Connector Protocol
+
+Conduit expects all connectors to follow the
+[Conduit Connector Protocol](https://github.com/ConduitIO/conduit-connector-protocol)
+. The connector protocol is a protobuf file describing the interface between
+Conduit and the connector in the form of gRPC services. This approach allows
+connectors to be written in any language with support for gRPC.
+
+The connector protocol splits the connector interface in 3 gRPC services - one
+for the source, another for the destination, and a third one for the connector
+specifications. A connector needs to implement the specifications and at least
+the source or destination.
