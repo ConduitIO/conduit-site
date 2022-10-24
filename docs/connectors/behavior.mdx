@@ -2,20 +2,57 @@
 title: "Connector Behavior"
 sidebar_label: "Behavior"
 slug: "behavior"
+sidebar_position: 1
 ---
 
-This document provides insights on how Conduit communicates with a connector,
-what is expected from the connector and the guarantees that Conduit provides.
+This document provides insights on how Conduit communicates with a connector.
 
 ## Conduit Connector Protocol
 
 Conduit expects all connectors to follow the
-[Conduit Connector Protocol](https://github.com/ConduitIO/conduit-connector-protocol)
-. The connector protocol is a protobuf file describing the interface between
-Conduit and the connector in the form of gRPC services. This approach allows
-connectors to be written in any language with support for gRPC.
+[Conduit Connector Protocol](https://github.com/ConduitIO/conduit-connector-protocol).
+The connector protocol is a set of protobuf files describing
+the [interface](#protocol-grpc-interface)
+between Conduit and the connector in the form of gRPC services. This approach
+allows connectors to be written in any language with support for gRPC.
 
 The connector protocol splits the connector interface in 3 gRPC services - one
 for the source, another for the destination, and a third one for the connector
 specifications. A connector needs to implement the specifications and at least
 the source or destination.
+
+Note that you don't need to use the connector protocol directly - we provide a
+[Go connector SDK](https://github.com/ConduitIO/conduit-connector-sdk) that
+hides the complexity of the protocol and simplifies the implementation of a
+connector.
+
+### Standalone vs built-in connectors
+
+While the Conduit Connector Protocol decouples Conduit from its connectors by
+using gRPC, it also provides a thin Go layer that allows any Go connector to be
+compiled into the Conduit binary as a built-in connector. The following diagram
+shows how Conduit communicates with a standalone connector and a built-in
+connector.
+
+![Standalone vs built-in connectors](/images/standalone-vs-builtin.svg)
+
+**Standalone connectors** are run as separate processes, separate from the
+Conduit process. They need to have an entrypoint (binary or script) which runs
+the connector and starts the gRPC server responsible for communicating with
+Conduit. A standalone connector process is started and stopped by Conduit on
+demand. One connector process will be started for every pipeline connector in
+Conduit.
+
+**Built-in connectors** on the other hand are executed in the same process as
+Conduit and communicate with Conduit through Go channels instead of gRPC. Any
+connector written in Go can be compiled into the Conduit binary and used as a
+built-in connector.
+
+Find ouy more about the [Conduit connector plugin architecture](https://github.com/ConduitIO/conduit/blob/main/docs/architecture-decision-records/20220121-conduit-plugin-architecture.md).
+
+## Protocol gRPC Interface
+
+The protocol interface is hosted on the
+[Buf schema registry](https://buf.build/conduitio/conduit-connector-protocol/docs/main:connector.v1).
+Use it as a starting point when implementing a connector in a language other
+than Go.
