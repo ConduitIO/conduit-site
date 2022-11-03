@@ -35,9 +35,8 @@ Processors are created through the `/processors` endpoint. Here's an example:
 ```json lines
 POST /v1/processors
 {
-    // name of the processor in Conduit
-    // note that this is NOT a user-defined name for this processor
-    "name": "extractfieldpayload",
+    // type of the processor in Conduit
+    "type": "extractfieldpayload",
     "parent": 
     {
         // type of parent: TYPE_CONNECTOR or TYPE_PIPELINE
@@ -82,7 +81,7 @@ Here's an example of a request payload to create a JavaScript processor:
 
 ```json
 {
-  "name": "js",
+  "type": "js",
   "parent": {
     "type": "TYPE_CONNECTOR",
     "id": "d1ae72ea-9d9c-4bb2-b993-fdb7a01825ab"
@@ -94,7 +93,7 @@ Here's an example of a request payload to create a JavaScript processor:
   }
 }
 ```
-The above will create a JavaScript processor (`"name": "js"`), attached to a connector (for the parent, we have
+The above will create a JavaScript processor (`"type": "js"`), attached to a connector (for the parent, we have
 `"type": "TYPE_CONNECTOR"`). The script used is:
 ```javascript
 function process(record) {
