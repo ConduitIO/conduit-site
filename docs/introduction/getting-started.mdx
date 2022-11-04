@@ -6,24 +6,30 @@ hide_title: true
 sidebar_label: "Getting Started"
 ---
 
-<div style={{ textAlign: "center" }}>
-  <img alt="Conduit Logo" style={{ maxWidth: "400px", marginTop: 0 }} src="/images/conduit/on-white-conduit-logo.png" />
-</div>
+<img
+  alt="Conduit Logo"
+  style={{ maxWidth: "400px", marginTop: 0 }}
+  src="/images/conduit/on-white-conduit-logo.png"
+/>
 
+Conduit is a data integration tool for software engineers. Its purpose is to
+help you move data from A to B. You can use Conduit to send data from Kafka to
+Postgres, between files and APIs,
+between [supported connectors](https://github.com/ConduitIO/conduit/blob/main/docs/connectors.md),
+and [any datastore you can build a plugin for](/docs/connectors/building-connectors).
 
-Conduit is a data integration tool for software engineers. Its purpose is to help you move data from A to B. You can use Conduit to send data from Kafka to Postgres, between files and APIs, between [supported connectors](https://github.com/ConduitIO/conduit/blob/main/docs/connectors.md), and [any datastore you can build a plugin for](/docs/introduction/plugins).
-
-It's written in [GoLang](https://go.dev/), compiles to a binary, and is designed to be easy to use and [deploy](https://docs.conduit.io/docs/Deploy/overview).
+It's written in [GoLang](https://go.dev/), compiles to a binary, and is designed
+to be easy to use and [deploy](https://docs.conduit.io/docs/Deploy/overview).
 
 To get started:
 
-1. [Download the latest Conduit release](https://github.com/ConduitIO/conduit/releases).
+1. [Download the latest Conduit release](https://github.com/ConduitIO/conduit/releases/latest).
 2. Unzip:
 
-If you’re on Mac, it will look something like this:
+If you're on Mac, it will look something like this:
 
 ```shell
-tar zxvf conduit_0.1.0_Darwin_x86_64.tar.gz
+tar zxvf conduit_0.3.0_Darwin_x86_64.tar.gz
 ```
 
 3. Start Conduit:
@@ -32,9 +38,10 @@ tar zxvf conduit_0.1.0_Darwin_x86_64.tar.gz
 ./conduit
 ```
 
-**Tip**: Depending on your operating system, you may need to run `chmod +x conduit` before running the binary.
+**Tip**: Depending on your operating system, you may need to
+run `chmod +x conduit` before running the binary.
 
-4. Navigate to `http://localhost:8080/ui/`:
+4. Navigate to `http://localhost:8080` to check Conduit's UI:
 
 ![Conduit Pipeline](/images/conduit/pipeline.png)
 

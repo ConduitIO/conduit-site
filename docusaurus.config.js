@@ -8,8 +8,8 @@ module.exports = {
   url: 'https://conduit.io', // Url to your site with no trailing slash
   baseUrl: '/',
   onBrokenLinks: 'ignore',
-  onBrokenMarkdownLinks: 'error',
-  onDuplicateRoutes: 'error',
+  onBrokenMarkdownLinks: 'warn',
+  onDuplicateRoutes: 'warn',
   favicon: 'images/favicon.ico',
   scripts: [
     {
@@ -45,7 +45,6 @@ module.exports = {
       logo: {
         alt: 'Conduit Logo',
         src: 'images/conduit/on-white-conduit-logo.png',
-        href: 'https://conduit.io',
         srcDark: 'images/conduit-logo-dark.svg',
       },
       items: [
