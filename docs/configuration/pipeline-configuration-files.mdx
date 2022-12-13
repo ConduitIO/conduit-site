@@ -9,16 +9,20 @@ It's as simple as creating a YAML file that defines pipelines, connectors, proce
 
 Create a folder called `pipelines` at the same level as your Conduit binary file, add all your YAML files
 there, then run Conduit using the command:
-```
+
+```shell
 ./conduit
 ```
+
 Conduit will only search for files with `.yml` or `.yaml` extensions, recursively in all sub-folders.
 
 If you have your YAML files in a different directory, or want to provision only one file, then simply run Conduit with
 the CLI flag `pipelines.path` and point to your file or directory:
-```
+
+```shell
 ./conduit -pipeline.path ../my-directory
 ```
+
 If your directory does not exist, Conduit will fail with an error: `"pipelines.path" config value is invalid`
 
 ### YAML Schema
@@ -28,46 +32,52 @@ The file in general has two root keys, the `version`, and the `pipelines` map. T
 
 To create connectors in that pipeline, simply add another map under the pipeline map, and call it `connectors`.
 
-To create processors, either add a `processors` map under a pipeline ID, or under a connector ID, depending on its parent.
+To create processors, either add a `processors` map under a pipeline, or under a connector, depending on its parent.
 Check this YAML file example with explanation for each field:
 
 ``` yaml
-version: 1.0                    # parser version, the only supported version for now is 1.0 [mandatory]
+version: 1.1                    # Parser version [optional]
 
-pipelines:                      # a map of pipelines IDs and their configurations.
-  pipeline1:                    # pipeline ID, has to be unique.
-    status: running             # pipelines status at startup, either running or stopped. [mandatory]
-    name: pipeline1             # pipeline name, if not specified, pipeline ID will be used as name. [optional]
-    description: desc           # pipeline description. [optional]
-    connectors:                 # a map of connectors IDs and their configurations.
-      con1:                     # connector ID, has to be unique per pipeline.
-        type: source            # connector type, either "source" or "destination". [mandatory]
-        plugin: builtin:file    # connector plugin. [mandatory]
-        name: con3              # connector name, if not specified, connector ID will be used as name. [optional]
-        settings:               # map of configurations keys and their values.
-          path: ./file1.txt     # for this example, the plugin "bultin:file" has only one configuration, which is path.
+pipelines:                      # A map of pipelines IDs and their configurations.
+  pipeline1:                    # Pipeline ID, has to be unique.
+    status: running             # Pipelines status at startup, either running or stopped. [mandatory]
+    name: pipeline1             # Pipeline name, if not specified, pipeline ID will be used as name. [optional]
+    description: desc           # Pipeline description. [optional]
+    connectors:                 # A map of connectors IDs and their configurations.
+      con1:                     # Connector ID, has to be unique per pipeline.
+        type: source            # Connector type, either "source" or "destination". [mandatory]
+        plugin: builtin:file    # Connector plugin. [mandatory]
+        name: con3              # Connector name, if not specified, connector ID will be used as name. [optional]
+        settings:               # A map of configuration keys and values.
+          path: ./file1.txt     # For this example, the plugin "bultin:file" has only one configuration, which is path.
       con2:
         type: destination
         plugin: builtin:file
         name: file-dest
         settings:
           path: ./file2.txt
-        processors:             # a map of processor IDs and their configurations, "con2" is the processor parent.
-          proc1:                # processor ID, has to be unique for each parent
-            type: js            # processor type. [mandatory]
-            settings:           # map of processor configurations and values
+        processors:             # A map of processor IDs and their configurations, "con2" is the processor parent.
+          proc1:                # Processor ID, has to be unique for each parent
+            type: js            # Processor type. [mandatory]
+            settings:           # A map of processor configurations and values
               Prop1: string
-    processors:                 # processor IDs, that have the pipeline "pipeline1" as a parent.
+    processors:                 # Processor IDs, that have the pipeline "pipeline1" as a parent.
       proc2:
         type: js
         settings:
-          prop1: ${ENV_VAR}     # yon can use environmental variables by wrapping them in a dollar sign and curly braces ${}.
+          prop1: ${ENV_VAR}     # You can use environment variables by wrapping them in a dollar sign and curly braces ${}.
+    dead-letter-queue:          # Dead-letter queue configuration. [optional]
+      plugin: "builtin:file"    # Connector plugin. [optional, default=builtin:log]
+      settings:                 # A map of configuration keys and values for the connector.
+        path: "./dlq.out"
+      window-size: 5            # Nack window size. [optional, default=1]
+      window-nack-threshold: 2  # Nack window threshold. [optional, default=0]
 ```
 
 If the file is invalid (missed a mandatory field, or has an invalid configuration value), then the pipeline that has the
 invalid value will be skipped, with an error message logged.
 
-If two pipelines in one file have the same ID, or the `version` field was not specified, then the file would be
+If two pipelines in one file have the same ID then the file would be
 non-parsable and will be skipped with an error message logged.
 
 If two pipelines from different files have the same ID, the second pipeline will be skipped, with an error message
