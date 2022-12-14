@@ -45,18 +45,22 @@ stops.
 
 ## Configuring a dead-letter queue
 
-By default a Conduit pipeline doesn't have a dead-letter queue. You can enable
-the dead-letter queue by changing the window size and nack threshold:
+By default, a Conduit pipeline will stop immediately when a record gets nacked.
+You can make the pipeline more fault-tolerant by enabling a dead-letter queue.
+The first step is to change the window size and nack threshold:
 
-- If the window size is >1 and nack threshold is 0, then the first nacked record
-  will cause the pipeline to stop running immediately. Such a configuration
-  essentially disables the dead-letter queue. This is the default configuration.
+- If the window size is greater than 1 and the nack threshold is 0, then the
+  first nacked record will cause the pipeline to stop running immediately. Such
+  a configuration essentially disables the dead-letter queue. **This is the
+  default configuration.**
 - If the window size is set to 0, then no records are monitored and all nacked
   records will be rerouted to the dead-letter queue without any limits. Such a
   configuration essentially disables the nack window and enables the dead-letter
   queue.
-- If the window size is >1 and nack threshold is >0, then nacked records are
-  sent to the dead-letter queue until the threshold is exceeded.
+- If the window size is greater than 1 and the nack threshold is greater than 0,
+  then nacked records will be sent to the dead-letter queue. Additionally,
+  Conduit will keep track of the number of nacks in the current window and stop
+  the pipeline if the threshold gets exceeded.
 
 If the window settings are adjusted accordingly, then Conduit will route nacked
 records to the builtin log connector by default, causing nacked records to show
