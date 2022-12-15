@@ -1,15 +1,10 @@
 ---
 title: "Pipeline Semantics"
-sidebar_position: 6
-slug: "pipeline-semantics"
+sidebar_position: 0
 ---
 
 This document describes the inner workings of a Conduit pipeline, its structure, and behavior. It also describes a
 Conduit message and its lifecycle as it flows through the pipeline.
-
-**NOTE**: Some parts of this document describe behavior that is not yet fully implemented (e.g. DLQs).
-For more information see [#383](https://github.com/ConduitIO/conduit/pull/383). This note
-should be removed once the new behavior is implemented.
 
 ## Pipeline structure
 
@@ -81,7 +76,7 @@ essentially controls what happens after a message is nacked (stop pipeline, drop
 message in DLQ and continue running).
 
 **Important**: if a message gets nacked and the DLQ handler successfully processes the nack (e.g. stores the message in
-the dead letter queue), the source connector will receive an ack as if the message was successfully processed, even
+the dead-letter queue), the source connector will receive an ack as if the message was successfully processed, even
 though Conduit marks it internally as nacked. In other words, the source connector will receive an ack every time
 Conduit handled a message end-to-end and it can be safely discarded from the source.
 
@@ -92,7 +87,7 @@ consequently stop the whole pipeline. The returned error is stored in the pipeli
 ### Message state change handlers
 
 A pipeline node can register state change handlers on a message that will be called when the message state changes. This
-is used for example to register handlers that reroute nacked messages to a dead letter queue or to update metrics when a
+is used for example to register handlers that reroute nacked messages to a dead-letter queue or to update metrics when a
 message reaches the end of the pipeline. If a message state change handler returns an error, the node that triggered the
 ack/nack will stop running, essentially causing the whole pipeline to stop.
 
@@ -108,7 +103,7 @@ There are two caveats:
 
 - If a pipeline contains multiple source connectors, the order of two messages coming from different connectors is
 nondeterministic. Messages coming from the same source connector are still guaranteed to retain their order.
-- If a dead letter queue is configured, negatively acknowledged messages will be removed from the stream while the
+- If a dead-letter queue is configured, negatively acknowledged messages will be removed from the stream while the
 pipeline will keep running, thus impacting the order of messages.
 
 The order guarantee only holds inside of Conduit. Once a message reaches a destination connector, it is allowed to buffer
@@ -123,7 +118,7 @@ multiple destinations that stopped because of a negatively acknowledged record, 
 negatively acknowledged a record and processed more messages after that. For this reason, we strongly recommend
 implementing the write operation of a destination connector in an idempotent way (if possible).
 
-The delivery guarantee can be changed to "at most once" by adding a [dead letter queue](#dead-letter-queue) handler that
+The delivery guarantee can be changed to "at most once" by adding a [dead-letter queue](#dead-letter-queue) handler that
 drops unsuccessfully processed messages.
 
 ### Acks are delivered in order
@@ -161,9 +156,9 @@ message was successfully sent to all downstream nodes (this doesn't mean the mes
 that all downstream nodes received the message). As a consequence, the speed of the pipeline will be throttled to
 accommodate the abilities of the slowest destination connector.
 
-### Dead letter queue
+### Dead-letter queue
 
-Messages that get negatively acknowledged can be rerouted to another destination called a dead letter queue (DLQ) where
+Messages that get negatively acknowledged can be rerouted to another destination called a dead-letter queue (DLQ) where
 they are stored and can be reprocessed at a later point in time after manual intervention. If rerouting is set up and
 the message successfully reaches the DLQ the message will be internally nacked, but an acknowledgment will be sent to
 the source connector since Conduit handled the message and it can be discarded from the source. The user has the option

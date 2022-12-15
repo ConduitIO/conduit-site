@@ -89,8 +89,8 @@ export default function Home() {
       <div className='announcement-banner bg-orange-kj'>
         <Wrapper>
           <p className='content'>
-            Conduit 0.3 is here!&nbsp;
-            <a className='cta' href='https://github.com/ConduitIO/conduit/releases/tag/v0.3.0' target='_blank' rel='noreferrer noopener'>See what's new</a>.
+            Conduit 0.4 is here!&nbsp;
+            <a className='cta' href='https://github.com/ConduitIO/conduit/releases/tag/v0.4.0' target='_blank' rel='noreferrer noopener'>See what's new</a>.
           </p>
 
           {/*
