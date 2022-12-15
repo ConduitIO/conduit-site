@@ -1,0 +1,21 @@
+---
+title: 'Stream Inspector'
+sidebar_position: 5
+tag: ['Stream Inspector', 'Connector']
+keywords: ['stream', 'inspector']
+---
+
+Conduit's stream inspector makes it possible to peek at the data as it enters Conduit via source connectors and what the
+data looks like as it travels to destination connectors. Keep in mind that this feature is about sampling data as it
+passes through the pipeline not tailing the pipeline.
+
+Stream inspection is available via the Conduit UI and the API. To learn how to use it, please visit our
+[stream inspector guide](/guides/stream-inspector).
+
+Stream inspection doesn't affect a pipeline's performance. However, if the data is being pushed through the stream very
+fast, it's possible that you may not see all of the records. This is done to protect Conduit's performance (by not keeping
+too much data in the memory) and to protect the pipeline's performance (by not blocking it until data is inspected).
+
+Stream inspection will **not** be automatically stopped if the connector being inspected is stopped. This makes it
+possible to "catch" all the records, from the moment a connector starts. It also makes it possible to inspect records
+as you're potentially restarting a pipeline.
