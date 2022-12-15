@@ -115,8 +115,8 @@ module.exports = {
       content: `
         <div class='wrapper announcement-banner'>
           <p class='content'>
-            Conduit 0.3 is here!&nbsp;
-            <a class='cta' href='https://github.com/ConduitIO/conduit/releases/tag/v0.3.0' target='_blank' rel='noreferrer noopener'>See what's new</a>&nbsp;
+            Conduit 0.4 is here!&nbsp;
+            <a class='cta' href='https://github.com/ConduitIO/conduit/releases/tag/v0.4.0' target='_blank' rel='noreferrer noopener'>See what's new</a>&nbsp;
           </p>
         </div>
       `,
