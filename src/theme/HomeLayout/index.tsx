@@ -175,7 +175,7 @@
                         <a href="https://github.com/ConduitIO/conduit/blob/main/docs/connectors.md" className="text-gray-600 hover:text-gray-600">Connectors</a>
                       </li>
                       <li>
-                        <a href="/docs/introduction/what-is-conduit" className="text-gray-600 hover:text-gray-600">Documentation</a>
+                        <a href="/docs/introduction/getting-started" className="text-gray-600 hover:text-gray-600">Documentation</a>
                       </li>
                       <li>
                         <a href="https://discord.meroxa.com" className="text-gray-600 hover:text-gray-600">Join our Discord</a>
