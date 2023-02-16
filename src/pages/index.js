@@ -90,7 +90,7 @@ export default function Home() {
         <Wrapper>
           <p className='content'>
             Conduit 0.5 is here!&nbsp;
-            <a className='cta' href='https://github.com/ConduitIO/conduit/releases/tag/v0.5.0' target='_blank' rel='noreferrer noopener'>See what's new</a>.
+            <a className='cta' href='https://github.com/ConduitIO/conduit/releases/latest' target='_blank' rel='noreferrer noopener'>See what's new</a>.
           </p>
 
           {/*
