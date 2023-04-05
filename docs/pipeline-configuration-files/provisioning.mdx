@@ -1,0 +1,61 @@
+---
+title: 'Provisioning'
+sidebar_position: 1
+---
+
+## Pipelines Directory
+
+When Conduit starts, it will search for all files ending with `.yml` or `.yaml` in folder `./pipelines` and its
+sub-folders. It will parse the configuration files and provision the pipelines defined in them.
+
+If you want Conduit to search a different directory, or want to provision a single file, you can specify the CLI flag
+`pipelines.path` and point to your file or directory:
+
+```shell
+./conduit -pipelines.path /path/to/my-directory
+```
+
+If the directory does not exist, Conduit will fail with the error `"pipelines.path" config value is invalid`.
+
+## Ignored errors
+
+Conduit will try to provision all pipelines regardless of the errors it may encounter while going through the
+configuration files. Invalid configuration files will be ignored (e.g. files that miss a mandatory field or have an
+invalid configuration value) and won't impact the provisioning of valid configuration files. Conduit will log a warning
+for every error it encounters during this process.
+
+You need to be careful when choosing IDs for your pipelines, connectors and processors. Each pipeline needs to get a
+unique pipeline ID, otherwise all pipelines with the same ID will be ignored. If a pipeline contains connectors or
+processors with the same ID, they will be ignored as well.
+
+**_Note_**: Connector IDs and processor IDs will be prefixed with the parent ID. In case of a connector this means the
+pipeline ID will be attached as a prefix to the connector ID (e.g. `pipelineID:connectorID`). Similarly, a pipeline
+processor's ID will be prefixed with the pipeline ID (e.g. `pipelineID:processorID`) and a connector processor's ID will
+be prefixed with the connector ID (e.g. `pipelineID:connectorID:processorID`). This ensures that connector and processor
+IDs are globally unique as long as the pipeline ID is unique.
+
+## Pipelines Immutability
+
+Pipelines provisioned by configuration files are **immutable**, any updates needed on a provisioned pipeline have to be
+done through the configuration file. You can still stop or start the pipeline through the UI or API.
+
+### Updates and Deletes
+
+Updates and deletes for a pipeline provisioned by configuration files can only be done through configuration files.
+Changes should be made to the files, then Conduit has to be restarted to reload the changes. Any updates or deletes done
+through the API or UI will be prohibited.
+
+To delete a pipeline you need to remove the pipeline from the configuration file or delete the file entirely. Next time
+Conduit starts it will delete the pipeline.
+
+To update a pipeline you need to change any field value in the configuration file. Next time Conduit starts it will
+update the pipeline to match the new configuration.
+
+Updates will preserve the state of the pipeline, so it resumes processing at the last record that was successfully
+processed. However, updates of some fields will cause the state to be lost, as it can't be guaranteed that the state is
+still applicable to the new configuration. In that case the pipeline will start processing records from the beginning,
+as if it's running for the first time. Here is a full list of fields that cause this behavior:
+- [`pipeline.id`](/docs/pipeline-configuration-files/specifications#id)
+- [`connector.id`](/docs/pipeline-configuration-files/specifications#id-1) (only for source connectors)
+- [`connector.type`](/docs/pipeline-configuration-files/specifications#type) (only for source connectors)
+- [`connector.plugin`](/docs/pipeline-configuration-files/specifications#plugin-1) (only for source connectors)
