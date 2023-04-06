@@ -1,0 +1,68 @@
+---
+title: "Output Formats"
+sidebar_position: 5
+---
+
+:::note
+
+Configuring different output formats is possible for connectors which use Conduit SDK's default
+middleware. Please consult the connector's documentation to confirm the feature is available.
+
+:::
+
+By default, Conduit uses
+the [OpenCDC format](https://github.com/ConduitIO/conduit/blob/main/docs/design-documents/20220309-opencdc.md)
+to represent records when communicating with connectors. When integrating with other systems, such as Kafka Connect, a
+different format is needed. Conduit makes it easy by providing built-in options to convert records to other formats and
+which do not require writing custom processors.
+
+The output format is configured at the connector level. An implication of that is that different connectors in the same
+or different pipelines can use different formats, which provides additional flexibility.
+
+There are two connector configuration parameters which control the output format: `sdk.record.format` and
+`sdk.record.format.options`. `sdk.record.format` configures the format itself whereas `sdk.record.format.options` allows
+the user to control specifics of the chosen format.
+
+## Available formats
+
+Some formats (but not all) come in the form of `type/subtype`.
+
+`type` is the name of the converter that **controls the structure** of the produced record. `subtype` is the name of the
+encoder that **controls the encoding** of the structure created by the converter. Currently, the only possible values is
+`json`. More encoders are planned in future (e.g. Avro, Parquet, ...)
+
+### `opencdc/json`
+
+This is the default format. An extensive description of this format is
+available [here](https://github.com/ConduitIO/conduit/blob/main/docs/design-documents/20220309-opencdc.md).
+
+#### **Options**
+
+None.
+
+### `debezium/json`
+
+Produces a Debezium record.
+
+#### **Options**
+
+##### `debezium.schema.name`
+
+Name of schema to be used in converted Debezium records.
+
+**Default value**: none
+
+##### `debezium.rawData.key`
+
+If the record to be converted doesn't contain a structured payload or its payload cannot be parsed as JSON,
+then this key defines the field into which the "raw" payload data will be put.
+
+**Default value**: `opencdc.rawData`
+
+### `template`
+
+The user gets full control over the output format by using [Go templates](https://pkg.go.dev/text/template). The value
+provided to the template is a
+[sdk.Record](https://github.com/ConduitIO/conduit-connector-sdk/blob/e08068428247af6e3b34bef8abffad2b758d5529/record.go#L81),
+so the template has access to all its fields (e.g. .Position, .Key, .Metadata and so on). We also inject all
+template functions provided by [sprig](http://masterminds.github.io/sprig/) to make it easier to write templates.
