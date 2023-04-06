@@ -58,5 +58,6 @@
   },
   "engines": {
     "node": "16.x"
-  }
+  },
+  "license": "Apache-2.0"
 }
