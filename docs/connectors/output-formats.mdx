@@ -25,7 +25,7 @@ the user to control specifics of the chosen format.
 
 ## Available formats
 
-Some formats (but not all) come in the form of `type/subtype`.
+Most formats (but not all) come in the form of `type/subtype`.
 
 `type` is the name of the converter that **controls the structure** of the produced record. `subtype` is the name of the
 encoder that **controls the encoding** of the structure created by the converter. Currently, the only possible values is
@@ -66,3 +66,101 @@ provided to the template is a
 [sdk.Record](https://github.com/ConduitIO/conduit-connector-sdk/blob/e08068428247af6e3b34bef8abffad2b758d5529/record.go#L81),
 so the template has access to all its fields (e.g. .Position, .Key, .Metadata and so on). We also inject all
 template functions provided by [sprig](http://masterminds.github.io/sprig/) to make it easier to write templates.
+
+## Examples
+
+### Example 1: A pipeline with a Debezium record formatter
+
+```yaml
+---
+version: 2.0
+
+pipelines:
+  - id: pipeline1
+    status: running
+    name: pipeline1
+    description: 'A pipeline with a Debezium record formatter'
+    connectors:
+      - id: source1
+        type: source
+        plugin: builtin:generator
+        name: source1
+        settings:
+          recordCount: "10"
+          readTime: "1s"
+          format.options: "name:string,company:string"
+          format.type: "structured"
+      - id: destination1
+        type: destination
+        plugin: "builtin:file"
+        name: destination1
+        settings:
+          sdk.record.format: "debezium/json"
+          sdk.record.format.options: 'debezium.schema.name=employee'
+          path: /tmp/file-destination.txt
+```
+
+If you `tail` the destination file, you'll see something like this:
+```json
+{
+  "schema": {
+    "type": "struct",
+    "name": "employee",
+    "fields": [
+      // omitted for brevity
+    ]
+  },
+  "payload": {
+    "before": null,
+    "after": {
+      "company": "string 3cea28f1-8ec2-4035-b4d3-790a9239feb3",
+      "name": "string 8fbbbf0c-aaaa-499f-b145-ac5345c8c067"
+    },
+    "source": {
+      "conduit.source.connector.id": "pipeline1:source1",
+      "opencdc.readAt": "1680796794653155968",
+      "opencdc.version": "v1"
+    },
+    "op": "c",
+    "ts_ms": 1680796794653,
+    "transaction": null
+  }
+}
+```
+
+### Example 2: A pipeline with a template record formatter
+
+The following pipeline has a generator source and a file destination. The generator source produces records which have
+a `name` field and a `company` field. In this pipeline, we use the `template` record formatter to extract only the 
+`company` field.
+
+```yaml
+---
+version: 2.0
+
+pipelines:
+  - id: pipeline1
+    status: running
+    name: pipeline1
+    description: 'A pipeline with a template record formatter'
+    connectors:
+      - id: source1
+        type: source
+        plugin: builtin:generator
+        name: source1
+        settings:
+          recordCount: "10"
+          readTime: "1s"
+          format.options: "name:string,company:string"
+          format.type: "structured"
+      - id: destination1
+        type: destination
+        plugin: "builtin:file"
+        name: destination1
+        settings:
+          # use the template record formatter
+          sdk.record.format: template
+          # print only the payload, format it as a string (normally it's a byte slice)
+          sdk.record.format.options: '{{ printf "%s" .Payload.After.company }}'
+          path: /tmp/file-destination.txt
+```
