@@ -99,8 +99,8 @@ pipelines:                      # A list of pipeline configurations
   identify the pipeline across all pipelines. If multiple pipelines use the same
   ID, none of them will be provisioned.
 
-**Warning**: Changing this property will cause all connectors to start from the
-beginning.
+**Warning**: Changing this property will cause the pipeline to be recreated and
+start from the beginning.
 
 ### status
 
@@ -118,7 +118,8 @@ beginning.
 - **Required**: No
 - **Default**: Same as pipeline [`id`](#id)
 - **Description**: Human readable name for the pipeline. Needs to be unique
-  across all pipelines.
+  across all pipelines (it is used as a label in pipeline
+  [metrics](/docs/features/metrics)).
 
 ### description
 
@@ -126,45 +127,6 @@ beginning.
 - **Required**: No
 - **Default**: None
 - **Description**: Human readable description of the pipeline.
-
-### dead-letter-queue
-
-- **Data Type**: Mapping node
-- **Required**: No
-- **Default**: See sub-fields
-- **Description**: This node contains the dead-letter queue configuration.
-
-#### plugin
-
-- **Data Type**: String
-- **Required**: No
-- **Default**: `builtin:file`
-- **Description**: This node references the connector plugin used for storing
-  dead-letters. See how to [reference a connector](/docs/connectors/referencing).
-
-#### settings
-
-- **Data Type**: Mapping node
-- **Required**: No
-- **Default**: `{"level": "warn", "message": "record delivery failed"}`
-- **Description**: A map of configuration keys and values for the dead-letter
-  queue connector.
-
-#### window-size
-
-- **Data Type**: Integer
-- **Required**: No
-- **Default**: `1`
-- **Description**: Defines the nack window size. See
-  [dead-letter queue](/docs/features/dead-letter-queue#nack-window-and-threshold).
-
-#### window-nack-threshold
-
-- **Data Type**: Integer
-- **Required**: No
-- **Default**: `0`
-- **Description**: Defines the nack window threshold. See
-  [dead-letter queue](/docs/features/dead-letter-queue#nack-window-and-threshold).
 
 ### connectors
 
@@ -186,6 +148,49 @@ beginning.
   processors. The processors are executed in the order in which they are defined
   in the list.
 
+### dead-letter-queue
+
+- **Data Type**: Mapping node
+- **Required**: No
+- **Default**: See sub-fields
+- **Description**: This node contains the dead-letter queue configuration. Read
+  more about [dead-letter queues](/docs/features/dead-letter-queue) in Conduit.
+
+#### plugin
+
+- **Data Type**: String
+- **Required**: No
+- **Default**: `builtin:log`
+- **Description**: This node references the destination connector plugin used
+  for storing dead-letters. See how to
+  [reference a connector](/docs/connectors/referencing).
+
+#### settings
+
+- **Data Type**: Mapping node
+- **Required**: No
+- **Default**: `{"level": "warn", "message": "record delivery failed"}`
+- **Description**: A map of configuration keys and values for the dead-letter
+  queue connector. These settings depend on the value of the dead-letter queue
+  [`plugin`](#plugin). Check the chosen destination connector's documentation
+  for a list of settings it supports and requires.
+
+#### window-size
+
+- **Data Type**: Integer
+- **Required**: No
+- **Default**: `1`
+- **Description**: Defines the nack window size. See
+  [dead-letter queue](/docs/features/dead-letter-queue#nack-window-and-threshold).
+
+#### window-nack-threshold
+
+- **Data Type**: Integer
+- **Required**: No
+- **Default**: `0`
+- **Description**: Defines the nack window threshold. See
+  [dead-letter queue](/docs/features/dead-letter-queue#nack-window-and-threshold).
+
 ## connector
 
 - **Data Type**: Mapping node
@@ -202,8 +207,8 @@ beginning.
   identify the connector inside the pipeline. If multiple connectors inside the
   pipeline use the same ID, provisioning will fail.
 
-**Warning**: Changing this property will cause the connector to start from the
-beginning.
+**Warning**: Changing this property will cause the connector to be recreated and
+start from the beginning.
 
 ### type
 
@@ -212,10 +217,10 @@ beginning.
 - **Default**: None
 - **Allowed Values**: `source`, `destination`
 - **Description**: Defines if the connector is a source or a destination. A
-  working pipeline needs at least one source and one destination.
+  valid pipeline needs at least one source and one destination.
 
-**Warning**: Changing this property will cause the connector to start from the
-beginning.
+**Warning**: Changing this property will cause the connector to be recreated and
+start from the beginning.
 
 ### plugin
 
@@ -241,8 +246,9 @@ beginning.
 - **Required**: Yes
 - **Default**: None
 - **Description**: A map of configuration keys and values for the connector
-  plugin. The values in this map depend on the chosen connector [`type`](#type)
-  and [`plugin`](#plugin-1).
+  plugin. These settings depend on the value of connector [`type`](#type) and
+  [`plugin`](#plugin-1). Check the chosen connector's documentation for a list
+  of settings it supports and requires.
 
 ### processors
 
@@ -275,7 +281,9 @@ beginning.
 - **Data Type**: String
 - **Required**: Yes
 - **Default**: None
-- **Description**: Defines the processor type.
+- **Description**: Defines the processor type (e.g. `js`). Check out the
+  [processors documentation](/docs/processors/getting-started) to find out which
+  processors are supported.
 
 ### settings
 
@@ -289,6 +297,6 @@ beginning.
 
 - **Data Type**: Integer
 - **Required**: No
-- **Default**: 1
+- **Default**: `1`
 - **Description**: Defines the number of workers that should execute this
   processor in parallel. The number needs to be larger than 0.
