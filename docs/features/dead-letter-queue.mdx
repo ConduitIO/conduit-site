@@ -72,9 +72,9 @@ dead-letter queue and stops the pipeline if more than 2 out of the last 5
 records are nacked.
 
 ```yaml
-version: 1.1
+version: 2.0
 pipelines:
-  dlq-example:
+  - id: dlq-example
     connectors:
       # define source and destination connectors
       # ...
