@@ -21,17 +21,15 @@ same or different pipelines can use different formats, which provides additional
 
 ## Configuration parameters
 
-There are two connector configuration parameters which control the output format: `sdk.record.format` and
-`sdk.record.format.options`. 
-
-`sdk.record.format` is used to choose the format itself whereas `sdk.record.format.options`
-allows the user to control specifics of the chosen format.
+There are two connector configuration parameters which control the output format: 
+* `sdk.record.format`: used to choose the format itself
+* `sdk.record.format.options`: used to configure the specifics of the chosen format.
 
 ## Available formats
 
-Most formats come in the form of `format-name/encoding`. `format-name` is the name of the converter that controls the
-structure of the produced record. `encoding` is the encoding used for the structure created by the converter.
-Currently, `json` is supported. More encoders are planned in future (e.g. Avro, Parquet, ...)
+Most formats come in the form of `name/encoding`. `name` is the name of the format and through that we control the
+structure of the output. `encoding` is the encoding used for the structure created by the converter.
+Currently, a `json` encoding is supported. More encoders are planned in future (e.g. Avro, Parquet, ...)
 
 ### `opencdc/json`
 
@@ -44,7 +42,7 @@ None.
 
 ### `debezium/json`
 
-Produces a Debezium record.
+Generates output compatible with Debezium connectors.
 
 #### **Options**
 
