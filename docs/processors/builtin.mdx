@@ -21,8 +21,9 @@ The script will run Conduit with a pipeline containing the built-in `extractfiel
 
 #### Configuration
 
-- `field`
-  (Required) Name of the field which replaces the entire key.
+- `field` (Required)
+
+  Name of the field which replaces the entire key.
 
 ### extractfieldpayload
 
@@ -35,14 +36,18 @@ Works in the same way as [extractfieldkey](#extractfieldkey), except that it's a
 #### Configuration
 
 - `type` (Required)
+  
   Sets the behavior to "include" or "exclude" the record based on the result of the condition. Possible values
   are: `include`, `exclude`.
 - `condition` (Required, XPath expression)
+  
   An XPath query expression that the user defines to forward or drop a record on its results.
 - `missingornull` (Optional)
+  
   Defines how to handle the record in the event the fields the query would use don't exist. Possible values
   are: `fail`, `include`, `exclude`. Defaults to `fail`.
 - `exists` (Optional)
+  
   Gives the user a chance to define an existence query for a given filter. Possible values
   are: `fail`, `include`, `exclude`. Defaults to `fail`.
 
@@ -63,6 +68,7 @@ Works in the same way as [filterfieldkey](#filterfieldkey), except that it's app
 #### Configuration
 
 - `field` (Required)
+
   Name of the field which replaces the entire key.
 
 ### hoistfieldpayload
@@ -77,17 +83,23 @@ wrapped in `RawData`.
 
 #### Configuration
 
-- `url`
-  (Required) URL used in the HTTP request.
+- `url` (Required)
+  
+  URL used in the HTTP request.
 - `method` (Optional)
+
   HTTP request method to be used. Defaults to `POST`.
-- `backoffRetry.count`
-  (Optional, integer) Maximum number of retries when backing off following an error. Defaults to 0.
+- `backoffRetry.count` (Optional, integer)
+
+  Maximum number of retries when backing off following an error. Defaults to 0.
 - `backoffRetry.factor` (Optional, integer)
+  
   The multiplying factor for each increment step. Defaults to 2.
 - `backoffRetry.min` (Optional, [duration string](https://pkg.go.dev/time#ParseDuration))
+  
   Minimum waiting time before retrying. Defaults to `100ms`.
 - `backoffRetry.max` (Optional, [duration string](https://pkg.go.dev/time#ParseDuration))
+  
   Maximum waiting time before retrying. Defaults to `5s`.
 
 ### insertfieldkey
@@ -101,10 +113,13 @@ Inserts a field into key. It's possible to insert a static value or the record's
 #### Configuration
 
 - `static.field` (Required, if `position.field` is not set)
+
   Name of the field into which the value in `static.value` will be inserted.
 - `static.value` (Required, if `static.field` is set)
+
   Value to be inserted.
 - `position.field` (Required, if `static.field` is not set)
+
   Name of the field into which the record's position will be inserted.
 
 ### insertfieldpayload
@@ -121,8 +136,10 @@ Raw keys (with or without schema) are not supported yet.
 #### Configuration
 
 - `field` (Required)
+  
   Name of the field to be masked.
 - `replacement` (Optional)
+
   Replacement value. Defaults to the field type's zero value (e.g. empty string for strings, 0 for integers etc.)
 
 ### maskfieldpayload
