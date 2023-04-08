@@ -26,7 +26,7 @@ The script will run Conduit with a pipeline containing the built-in `extractfiel
 
 ### extractfieldpayload
 
-Works in the same way as [extractfieldkey](#extractfieldkey), except that its applied to `Record.Payload.After`.
+Works in the same way as [extractfieldkey](#extractfieldkey), except that it's applied to `Record.Payload.After`.
 
 ### filterfieldkey
 
@@ -51,7 +51,7 @@ and `exists` matches nothing, then it will handle the record as `missingornull` 
 
 ### filterfieldpayload
 
-Works in the same way as [filterfieldkey](#filterfieldkey), except that its applied to `Record.Payload.After`.
+Works in the same way as [filterfieldkey](#filterfieldkey), except that it's applied to `Record.Payload.After`.
 
 ### hoistfieldkey
 
@@ -109,4 +109,23 @@ Inserts a field into key. It's possible to insert a static value or the record's
 
 ### insertfieldpayload
 
-Works in the same way as [insertfieldkey](#insertfieldkey), except that its applied to `Record.Payload.After`.
+Works in the same way as [insertfieldkey](#insertfieldkey), except that it's applied to `Record.Payload.After`.
+
+### maskfieldkey
+
+`maskfieldkey` replaces a field in a key with structured data with the zero value of its type. If the field is a string,
+an interger, or a float it's possible to define a replacement value.
+
+Raw keys (with or without schema) are not supported yet.
+
+#### Configuration
+
+- `field` (Required)
+  Name of the field to be masked.
+- `replacement` (Optional)
+  Replacement value. Defaults to the field type's zero value (e.g. empty string for strings, 0 for integers etc.)
+
+### maskfieldpayload
+
+Works in the same way as [maskfieldpayload](#maskfieldpayload), except that it's applied to `Record.Payload.After`.
+
