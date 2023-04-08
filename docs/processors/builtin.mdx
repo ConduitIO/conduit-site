@@ -3,11 +3,49 @@ title: 'Built-in processors'
 sidebar_position: 1
 ---
 
-### Built-in processors
+:::note
+Note that all built-in processors that operate on the payload actually operate on `Record.Payload.After`.
+If you need to manipulate the field `Record.Payload.Before` you can use
+a [JavaScript processor](./javascript-processors).
+:::
 
-An up-to-date list of all built-in processors and detailed descriptions can be found [here](https://pkg.go.dev/github.com/conduitio/conduit/pkg/processor/procbuiltin).
-Note that all built-in processors that operate on the payload actually operate on `Record.Payload.After`. If you need to manipulate
-the field `Record.Payload.Before` you can use a [JavaScript processor](#javascript-processors).
+Below is a list of available built-in processors in Conduit. An example usage of a built-in processor is available in
+[`extract-field-transform.sh`](https:github.com/ConduitIO/conduit/blob/main/examples/processors/extract-field-transform.sh).
+The script will run Conduit with a pipeline containing the built-in `extractfieldpayload` processor.
 
-An example is available in [`extract-field-transform.sh`](https://github.com/ConduitIO/conduit/blob/main/examples/processors/extract-field-transform.sh). The script will
-set up a pipeline with the built-in extract-field processors.
+### extractfieldkey
+
+- If the key is raw and has a schema attached, extracts the field and uses it to replace the entire key.
+- If the key is raw and has no schema, returns an error (not supported).
+- If the key is structured, extracts the field and uses it to replace the entire key.
+
+### extractfieldpayload
+
+Works in the same way as [extractfieldkey](#extractfieldkey), except that its applied to `Record.Payload.After`.
+
+### filterfieldkey
+
+`filterfieldkey` includes or excludes records using an XPath expression. Following configuration options are available:
+
+- `type`: sets the behavior to "include" or "exclude" the record based on the result of the condition.
+- `condition`: is an XPath query expression that the user defines to forward or drop a record on its results.
+- `missingornull`: defines how to handle the record in the event the fields the query would use don't exist.
+- `exists`: gives the user a chance to define an existence query for a given filter.
+
+If `condition` passes, then it will immediately handle the record as `type` dictates. If `condition` doesn't match
+and `exists` matches nothing, then it will handle the record as `missingornull` specifies.
+
+Here's an example processor configuration with noted possible values:
+
+```json
+{
+  "type": "include", // possible values: include, exclude
+  "condition": "<xpath expression>",
+  "exists": "<xpath expression>",
+  "missingornull": "fail" // possible values: fail, include, exclude
+}
+```
+
+### filterfieldpayload
+
+Works in the same way as [filterfieldkey](#filterfieldkey), except that its applied to `Record.Payload.After`.
