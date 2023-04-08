@@ -19,41 +19,35 @@ The script will run Conduit with a pipeline containing the built-in `extractfiel
 - If the key is raw and has no schema, returns an error (not supported).
 - If the key is structured, extracts the field and uses it to replace the entire key.
 
+#### Configuration
+
+- `field`
+  (Required) Name of the field which replaces the entire key.
+
 ### extractfieldpayload
 
 Works in the same way as [extractfieldkey](#extractfieldkey), except that its applied to `Record.Payload.After`.
 
 ### filterfieldkey
 
-`filterfieldkey` includes or excludes records using an XPath expression.
+`filterfieldkey` includes or excludes records (i.e. drops them from the pipeline) using an XPath expression.
 
 #### Configuration
 
-- `type`: sets the behavior to "include" or "exclude" the record based on the result of the condition.
-- `condition`: is an XPath query expression that the user defines to forward or drop a record on its results.
-- `missingornull`: defines how to handle the record in the event the fields the query would use don't exist.
-- `exists`: gives the user a chance to define an existence query for a given filter.
+- `type` (Required)
+  Sets the behavior to "include" or "exclude" the record based on the result of the condition. Possible values
+  are: `include`, `exclude`.
+- `condition` (Required, XPath expression)
+  An XPath query expression that the user defines to forward or drop a record on its results.
+- `missingornull` (Optional)
+  Defines how to handle the record in the event the fields the query would use don't exist. Possible values
+  are: `fail`, `include`, `exclude`. Defaults to `fail`.
+- `exists` (Optional)
+  Gives the user a chance to define an existence query for a given filter. Possible values
+  are: `fail`, `include`, `exclude`. Defaults to `fail`.
 
 If `condition` passes, then it will immediately handle the record as `type` dictates. If `condition` doesn't match
 and `exists` matches nothing, then it will handle the record as `missingornull` specifies.
-
-Here's an example processor configuration with noted possible values:
-
-```json
-{
-  "type": "include",
-  possible
-  values: include,
-  exclude
-  "condition": "<xpath expression>",
-  "exists": "<xpath expression>",
-  "missingornull": "fail"
-  possible
-  values: fail,
-  include,
-  exclude
-}
-```
 
 ### filterfieldpayload
 
@@ -65,6 +59,11 @@ Works in the same way as [filterfieldkey](#filterfieldkey), except that its appl
 - If the key is raw and has no schema, transforms it into structured data by creating a map with the hoisted field and
   raw data as the value.
 - If the key is structured, wraps it using the specified field name in a map.
+
+#### Configuration
+
+- `field` (Required)
+  Name of the field which replaces the entire key.
 
 ### hoistfieldpayload
 
@@ -78,10 +77,16 @@ wrapped in `RawData`.
 
 #### Configuration
 
-- `url`: URL used in the HTTP request
-- `method`: HTTP request method to be used. Default: `POST`.
-- `backoffRetry.count`: maximum number of retries when backing off following an error. Default: 0.
-- `backoffRetry.factor`: the multiplying factor for each increment step. Default: 2 
-- `backoffRetry.min`: minimum waiting time before retrying. Default: 100 milliseconds.
-- `backoffRetry.max`: maximum waiting time before retrying. Default: 5 seconds.
+- `url`
+  (Required) URL used in the HTTP request.
+- `method` (Optional)
+  HTTP request method to be used. Defaults to `POST`.
+- `backoffRetry.count`
+  (Optional, integer) Maximum number of retries when backing off following an error. Defaults to 0.
+- `backoffRetry.factor` (Optional, integer)
+  The multiplying factor for each increment step. Defaults to 2.
+- `backoffRetry.min` (Optional, [duration string](https://pkg.go.dev/time#ParseDuration))
+  Minimum waiting time before retrying. Defaults to `100ms`.
+- `backoffRetry.max` (Optional, [duration string](https://pkg.go.dev/time#ParseDuration))
+  Maximum waiting time before retrying. Defaults to `5s`.
 
