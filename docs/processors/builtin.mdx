@@ -1,0 +1,13 @@
+---
+title: 'Built-in processors'
+sidebar_position: 1
+---
+
+### Built-in processors
+
+An up-to-date list of all built-in processors and detailed descriptions can be found [here](https://pkg.go.dev/github.com/conduitio/conduit/pkg/processor/procbuiltin).
+Note that all built-in processors that operate on the payload actually operate on `Record.Payload.After`. If you need to manipulate
+the field `Record.Payload.Before` you can use a [JavaScript processor](#javascript-processors).
+
+An example is available in [`extract-field-transform.sh`](https://github.com/ConduitIO/conduit/blob/main/examples/processors/extract-field-transform.sh). The script will
+set up a pipeline with the built-in extract-field processors.
