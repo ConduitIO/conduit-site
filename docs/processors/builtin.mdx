@@ -90,3 +90,23 @@ wrapped in `RawData`.
 - `backoffRetry.max` (Optional, [duration string](https://pkg.go.dev/time#ParseDuration))
   Maximum waiting time before retrying. Defaults to `5s`.
 
+### insertfieldkey
+
+Inserts a field into key. It's possible to insert a static value or the record's position.
+
+- If the key is raw and has a schema attached, insert the field(s) in the key data.
+- If the key is raw and has no schema, return an error (not supported).
+- If the key is structured, set the field(s) in the key data.
+
+#### Configuration
+
+- `static.field` (Required, if `position.field` is not set)
+  Name of the field into which the value in `static.value` will be inserted.
+- `static.value` (Required, if `static.field` is set)
+  Value to be inserted.
+- `position.field` (Required, if `static.field` is not set)
+  Name of the field into which the record's position will be inserted.
+
+### insertfieldpayload
+
+Works in the same way as [insertfieldkey](#insertfieldkey), except that its applied to `Record.Payload.After`.
