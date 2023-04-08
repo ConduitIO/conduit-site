@@ -25,7 +25,9 @@ Works in the same way as [extractfieldkey](#extractfieldkey), except that its ap
 
 ### filterfieldkey
 
-`filterfieldkey` includes or excludes records using an XPath expression. Following configuration options are available:
+`filterfieldkey` includes or excludes records using an XPath expression.
+
+#### Configuration
 
 - `type`: sets the behavior to "include" or "exclude" the record based on the result of the condition.
 - `condition`: is an XPath query expression that the user defines to forward or drop a record on its results.
@@ -39,13 +41,47 @@ Here's an example processor configuration with noted possible values:
 
 ```json
 {
-  "type": "include", // possible values: include, exclude
+  "type": "include",
+  possible
+  values: include,
+  exclude
   "condition": "<xpath expression>",
   "exists": "<xpath expression>",
-  "missingornull": "fail" // possible values: fail, include, exclude
+  "missingornull": "fail"
+  possible
+  values: fail,
+  include,
+  exclude
 }
 ```
 
 ### filterfieldpayload
 
 Works in the same way as [filterfieldkey](#filterfieldkey), except that its applied to `Record.Payload.After`.
+
+### hoistfieldkey
+
+- If the key is raw and has a schema attached, wraps it using the specified field name in a struct.
+- If the key is raw and has no schema, transforms it into structured data by creating a map with the hoisted field and
+  raw data as the value.
+- If the key is structured, wraps it using the specified field name in a map.
+
+### hoistfieldpayload
+
+`hoistfieldpayload` builds the same processor as [hoistfieldkey](#hoistfieldkey), except that it operates on the field
+`Record.Payload.After`.
+
+### httprequest
+
+`httprequest` replaces a record's `Payload.After` field with the response of the HTTP request. The response body is
+wrapped in `RawData`.
+
+#### Configuration
+
+- `url`: URL used in the HTTP request
+- `method`: HTTP request method to be used. Default: `POST`.
+- `backoffRetry.count`: maximum number of retries when backing off following an error. Default: 0.
+- `backoffRetry.factor`: the multiplying factor for each increment step. Default: 2 
+- `backoffRetry.min`: minimum waiting time before retrying. Default: 100 milliseconds.
+- `backoffRetry.max`: maximum waiting time before retrying. Default: 5 seconds.
+
