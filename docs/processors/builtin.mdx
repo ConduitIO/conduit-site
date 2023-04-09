@@ -30,7 +30,7 @@ Works in the same way as [extractfieldkey](#extractfieldkey), except that it's a
 
 ### filterfieldkey
 
-`filterfieldkey` includes or excludes records (i.e. drops them from the pipeline) using an XPath expression.
+In `filterfieldkey`, the key is viewed as a JSON document and matched against an XPath expression.
 
 #### Configuration
 
@@ -50,18 +50,14 @@ Works in the same way as [extractfieldkey](#extractfieldkey), except that it's a
 
 - `exists` (Optional)
 
-  Gives the user a chance to define an existence query for a given filter. `exists` has an effect only if `conduit`
-  doesn't pass.
-  Possible values are: `fail`, `include`, `exclude`. Defaults to `fail`.
+  An XPath query expression used as an existence query for the node(s) used in `condition`.
 
-If `condition` passes, then it will handle the record as `type` dictates (i.e. keep the record, drop it, or return an
+If `condition` matches, then it will handle the record as `type` dictates (i.e. keep the record, drop it, or return an
 error).
 
-If `condition` **doesn't** pass (i.e. no node in the payload matches the expression), then the record is handled as
-follows:
-- if `exists` is not configured, the record is dropped.
-- if `exists` is configured and matches, the record is dropped.
-- if `exists` is configured but doesn't match, then the record is handled as `missingornull` specifies.
+If `condition` **doesn't** match anything, then we can use the `exists` expression to check if the JSON nodes used
+in `condition` actually exist. If `exists` doesn't match any node, then the record is handled as `missingornull`
+specifies. If `exists` is not configured or matches a node, then the record is dropped.
 
 ### filterfieldpayload
 
