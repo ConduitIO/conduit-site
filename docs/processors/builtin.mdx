@@ -15,15 +15,14 @@ The script will run Conduit with a pipeline containing the built-in `extractfiel
 
 ### extractfieldkey
 
-- If the key is raw and has a schema attached, extracts the field and uses it to replace the entire key.
-- If the key is raw and has no schema, returns an error (not supported).
-- If the key is structured, extracts the field and uses it to replace the entire key.
+Extracts a field from the key and uses it to replace the entire key. If the key is raw, returns an error (not
+supported).
 
 #### Configuration
 
 - `field` (Required)
 
-Name of the field which replaces the entire key.
+  Name of the field which replaces the entire key.
 
 ### extractfieldpayload
 
@@ -39,13 +38,16 @@ Works in the same way as [extractfieldkey](#extractfieldkey), except that it's a
 
 Sets the behavior to "include" or "exclude" the record based on the result of the condition. Possible values
 are: `include`, `exclude`.
+
 - `condition` (Required, XPath expression)
 
 An XPath query expression that the user defines to forward or drop a record on its results.
+
 - `missingornull` (Optional)
 
 Defines how to handle the record in the event the fields the query would use don't exist. Possible values
 are: `fail`, `include`, `exclude`. Defaults to `fail`.
+
 - `exists` (Optional)
 
 Gives the user a chance to define an existence query for a given filter. Possible values
@@ -60,9 +62,9 @@ Works in the same way as [filterfieldkey](#filterfieldkey), except that it's app
 
 ### hoistfieldkey
 
-- If the key is raw and has a schema attached, wraps it using the specified field name in a struct.
-- If the key is raw and has no schema, transforms it into structured data by creating a map with the hoisted field and
-raw data as the value.
+`hoistfieldkey` works in the following way:
+- If the key is raw, transforms it into structured data by creating a map with the hoisted field and
+  raw data as the value.
 - If the key is structured, wraps it using the specified field name in a map.
 
 #### Configuration
@@ -86,38 +88,42 @@ wrapped in `RawData`.
 - `url` (Required)
 
 URL used in the HTTP request.
+
 - `method` (Optional)
 
 HTTP request method to be used. Defaults to `POST`.
+
 - `backoffRetry.count` (Optional, integer)
 
 Maximum number of retries when backing off following an error. Defaults to 0.
+
 - `backoffRetry.factor` (Optional, integer)
 
 The multiplying factor for each increment step. Defaults to 2.
+
 - `backoffRetry.min` (Optional, [duration string](https://pkg.go.dev/time#ParseDuration))
 
 Minimum waiting time before retrying. Defaults to `100ms`.
+
 - `backoffRetry.max` (Optional, [duration string](https://pkg.go.dev/time#ParseDuration))
 
 Maximum waiting time before retrying. Defaults to `5s`.
 
 ### insertfieldkey
 
-Inserts a field into key. It's possible to insert a static value or the record's position.
-
-- If the key is raw and has a schema attached, insert the field(s) in the key data.
-- If the key is raw and has no schema, return an error (not supported).
-- If the key is structured, set the field(s) in the key data.
+Inserts a field into a record's key. It's possible to insert a static value or the record's position. Only structured
+keys are supported.
 
 #### Configuration
 
 - `static.field` (Required, if `position.field` is not set)
 
 Name of the field into which the value in `static.value` will be inserted.
+
 - `static.value` (Required, if `static.field` is set)
 
 Value to be inserted.
+
 - `position.field` (Required, if `static.field` is not set)
 
 Name of the field into which the record's position will be inserted.
@@ -129,15 +135,14 @@ Works in the same way as [insertfieldkey](#insertfieldkey), except that it's app
 ### maskfieldkey
 
 `maskfieldkey` replaces a field in a key with structured data with the zero value of its type. If the field is a string,
-an interger, or a float it's possible to define a replacement value.
-
-Raw keys (with or without schema) are not supported yet.
+an interger, or a float it's possible to define a replacement value. Raw keys are not supported yet.
 
 #### Configuration
 
 - `field` (Required)
 
 Name of the field to be masked.
+
 - `replacement` (Optional)
 
 Replacement value. Defaults to the field type's zero value (e.g. empty string for strings, 0 for integers etc.)
@@ -156,7 +161,7 @@ Transforms the record's `Payload.After` into structured data, i.e. a JSON object
 
 ### replacefieldkey
 
-Replaces a field in the key in raw data with a schema or in structured data. Raw data without a schema is not supported.
+Replaces a field in a record's key. Keys with raw data are not supported yet.
 
 #### Configuration
 
@@ -166,9 +171,11 @@ At least one of the following parameters is required.
 
 A comma separated list of fields that should be excluded from the processed record (`exclude` takes precedence
 over `include`).
+
 - `include`
 
 A comma separated list of fields that should be included in the processed record.
+
 - `rename`
 
 A comma separated list of pairs separated by colons, that controls the mapping of old field names to new field names.
@@ -199,17 +206,19 @@ The processor supports only structured data.
 - `date` (Required, string)
 
 Name of field which contains timestamp data.
+
 - `target.type` (Required)
 
 The target type into which the field's value will be converted. Possible values are `string`, `unix`, `time.Time`.
+
 - `format` (Required if the input value is a string or the target type is `string`)
 
 Timestamp format to be used to parse the input value (found in the `date` field) or to format the output value.
 
-
 ### timestampconvertorpayload
 
-Works in the same way as [timestampconvertorkey](#timestampconvertorkey), except that it's applied to `Record.Payload.After`.
+Works in the same way as [timestampconvertorkey](#timestampconvertorkey), except that it's applied
+to `Record.Payload.After`.
 
 ### unwrap
 
