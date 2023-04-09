@@ -23,7 +23,7 @@ The script will run Conduit with a pipeline containing the built-in `extractfiel
 
 - `field` (Required)
 
-  Name of the field which replaces the entire key.
+Name of the field which replaces the entire key.
 
 ### extractfieldpayload
 
@@ -37,19 +37,19 @@ Works in the same way as [extractfieldkey](#extractfieldkey), except that it's a
 
 - `type` (Required)
 
-  Sets the behavior to "include" or "exclude" the record based on the result of the condition. Possible values
-  are: `include`, `exclude`.
+Sets the behavior to "include" or "exclude" the record based on the result of the condition. Possible values
+are: `include`, `exclude`.
 - `condition` (Required, XPath expression)
 
-  An XPath query expression that the user defines to forward or drop a record on its results.
+An XPath query expression that the user defines to forward or drop a record on its results.
 - `missingornull` (Optional)
 
-  Defines how to handle the record in the event the fields the query would use don't exist. Possible values
-  are: `fail`, `include`, `exclude`. Defaults to `fail`.
+Defines how to handle the record in the event the fields the query would use don't exist. Possible values
+are: `fail`, `include`, `exclude`. Defaults to `fail`.
 - `exists` (Optional)
 
-  Gives the user a chance to define an existence query for a given filter. Possible values
-  are: `fail`, `include`, `exclude`. Defaults to `fail`.
+Gives the user a chance to define an existence query for a given filter. Possible values
+are: `fail`, `include`, `exclude`. Defaults to `fail`.
 
 If `condition` passes, then it will immediately handle the record as `type` dictates. If `condition` doesn't match
 and `exists` matches nothing, then it will handle the record as `missingornull` specifies.
@@ -62,14 +62,14 @@ Works in the same way as [filterfieldkey](#filterfieldkey), except that it's app
 
 - If the key is raw and has a schema attached, wraps it using the specified field name in a struct.
 - If the key is raw and has no schema, transforms it into structured data by creating a map with the hoisted field and
-  raw data as the value.
+raw data as the value.
 - If the key is structured, wraps it using the specified field name in a map.
 
 #### Configuration
 
 - `field` (Required)
 
-  Name of the field which replaces the entire key.
+Name of the field which replaces the entire key.
 
 ### hoistfieldpayload
 
@@ -85,22 +85,22 @@ wrapped in `RawData`.
 
 - `url` (Required)
 
-  URL used in the HTTP request.
+URL used in the HTTP request.
 - `method` (Optional)
 
-  HTTP request method to be used. Defaults to `POST`.
+HTTP request method to be used. Defaults to `POST`.
 - `backoffRetry.count` (Optional, integer)
 
-  Maximum number of retries when backing off following an error. Defaults to 0.
+Maximum number of retries when backing off following an error. Defaults to 0.
 - `backoffRetry.factor` (Optional, integer)
 
-  The multiplying factor for each increment step. Defaults to 2.
+The multiplying factor for each increment step. Defaults to 2.
 - `backoffRetry.min` (Optional, [duration string](https://pkg.go.dev/time#ParseDuration))
 
-  Minimum waiting time before retrying. Defaults to `100ms`.
+Minimum waiting time before retrying. Defaults to `100ms`.
 - `backoffRetry.max` (Optional, [duration string](https://pkg.go.dev/time#ParseDuration))
 
-  Maximum waiting time before retrying. Defaults to `5s`.
+Maximum waiting time before retrying. Defaults to `5s`.
 
 ### insertfieldkey
 
@@ -114,13 +114,13 @@ Inserts a field into key. It's possible to insert a static value or the record's
 
 - `static.field` (Required, if `position.field` is not set)
 
-  Name of the field into which the value in `static.value` will be inserted.
+Name of the field into which the value in `static.value` will be inserted.
 - `static.value` (Required, if `static.field` is set)
 
-  Value to be inserted.
+Value to be inserted.
 - `position.field` (Required, if `static.field` is not set)
 
-  Name of the field into which the record's position will be inserted.
+Name of the field into which the record's position will be inserted.
 
 ### insertfieldpayload
 
@@ -137,10 +137,10 @@ Raw keys (with or without schema) are not supported yet.
 
 - `field` (Required)
 
-  Name of the field to be masked.
+Name of the field to be masked.
 - `replacement` (Optional)
 
-  Replacement value. Defaults to the field type's zero value (e.g. empty string for strings, 0 for integers etc.)
+Replacement value. Defaults to the field type's zero value (e.g. empty string for strings, 0 for integers etc.)
 
 ### maskfieldpayload
 
@@ -164,14 +164,14 @@ At least one of the following parameters is required.
 
 - `exclude`
 
-  A comma separated list of fields that should be excluded from the processed record (`exclude` takes precedence
-  over `include`).
+A comma separated list of fields that should be excluded from the processed record (`exclude` takes precedence
+over `include`).
 - `include`
 
-  A comma separated list of fields that should be included in the processed record.
+A comma separated list of fields that should be included in the processed record.
 - `rename`
 
-  A comma separated list of pairs separated by colons, that controls the mapping of old field names to new field names.
+A comma separated list of pairs separated by colons, that controls the mapping of old field names to new field names.
 
 If `include` is not configured or is empty then all fields in the record will be included by default (except if they are
 configured in `exclude`). If `include` is not empty, then all fields are excluded by default and only fields
@@ -198,15 +198,33 @@ The processor supports only structured data.
 
 - `date` (Required, string)
 
-  Name of field which contains timestamp data.
+Name of field which contains timestamp data.
 - `target.type` (Required)
 
-  The target type into which the field's value will be converted. Possible values are `string`, `unix`, `time.Time`.
+The target type into which the field's value will be converted. Possible values are `string`, `unix`, `time.Time`.
 - `format` (Required if the input value is a string or the target type is `string`)
 
-  Timestamp format to be used to parse the input value (found in the `date` field) or to format the output value.
+Timestamp format to be used to parse the input value (found in the `date` field) or to format the output value.
 
 
 ### timestampconvertorpayload
 
 Works in the same way as [timestampconvertorkey](#timestampconvertorkey), except that it's applied to `Record.Payload.After`.
+
+### unwrap
+
+Unwraps a Debezium or a Kafka Connect record from the input OpenCDC record. This is useful in cases where Conduit acts
+as an intermediary between a Debezium/Kafka Connect source and a Debezium/Kafka Connect destination. In such cases, the
+Debezium or Kafka Connect record is set as the OpenCDC record's payload, and needs to be unwrapped for further usage.
+
+#### Configuration
+
+- `format` (Required)
+
+Format of the payload to be unwrapped. Possible values are: `debezium`, `kafka-connect`. In case of `debezium`, the
+processor will fail if the input payload isn't a valid Debezium record.
+
+### valuetokey
+
+`valuetokey` builds a processor that replaces the record key with a new key formed from a subset of fields in
+`Record.Payload.After`. If `Record.Payload.After` is raw the processor returns an error.
