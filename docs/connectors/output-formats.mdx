@@ -46,13 +46,13 @@ Generates output compatible with Debezium connectors.
 
 #### **Options**
 
-##### `debezium.schema.name`
+##### `debezium.schema.name` (Optional)
 
 Name of schema to be used in converted Debezium records.
 
 **Default value**: none
 
-##### `debezium.rawData.key`
+##### `debezium.rawData.key` (Optional)
 
 If the record to be converted doesn't contain a structured payload or its payload cannot be parsed as JSON,
 then this key defines the field into which the "raw" payload data will be put.
