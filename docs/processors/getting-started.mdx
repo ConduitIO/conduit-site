@@ -28,7 +28,20 @@ needs to happen for different sources or destinations, you have two options:
 2. If records from some, but not all, sources (or destinations) need to be processed in the same way, then you need to
    create multiple processors (one for each source or destination) and configure them in the same way.
 
-## Adding and configuring a processor
+## Creating a processor through a pipeline configuration file
+
+Creating a processor through a pipeline configuration file can be done as below:
+```yaml
+- id: extract-name
+  type: extractfieldpayload
+  settings:
+    field: name
+```
+
+In this example, we're using the built-in `extractfieldpayload` processor. It will replace a record's payload with the
+value found in the `name` field.
+
+## Creating a processor through the HTTP API
 
 Processors are created through the `/processors` endpoint. Here's an example:
 
@@ -58,5 +71,5 @@ The request to create a processor is described in [api.swagger.json](https://git
 
 ## Supported processors
 
-Conduit provides a number of built-in processors, such as filtering fields, replacing them, posting payloads to HTTP endpoints etc.
-Conduit also provides the ability to write custom processors in JavaScript.
+Conduit provides a number of [built-in processors](/docs/processors/builtin), such as filtering fields, replacing them, posting payloads to HTTP endpoints etc.
+Conduit also provides the ability to write [custom processors in JavaScript](/docs/processors/javascript-processors).
