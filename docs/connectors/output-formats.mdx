@@ -158,7 +158,7 @@ pipelines:
         plugin: builtin:generator
         name: source1
         settings:
-          recordCount: "10"
+          recordCount: "3"
           readTime: "1s"
           format.options: "id:int,name:string,company:string"
           format.type: "structured"
@@ -179,5 +179,4 @@ If you run Conduit and then `tail` the destination file, you'll see something li
 employee ID 636561854
 employee ID 1848322815
 employee ID 123675258
-...
 ```
