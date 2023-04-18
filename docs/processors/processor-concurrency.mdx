@@ -20,10 +20,12 @@ Consider a pipeline that needs to process 100 records per second. One of the
 processors in the pipeline needs to retrieve data from a server, and this
 operation typically takes 1 second to complete. Since this operation is executed
 for every record, sequential processing won't keep up with the stream. However,
-by configuring the processor to use 200 workers, we can execute the slow
-operation concurrently on 200 records at a time. This enables us to easily
-process 100 records per second and provides some room for handling larger
-bursts.
+by configuring the processor to use 100 workers, we can execute the slow
+operation concurrently on 100 records at a time. This enables us to process 100
+records per second.
+
+Note that in reality we would want to configure an even higher number of workers
+to provide some room for handling larger bursts.
 
 ## Configuration
 
