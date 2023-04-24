@@ -11,8 +11,8 @@ connector in a different language you should refer to the
 [Connector Protocol](https://github.com/ConduitIO/conduit-connector-protocol).
 :::
 
-Connector plugins, implemented using the
-[Connector SDK](https://github.com/ConduitIO/conduit-connector-sdk), can
+Connector plugins that are implemented using the
+[Connector SDK](https://github.com/ConduitIO/conduit-connector-sdk) can
 implement 2 interfaces: [`Source`](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#Source)
 for source connectors and [`Destination`](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#Destination)
 for destination connectors. Below we will describe the order of the method calls
@@ -35,11 +35,11 @@ The lifecycle of the connector generally looks like this:
 
 Conduit loads all connector plugins it discovers in the
 [connector path](/docs/connectors/installing#installing-a-connector-in-conduit)
-during its start. Each plugin is initiated to ensure it is a valid binary and to
-obtain the connector specifications. These specifications are then stored in
-Conduit's memory and exposed through the API. This helps the UI display the
-available connector plugins and their corresponding parameters that can be
-configured.
+while starting up. Each plugin is started in a separate process to ensure it is
+a valid binary and to obtain the connector specifications. These specifications
+are then stored in Conduit's memory and exposed through the API. This helps the
+UI display the available connector plugins and their corresponding parameters
+that can be configured.
 
 During the loading of connector specifications, the
 [`Source.Parameters`](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#Source)
@@ -55,8 +55,8 @@ Upon creating a connector ([`POST /v1/connectors`](/api#post-/v1/connectors)),
 Conduit validates the connector configuration. It starts an instance of the
 connector plugin and invokes the `Configure` method to validate the
 configuration. If the method returns no errors, the configuration is deemed
-valid, and the connector creation process continues. Otherwise, the creation of
-the connector is aborted. Afterward, Conduit signals the plugin to stop by
+valid and the connector creation process continues, otherwise, the creation of
+the connector is aborted. After that Conduit signals the plugin to stop by
 invoking the `Teardown` method.
 
 It's worth noting that the methods mentioned above are called either on
@@ -102,8 +102,8 @@ connections).
 ### Connector is deleted
 
 When a user deletes a connector ([`DELETE /v1/connectors/{id}`](/api#delete-/v1/connectors/-id-)),
-Conduit starts the connector plugin and triggers the [On Deleted](#on-deleted).
-After that it calls `Teardown` and stops the connector plugin process.
+Conduit starts the connector plugin and triggers the [On Deleted](#on-deleted)
+event. After that it calls `Teardown` and stops the connector plugin process.
 
 The specific methods called depend on whether the connector is a
 [`Source`](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#Source)
