@@ -13,6 +13,199 @@ Below is a list of available built-in processors in Conduit. An example usage of
 [`pipeline-extract-field-transform.yml`](https://github.com/ConduitIO/conduit/blob/main/examples/processors/pipeline-extract-field-transform.yml).
 The script will run Conduit with a pipeline containing the built-in `extractfieldpayload` processor.
 
+### decodewithschemakey
+
+The processor takes raw data (bytes) in field `Record.Key` and decodes it from the
+[Confluent wire format](https://docs.confluent.io/platform/current/schema-registry/fundamentals/serdes-develop/index.html#wire-format)
+into structured data. It extracts the schema ID from the data, downloads the
+associated schema from the
+[schema registry](https://docs.confluent.io/platform/current/schema-registry/index.html)
+and decodes the payload. The schema is cached locally after it's first
+downloaded. Currently, the processor only supports the Avro format. If the
+processor encounters structured data or the data can't be decoded it returns an
+error.
+
+This processor is the counterpart to [`encodewithschemakey`](#encodewithschemakey).
+
+#### Configuration
+
+- `url` (Required)
+
+  URL of the schema registry (e.g. `http://localhost:8085`)
+
+- `auth.basic.username` (Optional)
+
+  Configures the username to use with basic authentication. This option is required if `auth.basic.password` contains a value.
+  If both `auth.basic.username` and `auth.basic.password` are empty basic authentication is disabled.
+
+- `auth.basic.password` (Optional)
+
+  Configures the password to use with basic authentication. This option is required if `auth.basic.username` contains a value.
+  If both `auth.basic.username` and `auth.basic.password` are empty basic authentication is disabled.
+
+- `tls.ca.cert` (Optional)
+
+  Path to a file containing PEM encoded CA certificates. If this option is empty, Conduit falls back to using the host's root CA set.
+
+- `tls.client.cert` (Optional)
+
+  Path to a file containing a PEM encoded certificate. This option is required if `tls.client.key` contains a value.
+  If both `tls.client.cert` and `tls.client.key` are empty TLS is disabled.
+
+- `tls.client.key` (Optional)
+
+  Path to a file containing a PEM encoded private key. This option is required if `tls.client.cert` contains a value.
+  If both `tls.client.cert` and `tls.client.key` are empty TLS is disabled.
+
+#### Example
+
+```yaml
+processors:
+  id:   example
+  type: decodewithschemakey
+  settings:
+    url:                 "http://localhost:8085"
+    auth.basic.username: "user"
+    auth.basic.password: "pass"
+    tls.ca.cert:         "/path/to/ca/cert"
+    tls.client.cert:     "/path/to/client/cert"
+    tls.client.key:      "/path/to/client/key"
+```
+
+### decodewithschemapayload
+
+Works in the same way as [decodewithschemakey](#decodewithschemakey), except that it's applied to `Record.Payload.After`.
+
+This processor is the counterpart to [`encodewithschemapayload`](#encodewithschemapayload).
+
+### encodewithschemakey
+
+The processor takes structured data and encodes it using a schema into the
+[Confluent wire format](https://docs.confluent.io/platform/current/schema-registry/fundamentals/serdes-develop/index.html#wire-format).
+It provides two strategies for determining the schema:
+
+- `preRegistered` (recommended)
+
+  This strategy downloads an existing schema from the
+  [schema registry](https://docs.confluent.io/platform/current/schema-registry/index.html)
+  and uses it to encode the record. This requires the schema to already be
+  registered in the schema registry. The schema is downloaded only once and
+  cached locally.
+
+- `autoRegister` (for development purposes)
+
+  This strategy infers the schema by inspecting the structured data and
+  registers it in the
+  [schema registry](https://docs.confluent.io/platform/current/schema-registry/index.html).
+  If the record schema is known in advance it's recommended to use the
+  `preRegistered` strategy and manually register the schema, as this strategy comes
+  with limitations.
+
+  The strategy uses reflection to traverse the structured data of each record
+  and determine the type of each field. If a specific field is set to `nil` the
+  processor won't have enough information to determine the type and will default
+  to a nullable string. Because of this it is not guaranteed that two records
+  with the same structure produce the same schema or even a backwards compatible
+  schema. The processor registers each inferred schema in the schema registry
+  with the same subject, therefore the schema compatibility checks need to be
+  disabled for this schema to prevent failures. If the schema subject does not
+  exist before running this processor, it will automatically set the correct
+  compatibility settings in the schema registry.
+
+The processor currently only supports the Avro format.
+
+This processor is the counterpart to [`decodewithschemakey`](#decodewithschemakey).
+
+#### Configuration
+
+- `url` (Required)
+
+  URL of the schema registry (e.g. `http://localhost:8085`)
+
+- `schema.strategy` (Required, Enum: `preRegistered`,`autoRegister`)
+
+  Specifies which strategy to use to determine the schema for the record.
+  Available strategies:
+
+    - `preRegistered` (recommended) - Download an existing schema from the schema
+      registry. This strategy is further configured with options starting with
+      `schema.preRegistered.*`.
+
+    - `autoRegister` (for development purposes) - Infer the schema from the
+      record and register it in the schema registry. This strategy is further
+      configured with options starting with `schema.autoRegister.*`.
+
+  For more information about the behavior of each strategy read the main
+  processor description.
+
+- `schema.preRegistered.subject` (Required if `schema.strategy` = `preRegistered`)
+
+  Specifies the subject of the schema in the schema registry used to encode the
+  record.
+
+- `schema.preRegistered.version` (Required if `schema.strategy` = `preRegistered`)
+
+  Specifies the version of the schema in the schema registry used to encode the
+  record.
+
+- `schema.autoRegister.subject` (Required if `schema.strategy` = `autoRegister`)
+
+  Specifies the subject name under which the inferred schema will be registered
+  in the schema registry.
+
+- `schema.autoRegister.format` (Required if `schema.strategy` = `autoRegister`, Enum: `avro`)
+
+  Specifies the schema format that should be inferred. Currently the only
+  supported format is `avro`.
+
+- `auth.basic.username` (Optional)
+
+  Configures the username to use with basic authentication. This option is required if `auth.basic.password` contains a value.
+  If both `auth.basic.username` and `auth.basic.password` are empty basic authentication is disabled.
+
+- `auth.basic.password` (Optional)
+
+  Configures the password to use with basic authentication. This option is required if `auth.basic.username` contains a value.
+  If both `auth.basic.username` and `auth.basic.password` are empty basic authentication is disabled.
+
+- `tls.ca.cert` (Optional)
+
+  Path to a file containing PEM encoded CA certificates. If this option is empty, Conduit falls back to using the host's root CA set.
+
+- `tls.client.cert` (Optional)
+
+  Path to a file containing a PEM encoded certificate. This option is required if `tls.client.key` contains a value.
+  If both `tls.client.cert` and `tls.client.key` are empty TLS is disabled.
+
+- `tls.client.key` (Optional)
+
+  Path to a file containing a PEM encoded private key. This option is required if `tls.client.cert` contains a value.
+  If both `tls.client.cert` and `tls.client.key` are empty TLS is disabled.
+
+#### Example
+
+```yaml
+processors:
+  id:   example
+  type: encodewithschemakey
+  settings:
+    url:                          "http://localhost:8085"
+    schema.strategy:              "preRegistered"
+    schema.preRegistered.subject: "foo"
+    schema.preRegistered.version: 2
+    auth.basic.username:          "user"
+    auth.basic.password:          "pass"
+    tls.ca.cert:                  "/path/to/ca/cert"
+    tls.client.cert:              "/path/to/client/cert"
+    tls.client.key:               "/path/to/client/key"
+```
+
+### encodewithschemapayload
+
+Works in the same way as [encodewithschemakey](#encodewithschemakey), except that it's applied to `Record.Payload.After`.
+
+This processor is the counterpart to [`decodewithschemapayload`](#decodewithschemapayload).
+
 ### extractfieldkey
 
 Extracts a field from the key and uses it to replace the entire key. If the key is raw, returns an error (not
