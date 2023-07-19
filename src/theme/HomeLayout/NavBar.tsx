@@ -27,7 +27,7 @@ function classNames(...classes) {
 const navLinks = [
     {
         label: 'Connectors',
-        href: 'https://github.com/ConduitIO/conduit/blob/main/docs/connectors.md',
+        href: '/docs/connectors/connector-list',
     },
     {
         label: 'Documentation',
