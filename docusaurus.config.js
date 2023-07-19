@@ -59,7 +59,7 @@ module.exports = {
         { to: '/api', label: 'HTTP API', position: 'left' },
         { to: 'https://github.com/ConduitIO/conduit/discussions', label: 'GitHub Discussions', position: 'right' },
         { to: 'https://discord.meroxa.com', label: 'Discord Community', position: 'right' },
-        
+
       ],
     },
     footer: {
@@ -70,7 +70,7 @@ module.exports = {
           items: [
             {
               label: 'Connectors',
-              to: 'https://github.com/ConduitIO/conduit/blob/main/docs/connectors.md',
+              to: '/docs/connectors/connector-list',
             },
             {
               label: 'Documentation',
@@ -115,7 +115,7 @@ module.exports = {
       content: `
         <div class='wrapper announcement-banner'>
           <p class='content'>
-            Conduit 0.6 is here!&nbsp;
+            Conduit 0.7 is here!&nbsp;
             <a class='cta' href='https://github.com/ConduitIO/conduit/releases/latest' target='_blank' rel='noreferrer noopener'>See what's new</a>&nbsp;
           </p>
         </div>
