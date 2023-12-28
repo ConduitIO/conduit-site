@@ -3,7 +3,6 @@ title: "Real-time Pipeline: File to File"
 slug: conduit-file-to-file
 author: '@anaptfox'
 author_url: https://twitter.com/anaptfox
-author_image_url: https://pbs.twimg.com/profile_images/1004707739405205504/BpvzOr9X_400x400.jpg
 tag: ['File Connector']
 description: Learn how to move data between files with Conduit.
 keywords: ['data', 'file', 'conduit', 'move', 'copy']
@@ -13,7 +12,7 @@ keywords: ['data', 'file', 'conduit', 'move', 'copy']
 
 In this guide, we will build a data pipline that moves data between files. This example is a great to get started with Conduit on a local machine, but it's also the foundation of use cases such as [log aggregation](https://www.datadoghq.com/knowledge-center/log-aggregation).
 
-![Kafka to Postgres Conduit Pipeline](/images/guides/file-to-file.png)
+![Kafka to Postgres Conduit Pipeline](/img/guides/file-to-file.png)
 
 Everytime that data is appended to the `src.log`, data will be move in real-time to `dest.log`.
 
@@ -44,7 +43,7 @@ Now that we have some files, let's build the pipeline.
 Create a pipeline in the Conduit UI and create a source connector:
 
 <div style={{ textAlign: "center" }}>
-  <img alt="Kafka Configuration" className="rounded-lg" style={{ maxWidth: "800px", margin: 'auto' }} src="/images/guides/moving-data-between-files-with-conduit/add-connector.png" />
+  <img alt="Kafka Configuration" className="rounded-lg" style={{ maxWidth: "800px", margin: 'auto' }} src="/img/guides/moving-data-between-files-with-conduit/add-connector.png" />
 </div>
 
 Select "File" as the **Connector Type**. 
@@ -54,7 +53,7 @@ The file connector will listen to appends to the `src.log` and send the data int
 Then, do the same thing for the Destination. Once done, you should see a pipeline that looks like this:
 
 <div style={{ textAlign: "center" }}>
-  <img alt="Full Conduit Pipeline" className="rounded-lg" style={{ maxWidth: "800px", margin: 'auto' }} src="/images/guides/moving-data-between-files-with-conduit/pipeline.png" />
+  <img alt="Full Conduit Pipeline" className="rounded-lg" style={{ maxWidth: "800px", margin: 'auto' }} src="/img/guides/moving-data-between-files-with-conduit/pipeline.png" />
 </div>
 
 ## Start the pipeline
@@ -64,7 +63,7 @@ Now, it's time to start your pipeline.
 To start, click the pipeline status drop-down in the top right and select "Start".
 
 <div style={{ textAlign: "center" }}>
-  <img alt="Start Conduit Pipeline" className="rounded-lg" style={{ maxWidth: "500px", margin: 'auto' }} src="/images/guides/start-pipeline.png" />
+  <img alt="Start Conduit Pipeline" className="rounded-lg" style={{ maxWidth: "500px", margin: 'auto' }} src="/img/guides/start-pipeline.png" />
 </div>
 
 ### Generating data 

@@ -1,0 +1,7 @@
+.wrapper {
+    padding-left: var(--flow-space);
+    padding-right: var(--flow-space);
+    max-width: 80rem;
+    margin-left: auto;
+    margin-right: auto;
+}

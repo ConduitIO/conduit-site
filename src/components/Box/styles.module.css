@@ -1,0 +1,17 @@
+.box {
+  padding: var(--base-size);
+}
+
+.box[data-variant='canary'] {
+  background-color: var(--color-canary-60);
+  border-radius: var(--base-size);
+  color: var(--color-dark);
+  position: relative;
+  padding-bottom: 48px;
+}
+
+.box[data-variant='canary'] .button[data-variant='canary'] {
+  position: absolute;
+  bottom: var(--base-size);
+  left: var(--base-size);
+}
