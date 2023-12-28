@@ -27,4 +27,4 @@ yarn start
 
 ## Deploying to Production
 
-The `main` branch is auto deployed using Vercel.
+The `main` branch is auto deployed using CloudFlare.
