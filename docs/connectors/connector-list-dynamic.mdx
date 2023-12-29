@@ -1,0 +1,117 @@
+---
+title: "Connector list (dynamic)"
+sidebar_position: 8
+---
+
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import {Accordion, AccordionSummary} from '@site/src/components/ConnectorsAccordion';
+
+import { useEffect, useState } from "react"
+
+export const Connectors = ({url}) => {
+  const [connectors, setConnectors] = useState([])
+  const fetchConnectorData = () => {
+    fetch(url)
+      .then(response => {
+        return response.json()
+      })
+      .then(data => {
+        setConnectors(data)
+      })
+  }
+  useEffect(() => {
+    fetchConnectorData()
+  }, [])
+  return (
+    <div className="connectors">
+      {connectors.map(conn => (
+        <Accordion>
+          <AccordionSummary
+            name={conn.nameWithOwner}
+            url={conn.url}
+            stargazerCount={conn.stargazerCount}
+            description={conn.description}
+          />
+          <AccordionDetails>
+            <div className="releases">
+              <ul className="mb-4">
+                {conn.releases.map(release => (
+                  <li key={release.tag_name}>
+                    {release.tag_name}
+                    <ul className="mb-4">
+                      {release.body.split("\n").map(line => (
+                        <li key={line}>{line}</li>
+                      ))}
+                      <li>Downloads:
+                        <ul>
+                          {release.assets.map(asset => (
+                            <li key={asset.name}>{asset.os}/{asset.arch}: <a href={asset.browser_download_url}>{asset.name}</a></li>
+                          ))}
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </AccordionDetails>
+        </Accordion>
+      ))}
+    </div>
+  )
+};
+
+
+export const App = () => {
+  return (
+    <>
+      <Accordion>
+        <AccordionSummary
+          aria-controls="panel1a-content"
+          id="panel1a-header"
+          name="ConduitIO/conduit-connector-postgres"
+          url="https://github.com/conduitio/conduit-connector-postgres"
+          stargazerCount="25"
+          description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet blandit leo lobortis eget."
+        />
+        <AccordionDetails>
+          <Typography>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+            malesuada lacus ex, sit amet blandit leo lobortis eget.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+      <Accordion>
+        <AccordionSummary
+          aria-controls="panel2a-content"
+          id="panel2a-header"
+          name="ConduitIO/conduit-connector-file"
+          url="https://github.com/conduitio/conduit-connector-file"
+          stargazerCount="32"
+          description="My file description"
+        />
+        <AccordionDetails>
+          <Typography>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+            malesuada lacus ex, sit amet blandit leo lobortis eget.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+      <Accordion>
+        <AccordionSummary
+          aria-controls="panel3a-content"
+          id="panel3a-header"
+          name="ConduitIO/conduit-connector-s3"
+          url="https://github.com/conduitio/conduit-connector-s3"
+          stargazerCount="11"
+          description="My s3 description"
+        />
+      </Accordion>
+    </>
+  );
+}
+
+<!--App / -->
+
+<Connectors url="https://raw.githubusercontent.com/lovromazgon/connector-list/main/connectors.json" />
