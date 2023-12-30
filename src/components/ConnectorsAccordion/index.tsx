@@ -2,12 +2,15 @@ import * as React from 'react';
 import { styled } from '@mui/material/styles';
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
 import MuiAccordionSummary, { AccordionSummaryProps } from "@mui/material/AccordionSummary";
+import MuiAccordionDetails, { AccordionDetailsProps } from "@mui/material/AccordionDetails";
 import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
 import StarIcon from '@mui/icons-material/Star';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import IconButton from '@mui/material/IconButton';
+import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
 import Box from "@mui/material/Box";
 
 export interface IAccordionSummaryProps extends AccordionSummaryProps {
@@ -16,7 +19,6 @@ export interface IAccordionSummaryProps extends AccordionSummaryProps {
   stargazerCount: number;
   url: string;
 }
-
 
 export const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={0}  {...props} />
@@ -35,16 +37,18 @@ export const AccordionSummary = styled((props: IAccordionSummaryProps) => (
     expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />}
     {...props}
   >
-    <Stack direction="row" spacing={2} sx={{ width: '100%' }}>
+    <Stack direction='row' spacing={2} sx={{ width: '100%' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-        <Typography>{props.name}</Typography>
+        <Stack>
+          <Typography variant='body1' sx={{ textDecoration: 'underline' }}>{props.name}</Typography>
+          <Typography variant='body2' sx={{ color:'#6B7280' }}>{props.description}</Typography>
+        </Stack>
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <IconButton size="small" href={props.url} target="_blank">
-          <GitHubIcon />
+        <IconButton size='small' href={props.url} target='_blank'>
+          <GitHubIcon fontSize='small' />
         </IconButton>
-        <StarIcon />
-        <Typography>{props.stargazerCount}</Typography>
+        <Chip icon={<StarIcon />} label={props.stargazerCount} size='small' />
       </Box>
     </Stack>
   </MuiAccordionSummary>
@@ -58,3 +62,10 @@ export const AccordionSummary = styled((props: IAccordionSummaryProps) => (
   },
 }));
 
+export const AccordionDetails = styled((props: AccordionDetailsProps) => (
+  <MuiAccordionDetails {...props}>
+    <Divider variant='middle' light={true} sx={{ height:0, position:'relative', top:'-8px' }} />
+    {props.children}
+  </MuiAccordionDetails>
+))(({ theme }) => ({
+}));
