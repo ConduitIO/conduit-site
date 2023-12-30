@@ -64,7 +64,35 @@ export const AccordionSummary = styled((props: IAccordionSummaryProps) => (
 
 export const AccordionDetails = styled((props: AccordionDetailsProps) => (
   <MuiAccordionDetails {...props}>
-    <Divider variant='middle' light={true} sx={{ height:0, position:'relative', top:'-8px' }} />
+    {props.children}
+  </MuiAccordionDetails>
+))(({ theme }) => ({
+}));
+
+export interface ReleaseAccordionProps extends AccordionProps {}
+
+export const ReleaseAccordion = styled((props: ReleaseAccordionProps) => (
+  <MuiAccordion disableGutters {...props}>
+    {props.children}
+  </MuiAccordion>
+))(({ theme }) => ({
+}));
+
+export interface ReleaseAccordionSummaryProps extends AccordionSummaryProps {
+  tag: string;
+}
+
+export const ReleaseAccordionSummary = styled((props: ReleaseAccordionSummaryProps) => (
+  <MuiAccordionSummary {...props}>
+    <Typography>{props.tag}</Typography>
+  </MuiAccordionSummary>
+))(({ theme }) => ({
+}));
+
+export interface ReleaseAccordionDetailsProps extends AccordionDetailsProps {}
+
+export const ReleaseAccordionDetails = styled((props: ReleaseAccordionDetailsProps) => (
+  <MuiAccordionDetails {...props}>
     {props.children}
   </MuiAccordionDetails>
 ))(({ theme }) => ({
