@@ -10,7 +10,6 @@ import IconButton from '@mui/material/IconButton';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
 import Box from "@mui/material/Box";
 
 export interface IAccordionSummaryProps extends AccordionSummaryProps {
@@ -46,7 +45,7 @@ export const AccordionSummary = styled((props: IAccordionSummaryProps) => (
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <IconButton size='small' href={props.url} target='_blank'>
-          <GitHubIcon fontSize='small' />
+          <GitHubIcon fontSize='inherit' />
         </IconButton>
         <Chip icon={<StarIcon />} label={props.stargazerCount} size='small' />
       </Box>
@@ -63,35 +62,6 @@ export const AccordionSummary = styled((props: IAccordionSummaryProps) => (
 }));
 
 export const AccordionDetails = styled((props: AccordionDetailsProps) => (
-  <MuiAccordionDetails {...props}>
-    {props.children}
-  </MuiAccordionDetails>
-))(({ theme }) => ({
-}));
-
-export interface ReleaseAccordionProps extends AccordionProps {}
-
-export const ReleaseAccordion = styled((props: ReleaseAccordionProps) => (
-  <MuiAccordion disableGutters {...props}>
-    {props.children}
-  </MuiAccordion>
-))(({ theme }) => ({
-}));
-
-export interface ReleaseAccordionSummaryProps extends AccordionSummaryProps {
-  tag: string;
-}
-
-export const ReleaseAccordionSummary = styled((props: ReleaseAccordionSummaryProps) => (
-  <MuiAccordionSummary {...props}>
-    <Typography>{props.tag}</Typography>
-  </MuiAccordionSummary>
-))(({ theme }) => ({
-}));
-
-export interface ReleaseAccordionDetailsProps extends AccordionDetailsProps {}
-
-export const ReleaseAccordionDetails = styled((props: ReleaseAccordionDetailsProps) => (
   <MuiAccordionDetails {...props}>
     {props.children}
   </MuiAccordionDetails>

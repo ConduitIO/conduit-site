@@ -4,13 +4,12 @@ sidebar_position: 8
 ---
 
 import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  ReleaseAccordion,
-  ReleaseAccordionSummary,
-  ReleaseAccordionDetails,
-} from '@site/src/components/ConnectorsAccordion';
+  Accordion as ConnectorAccordion,
+  AccordionSummary as ConnectorAccordionSummary,
+  AccordionDetails as ConnectorAccordionDetails,
+} from '@site/src/components/ConnectorAccordion';
+
+import {Accordion as ReleaseAccordion} from '@site/src/components/ReleaseAccordion';
 
 import { useEffect, useState } from "react"
 
@@ -31,37 +30,19 @@ export const Connectors = ({url}) => {
   return (
     <div className="connectors">
       {connectors.map(conn => (
-        <Accordion>
-          <AccordionSummary
+        <ConnectorAccordion>
+          <ConnectorAccordionSummary
             name={conn.nameWithOwner}
             url={conn.url}
             stargazerCount={conn.stargazerCount}
             description={conn.description}
           />
-          <AccordionDetails>
+          <ConnectorAccordionDetails>
             {conn.releases.map(release => (
-              <ReleaseAccordion>
-                <ReleaseAccordionSummary
-                  tag={release.tag_name}
-                />
-                <ReleaseAccordionDetails>
-                  <ul className="mb-4">
-                    {release.body.split("\n").map(line => (
-                      <li key={line}>{line}</li>
-                    ))}
-                    <li>Downloads:
-                      <ul>
-                        {release.assets.map(asset => (
-                          <li key={asset.name}>{asset.os}/{asset.arch}: <a href={asset.browser_download_url}>{asset.name}</a></li>
-                        ))}
-                      </ul>
-                    </li>
-                  </ul>
-                </ReleaseAccordionDetails>
-              </ReleaseAccordion>
+              <ReleaseAccordion release={release} />
             ))}
-          </AccordionDetails>
-        </Accordion>
+          </ConnectorAccordionDetails>
+        </ConnectorAccordion>
       ))}
     </div>
   )
