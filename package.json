@@ -29,6 +29,7 @@
     "rapidoc": "^9.3.4",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
+    "react-markdown": "^9.0.1",
     "tailwindcss": "^3.4.0"
   },
   "devDependencies": {

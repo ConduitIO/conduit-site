@@ -39,12 +39,12 @@ export const AccordionSummary = styled((props: IAccordionSummaryProps) => (
     <Stack direction='row' spacing={2} sx={{ width: '100%' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
         <Stack>
-          <Typography variant='body1' sx={{ textDecoration: 'underline' }}>{props.name}</Typography>
+          <Typography variant='body1'>{props.name}</Typography>
           <Typography variant='body2' sx={{ color:'#6B7280' }}>{props.description}</Typography>
         </Stack>
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <IconButton size='small' href={props.url} target='_blank'>
+        <IconButton size='small' href={props.url} target='_blank' onClick={stopPropagation}>
           <GitHubIcon fontSize='inherit' />
         </IconButton>
         <Chip icon={<StarIcon />} label={props.stargazerCount} size='small' />
@@ -63,7 +63,11 @@ export const AccordionSummary = styled((props: IAccordionSummaryProps) => (
 
 export const AccordionDetails = styled((props: AccordionDetailsProps) => (
   <MuiAccordionDetails {...props}>
-    {props.children}
+    {React.Children.count(props.children) > 0 ? props.children : <Typography>No releases.</Typography>}
   </MuiAccordionDetails>
 ))(({ theme }) => ({
 }));
+
+function stopPropagation(e) {
+  e.stopPropagation();
+}

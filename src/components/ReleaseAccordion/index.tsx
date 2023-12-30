@@ -16,6 +16,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
+import Markdown from 'react-markdown';
+
 export class Release {
   tag_name: string;
   name: string;
@@ -44,8 +46,8 @@ export interface IAccordionProps extends AccordionProps {
 }
 
 function humanFileSize(size) {
-  var i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
-  return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+  const i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
+  return (size / Math.pow(1024, i)).toFixed(2) + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
 }
 
 export const Accordion = styled((props: IAccordionProps) => (
@@ -54,7 +56,7 @@ export const Accordion = styled((props: IAccordionProps) => (
       <Stack direction='row' spacing={1}>
         <Chip label={props.release.tag_name} size='small' sx={{ display: 'flex', alignItems: 'center', height:'100%'}} />
         <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center'}}>{Intl.DateTimeFormat('en-US', {dateStyle: 'medium'}).format(new Date(props.release.published_at))}</Typography>
-        <IconButton size='small' href={props.release.html_url} target='_blank'>
+        <IconButton size='small' href={props.release.html_url} target='_blank' onClick={stopPropagation}>
           <OpenInNewIcon fontSize='inherit' />
         </IconButton>
       </Stack>
@@ -89,6 +91,9 @@ export const Accordion = styled((props: IAccordionProps) => (
           </TableBody>
         </Table>
       </TableContainer>
+      <Typography variant='body2'>
+        <Markdown>{props.release.body}</Markdown>
+      </Typography>
     </MuiAccordionDetails>
   </MuiAccordion>
 ))(({ theme }) => ({
@@ -100,3 +105,7 @@ export const Accordion = styled((props: IAccordionProps) => (
     display: 'none',
   },
 }));
+
+function stopPropagation(e) {
+  e.stopPropagation();
+}
