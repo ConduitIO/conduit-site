@@ -3,13 +3,7 @@ title: "Connector list (dynamic)"
 sidebar_position: 8
 ---
 
-import {
-  Accordion as ConnectorAccordion,
-  AccordionSummary as ConnectorAccordionSummary,
-  AccordionDetails as ConnectorAccordionDetails,
-} from '@site/src/components/ConnectorAccordion';
-
-import {Accordion as ReleaseAccordion} from '@site/src/components/ReleaseAccordion';
+import ConnectorAccordion from '@site/src/components/ConnectorAccordion';
 
 import { useEffect, useState } from "react"
 
@@ -28,23 +22,11 @@ export const Connectors = ({url}) => {
     fetchConnectorData()
   }, [])
   return (
-    <div className="connectors">
+    <>
       {connectors.map(conn => (
-        <ConnectorAccordion>
-          <ConnectorAccordionSummary
-            name={conn.nameWithOwner}
-            url={conn.url}
-            stargazerCount={conn.stargazerCount}
-            description={conn.description}
-          />
-          <ConnectorAccordionDetails>
-            {conn.releases.map(release => (
-              <ReleaseAccordion release={release} />
-            ))}
-          </ConnectorAccordionDetails>
-        </ConnectorAccordion>
+        <ConnectorAccordion connector={conn} />
       ))}
-    </div>
+    </>
   )
 };
 

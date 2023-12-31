@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
-import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
-import MuiAccordionSummary, { AccordionSummaryProps } from "@mui/material/AccordionSummary";
-import MuiAccordionDetails, { AccordionDetailsProps } from "@mui/material/AccordionDetails";
+import Accordion, { AccordionProps } from '@mui/material/Accordion';
+import MuiAccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
 import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
 import StarIcon from '@mui/icons-material/Star';
 import GitHubIcon from '@mui/icons-material/GitHub';
@@ -11,16 +11,33 @@ import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Box from "@mui/material/Box";
+import ReleaseAccordion, {Release} from "@site/src/components/ConnectorAccordion/ReleaseAccordion";
 
-export interface IAccordionSummaryProps extends AccordionSummaryProps {
-  name: string;
+export class Connector {
+  nameWithOwner: string;
   description: string;
-  stargazerCount: number;
   url: string;
+  created_at: string;
+  stargazerCount: number;
+  forkCount: number;
+  releases: [Release];
 }
 
-export const Accordion = styled((props: AccordionProps) => (
-  <MuiAccordion disableGutters elevation={0}  {...props} />
+export interface IAccordionProps extends AccordionProps {
+  connector: Connector;
+}
+
+const ConnectorAccordion = styled((props: IAccordionProps) => (
+  <Accordion disableGutters elevation={0}  {...props}>
+    <AccordionSummary {...props.connector} />
+    <AccordionDetails>
+      {
+        props.connector.releases.length > 0
+          ? props.connector.releases.map(release => ( <ReleaseAccordion release={release} /> ))
+          : <Typography>No releases.</Typography>
+      }
+    </AccordionDetails>
+  </Accordion>
 ))(({ theme }) => ({
   border: `1px solid ${theme.palette.divider}`,
   '&:not(:last-child)': {
@@ -31,23 +48,22 @@ export const Accordion = styled((props: AccordionProps) => (
   },
 }));
 
-export const AccordionSummary = styled((props: IAccordionSummaryProps) => (
+const AccordionSummary = styled((connector: Connector) => (
   <MuiAccordionSummary
     expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />}
-    {...props}
   >
     <Stack direction='row' spacing={2} sx={{ width: '100%' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
         <Stack>
-          <Typography variant='body1'>{props.name}</Typography>
-          <Typography variant='body2' sx={{ color:'#6B7280' }}>{props.description}</Typography>
+          <Typography variant='body1'>{connector.nameWithOwner}</Typography>
+          <Typography variant='body2' sx={{ color:'#6B7280' }}>{connector.description}</Typography>
         </Stack>
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <IconButton size='small' href={props.url} target='_blank' onClick={stopPropagation}>
+        <IconButton size='small' href={connector.url} target='_blank' onClick={stopPropagation}>
           <GitHubIcon fontSize='inherit' />
         </IconButton>
-        <Chip icon={<StarIcon />} label={props.stargazerCount} size='small' />
+        <Chip icon={<StarIcon />} label={connector.stargazerCount} size='small' />
       </Box>
     </Stack>
   </MuiAccordionSummary>
@@ -61,13 +77,8 @@ export const AccordionSummary = styled((props: IAccordionSummaryProps) => (
   },
 }));
 
-export const AccordionDetails = styled((props: AccordionDetailsProps) => (
-  <MuiAccordionDetails {...props}>
-    {React.Children.count(props.children) > 0 ? props.children : <Typography>No releases.</Typography>}
-  </MuiAccordionDetails>
-))(({ theme }) => ({
-}));
-
 function stopPropagation(e) {
   e.stopPropagation();
 }
+
+export default ConnectorAccordion;

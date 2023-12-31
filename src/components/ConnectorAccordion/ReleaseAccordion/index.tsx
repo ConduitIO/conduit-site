@@ -50,7 +50,7 @@ function humanFileSize(size) {
   return (size / Math.pow(1024, i)).toFixed(2) + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
 }
 
-export const Accordion = styled((props: IAccordionProps) => (
+const ReleaseAccordion = styled((props: IAccordionProps) => (
   <MuiAccordion disableGutters {...props}>
     <MuiAccordionSummary>
       <Stack direction='row' spacing={1}>
@@ -109,3 +109,5 @@ export const Accordion = styled((props: IAccordionProps) => (
 function stopPropagation(e) {
   e.stopPropagation();
 }
+
+export default ReleaseAccordion;
