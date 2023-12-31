@@ -24,6 +24,7 @@
     "@mui/material": "^5.15.2",
     "autoprefixer": "^10.4.16",
     "clsx": "^2.0.0",
+    "fuse.js": "^7.0.0",
     "postcss": "^8.4.32",
     "prism-react-renderer": "^2.3.0",
     "rapidoc": "^9.3.4",

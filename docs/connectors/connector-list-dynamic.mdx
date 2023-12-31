@@ -4,25 +4,51 @@ sidebar_position: 8
 ---
 
 import ConnectorAccordion from '@site/src/components/ConnectorAccordion';
+import data from '@site/static/connectors.json';
+import Fuse from 'fuse.js';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+import SearchIcon from '@mui/icons-material/Search';
 
-import { useEffect, useState } from "react"
+import { useState } from "react";
 
-export const Connectors = ({url}) => {
-  const [connectors, setConnectors] = useState([])
-  const fetchConnectorData = () => {
-    fetch(url)
-      .then(response => {
-        return response.json()
-      })
-      .then(data => {
-        setConnectors(data)
-      })
-  }
-  useEffect(() => {
-    fetchConnectorData()
-  }, [])
+export const Connectors = () => {
+  const [connectors, setConnectors] = useState(data)
+  const searchConnector = (query) => {
+    const fuse = new Fuse(data, {
+      shouldSort: false,
+      threshold: 0,
+      ignoreLocation: true,
+      keys: ['nameWithOwner'],
+    });
+    const result = fuse.search(query);
+    const finalResult = [];
+    if (result.length) {
+      result.forEach((item) => {
+        finalResult.push(item.item);
+      });
+      setConnectors(finalResult);
+    } else {
+      setConnectors(data);
+    }
+  };
   return (
     <>
+      <TextField
+        fullWidth
+        margin='normal'
+        placeholder='Search by connector name ...'
+        onChange={(e) => {
+          searchConnector(e.target.value);
+        }}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchIcon />
+            </InputAdornment>
+          ),
+        }}
+      />
       {connectors.map(conn => (
         <ConnectorAccordion connector={conn} />
       ))}
@@ -30,4 +56,4 @@ export const Connectors = ({url}) => {
   )
 };
 
-<Connectors url="https://raw.githubusercontent.com/lovromazgon/connector-list/main/connectors.json" />
+<Connectors />
