@@ -5,7 +5,7 @@ import Wrapper from '@site/src/components/Wrapper';
 const navLinks = [
   {
     label: 'Connectors',
-    href: 'https://github.com/ConduitIO/conduit/blob/main/docs/connectors.md',
+    href: '/docs/connectors/connector-list',
   },
   {
     label: 'Documentation',

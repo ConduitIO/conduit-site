@@ -107,8 +107,7 @@ const config: Config = {
         {
           title: 'Resources',
           items: [
-            // TODO: change connectors list link
-            { label: 'Connectors', to: 'https://github.com/ConduitIO/conduit/blob/main/docs/connectors.md' },
+            { label: 'Connectors', to: '/docs/connectors/connector-list' },
             { label: 'Documentation', to: '/docs/introduction/what-is-conduit' },
             { label: 'Join our Discord', to: 'https://discord.meroxa.com' },
             { label: 'Issues', to: 'https://github.com/ConduitIO/conduit/issues' },
