@@ -10,8 +10,9 @@ import IconButton from '@mui/material/IconButton';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
 import Box from "@mui/material/Box";
-import ReleaseAccordion, {Release} from "@site/src/components/ConnectorAccordion/ReleaseAccordion";
+import ReleaseAccordion, {Release} from "@site/src/components/ConnectorList/ReleaseAccordion";
 
 export class Connector {
   nameWithOwner: string;
@@ -20,7 +21,7 @@ export class Connector {
   created_at: string;
   stargazerCount: number;
   forkCount: number;
-  releases: [Release];
+  releases: Release[];
 }
 
 export interface ConnectorAccordionProps extends AccordionProps {
@@ -58,18 +59,21 @@ export const ConnectorAccordionSummary = styled((props: ConnectorAccordionSummar
     {...props}
   >
     <Stack direction='row' spacing={2} sx={{ width: '100%' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-        <Stack>
-          <Typography variant='body1'>{props.connector.nameWithOwner}</Typography>
-          <Typography variant='body2' sx={{ color:'#6B7280' }}>{props.connector.description}</Typography>
-        </Stack>
-      </Box>
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Stack sx={{ width: '100%' }}>
+        <Typography variant='body1'>{props.connector.nameWithOwner}</Typography>
+        <Typography variant='body2' sx={{ color:'#6B7280' }}>{props.connector.description}</Typography>
+      </Stack>
+      <Stack direction='row' justifyContent='flex-end' sx={{ alignItems: 'center' }}>
+        {
+          props.connector.nameWithOwner.toLowerCase().startsWith('conduitio/') || props.connector.nameWithOwner.toLowerCase().startsWith('conduitio-labs/')
+            ? <Tooltip title="Created by the Conduit team"><img src='/img/conduit/conduit-ring.png' width='18'/></Tooltip>
+            : null
+        }
         <IconButton size='small' href={props.connector.url} target='_blank' onClick={stopPropagation}>
           <GitHubIcon fontSize='inherit' />
         </IconButton>
         <Chip icon={<StarIcon />} label={props.connector.stargazerCount} size='small' />
-      </Box>
+      </Stack>
     </Stack>
   </MuiAccordionSummary>
 ))(({ theme }) => ({

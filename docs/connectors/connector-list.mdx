@@ -3,77 +3,59 @@ title: "Connector List"
 sidebar_position: 2
 ---
 
-The Conduit team and our community of developers are always adding new connectors. Don't see the connector you need below? Help us prioritize by creating new issues, commenting, or leaving a `+1` on our [source](https://github.com/ConduitIO/conduit/issues?q=is%3Aissue+label%3Aconnector%3Asource+is%3Aopen)
-and [destination](https://github.com/ConduitIO/conduit/issues?q=is%3Aissue+label%3Aconnector%3Adestination+is%3Aopen) connector lists.
+The Conduit team and our community of developers are always adding new connectors.
+Don't see the connector you need below? Help us prioritize by creating new issues,
+commenting, or leaving a `+1` on our [source](https://github.com/ConduitIO/conduit/issues?q=is%3Aissue+label%3Aconnector%3Asource+is%3Aopen)
+and [destination](https://github.com/ConduitIO/conduit/issues?q=is%3Aissue+label%3Aconnector%3Adestination+is%3Aopen)
+connector lists.
 
 
 Don't have time to wait? You can get started [building your own](/docs/connectors/building) in no time.
 
-## Connectors
-
 ### Built-in vs Standalone
-A Conduit connector can run in one of two ways _built-in_ or _standalone_. Built-in refers to connectors that are compiled into the Conduit binary, while standalone refers to connectors that run separately from Conduit.
-You can learn more about standalone vs built-in connectors on our [Connector Behavior](/docs/connectors/behavior) page. A small set of connectors are built into Conduit by default.
-For those connectors no additional setup is required and you can start using them in Conduit right away.
 
-### Support Types
-
-- `Conduit` - These are connectors that are built by the Conduit team. Any issues or problems filed on those repos will be
-  responded to by the Conduit team.
-- `Community` - A community connector is one where a developer created a connector and they're the ones supporting it,
-  not the Conduit team.
-- `Legacy` - Some connectors are built using non-preferred methods. For example, Kafka Connect connectors can be used
-  on Conduit. This is considered a stop-gap measure until `conduit` or `community` connectors are built.
-
-At this time, Conduit does not have any commercially supported connectors.
+A Conduit connector can run in one of two ways: _built-in_ or _standalone_.
+Built-in refers to connectors that are compiled into the Conduit binary, while
+standalone refers to connectors that run separately from Conduit. You can learn
+more about standalone vs built-in connectors on our
+[Connector Behavior](/docs/connectors/behavior) page. A small set of connectors
+are built into Conduit by default. For those connectors no additional setup is
+required and you can start using them in Conduit right away.
 
 ### Connector Types
 
-Source means the connector has the ability to get data from an upstream data store. Destination means the connector can
-write to a downstream data store.
+Source means the connector has the ability to get data from an upstream data
+store. Destination means the connector can write to a downstream data store.
 
-### Current Connectors
+import ConnectorList from '@site/src/components/ConnectorList';
+import { useEffect, useState } from "react"
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
-| Connector | Source | Destination | Built-in | Support |
-|-----------|-------|----| ----------| -------------|
-| [Airtable](https://github.com/conduitio-labs/conduit-connector-airtable) | [WIP](https://github.com/conduitio-labs/conduit-connector-airtable/pull/5) | | | Community |
-| [Algolia](https://github.com/conduitio-labs/conduit-connector-algolia) | |✅ | | Conduit |
-| [Amazon Redshift](https://github.com/conduitio-labs/conduit-connector-redshift) | [WIP](https://github.com/conduitio-labs/conduit-connector-redshift/pull/18) | [WIP](https://github.com/conduitio-labs/conduit-connector-redshift/pull/17) | | Community |
-| [Azure Cosmos DB](https://github.com/conduitio-labs/conduit-connector-cosmos-nosql) |[WIP](https://github.com/conduitio-labs/conduit-connector-cosmos-nosql/tree/source) | [WIP](https://github.com/conduitio-labs/conduit-connector-cosmos-nosql/tree/destination) | | Community |
-| [Azure Storage](https://github.com/conduitio-labs/conduit-connector-azure-storage) |✅ | | | Community |
-| [BigQuery](https://github.com/conduitio-labs/conduit-connector-bigquery) |✅ | | | Community |
-| [Cassandra](https://github.com/conduitio-labs/conduit-connector-cassandra) ||✅| | Community|
-| [Chaos](https://github.com/conduitio-labs/conduit-connector-chaos) |✅|✅| | Community|
-| [ClickHouse](https://github.com/conduitio-labs/conduit-connector-clickhouse) |✅|✅| | Community|
-| [Databricks](https://github.com/conduitio-labs/conduit-connector-databricks) | |✅| | Community|
-| [DB2](https://github.com/conduitio-labs/conduit-connector-db2) |✅|✅| | Community |
-| [Elasticsearch](https://github.com/conduitio-labs/conduit-connector-elasticsearch) |✅ |✅ | | Community |
-| [File](https://github.com/ConduitIO/conduit-connector-file) |✅ |✅ | ✅ | Conduit |
-| [Firebolt](https://github.com/conduitio-labs/conduit-connector-firebolt) |✅ |✅| | Community |
-| [GCP PubSub](https://github.com/conduitio-labs/conduit-connector-gcp-pubsub) |✅ |✅| | Community |
-| [Google Cloud Storage](https://github.com/conduitio-labs/conduit-connector-google-cloudstorage) |✅ | | | Community |
-| [Google Sheets](https://github.com/conduitio-labs/conduit-connector-google-sheets) |✅ | | | Community |
-| [HubSpot](https://github.com/conduitio-labs/conduit-connector-hubspot) | [WIP](https://github.com/conduitio-labs/conduit-connector-hubspot/pull/20) | [WIP](https://github.com/conduitio-labs/conduit-connector-hubspot/pull/21) | | Community |
-| [Kafka](https://github.com/ConduitIO/conduit-connector-kafka) |✅ |✅ | ✅ | Conduit |
-| [Kafka Connect Wrapper](https://github.com/ConduitIO/conduit-kafka-connect-wrapper) | ✅ | ✅ | | Legacy |
-| [Log](https://github.com/ConduitIO/conduit-connector-log) | | ✅ | ✅ | Conduit |
-| [Marketo](https://github.com/conduitio-labs/conduit-connector-marketo) |✅ | | | Community |
-| [Materialize](https://github.com/conduitio-labs/conduit-connector-materialize) | |✅ | | Community |
-| [MongoDB](https://github.com/conduitio-labs/conduit-connector-mongo) |✅ |✅ | | Community |
-| [NATS Jetstream](https://github.com/conduitio-labs/conduit-connector-nats-jetstream) |✅ |✅ | | Community |
-| [NATS PubSub](https://github.com/conduitio-labs/conduit-connector-nats-pubsub) |✅|✅ | | Community |
-| [Neo4j](https://github.com/conduitio-labs/conduit-connector-neo4j) | [WIP](https://github.com/conduitio-labs/conduit-connector-neo4j/pull/25)| [WIP](https://github.com/conduitio-labs/conduit-connector-neo4j/pull/24) | | Community |
-| [Notion](https://github.com/conduitio-labs/conduit-connector-notion) | ✅ |  | | Community |
-| [Oracle DB](https://github.com/conduitio-labs/conduit-connector-oracle) |✅|✅| | Community |
-| [Postgres](https://github.com/ConduitIO/conduit-connector-postgres)   |✅ |✅ | ✅ | Conduit |
-| [Random Generator](https://github.com/ConduitIO/conduit-connector-generator) |✅ | | ✅ | Conduit |
-| [Redis](https://github.com/conduitio-labs/conduit-connector-redis) |✅|✅ | | Community |
-| [S3](https://github.com/ConduitIO/conduit-connector-s3) |✅ |✅ | ✅ | Conduit |
-| [SAP Hana](https://github.com/conduitio-labs/conduit-connector-sap-hana) |✅ | [WIP](https://github.com/conduitio-labs/conduit-connector-sap-hana/pull/18) | | Conduit |
-| [Salesforce](https://github.com/conduitio-labs/conduit-connector-salesforce) | ✅ | | | Community |
-| [Snowflake](https://github.com/conduitio-labs/conduit-connector-snowflake) |✅ | | | Community |
-| [Stripe](https://github.com/conduitio-labs/conduit-connector-stripe) |✅ | | | Community |
-| [SQL Server](https://github.com/conduitio-labs/conduit-connector-sql-server)| [WIP](https://github.com/conduitio-labs/conduit-connector-sql-server/pull/18) |✅ | | Community |
-| [Weather](https://github.com/conduitio-labs/conduit-connector-weather) |✅ | | | Community |
-| [Vitess](https://github.com/conduitio-labs/conduit-connector-vitess) |✅ |✅ | | Community |
-| [Zendesk](https://github.com/conduitio-labs/conduit-connector-zendesk) |✅ |✅| | Community |
+export const Connectors = ({url}) => {
+  const [connectors, setConnectors] = useState([])
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetch(url)
+      .then(response => response.json() )
+      .then(data => {
+        setConnectors(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return <p>Loading list...</p>;
+  }
+  if (error) {
+    return <p>Error: {error.message}</p>;
+  }
+  return <ConnectorList connectors={connectors} />
+}
+
+<Connectors url={useBaseUrl('/connectors.json')} />

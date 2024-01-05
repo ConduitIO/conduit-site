@@ -26,7 +26,7 @@ export class Release {
   prerelease: boolean;
   published_at: string;
   html_url: string;
-  assets: [Asset];
+  assets: Asset[];
 }
 
 export class Asset {
