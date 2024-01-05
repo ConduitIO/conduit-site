@@ -120,7 +120,7 @@ class ConnectorList extends React.Component<{connectors: Connector[]}, Connector
           <Stack direction='row'>
             <Switch defaultChecked onChange={(e) => { this.onHideWithoutRelease(e.target.checked) }} />
             <Box display="flex" alignItems="center">
-              Hide connectors without a release
+              Only show connectors with a release
             </Box>
           </Stack>
           <Stack direction='row'>
