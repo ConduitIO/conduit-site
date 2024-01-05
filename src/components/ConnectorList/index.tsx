@@ -3,7 +3,10 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
 import Switch from '@mui/material/Switch';
+import Stack from '@mui/material/Stack';
+import Box from '@mui/system/Box';
 import React from "react";
+import Typography from "@mui/material/Typography";
 
 class Filter {
   nameWithOwnerQuery: string;
@@ -113,14 +116,20 @@ class ConnectorList extends React.Component<{connectors: Connector[]}, Connector
     const connectors = this.filterConnectors(this.state.filter, this.state.allConnectors);
     return (
       <>
-        <Switch
-          defaultChecked
-          onChange={(e) => { this.onHideWithoutRelease(e.target.checked) }}
-        /> Hide connectors without a release
-        <Switch
-          defaultChecked
-          onChange={(e) => { this.onHideCommunity(e.target.checked) }}
-        /> Only show connectors from the Conduit team
+        <Stack sx={{ border: '1px solid rgba(0,0,0,0.23)', borderRadius: '4px', p: 1 }}>
+          <Stack direction='row'>
+            <Switch defaultChecked onChange={(e) => { this.onHideWithoutRelease(e.target.checked) }} />
+            <Box display="flex" alignItems="center">
+              Hide connectors without a release
+            </Box>
+          </Stack>
+          <Stack direction='row'>
+            <Switch defaultChecked onChange={(e) => { this.onHideCommunity(e.target.checked) }} />
+            <Box display="flex" alignItems="center">
+              Only show connectors from the Conduit team
+            </Box>
+          </Stack>
+        </Stack>
         <TextField
           fullWidth
           margin='normal'
@@ -135,7 +144,7 @@ class ConnectorList extends React.Component<{connectors: Connector[]}, Connector
           }}
         />
         {connectors.map(conn => (
-          <ConnectorAccordion connector={conn} children={''} />
+          <ConnectorAccordion key={conn.url} connector={conn} children={''} />
         ))}
       </>
     );

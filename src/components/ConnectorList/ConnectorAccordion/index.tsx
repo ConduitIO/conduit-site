@@ -34,7 +34,9 @@ const ConnectorAccordion = styled((props: ConnectorAccordionProps) => (
     <MuiAccordionDetails>
       {
         props.connector.releases.length > 0
-          ? props.connector.releases.map((release: Release, index: number) => ( <ReleaseAccordion release={release} defaultExpanded={index==0}  children=''/> ))
+          ? props.connector.releases.map((release: Release, index: number) => (
+            <ReleaseAccordion key={release.tag_name} release={release} defaultExpanded={index==0}  children=''/>
+          ))
           : <Typography>No releases.</Typography>
       }
     </MuiAccordionDetails>

@@ -86,7 +86,7 @@ const ReleaseAccordion = styled((props: IAccordionProps) => (
           </TableBody>
         </Table>
       </TableContainer>
-      <Typography variant='body2'>
+      <Typography variant='body2' component='span'>
         <Markdown>{props.release.body}</Markdown>
       </Typography>
     </MuiAccordionDetails>
