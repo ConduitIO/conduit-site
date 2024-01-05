@@ -65,7 +65,7 @@ export const ConnectorAccordionSummary = styled((props: ConnectorAccordionSummar
         <Typography variant='body1'>{props.connector.nameWithOwner}</Typography>
         <Typography variant='body2' className='color-6b7280' >{props.connector.description}</Typography>
       </Stack>
-      <Stack className='align-items-center' direction='row' justifyContent='flex-end'>
+      <Stack className='align-items-center' direction='row' justifyContent='flex-end' spacing={1} >
         {
           props.connector.nameWithOwner.toLowerCase().startsWith('conduitio/') || props.connector.nameWithOwner.toLowerCase().startsWith('conduitio-labs/')
             ? <Tooltip title="Created by the Conduit team"><img src='/img/conduit/conduit-ring.png' width='18'/></Tooltip>
