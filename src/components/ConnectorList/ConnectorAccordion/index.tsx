@@ -55,15 +55,15 @@ export interface ConnectorAccordionSummaryProps extends AccordionSummaryProps {
 
 export const ConnectorAccordionSummary = styled((props: ConnectorAccordionSummaryProps) => (
   <MuiAccordionSummary
-    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />}
+    expandIcon={<ArrowForwardIosSharpIcon />}
     {...props}
   >
-    <Stack direction='row' spacing={2} sx={{ width: '100%' }}>
-      <Stack sx={{ width: '100%' }}>
+    <Stack className='width-100pct' direction='row' spacing={2} >
+      <Stack className='width-100pct' >
         <Typography variant='body1'>{props.connector.nameWithOwner}</Typography>
-        <Typography variant='body2' sx={{ color:'#6B7280' }}>{props.connector.description}</Typography>
+        <Typography variant='body2' className='color-6b7280' >{props.connector.description}</Typography>
       </Stack>
-      <Stack direction='row' justifyContent='flex-end' sx={{ alignItems: 'center' }}>
+      <Stack className='align-items-center' direction='row' justifyContent='flex-end'>
         {
           props.connector.nameWithOwner.toLowerCase().startsWith('conduitio/') || props.connector.nameWithOwner.toLowerCase().startsWith('conduitio-labs/')
             ? <Tooltip title="Created by the Conduit team"><img src='/img/conduit/conduit-ring.png' width='18'/></Tooltip>
@@ -84,6 +84,18 @@ export const ConnectorAccordionSummary = styled((props: ConnectorAccordionSummar
   '& .MuiAccordionSummary-content': {
     marginLeft: theme.spacing(1),
   },
+  '& .MuiAccordionSummary-expandIconWrapper .MuiSvgIcon-root': {
+    fontSize: '0.9rem',
+  },
+  '& .width-100pct': {
+    width: '100%',
+  },
+  '& .align-items-center': {
+    alignItems: 'center',
+  },
+  '& .color-6b7280': {
+    color:'#6B7280',
+  }
 }));
 
 function stopPropagation(e) {

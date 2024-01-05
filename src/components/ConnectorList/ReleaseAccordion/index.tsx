@@ -54,8 +54,8 @@ const ReleaseAccordion = styled((props: IAccordionProps) => (
   <MuiAccordion disableGutters {...props}>
     <MuiAccordionSummary>
       <Stack direction='row' spacing={1}>
-        <Chip label={props.release.tag_name} size='small' sx={{ display: 'flex', alignItems: 'center', height:'100%'}} />
-        <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center'}}>{Intl.DateTimeFormat('en-US', {dateStyle: 'medium'}).format(new Date(props.release.published_at))}</Typography>
+        <Chip label={props.release.tag_name} size='small' className='header-content' />
+        <Typography variant="body2" className='header-content'>{Intl.DateTimeFormat('en-US', {dateStyle: 'medium'}).format(new Date(props.release.published_at))}</Typography>
         <IconButton size='small' href={props.release.html_url} target='_blank' onClick={stopPropagation}>
           <OpenInNewIcon fontSize='inherit' />
         </IconButton>
@@ -65,9 +65,7 @@ const ReleaseAccordion = styled((props: IAccordionProps) => (
       <TableContainer>
         <Table size="small">
           <TableHead>
-            <TableRow
-              sx={{ '& td, & th': {border: 0} }}
-            >
+            <TableRow>
               <TableCell>File</TableCell>
               <TableCell>OS</TableCell>
               <TableCell>Arch</TableCell>
@@ -76,11 +74,8 @@ const ReleaseAccordion = styled((props: IAccordionProps) => (
           </TableHead>
           <TableBody>
             {props.release.assets.map(asset => (
-              <TableRow
-                key={asset.name}
-                sx={{ '& td, & th': {border: 0} }}
-              >
-                <TableCell component="th" scope="row">
+              <TableRow key={asset.name} >
+                <TableCell>
                   <a href={asset.browser_download_url}>{asset.name}</a>
                 </TableCell>
                 <TableCell>{asset.os}</TableCell>
@@ -104,6 +99,14 @@ const ReleaseAccordion = styled((props: IAccordionProps) => (
   '&::before': {
     display: 'none',
   },
+  '& td, & th': {
+    border: 0,
+  },
+  '& .header-content': {
+    display: 'flex',
+    alignItems: 'center',
+    height:'100%',
+  }
 }));
 
 function stopPropagation(e) {
