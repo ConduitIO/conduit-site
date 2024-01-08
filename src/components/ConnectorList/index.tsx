@@ -7,24 +7,28 @@ import Stack from '@mui/material/Stack';
 import Box from '@mui/system/Box';
 import React from "react";
 import Typography from "@mui/material/Typography";
+import InfoIcon from '@mui/icons-material/Info';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import BorderedSection from "@site/src/components/BorderedSection";
 
 class Filter {
   nameWithOwnerQuery: string;
-  hideWithoutRelease: boolean;
-  hideCommunity: boolean;
+  showWithoutRelease: boolean;
+  showCommunity: boolean;
 
-  constructor(nameWithOwnerQuery: string='', hideWithoutRelease: boolean=true, hideCommunity: boolean=true) {
+  constructor(nameWithOwnerQuery: string='', showWithoutRelease: boolean=false, showCommunity: boolean=false) {
     this.nameWithOwnerQuery = nameWithOwnerQuery;
-    this.hideWithoutRelease = hideWithoutRelease;
-    this.hideCommunity = hideCommunity;
+    this.showWithoutRelease = showWithoutRelease;
+    this.showCommunity = showCommunity;
   }
 
   matches(connector: Connector): boolean {
-    if (this.hideWithoutRelease &&
+    if (!this.showWithoutRelease &&
       (!connector.releases || connector.releases.length == 0)) {
       return false;
     }
-    if (this.hideCommunity &&
+    if (!this.showCommunity &&
       !connector.nameWithOwner.toLowerCase().startsWith('conduitio/') &&
       !connector.nameWithOwner.toLowerCase().startsWith('conduitio-labs/')) {
       return false;
@@ -36,8 +40,8 @@ class Filter {
     return true;
   }
 
-  isEmpty(): boolean {
-    return !this.nameWithOwnerQuery && !this.hideWithoutRelease && !this.hideCommunity;
+  showAll(): boolean {
+    return !this.nameWithOwnerQuery && this.showWithoutRelease && this.showCommunity;
   }
 }
 
@@ -86,20 +90,20 @@ class ConnectorList extends React.Component<{connectors: Connector[]}, Connector
       return {filter: state.filter};
     });
   };
-  onHideWithoutRelease(hide: boolean) {
+  onHideWithoutRelease(show: boolean) {
     this.setState((state) => {
-      state.filter.hideWithoutRelease = hide;
+      state.filter.showWithoutRelease = show;
       return {filter: state.filter};
     });
   };
-  onHideCommunity(hide: boolean) {
+  onHideCommunity(show: boolean) {
     this.setState((state) => {
-      state.filter.hideCommunity = hide;
+      state.filter.showCommunity = show;
       return {filter: state.filter};
     });
   };
   filterConnectors(filter: Filter, connectors: Connector[]): Connector[] {
-    if (filter.isEmpty()) {
+    if (filter.showAll()) {
       return connectors;
     }
 
@@ -116,20 +120,32 @@ class ConnectorList extends React.Component<{connectors: Connector[]}, Connector
     const connectors = this.filterConnectors(this.state.filter, this.state.allConnectors);
     return (
       <>
-        <Stack sx={{ border: '1px solid rgba(0,0,0,0.23)', borderRadius: '4px', p: 1 }}>
-          <Stack direction='row'>
-            <Switch defaultChecked onChange={(e) => { this.onHideWithoutRelease(e.target.checked) }} />
-            <Box display="flex" alignItems="center">
-              Only show connectors with a release
-            </Box>
+        <BorderedSection title="Filters">
+          <Stack>
+            <Stack direction='row'>
+              <Switch onChange={(e) => { this.onHideWithoutRelease(e.target.checked) }} />
+              <Box display="flex" alignItems="center">
+                <Typography>Show connectors without a release</Typography>
+                <Tooltip sx={{ ml: 1 }} placement="right" title="Some connectors are still being implemented and are not released yet. You can however try to build them yourself.">
+                  <IconButton size='small'>
+                    <InfoIcon fontSize='inherit' />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            </Stack>
+            <Stack direction='row'>
+              <Switch onChange={(e) => { this.onHideCommunity(e.target.checked) }} />
+              <Box display="flex" alignItems="center">
+                <Typography>Show community connectors</Typography>
+                <Tooltip sx={{ ml: 1 }} placement="right" title="This will show connectors created by anyone, not only the Conduit team. We do not test or review those connectors and can not vouch for their quality.">
+                  <IconButton size='small'>
+                    <InfoIcon fontSize='inherit' />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            </Stack>
           </Stack>
-          <Stack direction='row'>
-            <Switch defaultChecked onChange={(e) => { this.onHideCommunity(e.target.checked) }} />
-            <Box display="flex" alignItems="center">
-              Only show connectors from the Conduit team
-            </Box>
-          </Stack>
-        </Stack>
+        </BorderedSection>
         <TextField
           fullWidth
           margin='normal'
@@ -144,7 +160,7 @@ class ConnectorList extends React.Component<{connectors: Connector[]}, Connector
           }}
         />
         {connectors.map(conn => (
-          <ConnectorAccordion key={conn.url} connector={conn} children={''} />
+          <ConnectorAccordion key={conn.url} connector={conn} />
         ))}
       </>
     );

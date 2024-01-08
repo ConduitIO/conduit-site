@@ -11,7 +11,6 @@ import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
-import Box from "@mui/material/Box";
 import ReleaseAccordion, {Release} from "@site/src/components/ConnectorList/ReleaseAccordion";
 
 export class Connector {
