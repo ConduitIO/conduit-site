@@ -125,7 +125,7 @@ class ConnectorList extends React.Component<{connectors: Connector[]}, Connector
             <Stack direction='row'>
               <Switch onChange={(e) => { this.onHideWithoutRelease(e.target.checked) }} />
               <Box display="flex" alignItems="center">
-                <Typography>Show connectors without a release</Typography>
+                <Typography>Show unreleased connectors</Typography>
                 <Tooltip sx={{ ml: 1 }} placement="right" title="Some connectors are still being implemented and are not released yet. You can however try to build them yourself.">
                   <IconButton size='small'>
                     <InfoIcon fontSize='inherit' />
