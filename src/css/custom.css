@@ -1,20 +1,17 @@
-/* stylelint-disable docusaurus/copyright-header */
 /**
  * Any CSS included here will be global. The classic template
  * bundles Infima by default. Infima is a CSS framework designed to
  * work well for content-centric websites.
  */
-
-/* You can override the default Infima variables here. */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
-    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, system-ui,
-        'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif,
-        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-        'Noto Color Emoji';
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, system-ui,
+  'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif,
+  'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+  'Noto Color Emoji';
 }
 
 :root {
@@ -27,233 +24,30 @@ body {
   --ifm-color-primary-lightest: #157e90;
   --base-size: 1rem;
   --flow-space: 1.5rem;
+  --docusaurus-announcement-bar-height: 50px;
 }
 
-html[data-theme='dark'] {
-    --ifm-color-primary: #20bed9;
-    --ifm-color-primary-dark: #1dabc3;
-    --ifm-color-primary-darker: #1ba1b8;
-    --ifm-color-primary-darkest: #168598;
-    --ifm-color-primary-light: #31c7e1;
-    --ifm-color-primary-lighter: #3ccae2;
-    --ifm-color-primary-lightest: #5dd3e7;
-    /* any other colors you wish to overwrite */
-}
-
-.navbar__logo {
-    width: 102px;
-}
-
-.docusaurus-highlight-code-line {
-    background-color: rgb(72, 77, 91);
-    display: block;
-    margin: 0 calc(-1 * var(--ifm-pre-padding));
-    padding: 0 var(--ifm-pre-padding);
-}
-
-was-this-helpful {
-    --was-this-helpful-main-color: rgb(28, 30, 33);
-    --was-this-helpful-font-family: 'Inter', sans-serif;
-}
-
-html[data-theme='dark'] was-this-helpful {
-    --was-this-helpful-main-color: white;
-}
-
-a > span > svg {
-    display: inline;
-    margin-left: 0.3em;
-    vertical-align: baseline;
-}
-
-a {
-    color: var(--ifm-link-color);
-    text-decoration: var(--ifm-link-decoration);
-    transition: color var(--ifm-transition-fast)
-        var(--ifm-transition-timing-default);
-}
-
-.prose pre {
-    margin-top: 0;
-    margin-bottom: 0;
-}
-
-.prose .avatar__photo img {
-    margin-top: 0;
-}
-
-.prose :where(code):not(:where([class~=not-prose] *)):before {
-    display:none;
-}
-
-.prose :where(code):not(:where([class~=not-prose] *)):after {
-    display:none;
-}
-
-/* current connector table styles */
-.prose #current-connectors + table :where(tbody td:first-child):not(:where([class~=not-prose] *)) {
-  padding-left: 8px;
-}
-
-.prose #current-connectors + table :where(tbody td:last-child):not(:where([class~=not-prose] *)) {
-  padding-right: 8px;
-}
-
-#current-connectors + table {
-  text-align: center;
-}
-
-/* Composition Classes */
-.box {
-  padding: var(--base-size);
-}
-
-.box[data-variant='canary'] {
-  background-color: var(--color-canary-60);
-  border-radius: var(--base-size);
-  color: var(--color-dark);
-  position: relative;
-  padding-bottom: 48px;
-}
-
-.box[data-variant='canary'] .button[data-variant='canary'] {
-  position: absolute;
-  bottom: var(--base-size);
-  left: var(--base-size);
-}
-
-.wrapper {
-  padding-left: var(--flow-space);
-  padding-right: var(--flow-space);
-  max-width: 80rem;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.stack > * + * {
-  margin-top: var(--flow-space) !important;
-}
-
-.split-pair {
-  margin: calc(var(--flow-space) * -1);
-}
-
-.split-pair > * {
-  margin: var(--flow-space);
-}
-
-@media screen and (min-width: 40em) {
-  .split-pair {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .split-pair > * {
-    flex-basis: 50%;
-  }
-
-  .split-pair[data-align-start] {
-    align-items: start;
-  }
-
-  .split-pair[data-skewed][data-reversed] > :first-child {
-    flex-basis: 60%;
-  }
-
-  .split-pair[data-skewed] > :first-child {
-    flex-basis: 40%;
-  }
-
-  .split-pair[data-skewed][data-reversed] > :nth-child(2) {
-    flex-basis: 40%;
-  }
-
-  .split-pair[data-skewed] > :nth-child(2) {
-    flex-basis: 60%;
-  }
-
-  .split-pair[data-reversed] {
-    flex-direction: row-reverse;
-  }
-}
-
-.cluster {
-  overflow: hidden;
-  --flow-space: 1.5rem;
-}
-
-.cluster > * {
-  display: flex;
-  flex-wrap: wrap;
-  margin: calc(var(--flow-space) / 2 * -1);
-}
-
-.cluster > * > * {
-  margin: calc(var(--flow-space) / 2);
-}
-
-.switcher {
-  --threshold: 40rem;
-  --flow-space: 1.5rem;
-  overflow: hidden;
-}
-
-.switcher > * {
-  display: flex;
-  flex-wrap: wrap;
-  margin: calc(var(--flow-space) / 2 * -1);
-}
-
-.switcher > * > * {
-  flex-grow: 1;
-  flex-basis: calc((var(--threshold) - (100% - var(--flow-space))) * 999);
-  margin: calc(var(--flow-space) / 2);
-}
-
-.center {
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center;
-}
-
-.bg-transparent-200 {
-   --tw-bg-opacity: .2;
-  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-}
-
-.announcement-banner,
-#announcement-banner {
-  background-color: #E3C9C3; /* var(--color-dark); */
-  color: var(--color-slate-20);
-}
-
-.announcement-banner .content {
-  padding: .75rem;
+div[class^='announcementBar_'] {
+  font-size: 18px;
+  background-color: #e3c9c3;
   font-weight: bold;
+  height: 50px;
 }
 
-.announcement-banner .cta {
-  color: #6E2312;
-  font-weight: extra-bold;
-  text-decoration: underline;
+div[class^='announcementBar_'] .cta {
+  color: #6e2312;
 }
 
-@media screen and (min-width: 45em) {
-  .announcement-banner .content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .announcement-banner .cta {
-    display: flex;
-    align-items: center;
-  }
+/* Home page styles */
+html.home .navbar {
+  display: none;
 }
-
-.announcement-banner .content > * + * {
-  border-left: 1px solid var(--color-slate-20);
-  margin-left: .5rem;
-  padding-left: .5rem;
+html.home .footer {
+  background-color: white;
+}
+html.home #footer-logo {
+  content:url("/img/conduit/conduit-footer-logo-dark.svg");
+}
+html.home div[class^='announcementBar_'] {
+  border-bottom: 0;
 }

@@ -4,7 +4,7 @@ slug: conduit-kafka-to-postgres
 author: 'Dylan Lott'
 author_title: Conduit Engineer
 tag: ['File Connector']
-image: /images/guides/kafka-to-postgres.png
+image: /img/guides/kafka-to-postgres.png
 description: Learn how to move data between files with Conduit.
 keywords: ['data', 'file', 'conduit', 'move', 'copy']
 ---
@@ -13,7 +13,7 @@ keywords: ['data', 'file', 'conduit', 'move', 'copy']
 
 In this guide, we will build a data pipline that moves data between a Kafka topic and a Postgres table. We will also use Docker to run local instances of [Apache Kafka](https://kafka.apache.org/) and [Postgres](https://www.postgresql.org/).
 
-![Kafka to Postgres Conduit Pipeline](/images/guides/kafka-to-postgres.png)
+![Kafka to Postgres Conduit Pipeline](/img/guides/kafka-to-postgres.png)
 
 <!--truncate-->
 
@@ -128,7 +128,7 @@ We will create our Kafka source and then a Postgres destination, then we can hit
 ### Create your Kafka source
 
 <div style={{ textAlign: "center" }}>
-  <img alt="Kafka Configuration" className="rounded-lg" style={{ maxWidth: "400px", margin: 'auto' }} src="/images/guides/conduit-kafka-to-postgres/kafka-configuration.png" />
+  <img alt="Kafka Configuration" className="rounded-lg" style={{ maxWidth: "400px", margin: 'auto' }} src="/img/guides/conduit-kafka-to-postgres/kafka-configuration.png" />
 </div>
 
 Make sure to set your servers and topic correctly. We have entered in the defaults from our docker-compose files.
@@ -136,7 +136,7 @@ Make sure to set your servers and topic correctly. We have entered in the defaul
 ### Create your Postgres destination
 
 <div style={{ textAlign: "center" }}>
-  <img alt="Postgres Configuration" className="rounded-lg" style={{ maxWidth: "400px", margin: 'auto' }} src="/images/guides/conduit-kafka-to-postgres/postgres-configuration.png" />
+  <img alt="Postgres Configuration" className="rounded-lg" style={{ maxWidth: "400px", margin: 'auto' }} src="/img/guides/conduit-kafka-to-postgres/postgres-configuration.png" />
 </div>
 
 Make sure to double check your PostgreSQL URL. 😅 
@@ -148,7 +148,7 @@ Now, it's time to start your pipeline.
 To start, click the pipeline status drop-down in the top right and select "Start".
 
 <div style={{ textAlign: "center" }}>
-  <img alt="Start Conduit Pipeline" className="rounded-lg" style={{ maxWidth: "500px", margin: 'auto' }} src="/images/guides/start-pipeline.png" />
+  <img alt="Start Conduit Pipeline" className="rounded-lg" style={{ maxWidth: "500px", margin: 'auto' }} src="/img/guides/start-pipeline.png" />
 </div>
 
 ### Producing Messages to Kafka 

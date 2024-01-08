@@ -1,0 +1,17 @@
+.switcher {
+    --threshold: 40rem;
+    --flow-space: 1.5rem;
+    overflow: hidden;
+}
+
+.switcher > * {
+    display: flex;
+    flex-wrap: wrap;
+    margin: calc(var(--flow-space) / 2 * -1);
+}
+
+.switcher > * > * {
+    flex-grow: 1;
+    flex-basis: calc((var(--threshold) - (100% - var(--flow-space))) * 999);
+    margin: calc(var(--flow-space) / 2);
+}
