@@ -1,0 +1,53 @@
+:root {
+  --borderedSectionBorderColor: rgba(0,0,0,0.23);
+  --borderedSectionTitleColor: rgba(0, 0, 0, 0.54);
+}
+
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+
+  border-left: 1px solid var(--borderedSectionBorderColor);
+  border-bottom: 1px solid var(--borderedSectionBorderColor);
+  border-right: 1px solid var(--borderedSectionBorderColor);
+  border-radius: 4px;
+}
+
+.mainContainer .childrenContainer {
+  padding: 0.1em 1em 1em 1em;
+}
+
+.mainContainer .header {
+  display: flex;
+  flex-direction: row;
+  width: 100% !important;
+}
+
+.mainContainer .header .headerBorderBefore {
+  border-top: 1px solid var(--borderedSectionBorderColor);
+  width: 1em;
+  border-top-left-radius: 4px;
+}
+
+.mainContainer .header .headerTitle {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  color: var(--borderedSectionTitleColor);
+  gap: 0.25em;
+  width: fit-content;
+  height: 2em;
+  margin: -1em 0.5em 0 0.5em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 1em;
+}
+
+.mainContainer .header .headerBorderAfter {
+  border-top: 1px solid var(--borderedSectionBorderColor);
+  width: 1em;
+  flex-grow: 2;
+  border-top-right-radius: 4px;
+}
