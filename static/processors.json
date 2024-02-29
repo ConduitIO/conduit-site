@@ -23,26 +23,26 @@
     },
     "examples": [
       {
-        "description": "",
+        "description": "Modifying metadata and payload",
         "config": {
-          "script": "function process(records) {\n\t\t\t\t\trecords[0].Metadata[\"processed\"] = \"true\";\n\t\t\t\t\tlet existing = String.fromCharCode.apply(String, records[0].Payload.After);\n\t\t\t\t\trecords[0].Payload.After = RawData(\"hello, \" + existing);\n\t\t\t\t\treturn records;\n\t\t\t\t}",
+          "script": "function process(records) {\n\trecords[0].Metadata[\"processed\"] = \"true\";\n\tlet existing = String.fromCharCode.apply(String, records[0].Payload.After);\n\trecords[0].Payload.After = RawData(\"hello, \" + existing);\n\treturn records;\n}",
           "script.path": ""
         },
         "have": {
           "position": null,
-          "operation": "Operation(0)",
+          "operation": "create",
           "metadata": {
             "existing-key": "existing-value"
           },
           "key": null,
           "payload": {
             "before": null,
-            "after": "d29ybGQ="
+            "after": "world"
           }
         },
         "want": {
           "position": null,
-          "operation": "Operation(0)",
+          "operation": "create",
           "metadata": {
             "existing-key": "existing-value",
             "processed": "true"
@@ -50,7 +50,7 @@
           "key": null,
           "payload": {
             "before": null,
-            "after": "aGVsbG8sIHdvcmxk"
+            "after": "hello, world"
           }
         }
       }

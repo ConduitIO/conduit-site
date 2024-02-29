@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
 
+import ReactDiffViewer from 'react-diff-viewer';
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
 import MuiAccordionSummary, { AccordionSummaryProps } from "@mui/material/AccordionSummary";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
@@ -10,6 +11,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/system/Box';
 
 import Table from '@mui/material/Table';
+import TableContainer from '@mui/material/TableContainer';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
@@ -39,7 +41,7 @@ export class Parameter {
 
 export class Example {
   description: string;
-  config: string;
+  config: any;
   have: any;
   want: any;
 }
@@ -74,7 +76,7 @@ const ProcessorAccordion = styled((props: ProcessorAccordionProps) => (
                 <code>{name}</code>
               </TableCell>
               <TableCell>
-                <Markdown className='parameter-description'>{props.processor.specification.parameters[name].description}</Markdown>
+                <Markdown className='parameter-value'>{props.processor.specification.parameters[name].description}</Markdown>
               </TableCell>
             </TableRow>
           ))}
@@ -83,6 +85,46 @@ const ProcessorAccordion = styled((props: ProcessorAccordionProps) => (
       <Typography variant='h5' component='span'>
         Examples
       </Typography>
+      {props.processor.examples.map((example, index) => (
+        <Box sx={{ width: '100%', overflow: 'hidden' }}>
+          <TableContainer>
+            <Table>
+              <TableBody>
+                {Object.keys(example.config).map(name => (
+                  <TableRow key={name}>
+                    <TableCell component="th" scope="row">
+                      <code>{name}</code>
+                    </TableCell>
+                    <TableCell>
+                      <Markdown className='parameter-value'>{"```\n" + example.config[name] + "\n```"}</Markdown>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <Typography variant='h6' component='span'>
+            {example.description}
+          </Typography>
+          <Box className='diff-viewer' sx={{ width: '100%', overflow: 'hidden' }}>
+            <ReactDiffViewer
+              styles={{
+                diffContainer: {
+                  overflowX: 'auto',
+                  overflowY: 'hidden',
+                },
+              }}
+              leftTitle={'Record before'}
+              rightTitle={'Record after'}
+              oldValue={JSON.stringify(example.have, null, 2)}
+              newValue={JSON.stringify(example.want, null, 2)}
+              hideLineNumbers={false}
+              showDiffOnly={false}
+              splitView={true}
+            />
+          </Box>
+        </Box>
+      ))}
     </MuiAccordionDetails>
   </MuiAccordion>
 ))(({ theme }) => ({
@@ -93,8 +135,29 @@ const ProcessorAccordion = styled((props: ProcessorAccordionProps) => (
   '&::before': {
     display: 'none',
   },
-  '& .parameter-description p': {
+  '& .parameter-value>*': {
     margin: 0,
+  },
+  // -- Diff Viewer --
+  '& .diff-viewer td': {
+    padding: '1px',
+  },
+  '& .diff-viewer td span': {
+    whiteSpace: 'preserve nowrap',
+  },
+  '& .diff-viewer pre': {
+    lineHeight: 'inherit',
+    padding: '1px 10px',
+    backgroundColor: 'transparent',
+    whiteSpace: 'preserve nowrap',
+    fontSize: '0.8em',
+  },
+  '& .diff-viewer table td': {
+    border: 0,
+  },
+  '& .diff-viewer table tr': {
+    border: 0,
+    backgroundColor: 'inherit',
   },
 }));
 
