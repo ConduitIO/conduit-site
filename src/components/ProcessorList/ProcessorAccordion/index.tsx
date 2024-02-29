@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
 
-import ReactDiffViewer from 'react-diff-viewer';
 import ExampleAccordion, {Example} from "@site/src/components/ProcessorList/ExampleAccordion";
 
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
@@ -13,7 +12,6 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/system/Box';
 
 import Table from '@mui/material/Table';
-import TableContainer from '@mui/material/TableContainer';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';

@@ -7,15 +7,11 @@ import MuiAccordionSummary from "@mui/material/AccordionSummary";
 import Typography from "@mui/material/Typography";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import Chip from '@mui/material/Chip';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import IconButton from "@mui/material/IconButton";
-import Stack from '@mui/material/Stack';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Markdown from "react-markdown";
 import Box from "@mui/system/Box";
