@@ -1,0 +1,44 @@
+---
+title: "Processor List"
+sidebar_position: 1
+---
+
+TBD
+
+### Built-in vs Standalone
+
+TBD
+
+import ProcessorList from '@site/src/components/ProcessorList';
+import { useEffect, useState } from "react"
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+export const Processors = ({url}) => {
+  const [processors, setProcessors] = useState([])
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetch(url)
+      .then(response => response.json() )
+      .then(data => {
+        setProcessors(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return <p>Loading list...</p>;
+  }
+  if (error) {
+    return <p>Error: {error.message}</p>;
+  }
+  console.log(processors);
+  return <ProcessorList processors={processors} />
+}
+
+<Processors url={useBaseUrl('/processors.json')} />
