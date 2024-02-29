@@ -50,7 +50,7 @@ const ExampleAccordion = styled((props: IAccordionProps) => (
                     <code>{name}</code>
                   </TableCell>
                   <TableCell>
-                    <Markdown className='parameter-value'>{"```\n" + props.example.config[name] + "\n```"}</Markdown>
+                    {getParameterValueComponent(props.example.config[name])}
                   </TableCell>
                 </TableRow>
               ))}
@@ -107,8 +107,14 @@ const ExampleAccordion = styled((props: IAccordionProps) => (
   },
 }));
 
-function stopPropagation(e) {
-  e.stopPropagation();
+function getParameterValueComponent(value: any) {
+  if (value == "") {
+    return <Chip label='null' />;
+  } else if (value.includes("\n")) {
+    return <Markdown className='parameter-value'>{"```\n" + value + "\n```"}</Markdown>;
+  } else {
+    return <code>{value}</code>;
+  }
 }
 
 export default ExampleAccordion;
