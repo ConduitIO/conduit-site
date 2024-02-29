@@ -2,6 +2,8 @@ import * as React from 'react';
 import { styled } from '@mui/material/styles';
 
 import ReactDiffViewer from 'react-diff-viewer';
+import ExampleAccordion, {Example} from "@site/src/components/ProcessorList/ExampleAccordion";
+
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
 import MuiAccordionSummary, { AccordionSummaryProps } from "@mui/material/AccordionSummary";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
@@ -37,13 +39,6 @@ export class Parameter {
   description: string;
   type: string;
   validations: Validation[];
-}
-
-export class Example {
-  description: string;
-  config: any;
-  have: any;
-  want: any;
 }
 
 export class Validation {
@@ -86,44 +81,7 @@ const ProcessorAccordion = styled((props: ProcessorAccordionProps) => (
         Examples
       </Typography>
       {props.processor.examples.map((example, index) => (
-        <Box sx={{ width: '100%', overflow: 'hidden' }}>
-          <TableContainer>
-            <Table>
-              <TableBody>
-                {Object.keys(example.config).map(name => (
-                  <TableRow key={name}>
-                    <TableCell component="th" scope="row">
-                      <code>{name}</code>
-                    </TableCell>
-                    <TableCell>
-                      <Markdown className='parameter-value'>{"```\n" + example.config[name] + "\n```"}</Markdown>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <Typography variant='h6' component='span'>
-            {example.description}
-          </Typography>
-          <Box className='diff-viewer' sx={{ width: '100%', overflow: 'hidden' }}>
-            <ReactDiffViewer
-              styles={{
-                diffContainer: {
-                  overflowX: 'auto',
-                  overflowY: 'hidden',
-                },
-              }}
-              leftTitle={'Record before'}
-              rightTitle={'Record after'}
-              oldValue={JSON.stringify(example.have, null, 2)}
-              newValue={JSON.stringify(example.want, null, 2)}
-              hideLineNumbers={false}
-              showDiffOnly={false}
-              splitView={true}
-            />
-          </Box>
-        </Box>
+        <ExampleAccordion example={example} />
       ))}
     </MuiAccordionDetails>
   </MuiAccordion>
@@ -137,27 +95,6 @@ const ProcessorAccordion = styled((props: ProcessorAccordionProps) => (
   },
   '& .parameter-value>*': {
     margin: 0,
-  },
-  // -- Diff Viewer --
-  '& .diff-viewer td': {
-    padding: '1px',
-  },
-  '& .diff-viewer td span': {
-    whiteSpace: 'preserve nowrap',
-  },
-  '& .diff-viewer pre': {
-    lineHeight: 'inherit',
-    padding: '1px 10px',
-    backgroundColor: 'transparent',
-    whiteSpace: 'preserve nowrap',
-    fontSize: '0.8em',
-  },
-  '& .diff-viewer table td': {
-    border: 0,
-  },
-  '& .diff-viewer table tr': {
-    border: 0,
-    backgroundColor: 'inherit',
   },
 }));
 
