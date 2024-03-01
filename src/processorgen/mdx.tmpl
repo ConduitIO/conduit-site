@@ -1,0 +1,70 @@
+---
+title: 'Processor List'
+sidebar_position: 1
+---
+
+import ReactDiffViewer from 'react-diff-viewer';
+
+{{ range $p := . -}}
+### `{{ $p.specification.name }}`
+
+{{ $p.specification.summary }}
+
+#### Description
+
+{{ $p.specification.description }}
+
+#### Configuration parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+{{- range $name, $param := $p.specification.parameters }}
+| `{{ $name }}` | {{ $param.type }} | {{ $param.default }} | {{ $param.description }} |
+{{- end }}
+
+#### Examples
+
+{{ range $e := $p.examples -}}
+<details>
+  <summary>{{ $e.description }}</summary>
+  <div>
+    #### Configuration parameters
+
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      {{- range $name, $value := $e.config }}
+      <tr>
+        <td>`{{ $name }}`</td>
+        <td>
+```
+{{ replace $value "{" "\\{" }}
+```
+        </td>
+      </tr>
+      {{- end }}
+    </table>
+
+    #### Record difference
+
+    <ReactDiffViewer
+      styles={{`{{`}}
+        diffContainer: {
+          overflowX: 'auto',
+          overflowY: 'hidden',
+        },
+      {{`}}`}}
+      leftTitle={'Before'}
+      rightTitle={'After'}
+      oldValue={'{"foo":"bar"}'}
+      newValue={'{"foo":"qux"}'}
+      hideLineNumbers={false}
+      showDiffOnly={false}
+      splitView={true}
+    />
+  </div>
+</details>
+{{- end }}
+{{- end }}

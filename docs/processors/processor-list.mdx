@@ -1,0 +1,92 @@
+---
+title: 'Processor List'
+sidebar_position: 1
+---
+
+import ReactDiffViewer from 'react-diff-viewer';
+
+### `custom.javascript`
+
+JavaScript processor
+
+#### Description
+
+A processor that makes it possible to process Conduit records using JavaScript.
+
+The following helper functions and fields are available:
+* logger: a logger that outputs to Conduit's logs. Check zerolog's API on how to use it.
+* SingleRecord(): constructs a new record which represents a successful processing result.
+It's analogous to sdk.SingleRecord from Conduit's Go processor SDK.
+* FilterRecord(): returning a FilterRecord from the process() functions means that the
+record should be dropped from the pipeline.
+* ErrorRecord(): returning an ErrorRecord from the process() function means that there
+was an error processing the input record. Details about the error can be provided through a
+string argument in the constructor, e.g. ErrorRecord("details about the error").
+* RawData(): creates a raw data object. It's analogous to opencdc.RawData. Optionally, it
+accepts a string argument, which will be cast into a byte array, for example: record.Key = RawData("new key").
+* StructuredData(): creates a structured data (map-like) object.
+
+To find out what's possible with the JS processors, also refer to the documentation for 
+[goja](https://github.com/dop251/goja), which is the JavaScript engine we use.
+
+#### Configuration parameters
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| `script` | 1 |  | script is the Javascript code for this processor. It needs to have a function `process()` that accepts an array of records and returns an array of processed records. The processed records in the returned array need to have matching indexes with records in the input array. In other words, for the record at input_array[i] the processed record should be at output_array[i].  The processed record can be one of the following: 1. a processed record itself 2. a filter record (constructed with new FilterRecord()) 3. an error record (constructred with new ErrorRecord()) |
+| `script.path` | 1 |  | script.path is the path to a .js file containing the processor code. |
+
+#### Examples
+
+<details>
+  <summary>Modifying metadata and payload</summary>
+  <div>
+    #### Configuration parameters
+
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`script`</td>
+        <td>
+```
+function process(records) \{
+	records[0].Metadata["processed"] = "true";
+	let existing = String.fromCharCode.apply(String, records[0].Payload.After);
+	records[0].Payload.After = RawData("hello, " + existing);
+	return records;
+}
+```
+        </td>
+      </tr>
+      <tr>
+        <td>`script.path`</td>
+        <td>
+```
+
+```
+        </td>
+      </tr>
+    </table>
+
+    #### Record difference
+
+    <ReactDiffViewer
+      styles={{
+        diffContainer: {
+          overflowX: 'auto',
+          overflowY: 'hidden',
+        },
+      }}
+      leftTitle={'Before'}
+      rightTitle={'After'}
+      oldValue={'{"foo":"bar"}'}
+      newValue={'{"foo":"qux"}'}
+      hideLineNumbers={false}
+      showDiffOnly={false}
+      splitView={true}
+    />
+  </div>
+</details>
