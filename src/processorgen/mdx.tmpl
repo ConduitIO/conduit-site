@@ -1,70 +1,68 @@
 ---
-title: 'Processor List'
-sidebar_position: 1
+title: '{{ .specification.name }}'
+sidebar_position: {{ .index }}
 ---
 
 import ReactDiffViewer from 'react-diff-viewer';
+import Chip from '@mui/material/Chip';
 
-{{ range $p := . -}}
-### `{{ $p.specification.name }}`
+# `{{ .specification.name }}`
 
-{{ $p.specification.summary }}
+{{ .specification.summary }}
 
-#### Description
+## Description
 
-{{ $p.specification.description }}
+{{ .specification.description }}
 
-#### Configuration parameters
+## Configuration parameters
 
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
-{{- range $name, $param := $p.specification.parameters }}
-| `{{ $name }}` | {{ $param.type }} | {{ $param.default }} | {{ $param.description }} |
+{{- range $name, $param := .specification.parameters }}
+| `{{ $name }}` | {{ $param.type }} | {{ formatParameterValue $param.default }} | {{ $param.description }} |
 {{- end }}
 
-#### Examples
+## Examples
 
-{{ range $e := $p.examples -}}
-<details>
-  <summary>{{ $e.description }}</summary>
-  <div>
-    #### Configuration parameters
+{{ range $e := .examples -}}
+### {{ $e.summary }}
 
-    <table>
-      <tr>
-        <th>Name</th>
-        <th>Value</th>
-      </tr>
-      {{- range $name, $value := $e.config }}
-      <tr>
-        <td>`{{ $name }}`</td>
-        <td>
+{{ $e.description }}
+
+#### Configuration parameters
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Value</th>
+  </tr>
+  {{- range $name, $value := $e.config }}
+  <tr>
+    <td>`{{ $name }}`</td>
+    <td>
+{{ formatParameterValue $value }}
+    </td>
+  </tr>
+  {{- end }}
+</table>
+
+#### Record difference
+
+```mdx-code-block
+<ReactDiffViewer
+  styles={{`{{`}}
+    diffContainer: {
+      overflowX: 'auto',
+      overflowY: 'hidden',
+    },
+  {{`}}`}}
+  leftTitle={'Before'}
+  rightTitle={'After'}
+  oldValue={'{"foo":"bar"}'}
+  newValue={'{"foo":"qux"}'}
+  hideLineNumbers={false}
+  showDiffOnly={false}
+  splitView={true}
+/>
 ```
-{{ replace $value "{" "\\{" }}
-```
-        </td>
-      </tr>
-      {{- end }}
-    </table>
-
-    #### Record difference
-
-    <ReactDiffViewer
-      styles={{`{{`}}
-        diffContainer: {
-          overflowX: 'auto',
-          overflowY: 'hidden',
-        },
-      {{`}}`}}
-      leftTitle={'Before'}
-      rightTitle={'After'}
-      oldValue={'{"foo":"bar"}'}
-      newValue={'{"foo":"qux"}'}
-      hideLineNumbers={false}
-      showDiffOnly={false}
-      splitView={true}
-    />
-  </div>
-</details>
-{{- end }}
 {{- end }}

@@ -23,7 +23,8 @@
     },
     "examples": [
       {
-        "description": "Modifying metadata and payload",
+        "summary": "Modifying metadata and payload",
+        "description": "This example shows how to modify the metadata and payload of a record.",
         "config": {
           "script": "function process(records) {\n\trecords[0].Metadata[\"processed\"] = \"true\";\n\tlet existing = String.fromCharCode.apply(String, records[0].Payload.After);\n\trecords[0].Payload.After = RawData(\"hello, \" + existing);\n\treturn records;\n}",
           "script.path": ""
