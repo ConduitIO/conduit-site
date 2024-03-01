@@ -506,8 +506,8 @@
     },
     "examples": [
       {
-        "summary": "",
-        "description": "filter out the record",
+        "summary": "filter out the record",
+        "description": "",
         "config": {},
         "have": {
           "position": null,
