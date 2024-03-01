@@ -48,7 +48,7 @@ func main() {
 	}
 
 	log.Printf("🕵️parsing mdx template ...")
-	t, err := template.New("").Funcs(funcMap).Parse(tmpl)
+	t, err := template.New("").Funcs(funcMap).Option("missingkey=zero").Parse(tmpl)
 	if err != nil {
 		log.Fatalf("error: failed to parse mdx template: %v", err)
 	}
@@ -102,7 +102,7 @@ func formatParameterValue(value string) string {
 		return `<Chip label="null" />`
 	case strings.Contains(value, "\n"):
 		// specifically used in the javascript processor
-		return fmt.Sprintf("```js\n%s\n```", value)
+		return fmt.Sprintf("\n```js\n%s\n```\n", value)
 	default:
 		return fmt.Sprintf("`%s`", value)
 	}

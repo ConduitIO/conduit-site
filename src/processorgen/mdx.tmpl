@@ -3,6 +3,8 @@ title: '{{ .specification.name }}'
 sidebar_position: {{ .index }}
 ---
 
+[comment]: <> (This file was generated using src/processorgen/main.go. DO NOT EDIT.)
+
 import ReactDiffViewer from 'react-diff-viewer';
 import Chip from '@mui/material/Chip';
 import Box from "@mui/system/Box";
@@ -17,10 +19,25 @@ import Box from "@mui/system/Box";
 
 ## Configuration parameters
 
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
-{{- range $name, $param := .specification.parameters }}
-| `{{ $name }}` | {{ $param.type }} | {{ formatParameterValue $param.default }} | {{ $param.description }} |
+{{ if eq (len .specification.parameters) 0 -}}
+  No configuration parameters.
+{{- else -}}
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Default</th>
+      <th>Description</th>
+    </tr>
+    {{- range $name, $param := .specification.parameters }}
+    <tr>
+      <td>`{{ $name }}`</td>
+      <td>{{ $param.type }}</td>
+      <td>{{ formatParameterValue $param.default }}</td>
+      <td>{{ $param.description }}</td>
+    </tr>
+    {{- end }}
+  </table>
 {{- end }}
 
 ## Examples
@@ -32,6 +49,9 @@ import Box from "@mui/system/Box";
 
 #### Configuration parameters
 
+{{ if eq (len $e.config) 0 -}}
+No configuration parameters.
+{{- else -}}
 <table>
   <tr>
     <th>Name</th>
@@ -40,12 +60,11 @@ import Box from "@mui/system/Box";
   {{- range $name, $value := $e.config }}
   <tr>
     <td>`{{ $name }}`</td>
-    <td>
-{{ formatParameterValue $value }}
-    </td>
+    <td>{{ formatParameterValue $value }}</td>
   </tr>
   {{- end }}
 </table>
+{{- end }}
 
 #### Record difference
 
@@ -68,4 +87,5 @@ import Box from "@mui/system/Box";
   />
 </Box>
 ```
-{{- end }}
+
+{{ end }}

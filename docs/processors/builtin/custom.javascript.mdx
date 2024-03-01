@@ -1,7 +1,9 @@
 ---
 title: 'custom.javascript'
-sidebar_position: 0
+sidebar_position: 5
 ---
+
+[comment]: <> (This file was generated using src/processorgen/main.go. DO NOT EDIT.)
 
 import ReactDiffViewer from 'react-diff-viewer';
 import Chip from '@mui/material/Chip';
@@ -33,10 +35,26 @@ To find out what's possible with the JS processors, also refer to the documentat
 
 ## Configuration parameters
 
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
-| `script` | 1 | <Chip label="null" /> | script is the Javascript code for this processor. It needs to have a function `process()` that accepts an array of records and returns an array of processed records. The processed records in the returned array need to have matching indexes with records in the input array. In other words, for the record at input_array[i] the processed record should be at output_array[i].  The processed record can be one of the following: 1. a processed record itself 2. a filter record (constructed with new FilterRecord()) 3. an error record (constructred with new ErrorRecord()) |
-| `script.path` | 1 | <Chip label="null" /> | script.path is the path to a .js file containing the processor code. |
+<table>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Default</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>`script`</td>
+      <td>1</td>
+      <td><Chip label="null" /></td>
+      <td>script is the Javascript code for this processor. It needs to have a function `process()` that accepts an array of records and returns an array of processed records. The processed records in the returned array need to have matching indexes with records in the input array. In other words, for the record at input_array[i] the processed record should be at output_array[i].  The processed record can be one of the following: 1. a processed record itself 2. a filter record (constructed with new FilterRecord()) 3. an error record (constructred with new ErrorRecord())</td>
+    </tr>
+    <tr>
+      <td>`script.path`</td>
+      <td>1</td>
+      <td><Chip label="null" /></td>
+      <td>script.path is the path to a .js file containing the processor code.</td>
+    </tr>
+  </table>
 
 ## Examples
 
@@ -62,13 +80,11 @@ function process(records) {
 	return records;
 }
 ```
-    </td>
+</td>
   </tr>
   <tr>
     <td>`script.path`</td>
-    <td>
-<Chip label="null" />
-    </td>
+    <td><Chip label="null" /></td>
   </tr>
 </table>
 
@@ -93,3 +109,4 @@ function process(records) {
   />
 </Box>
 ```
+
