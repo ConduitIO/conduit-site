@@ -51,3 +51,24 @@ html.home #footer-logo {
 html.home div[class^='announcementBar_'] {
   border-bottom: 0;
 }
+
+/* Diff Viewer */
+.diff-viewer td {
+  padding: 1px;
+}
+.diff-viewer td span {
+  white-space: pre;
+}
+.diff-viewer pre {
+  line-height: inherit;
+  padding: 1px 10px;
+  background-color: transparent;
+  white-space: pre;
+  font-size: 0.8em;
+}
+.diff-viewer table td {
+  border: 0;
+}
+.diff-viewer table tr {
+  border: 0;
+}

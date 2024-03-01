@@ -5,6 +5,7 @@ sidebar_position: {{ .index }}
 
 import ReactDiffViewer from 'react-diff-viewer';
 import Chip from '@mui/material/Chip';
+import Box from "@mui/system/Box";
 
 # `{{ .specification.name }}`
 
@@ -49,20 +50,22 @@ import Chip from '@mui/material/Chip';
 #### Record difference
 
 ```mdx-code-block
-<ReactDiffViewer
-  styles={{`{{`}}
-    diffContainer: {
-      overflowX: 'auto',
-      overflowY: 'hidden',
-    },
-  {{`}}`}}
-  leftTitle={'Before'}
-  rightTitle={'After'}
-  oldValue={'{"foo":"bar"}'}
-  newValue={'{"foo":"qux"}'}
-  hideLineNumbers={false}
-  showDiffOnly={false}
-  splitView={true}
-/>
+<Box className='diff-viewer'>
+  <ReactDiffViewer
+    styles={{`{{`}}
+      diffContainer: {
+        overflowX: 'auto',
+        overflowY: 'hidden',
+      },
+    {{`}}`}}
+    leftTitle={'Before'}
+    rightTitle={'After'}
+    oldValue={'{"foo":"bar"}'}
+    newValue={'{"foo":"qux"}'}
+    hideLineNumbers={false}
+    showDiffOnly={false}
+    splitView={true}
+  />
+</Box>
 ```
 {{- end }}
