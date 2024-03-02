@@ -101,8 +101,8 @@ function process(records) {
     }}
     leftTitle={'Before'}
     rightTitle={'After'}
-    oldValue={'{"foo":"bar"}'}
-    newValue={'{"foo":"qux"}'}
+    oldValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"existing-key\": \"existing-value\"\n  },\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": \"world\"\n  }\n}"}
+    newValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"existing-key\": \"existing-value\",\n    \"processed\": \"true\"\n  },\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": \"hello, world\"\n  }\n}"}
     hideLineNumbers={false}
     showDiffOnly={false}
     splitView={true}

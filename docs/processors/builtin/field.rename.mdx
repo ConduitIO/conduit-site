@@ -69,14 +69,16 @@ are separated by colons ":"). For example: `.Metadata.key:id,.Payload.After.foo:
     }}
     leftTitle={'Before'}
     rightTitle={'After'}
-    oldValue={'{"foo":"bar"}'}
-    newValue={'{"foo":"qux"}'}
+    oldValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": null,\n  \"payload\": {\n    \"before\": {\n      \"bar\": \"baz\"\n    },\n    \"after\": {\n      \"foo\": \"bar\"\n    }\n  }\n}"}
+    newValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"newKey\": \"val1\"\n  },\n  \"key\": null,\n  \"payload\": {\n    \"before\": {\n      \"bar\": \"baz\"\n    },\n    \"after\": {\n      \"newFoo\": \"bar\"\n    }\n  }\n}"}
     hideLineNumbers={false}
     showDiffOnly={false}
     splitView={true}
   />
 </Box>
 ```
+
+---
 
 ### Rename two fields, one under key, and one under payload.before
 
@@ -108,8 +110,8 @@ are separated by colons ":"). For example: `.Metadata.key:id,.Payload.After.foo:
     }}
     leftTitle={'Before'}
     rightTitle={'After'}
-    oldValue={'{"foo":"bar"}'}
-    newValue={'{"foo":"qux"}'}
+    oldValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": {\n    \"id\": \"table-name\"\n  },\n  \"payload\": {\n    \"before\": {\n      \"bar\": \"baz\"\n    },\n    \"after\": {\n      \"foo\": \"bar\"\n    }\n  }\n}"}
+    newValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": {\n    \"table\": \"table-name\"\n  },\n  \"payload\": {\n    \"before\": {\n      \"renamedBar\": \"baz\"\n    },\n    \"after\": {\n      \"foo\": \"bar\"\n    }\n  }\n}"}
     hideLineNumbers={false}
     showDiffOnly={false}
     splitView={true}

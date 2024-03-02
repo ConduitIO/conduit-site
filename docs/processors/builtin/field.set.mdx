@@ -82,14 +82,16 @@ Note that it is not allowed to set the .Position field.</td>
     }}
     leftTitle={'Before'}
     rightTitle={'After'}
-    oldValue={'{"foo":"bar"}'}
-    newValue={'{"foo":"qux"}'}
+    oldValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": null,\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": null\n  }\n}"}
+    newValue={"{\n  \"position\": null,\n  \"operation\": \"update\",\n  \"metadata\": null,\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": null\n  }\n}"}
     hideLineNumbers={false}
     showDiffOnly={false}
     splitView={true}
   />
 </Box>
 ```
+
+---
 
 ### Processor will create a new field and set its value
 
@@ -125,14 +127,16 @@ Note that it is not allowed to set the .Position field.</td>
     }}
     leftTitle={'Before'}
     rightTitle={'After'}
-    oldValue={'{"foo":"bar"}'}
-    newValue={'{"foo":"qux"}'}
+    oldValue={"{\n  \"position\": null,\n  \"operation\": \"snapshot\",\n  \"metadata\": null,\n  \"key\": {\n    \"my-key\": \"id\"\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": null\n  }\n}"}
+    newValue={"{\n  \"position\": null,\n  \"operation\": \"snapshot\",\n  \"metadata\": null,\n  \"key\": {\n    \"my-key\": \"id\"\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"foo\": \"bar\"\n    }\n  }\n}"}
     hideLineNumbers={false}
     showDiffOnly={false}
     splitView={true}
   />
 </Box>
 ```
+
+---
 
 ### set the value under .Payload.After.postgres to true if .Metadata.table="postgres"
 
@@ -168,8 +172,8 @@ Note that it is not allowed to set the .Position field.</td>
     }}
     leftTitle={'Before'}
     rightTitle={'After'}
-    oldValue={'{"foo":"bar"}'}
-    newValue={'{"foo":"qux"}'}
+    oldValue={"{\n  \"position\": null,\n  \"operation\": \"snapshot\",\n  \"metadata\": {\n    \"table\": \"postgres\"\n  },\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"postgres\": \"false\"\n    }\n  }\n}"}
+    newValue={"{\n  \"position\": null,\n  \"operation\": \"snapshot\",\n  \"metadata\": {\n    \"table\": \"postgres\"\n  },\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"postgres\": \"true\"\n    }\n  }\n}"}
     hideLineNumbers={false}
     showDiffOnly={false}
     splitView={true}

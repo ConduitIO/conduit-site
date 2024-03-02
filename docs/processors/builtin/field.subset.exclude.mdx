@@ -69,14 +69,16 @@ Note that this processor only runs on structured data, if the record contains ra
     }}
     leftTitle={'Before'}
     rightTitle={'After'}
-    oldValue={'{"foo":"bar"}'}
-    newValue={'{"foo":"qux"}'}
+    oldValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": null,\n  \"payload\": {\n    \"before\": {\n      \"bar\": \"baz\"\n    },\n    \"after\": {\n      \"foo\": \"bar\"\n    }\n  }\n}"}
+    newValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": null\n  }\n}"}
     hideLineNumbers={false}
     showDiffOnly={false}
     splitView={true}
   />
 </Box>
 ```
+
+---
 
 ### Exclude metadata and some fields under payload and key
 
@@ -108,8 +110,8 @@ Note that this processor only runs on structured data, if the record contains ra
     }}
     leftTitle={'Before'}
     rightTitle={'After'}
-    oldValue={'{"foo":"bar"}'}
-    newValue={'{"foo":"qux"}'}
+    oldValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"source\": \"s3\"\n  },\n  \"key\": {\n    \"key1\": \"val1\",\n    \"key2\": \"val2\"\n  },\n  \"payload\": {\n    \"before\": {\n      \"bar\": \"baz\"\n    },\n    \"after\": {\n      \"foo\": \"bar\",\n      \"foobar\": \"baz\"\n    }\n  }\n}"}
+    newValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": {},\n  \"key\": {\n    \"key2\": \"val2\"\n  },\n  \"payload\": {\n    \"before\": {\n      \"bar\": \"baz\"\n    },\n    \"after\": {\n      \"foobar\": \"baz\"\n    }\n  }\n}"}
     hideLineNumbers={false}
     showDiffOnly={false}
     splitView={true}

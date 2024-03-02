@@ -81,14 +81,16 @@ you can only convert fields that are under .Key and .Payload, and said fields sh
     }}
     leftTitle={'Before'}
     rightTitle={'After'}
-    oldValue={'{"foo":"bar"}'}
-    newValue={'{"foo":"qux"}'}
+    oldValue={"{\n  \"position\": null,\n  \"operation\": \"update\",\n  \"metadata\": null,\n  \"key\": {\n    \"id\": \"123\"\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"done\": \"1\"\n    }\n  }\n}"}
+    newValue={"{\n  \"position\": null,\n  \"operation\": \"update\",\n  \"metadata\": null,\n  \"key\": {\n    \"id\": \"123\"\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"done\": true\n    }\n  }\n}"}
     hideLineNumbers={false}
     showDiffOnly={false}
     splitView={true}
   />
 </Box>
 ```
+
+---
 
 ### change .Key.id type to string
 
@@ -124,14 +126,16 @@ you can only convert fields that are under .Key and .Payload, and said fields sh
     }}
     leftTitle={'Before'}
     rightTitle={'After'}
-    oldValue={'{"foo":"bar"}'}
-    newValue={'{"foo":"qux"}'}
+    oldValue={"{\n  \"position\": null,\n  \"operation\": \"update\",\n  \"metadata\": null,\n  \"key\": {\n    \"id\": 123.345\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"foo\": \"bar\"\n    }\n  }\n}"}
+    newValue={"{\n  \"position\": null,\n  \"operation\": \"update\",\n  \"metadata\": null,\n  \"key\": {\n    \"id\": \"123.345\"\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"foo\": \"bar\"\n    }\n  }\n}"}
     hideLineNumbers={false}
     showDiffOnly={false}
     splitView={true}
   />
 </Box>
 ```
+
+---
 
 ### Change field type in key
 
@@ -167,8 +171,8 @@ In this example we take the string in field `.Key.id` and change its data type t
     }}
     leftTitle={'Before'}
     rightTitle={'After'}
-    oldValue={'{"foo":"bar"}'}
-    newValue={'{"foo":"qux"}'}
+    oldValue={"{\n  \"position\": null,\n  \"operation\": \"update\",\n  \"metadata\": null,\n  \"key\": {\n    \"id\": \"123\"\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"foo\": \"bar\"\n    }\n  }\n}"}
+    newValue={"{\n  \"position\": null,\n  \"operation\": \"update\",\n  \"metadata\": null,\n  \"key\": {\n    \"id\": 123\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"foo\": \"bar\"\n    }\n  }\n}"}
     hideLineNumbers={false}
     showDiffOnly={false}
     splitView={true}

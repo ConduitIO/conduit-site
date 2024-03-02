@@ -93,9 +93,10 @@ func main() {
 
 var funcMap = template.FuncMap{
 	"formatParameterValue": formatParameterValue,
+	"formatRecord":         formatRecord,
 }
 
-// formatParameterValue formats the value of a parameter in an example.
+// formatParameterValue formats the value of a configuration parameter.
 func formatParameterValue(value string) string {
 	switch {
 	case value == "":
@@ -106,6 +107,45 @@ func formatParameterValue(value string) string {
 	default:
 		return fmt.Sprintf("`%s`", value)
 	}
+}
+
+// formatRecord formats a record as an escaped string.
+func formatRecord(recordMap map[string]any) string {
+	if len(recordMap) == 0 {
+		return ""
+	}
+
+	// store the record in a struct so we control the order of the fields in JSON
+	r := record{
+		Position:  recordMap["position"],
+		Operation: recordMap["operation"],
+		Metadata:  recordMap["metadata"],
+		Key:       recordMap["key"],
+		Payload: struct {
+			Before any `json:"before"`
+			After  any `json:"after"`
+		}{
+			Before: recordMap["payload"].(map[string]any)["before"],
+			After:  recordMap["payload"].(map[string]any)["after"],
+		},
+	}
+
+	b, err := json.MarshalIndent(r, "", "  ")
+	if err != nil {
+		return fmt.Sprintf("failed to marshal record: %v", err)
+	}
+	return strings.Trim(fmt.Sprintf("%#v", string(b)), "\"")
+}
+
+type record struct {
+	Position  any `json:"position"`
+	Operation any `json:"operation"`
+	Metadata  any `json:"metadata"`
+	Key       any `json:"key"`
+	Payload   struct {
+		Before any `json:"before"`
+		After  any `json:"after"`
+	} `json:"payload"`
 }
 
 type Args struct {

@@ -42,7 +42,11 @@ import Box from "@mui/system/Box";
 
 ## Examples
 
-{{ range $e := .examples -}}
+{{ range $i, $e := .examples -}}
+{{ if ne $i 0 -}}
+---
+
+{{ end -}}
 ### {{ $e.summary }}
 
 {{ $e.description }}
@@ -79,8 +83,8 @@ No configuration parameters.
     {{`}}`}}
     leftTitle={'Before'}
     rightTitle={'After'}
-    oldValue={'{"foo":"bar"}'}
-    newValue={'{"foo":"qux"}'}
+    oldValue={"{{ formatRecord $e.have }}"}
+    newValue={"{{ formatRecord $e.want }}"}
     hideLineNumbers={false}
     showDiffOnly={false}
     splitView={true}
