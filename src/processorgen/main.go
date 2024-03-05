@@ -27,7 +27,7 @@ func main() {
 		log.Fatalf("error: failed to parse mdx template: %v", err)
 	}
 
-	log.Printf("📂 opening input folder %v ...", args.input)
+	log.Printf("📂 opening input folder %v", args.input)
 	inputFiles, err := os.ReadDir(args.input)
 	if err != nil {
 		log.Fatalf("error: failed to open input folder: %v", err)
@@ -57,7 +57,7 @@ func main() {
 
 		log.Printf("⏳  %v ...", dirEntry.Name())
 		log.SetPrefix("  ") // indent
-		exportProcessorDocs(
+		exportProcessorDoc(
 			index,
 			filepath.Join(args.input, dirEntry.Name()),
 			args.output,
@@ -70,7 +70,7 @@ func main() {
 	log.Printf("✅  done")
 }
 
-func exportProcessorDocs(index int, inputPath, outputPath string, t *template.Template) {
+func exportProcessorDoc(index int, inputPath, outputPath string, t *template.Template) {
 	log.Printf("🕵️ decoding contents as JSON")
 
 	input, err := os.Open(inputPath)
@@ -197,58 +197,3 @@ func parseFlags() Args {
 
 	return args
 }
-
-// example processors.json:
-// [
-//  {
-//    "specification": {
-//      "name": "example",
-//      "summary": "Example processor.",
-//      "description": "Description using markdown.",
-//      "version": "v0.1.0",
-//      "author": "Meroxa, Inc.",
-//      "parameters": {
-//        "foo": {
-//          "default": "",
-//          "description": "Foo description using markdown.",
-//          "type": "string",
-//          "validations": []
-//        },
-//      }
-//    },
-//    "examples": [
-//      {
-//        "summary": "Short example name",
-//        "description": "Long description explaining what's going on in this example.",
-//        "config": {
-//          "foo": "bar",
-//        },
-//        "have": {
-//          "position": null,
-//          "operation": "create",
-//          "metadata": {
-//            "existing-key": "existing-value"
-//          },
-//          "key": null,
-//          "payload": {
-//            "before": null,
-//            "after": "world"
-//          }
-//        },
-//        "want": {
-//          "position": null,
-//          "operation": "create",
-//          "metadata": {
-//            "existing-key": "existing-value",
-//            "processed": "true"
-//          },
-//          "key": null,
-//          "payload": {
-//            "before": null,
-//            "after": "hello, world"
-//          }
-//        }
-//      }
-//    ]
-//  }
-// ]
