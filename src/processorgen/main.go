@@ -17,45 +17,24 @@ var tmpl string
 
 func main() {
 	log.SetFlags(0)
-	log.SetPrefix("processorgen: ")
 
 	// parse the command arguments
 	args := parseFlags()
 
-	var err error
-	args.input, err = filepath.Abs(args.input)
-	if err != nil {
-		log.Fatalf("error: failed to get absolute path of input: %v", err)
-	}
-
-	args.output, err = filepath.Abs(args.output)
-	if err != nil {
-		log.Fatalf("error: failed to get absolute path of output: %v", err)
-	}
-
-	log.Printf("📂 opening input file %v ...", args.input)
-	input, err := os.Open(args.input)
-	if err != nil {
-		log.Fatalf("error: failed to open input file: %v", err)
-	}
-	defer input.Close()
-
-	log.Printf("🕵️decoding input file as JSON ...")
-	var v []any
-	err = json.NewDecoder(input).Decode(&v)
-	if err != nil {
-		log.Fatalf("error: failed to parse input file as JSON: %v", err)
-	}
-
-	log.Printf("🕵️parsing mdx template ...")
+	log.Printf("🕵️parsing mdx template")
 	t, err := template.New("").Funcs(funcMap).Option("missingkey=zero").Parse(tmpl)
 	if err != nil {
 		log.Fatalf("error: failed to parse mdx template: %v", err)
 	}
 
-	log.Printf("📂 opening output folder %v ...", args.output)
+	log.Printf("📂 opening input folder %v ...", args.input)
+	inputFiles, err := os.ReadDir(args.input)
+	if err != nil {
+		log.Fatalf("error: failed to open input folder: %v", err)
+	}
+
 	if fileInfo, err := os.Stat(args.output); os.IsNotExist(err) {
-		log.Printf("output folder does not exist, creating %v ...", args.output)
+		log.Printf("📂 output folder does not exist, creating %v", args.output)
 		err = os.MkdirAll(args.output, os.ModePerm)
 		if err != nil {
 			log.Fatalf("error: failed to create output folder: %v", err)
@@ -64,31 +43,66 @@ func main() {
 		log.Fatalf("error: failed to open output folder: %v", err)
 	} else if !fileInfo.IsDir() {
 		log.Fatalf("error: output path is not a directory: %v", args.output)
+	} else {
+		log.Printf("📂 output folder %v already exists, contents may be overwritten", args.output)
 	}
 
-	for i, proc := range v {
-		procName := proc.(map[string]any)["specification"].(map[string]any)["name"].(string)
-		log.Printf("⌛  generating %s.mdx ...", procName)
-
-		// inject index into the processor
-		proc.(map[string]any)["index"] = i
-
-		path := filepath.Join(args.output, procName+".mdx")
-
-		output, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0600)
-		if err != nil {
-			log.Fatalf("error: failed to open %s: %v", path, err)
+	log.Printf("🏃 walking over files in input folder %v", args.input)
+	index := 0
+	for _, dirEntry := range inputFiles {
+		if dirEntry.IsDir() {
+			// skip directories
+			continue
 		}
 
-		err = t.Execute(output, proc)
-		if err != nil {
-			log.Fatalf("error: failed to write %s: %v", path, err)
-		}
-
-		_ = output.Close()
+		log.Printf("⏳  %v ...", dirEntry.Name())
+		log.SetPrefix("  ") // indent
+		exportProcessorDocs(
+			index,
+			filepath.Join(args.input, dirEntry.Name()),
+			args.output,
+			t,
+		)
+		log.SetPrefix("") // reset indent
+		index++
 	}
 
 	log.Printf("✅  done")
+}
+
+func exportProcessorDocs(index int, inputPath, outputPath string, t *template.Template) {
+	log.Printf("🕵️ decoding contents as JSON")
+
+	input, err := os.Open(inputPath)
+	if err != nil {
+		log.Fatalf("error: failed to open %s: %v", inputPath, err)
+	}
+	defer input.Close()
+
+	var proc map[string]any
+	err = json.NewDecoder(input).Decode(&proc)
+	if err != nil {
+		log.Fatalf("error: failed to parse input file as JSON: %v", err)
+	}
+
+	procName := proc["specification"].(map[string]any)["name"].(string)
+	log.Printf("📄  generating %s.mdx", procName)
+
+	// inject index into the processor
+	proc["index"] = index
+
+	path := filepath.Join(outputPath, procName+".mdx")
+
+	output, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0600)
+	if err != nil {
+		log.Fatalf("error: failed to open %s: %v", path, err)
+	}
+	defer output.Close()
+
+	err = t.Execute(output, proc)
+	if err != nil {
+		log.Fatalf("error: failed to write %s: %v", path, err)
+	}
 }
 
 var funcMap = template.FuncMap{
@@ -156,7 +170,7 @@ type Args struct {
 func parseFlags() Args {
 	flags := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	var (
-		output = flags.String("output", "processors", "name of the output file")
+		output = flags.String("output", "docs", "path to the output folder")
 	)
 
 	logAndExit := func(msg string) {
@@ -169,16 +183,16 @@ func parseFlags() Args {
 	// flags is set up to exit on error, we can safely ignore the error
 	_ = flags.Parse(os.Args[1:])
 
-	if len(flags.Args()) == 0 {
-		logAndExit("input path argument missing")
+	args := Args{
+		output: *output,
+		input:  "specs",
 	}
-
-	var args Args
-	args.output = *output
-	args.input = flags.Args()[0]
 
 	if args.output == "" {
 		logAndExit("output path argument cannot be empty")
+	}
+	if len(flags.Args()) > 0 {
+		args.input = flags.Args()[0]
 	}
 
 	return args

@@ -15,8 +15,9 @@ Rename a group of fields.
 
 ## Description
 
-Rename a group of field names to new names. It is not allowed to rename top-level fields (.Operation, .Position, 
-.Key, .Metadata, .Payload.Before, .Payload.After).
+Rename a group of field names to new names. It is not allowed to rename top-level fields (`.Operation`, `.Position`, 
+`.Key`, `.Metadata`, `.Payload.Before`, `.Payload.After`).
+
 Note that this processor only runs on structured data, if the record contains raw JSON data, then use the processor "decode.json" to parse it into structured data first.
 
 ## Configuration parameters

@@ -5,4 +5,4 @@ clean:
 
 .PHONY: generate
 generate: clean
-	go run main.go -output=../../docs/processors/builtin processors.json
+	go run main.go -output=../../docs/processors/builtin ./specs
