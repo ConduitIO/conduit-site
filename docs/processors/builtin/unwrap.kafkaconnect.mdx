@@ -24,7 +24,7 @@ In such cases, the Debezium record is set as the OpenCDC record's payload, and n
 
 ## Configuration parameters
 
-<table>
+<table class="no-margin-table">
     <tr>
       <th>Name</th>
       <th>Type</th>
@@ -35,9 +35,11 @@ In such cases, the Debezium record is set as the OpenCDC record's payload, and n
       <td>`field`</td>
       <td>string</td>
       <td>`.Payload.After`</td>
-      <td>Field is a reference to the field which contains the Kafka Connect record.
+      <td>
+Field is a reference to the field which contains the Kafka Connect record.
 
-For more information about record references, see: https://github.com/ConduitIO/conduit-processor-sdk/blob/cbdc5dcb5d3109f8f13b88624c9e360076b0bcdb/util.go#L66.</td>
+For more information about record references, see: https://github.com/ConduitIO/conduit-processor-sdk/blob/cbdc5dcb5d3109f8f13b88624c9e360076b0bcdb/util.go#L66.
+      </td>
     </tr>
   </table>
 
@@ -55,7 +57,7 @@ We also see how the key is unwrapped too. In this case, the key comes in as stru
 
 #### Configuration parameters
 
-<table>
+<table class="no-margin-table">
   <tr>
     <th>Name</th>
     <th>Value</th>

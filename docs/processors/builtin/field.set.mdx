@@ -24,7 +24,7 @@ Note that this processor only runs on structured data, if the record contains ra
 
 ## Configuration parameters
 
-<table>
+<table class="no-margin-table">
     <tr>
       <th>Name</th>
       <th>Type</th>
@@ -35,14 +35,18 @@ Note that this processor only runs on structured data, if the record contains ra
       <td>`field`</td>
       <td>string</td>
       <td><Chip label="null" /></td>
-      <td>Field is the target field, as it would be addressed in a Go template (e.g. `.Payload.After.foo`).
-Note that it is not allowed to set the .Position field.</td>
+      <td>
+Field is the target field, as it would be addressed in a Go template (e.g. `.Payload.After.foo`).
+Note that it is not allowed to set the .Position field.
+      </td>
     </tr>
     <tr>
       <td>`value`</td>
       <td>string</td>
       <td><Chip label="null" /></td>
-      <td>Value is a Go template expression which will be evaluated and stored in `field` (e.g. `{{ .Payload.After }}`).</td>
+      <td>
+Value is a Go template expression which will be evaluated and stored in `field` (e.g. `{{ .Payload.After }}`).
+      </td>
     </tr>
   </table>
 
@@ -54,7 +58,7 @@ Note that it is not allowed to set the .Position field.</td>
 
 #### Configuration parameters
 
-<table>
+<table class="no-margin-table">
   <tr>
     <th>Name</th>
     <th>Value</th>
@@ -99,7 +103,7 @@ Note that it is not allowed to set the .Position field.</td>
 
 #### Configuration parameters
 
-<table>
+<table class="no-margin-table">
   <tr>
     <th>Name</th>
     <th>Value</th>
@@ -144,7 +148,7 @@ Note that it is not allowed to set the .Position field.</td>
 
 #### Configuration parameters
 
-<table>
+<table class="no-margin-table">
   <tr>
     <th>Name</th>
     <th>Value</th>
