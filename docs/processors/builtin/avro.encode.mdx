@@ -2,7 +2,7 @@
 IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
 
 title: 'avro.encode'
-sidebar_position: 0
+sidebar_position: 1
 ---
 
 import ReactDiffViewer from 'react-diff-viewer';
@@ -11,18 +11,31 @@ import Box from "@mui/system/Box";
 
 # `avro.encode`
 
-Decodes a field's raw data in the Avro format
+Encodes a record's field into the Avro format
 
 ## Description
 
-The processor takes raw data (bytes or a string) in the specified field and decodes
-it from the [Avro format](https://avro.apache.org/) into structured data. It extracts the schema ID from the data,
-downloads the associated schema from the [schema registry](https://docs.confluent.io/platform/current/schema-registry/index.html)
-and decodes the payload. The schema is cached locally after it's first downloaded.
+The processor takes a record's field and encodes it using a schema into the [Avro format](https://avro.apache.org/).
+It provides two strategies for determining the schema:
 
-If the processor encounters structured data or the data can't be decoded it returns an error.
+* **preRegistered** (recommended)
+  This strategy downloads an existing schema from the schema registry and uses it to encode the record.
+  This requires the schema to already be registered in the schema registry. The schema is downloaded
+  only once and cached locally.
+* **autoRegister** (for development purposes)
+  This strategy infers the schema by inspecting the structured data and registers it in the schema
+  registry. If the record schema is known in advance it's recommended to use the preRegistered strategy
+  and manually register the schema, as this strategy comes with limitations.
 
-This processor is the counterpart to [`avro.encode`](/docs/processors/builtin/avro.encode).
+  The strategy uses reflection to traverse the structured data of each record and determine the type
+  of each field. If a specific field is set to nil the processor won't have enough information to determine
+  the type and will default to a nullable string. Because of this it is not guaranteed that two records
+  with the same structure produce the same schema or even a backwards compatible schema. The processor
+  registers each inferred schema in the schema registry with the same subject, therefore the schema compatibility
+  checks need to be disabled for this schema to prevent failures. If the schema subject does not exist before running
+  this processor, it will automatically set the correct compatibility settings in the schema registry.
+
+This processor is the counterpart to [`avro.decode`](/docs/processors/builtin/avro.decode).
 
 ## Configuration parameters
 
@@ -59,6 +72,46 @@ are empty basic authentication is disabled.
       <td>`.Payload.After`</td>
       <td>
 The field that will be encoded.
+      </td>
+    </tr>
+    <tr>
+      <td>`schema.autoRegister.subject`</td>
+      <td>string</td>
+      <td><Chip label="null" /></td>
+      <td>
+The subject name under which the inferred schema will be registered in the schema registry.
+      </td>
+    </tr>
+    <tr>
+      <td>`schema.preRegistered.subject`</td>
+      <td>string</td>
+      <td><Chip label="null" /></td>
+      <td>
+The subject of the schema in the schema registry used to encode the record.
+      </td>
+    </tr>
+    <tr>
+      <td>`schema.preRegistered.version`</td>
+      <td>int</td>
+      <td><Chip label="null" /></td>
+      <td>
+The version of the schema in the schema registry used to encode the record.
+      </td>
+    </tr>
+    <tr>
+      <td>`schema.strategy`</td>
+      <td>string</td>
+      <td><Chip label="null" /></td>
+      <td>
+Strategy to use to determine the schema for the record.
+Available strategies are:
+* `preRegistered` (recommended) - Download an existing schema from the schema registry.
+   This strategy is further configured with options starting with `schema.preRegistered.*`.
+* `autoRegister` (for development purposes) - Infer the schema from the record and register it
+   in the schema registry. This strategy is further configured with options starting with
+  `schema.autoRegister.*`.
+
+For more information about the behavior of each strategy read the main processor description.
       </td>
     </tr>
     <tr>
@@ -101,85 +154,6 @@ URL of the schema registry (e.g. http://localhost:8085)
   </table>
 
 ## Examples
-
-### 
-
-This example shows the usage of the `avro.decode` processor.
-The processor decodes the record's`.Key` field using the schema that is
-downloaded from the schema registry and needs to exist under the subject`example-decode`.
-In this example we use the following schema:
-
-```json
-{
-  "type":"record",
-  "name":"record",
-  "fields":[
-    {"name":"myString","type":"string"},
-    {"name":"myInt","type":"int"}
-  ]
-}
-```
-
-#### Configuration parameters
-
-<table class="no-margin-table">
-  <tr>
-    <th>Name</th>
-    <th>Value</th>
-  </tr>
-  <tr>
-    <td>`auth.basic.password`</td>
-    <td><Chip label="null" /></td>
-  </tr>
-  <tr>
-    <td>`auth.basic.username`</td>
-    <td><Chip label="null" /></td>
-  </tr>
-  <tr>
-    <td>`field`</td>
-    <td>`.Key`</td>
-  </tr>
-  <tr>
-    <td>`tls.ca.cert`</td>
-    <td><Chip label="null" /></td>
-  </tr>
-  <tr>
-    <td>`tls.client.cert`</td>
-    <td><Chip label="null" /></td>
-  </tr>
-  <tr>
-    <td>`tls.client.key`</td>
-    <td><Chip label="null" /></td>
-  </tr>
-  <tr>
-    <td>`url`</td>
-    <td>`http://127.0.0.1:54322`</td>
-  </tr>
-</table>
-
-#### Record difference
-
-```mdx-code-block
-<Box className='diff-viewer'>
-  <ReactDiffViewer
-    styles={{
-      diffContainer: {
-        overflowX: 'auto',
-        overflowY: 'hidden',
-      },
-    }}
-    leftTitle={'Before'}
-    rightTitle={'After'}
-    oldValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": \"\\u0000\\u0000\\u0000\\u0000\\u0001\\u0006bar\\u0002\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": null\n  }\n}"}
-    newValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": {\n    \"myInt\": 1,\n    \"myString\": \"bar\"\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": null\n  }\n}"}
-    hideLineNumbers={false}
-    showDiffOnly={false}
-    splitView={true}
-  />
-</Box>
-```
-
----
 
 ### Auto-register schema
 

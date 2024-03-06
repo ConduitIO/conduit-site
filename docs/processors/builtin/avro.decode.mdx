@@ -1,0 +1,181 @@
+---
+IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
+
+title: 'avro.decode'
+sidebar_position: 0
+---
+
+import ReactDiffViewer from 'react-diff-viewer';
+import Chip from '@mui/material/Chip';
+import Box from "@mui/system/Box";
+
+# `avro.decode`
+
+Decodes a field's raw data in the Avro format
+
+## Description
+
+The processor takes raw data (bytes or a string) in the specified field and decodes
+it from the [Avro format](https://avro.apache.org/) into structured data. It extracts the schema ID from the data,
+downloads the associated schema from the [schema registry](https://docs.confluent.io/platform/current/schema-registry/index.html)
+and decodes the payload. The schema is cached locally after it's first downloaded.
+
+If the processor encounters structured data or the data can't be decoded it returns an error.
+
+This processor is the counterpart to [`avro.encode`](/docs/processors/builtin/avro.encode).
+
+## Configuration parameters
+
+<table class="no-margin-table">
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Default</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>`auth.basic.password`</td>
+      <td>string</td>
+      <td><Chip label="null" /></td>
+      <td>
+The password to use with basic authentication. This option is required if
+auth.basic.username contains a value. If both auth.basic.username and auth.basic.password
+are empty basic authentication is disabled.
+      </td>
+    </tr>
+    <tr>
+      <td>`auth.basic.username`</td>
+      <td>string</td>
+      <td><Chip label="null" /></td>
+      <td>
+The username to use with basic authentication. This option is required if
+auth.basic.password contains a value. If both auth.basic.username and auth.basic.password
+are empty basic authentication is disabled.
+      </td>
+    </tr>
+    <tr>
+      <td>`field`</td>
+      <td>string</td>
+      <td>`.Payload.After`</td>
+      <td>
+The field that will be encoded.
+      </td>
+    </tr>
+    <tr>
+      <td>`tls.ca.cert`</td>
+      <td>string</td>
+      <td><Chip label="null" /></td>
+      <td>
+The path to a file containing PEM encoded CA certificates. If this option is empty,
+Conduit falls back to using the host's root CA set.
+      </td>
+    </tr>
+    <tr>
+      <td>`tls.client.cert`</td>
+      <td>string</td>
+      <td><Chip label="null" /></td>
+      <td>
+The path to a file containing a PEM encoded certificate. This option is required
+if tls.client.key contains a value. If both tls.client.cert and tls.client.key are empty
+TLS is disabled.
+      </td>
+    </tr>
+    <tr>
+      <td>`tls.client.key`</td>
+      <td>string</td>
+      <td><Chip label="null" /></td>
+      <td>
+The path to a file containing a PEM encoded private key. This option is required
+if tls.client.cert contains a value. If both tls.client.cert and tls.client.key are empty
+TLS is disabled.
+      </td>
+    </tr>
+    <tr>
+      <td>`url`</td>
+      <td>string</td>
+      <td><Chip label="null" /></td>
+      <td>
+URL of the schema registry (e.g. http://localhost:8085)
+      </td>
+    </tr>
+  </table>
+
+## Examples
+
+### 
+
+This example shows the usage of the `avro.decode` processor.
+The processor decodes the record's`.Key` field using the schema that is
+downloaded from the schema registry and needs to exist under the subject`example-decode`.
+In this example we use the following schema:
+
+```json
+{
+  "type":"record",
+  "name":"record",
+  "fields":[
+    {"name":"myString","type":"string"},
+    {"name":"myInt","type":"int"}
+  ]
+}
+```
+
+#### Configuration parameters
+
+<table class="no-margin-table">
+  <tr>
+    <th>Name</th>
+    <th>Value</th>
+  </tr>
+  <tr>
+    <td>`auth.basic.password`</td>
+    <td><Chip label="null" /></td>
+  </tr>
+  <tr>
+    <td>`auth.basic.username`</td>
+    <td><Chip label="null" /></td>
+  </tr>
+  <tr>
+    <td>`field`</td>
+    <td>`.Key`</td>
+  </tr>
+  <tr>
+    <td>`tls.ca.cert`</td>
+    <td><Chip label="null" /></td>
+  </tr>
+  <tr>
+    <td>`tls.client.cert`</td>
+    <td><Chip label="null" /></td>
+  </tr>
+  <tr>
+    <td>`tls.client.key`</td>
+    <td><Chip label="null" /></td>
+  </tr>
+  <tr>
+    <td>`url`</td>
+    <td>`http://127.0.0.1:54322`</td>
+  </tr>
+</table>
+
+#### Record difference
+
+```mdx-code-block
+<Box className='diff-viewer'>
+  <ReactDiffViewer
+    styles={{
+      diffContainer: {
+        overflowX: 'auto',
+        overflowY: 'hidden',
+      },
+    }}
+    leftTitle={'Before'}
+    rightTitle={'After'}
+    oldValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": \"\\u0000\\u0000\\u0000\\u0000\\u0001\\u0006bar\\u0002\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": null\n  }\n}"}
+    newValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": {\n    \"myInt\": 1,\n    \"myString\": \"bar\"\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": null\n  }\n}"}
+    hideLineNumbers={false}
+    showDiffOnly={false}
+    splitView={true}
+  />
+</Box>
+```
+
