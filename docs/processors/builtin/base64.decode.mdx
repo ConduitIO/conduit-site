@@ -40,12 +40,12 @@ Note that it is not allowed to base64 decode the `.Position` field.
 
 ## Examples
 
-### 
+### Decode a base64 encoded string
 
 This example decodes the base64 encoded string stored in
 `.Payload.After`. Note that the result is a string, so if you want to
 further process the result (e.g. parse the string as JSON), you need to chain
-other processors (e.g. [`json.decode`](/docs/processors/builtin/decode.json)).
+other processors (e.g. [`json.decode`](/docs/processors/builtin/json.decode)).
 
 #### Configuration parameters
 

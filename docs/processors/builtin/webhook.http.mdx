@@ -2,7 +2,7 @@
 IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
 
 title: 'webhook.http'
-sidebar_position: 14
+sidebar_position: 16
 ---
 
 import ReactDiffViewer from 'react-diff-viewer';
@@ -15,10 +15,8 @@ HTTP webhook processor
 
 ## Description
 
-
 A processor that sends an HTTP request to the specified URL, retries on error and 
-saves the response body and, optionally, the response status. 
-
+saves the response body and, optionally, the response status.
 
 ## Configuration parameters
 
@@ -127,11 +125,11 @@ See: sdk.NewReferenceResolver
 ### Send a request to an HTTP server
 
 
-This example shows how to use the HTTP processor to send a record's .Payload.After field to a dummy HTTP server 
-that replies back with a greeting. 
+This example shows how to use the HTTP processor to send a record's .Payload.After field to a dummy HTTP server
+that replies back with a greeting.
 
-The record's .Payload.After is overwritten with the response. Additionally, the example shows how to store the 
-value of the HTTP response's code in the record's metadata'.
+The record's .Payload.After is overwritten with the response. Additionally, the example shows how to store the
+value of the HTTP response's code in the metadata field http_status.
 
 #### Configuration parameters
 

@@ -2,7 +2,7 @@
 IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
 
 title: 'field.set'
-sidebar_position: 7
+sidebar_position: 8
 ---
 
 import ReactDiffViewer from 'react-diff-viewer';
@@ -20,7 +20,7 @@ The new value can be a Go template expression, the processor will evaluate the o
 If the "field" provided doesn't exist, the processor will create that field and assign its value.
 This processor can be used for multiple purposes, like extracting fields, hoisting data, inserting fields, copying fields, masking fields, etc.
 Note that this processor only runs on structured data, if the record contains raw JSON data, then use the processor
-"decode.json" to parse it into structured data first.
+[json.decode](/docs/processors/builtin/json.decode) to parse it into structured data first.
 
 ## Configuration parameters
 
@@ -52,54 +52,10 @@ Value is a Go template expression which will be evaluated and stored in `field` 
 
 ## Examples
 
-### Sets a record's operation to "update"
+### Add field
 
-
-
-#### Configuration parameters
-
-<table class="no-margin-table">
-  <tr>
-    <th>Name</th>
-    <th>Value</th>
-  </tr>
-  <tr>
-    <td>`field`</td>
-    <td>`.Operation`</td>
-  </tr>
-  <tr>
-    <td>`value`</td>
-    <td>`update`</td>
-  </tr>
-</table>
-
-#### Record difference
-
-```mdx-code-block
-<Box className='diff-viewer'>
-  <ReactDiffViewer
-    styles={{
-      diffContainer: {
-        overflowX: 'auto',
-        overflowY: 'hidden',
-      },
-    }}
-    leftTitle={'Before'}
-    rightTitle={'After'}
-    oldValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": null,\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": null\n  }\n}"}
-    newValue={"{\n  \"position\": null,\n  \"operation\": \"update\",\n  \"metadata\": null,\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": null\n  }\n}"}
-    hideLineNumbers={false}
-    showDiffOnly={false}
-    splitView={true}
-  />
-</Box>
-```
-
----
-
-### Processor will create a new field and set its value
-
-
+This example adds a new field to the record. The field is
+added to .Payload.After and is set to bar.
 
 #### Configuration parameters
 
@@ -142,9 +98,54 @@ Value is a Go template expression which will be evaluated and stored in `field` 
 
 ---
 
-### Set the value under .Payload.After.postgres to true if .Metadata.table="postgres"
+### Sets the record operation to `update`
 
+This example sets the `.Operation` field to `update` for all records.
 
+#### Configuration parameters
+
+<table class="no-margin-table">
+  <tr>
+    <th>Name</th>
+    <th>Value</th>
+  </tr>
+  <tr>
+    <td>`field`</td>
+    <td>`.Operation`</td>
+  </tr>
+  <tr>
+    <td>`value`</td>
+    <td>`update`</td>
+  </tr>
+</table>
+
+#### Record difference
+
+```mdx-code-block
+<Box className='diff-viewer'>
+  <ReactDiffViewer
+    styles={{
+      diffContainer: {
+        overflowX: 'auto',
+        overflowY: 'hidden',
+      },
+    }}
+    leftTitle={'Before'}
+    rightTitle={'After'}
+    oldValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": null,\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": null\n  }\n}"}
+    newValue={"{\n  \"position\": null,\n  \"operation\": \"update\",\n  \"metadata\": null,\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": null\n  }\n}"}
+    hideLineNumbers={false}
+    showDiffOnly={false}
+    splitView={true}
+  />
+</Box>
+```
+
+---
+
+### Set field using Go template
+
+This example sets the `.Payload.After.postgres` field to `true` if the `.Metadata.table` field contains `postgres`.
 
 #### Configuration parameters
 

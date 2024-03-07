@@ -19,7 +19,8 @@ Convert takes the field of one type and converts it into another type (e.g. stri
 The applicable types are string, int, float and bool. Converting can be done between any combination of types. Note that
 booleans will be converted to numeric values 1 (true) and 0 (false). Processor is only applicable to .Key, .Payload.Before
 and .Payload.After prefixes, and only applicable if said fields contain structured data.
-If the record contains raw JSON data, then use the processor "decode.json" to parse it into structured data first.
+If the record contains raw JSON data, then use the processor [json.decode](/docs/processors/builtin/json.decode)
+to parse it into structured data first.
 
 ## Configuration parameters
 
@@ -51,54 +52,9 @@ Type is the target field type after conversion, available options are: string, i
 
 ## Examples
 
-### change .Payload.After.done type to bool
+### Convert `float` to `string`
 
-
-
-#### Configuration parameters
-
-<table class="no-margin-table">
-  <tr>
-    <th>Name</th>
-    <th>Value</th>
-  </tr>
-  <tr>
-    <td>`field`</td>
-    <td>`.Payload.After.done`</td>
-  </tr>
-  <tr>
-    <td>`type`</td>
-    <td>`bool`</td>
-  </tr>
-</table>
-
-#### Record difference
-
-```mdx-code-block
-<Box className='diff-viewer'>
-  <ReactDiffViewer
-    styles={{
-      diffContainer: {
-        overflowX: 'auto',
-        overflowY: 'hidden',
-      },
-    }}
-    leftTitle={'Before'}
-    rightTitle={'After'}
-    oldValue={"{\n  \"position\": null,\n  \"operation\": \"update\",\n  \"metadata\": null,\n  \"key\": {\n    \"id\": \"123\"\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"done\": \"1\"\n    }\n  }\n}"}
-    newValue={"{\n  \"position\": null,\n  \"operation\": \"update\",\n  \"metadata\": null,\n  \"key\": {\n    \"id\": \"123\"\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"done\": true\n    }\n  }\n}"}
-    hideLineNumbers={false}
-    showDiffOnly={false}
-    splitView={true}
-  />
-</Box>
-```
-
----
-
-### change .Key.id type to string
-
-
+This example takes the `float` in field `.Key.id` and changes its data type to `string`.
 
 #### Configuration parameters
 
@@ -141,9 +97,54 @@ Type is the target field type after conversion, available options are: string, i
 
 ---
 
-### Change field type in key
+### Convert `int` to `bool`
 
-In this example we take the string in field `.Key.id` and change its data type to `int`.
+This example takes the `int` in field `.Payload.After.done` and changes its data type to `bool`.
+
+#### Configuration parameters
+
+<table class="no-margin-table">
+  <tr>
+    <th>Name</th>
+    <th>Value</th>
+  </tr>
+  <tr>
+    <td>`field`</td>
+    <td>`.Payload.After.done`</td>
+  </tr>
+  <tr>
+    <td>`type`</td>
+    <td>`bool`</td>
+  </tr>
+</table>
+
+#### Record difference
+
+```mdx-code-block
+<Box className='diff-viewer'>
+  <ReactDiffViewer
+    styles={{
+      diffContainer: {
+        overflowX: 'auto',
+        overflowY: 'hidden',
+      },
+    }}
+    leftTitle={'Before'}
+    rightTitle={'After'}
+    oldValue={"{\n  \"position\": null,\n  \"operation\": \"update\",\n  \"metadata\": null,\n  \"key\": {\n    \"id\": \"123\"\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"done\": 1\n    }\n  }\n}"}
+    newValue={"{\n  \"position\": null,\n  \"operation\": \"update\",\n  \"metadata\": null,\n  \"key\": {\n    \"id\": \"123\"\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"done\": true\n    }\n  }\n}"}
+    hideLineNumbers={false}
+    showDiffOnly={false}
+    splitView={true}
+  />
+</Box>
+```
+
+---
+
+### Convert `string` to `int`
+
+This example takes the string in field `.Key.id` and changes its data type to `int`.
 
 #### Configuration parameters
 
