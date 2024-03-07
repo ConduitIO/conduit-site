@@ -37,7 +37,7 @@ This processor is only applicable to fields under `.Key`, `.Payload`.Before and
       <td><Chip label="null" /></td>
       <td>
 Field is the target field, as it would be addressed in a Go template (e.g. `.Payload.After.foo`).
-you can only decode fields that are under .Key and .Payload.
+you can only decode fields that are under `.Key` and `.Payload`.
       </td>
     </tr>
   </table>
@@ -47,7 +47,7 @@ you can only decode fields that are under .Key and .Payload.
 ### Decode record key as JSON
 
 This example takes a record containing a raw JSON string in
-.Key and converts it into structured data.
+`.Key` and converts it into structured data.
 
 #### Configuration parameters
 
@@ -89,7 +89,7 @@ This example takes a record containing a raw JSON string in
 ### Decode nested field as JSON
 
 This example takes a record containing a raw JSON string in
-.Payload.Before.foo and converts it into a map.
+`.Payload.Before.foo` and converts it into a map.
 
 #### Configuration parameters
 

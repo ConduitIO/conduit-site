@@ -11,7 +11,7 @@ import Box from "@mui/system/Box";
 
 # `webhook.http`
 
-HTTP webhook processor
+Trigger a HTTP request for every record.
 
 ## Description
 
@@ -32,8 +32,7 @@ saves the response body and, optionally, the response status.
       <td>float</td>
       <td>`0`</td>
       <td>
-BackoffRetryCount is the maximum number of retries for an individual record
-when backing off following an error.
+Maximum number of retries for an individual record when backing off following an error.
       </td>
     </tr>
     <tr>
@@ -41,7 +40,7 @@ when backing off following an error.
       <td>float</td>
       <td>`2`</td>
       <td>
-BackoffRetryFactor is the multiplying factor for each increment step.
+The multiplying factor for each increment step.
       </td>
     </tr>
     <tr>
@@ -49,7 +48,7 @@ BackoffRetryFactor is the multiplying factor for each increment step.
       <td>duration</td>
       <td>`5s`</td>
       <td>
-BackoffRetryMax is the maximum waiting time before retrying.
+The maximum waiting time before retrying.
       </td>
     </tr>
     <tr>
@@ -57,7 +56,7 @@ BackoffRetryMax is the maximum waiting time before retrying.
       <td>duration</td>
       <td>`100ms`</td>
       <td>
-BackoffRetryMin is the minimum waiting time before retrying.
+The minimum waiting time before retrying.
       </td>
     </tr>
     <tr>
@@ -65,10 +64,9 @@ BackoffRetryMin is the minimum waiting time before retrying.
       <td>string</td>
       <td>`.`</td>
       <td>
-RequestBodyRef specifies which field from the input record
-should be used as the body in the HTTP request.
-The value of this parameter should be a valid record field reference:
-See: sdk.NewReferenceResolver
+Specifies which field from the input record should be used as the body in
+the HTTP request. The value of this parameter should be a valid record
+field reference (see [`sdk.NewReferenceResolver`](https://github.com/ConduitIO/conduit-processor-sdk/blob/02b60dc7acad11a2fcdf0a0188a13cf573648650/util.go#L53-L66)).
       </td>
     </tr>
     <tr>
@@ -76,7 +74,7 @@ See: sdk.NewReferenceResolver
       <td>string</td>
       <td>`application/json`</td>
       <td>
-ContentType is the value of the Content-Type header.
+The value of the `Content-Type` header.
       </td>
     </tr>
     <tr>
@@ -100,10 +98,9 @@ URL used in the HTTP request.
       <td>string</td>
       <td>`.Payload.After`</td>
       <td>
-ResponseBodyRef specifies to which field should the
-response body be saved to.
-The value of this parameter should be a valid record field reference:
-See: sdk.NewReferenceResolver
+Specifies in which field should the response body be saved.
+The value of this parameter should be a valid record field reference
+(see [`sdk.NewReferenceResolver`](https://github.com/ConduitIO/conduit-processor-sdk/blob/02b60dc7acad11a2fcdf0a0188a13cf573648650/util.go#L53-L66)).
       </td>
     </tr>
     <tr>
@@ -111,11 +108,10 @@ See: sdk.NewReferenceResolver
       <td>string</td>
       <td><Chip label="null" /></td>
       <td>
-ResponseStatusRef specifies to which field should the
-response status be saved to.
-The value of this parameter should be a valid record field reference.
+Specifies in which field should the response status be saved.
+The value of this parameter should be a valid record field reference
+(see [`sdk.NewReferenceResolver`](https://github.com/ConduitIO/conduit-processor-sdk/blob/02b60dc7acad11a2fcdf0a0188a13cf573648650/util.go#L53-L66)).
 If no value is set, then the response status will NOT be saved.
-See: sdk.NewReferenceResolver
       </td>
     </tr>
   </table>
@@ -125,11 +121,11 @@ See: sdk.NewReferenceResolver
 ### Send a request to an HTTP server
 
 
-This example shows how to use the HTTP processor to send a record's .Payload.After field to a dummy HTTP server
+This example shows how to use the HTTP processor to send a record's `.Payload.After` field to a dummy HTTP server
 that replies back with a greeting.
 
-The record's .Payload.After is overwritten with the response. Additionally, the example shows how to store the
-value of the HTTP response's code in the metadata field http_status.
+The record's `.Payload.After` is overwritten with the response. Additionally, the example shows how to store the
+value of the HTTP response's code in the metadata field `http_status`.
 
 #### Configuration parameters
 

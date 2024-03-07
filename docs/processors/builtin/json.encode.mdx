@@ -15,7 +15,7 @@ Encodes a specific field from structured data to JSON raw data (string).
 
 ## Description
 
-The processor takes data from the target field, encodes it into s JSON value
+The processor takes data from the target field, encodes it into a JSON value
 and stores the encoded value in the target field.
 
 This processor is only applicable to fields under `.Key`, `.Payload`.Before and
@@ -36,7 +36,7 @@ This processor is only applicable to fields under `.Key`, `.Payload`.Before and
       <td><Chip label="null" /></td>
       <td>
 Field is the target field, as it would be addressed in a Go template (e.g. `.Payload.After.foo`).
-you can only encode fields that are under .Key, .Payload.Before and .Payload.After.
+you can only encode fields that are under `.Key`, `.Payload.Before` and `.Payload.After`.
       </td>
     </tr>
   </table>
@@ -46,7 +46,7 @@ you can only encode fields that are under .Key, .Payload.Before and .Payload.Aft
 ### Encode nested field to JSON
 
 This example takes a record containing a map in
-.Payload.Before.foo and converts it into a raw JSON string.
+`.Payload.Before.foo` and converts it into a raw JSON string.
 
 #### Configuration parameters
 
@@ -88,7 +88,7 @@ This example takes a record containing a map in
 ### Encode record key to JSON
 
 This example takes a record containing structured data in
-.Key and converts it into a raw JSON string.
+`.Key` and converts it into a raw JSON string.
 
 #### Configuration parameters
 
