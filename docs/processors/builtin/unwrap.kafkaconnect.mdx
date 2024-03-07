@@ -2,7 +2,7 @@
 IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
 
 title: 'unwrap.kafkaconnect'
-sidebar_position: 12
+sidebar_position: 14
 ---
 
 import ReactDiffViewer from 'react-diff-viewer';
@@ -49,11 +49,10 @@ For more information about record references, see: https://github.com/ConduitIO/
 
 This example shows how to unwrap a Kafka Connect record.
 
-The Kafka Connect record is serialized as a JSON string in the .Payload.After field (raw data).
+The Kafka Connect record is serialized as a JSON string in the `.Payload.After` field (raw data).
 The Kafka Connect record's payload will replace the OpenCDC record's payload.
 
 We also see how the key is unwrapped too. In this case, the key comes in as structured data.
-
 
 #### Configuration parameters
 

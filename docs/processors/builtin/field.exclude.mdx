@@ -1,15 +1,15 @@
 ---
 IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
 
-title: 'field.subset.exclude'
-sidebar_position: 9
+title: 'field.exclude'
+sidebar_position: 6
 ---
 
 import ReactDiffViewer from 'react-diff-viewer';
 import Chip from '@mui/material/Chip';
 import Box from "@mui/system/Box";
 
-# `field.subset.exclude`
+# `field.exclude`
 
 Remove a subset of fields from the record.
 
@@ -18,7 +18,10 @@ Remove a subset of fields from the record.
 Remove a subset of fields from the record, all the other fields are left untouched.
 If a field is excluded that contains nested data, the whole tree will be removed.
 It is not allowed to exclude .Position or .Operation fields.
-Note that this processor only runs on structured data, if the record contains raw JSON data, then use the processor "decode.json" to parse it into structured data first.
+
+Note that this processor only runs on structured data, if the record contains
+raw JSON data, then use the processor [json.decode](/docs/processors/builtin/json.decode)
+to parse it into structured data first.
 
 ## Configuration parameters
 
@@ -41,9 +44,9 @@ Fields is a comma separated list of target fields, as they would be addressed in
 
 ## Examples
 
-### Exclude all fields under payload
+### Exclude all fields in payload
 
-
+Excluding all fields in `.Payload` results in an empty payload.
 
 #### Configuration parameters
 
@@ -82,9 +85,11 @@ Fields is a comma separated list of target fields, as they would be addressed in
 
 ---
 
-### Exclude metadata and some fields under payload and key
+### Exclude multiple fields
 
-
+It's possible to exclude multiple fields by providing a
+comma-separated list of fields. In this example, we exclude .Metadata,
+.Payload.After.foo and .Key.key1.
 
 #### Configuration parameters
 
