@@ -8,9 +8,9 @@ record (which is always in
 the [OpenCDC format](/docs/features/opencdc-record.mdx)). That is done through
 _field references_, strings that describe the path to a field in a record. That
 can be a field within an OpenCDC record (such as the metadata or the payload),
-but it can also be a nested field, as we will see in examples below.
+but it can also be a nested field, as we will see in the examples below.
 
-To reference one of the OpenCDC record fields, following should be used:
+To reference one of the OpenCDC record fields, the following should be used:
 
 * `.Position`
 * `.Operation`
@@ -19,7 +19,7 @@ To reference one of the OpenCDC record fields, following should be used:
 * `.Payload`
 
 To access a key in a map (e.g. the metadata) or a field in a structured field (
-e.g. a payload's `After` field), the dot or the bracket notation can be used.
+e.g. a payload's `After` field), the dot, or the bracket notation can be used.
 The bracket notation is useful when the key name contains non-alphanumeric
 characters. The following examples demonstrate that:
 
