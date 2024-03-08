@@ -1,0 +1,47 @@
+---
+title: 'Referencing record fields'
+sidebar_position: 1
+---
+
+Very often, processors can be configured to work on a specific field in a
+record (which is always in
+the [OpenCDC format](/docs/features/opencdc-record.mdx)). That is done through
+_field references_, strings that describe the path to a field in a record. That
+can be a field within an OpenCDC record (such as the metadata or the payload),
+but it can also be a nested field, as we will see in examples below.
+
+To reference one of the OpenCDC record fields, following should be used:
+
+* `.Position`
+* `.Operation`
+* `.Key`
+* `.Metadata`
+* `.Payload`
+
+To access a key in a map (e.g. the metadata) or a field in a structured field (
+e.g. a payload's `After` field), the dot or the bracket notation can be used.
+The bracket notation is useful when the key name contains non-alphanumeric
+characters. The following examples demonstrate that:
+
+* `.Metadata.foo` references the value associated with the key `foo` in a
+  record's metadata.
+* `.Metadata["foo bar"]` references the value associated with the key `foo bar`
+  in a record's metadata. The dot notation (i.e. `.Metadata.foo bar`)cannot be
+  used here because the referenced key `foo bar` contains a non-alphanumeric
+  character (the space).
+* `.Payload.After.foo` references the field `foo` in the `After` field of a
+  record's payload. This is possible only if `After`'s type
+  is `opencdc.StructuredData`.
+* Arbitrary nesting is possible. Let's assume we have the following record:
+  ```go
+  opencdc.Record{
+      Payload: opencdc.Change{
+          After: opencdc.StructuredData{
+              "foo": map[string]interface{}{
+                  "bar baz": "qux",
+              },
+          },
+      },
+  }
+  ```
+  The reference `.Payload.After.foo["bar baz"]` will return the value `qux`.
