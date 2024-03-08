@@ -43,20 +43,21 @@ pipelines:                      # A list of pipeline configurations
         name: my-file-destination
         settings:
           path: ./file2.txt
-        processors:             # A list of processor configurations, processors are attached to the connector
-          - id: proc1           # Processor ID [required]
-            type: js            # Processor type [required]
-            workers: 2          # Number of parallel workers
-            settings:           # A map of configuration keys and values for the processor (specific to the chosen type)
+        processors:                   # A list of processor configurations, processors are attached to the connector
+          - id: proc1                 # Processor ID [required]
+            plugin: custom.javascript # Processor plugin name [required]
+            workers: 2                # Number of parallel workers
+            settings:                 # A map of configuration keys and values for the processor (specific to the chosen type)
               script: >
                 function process(record) {
                   return record; // pass through
                 }
-    processors:                 # A list of processor configurations, processors are attached to the pipeline
-      - id: proc2               # Processor ID [required]
-        type: hoistfieldpayload # Processor type [required]
-        settings:               # A map of configuration keys and values for the processor (specific to the chosen type)
-          field: ${ENV_VAR}     # You can use environment variables by wrapping them in a dollar sign and curly braces ${}
+    processors:                      # A list of processor configurations, processors are attached to the pipeline
+      - id: proc2                    # Processor ID [required]
+        plugin: field.set            # Processor type [required]
+        settings:                    # A map of configuration keys and values for the processor (specific to the chosen type)
+          field: .Payload.After.key  # You can use environment variables by wrapping them in a dollar sign and curly braces ${}
+          value: ${ENV_VAR}          # You can use environment variables by wrapping them in a dollar sign and curly braces ${}
     dead-letter-queue:          # Dead-letter queue (DLQ) configuration
       plugin: "builtin:file"    # DLQ Connector plugin
       settings:                 # A map of configuration keys and values for the plugin (specific to the chosen plugin)
@@ -267,7 +268,7 @@ beginning.
 - **Default**: None
 - **Description**: This node contains the configuration of a single processor.
 
-### id
+### plugin
 
 - **Data Type**: String
 - **Required**: Yes
@@ -276,14 +277,15 @@ beginning.
   identify the processor inside the pipeline. If multiple processors inside the
   pipeline use the same ID, provisioning will fail.
 
-### type
+### plugin
 
 - **Data Type**: String
 - **Required**: Yes
 - **Default**: None
-- **Description**: Defines the processor type (e.g. `js`). Check out the
-  [processors documentation](/docs/processors/getting-started) to find out which
-  processors are supported.
+- **Description**: Defines the processor's plugin name (e.g. `field.set`). Check out the
+  [processors documentation](/docs/processors/builtin) to find the list of builtin processors
+   we provide. Also, check [Building processors](/docs/processors/building-processors)
+  for how to build and use your own WASM processor.
 
 ### settings
 
@@ -291,7 +293,7 @@ beginning.
 - **Required**: Yes
 - **Default**: None
 - **Description**: A map of configuration keys and values for the processor. The
-  values in this map depend on the chosen processor [`type`](#type-1).
+  values in this map depend on the chosen processor [`plugin`](#plugin-1).
 
 ### workers
 
