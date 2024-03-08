@@ -30,10 +30,15 @@ Examples:
       the standalone plugin wasn't found
 - `base64.decode@v0.2.0`
     - will use the **standalone** **base64.decode** plugin with version **v0.2.0**
-    - will fall back to a **builtin** **base64.decode** plugin with version **v0.2.0** 
+    - will fall back to a **builtin** **base64.decode** plugin with version **v0.2.0**
       if the standalone plugin wasn't found
 - `builtin:base64.decode`
     - will use the **latest** **builtin** **base64.decode** plugin
 - `standalone:base64.decode@v0.3.0`
-    - will use the **standalone** **base64.decode** plugin with version **v0.3.0** (
-      no fallback to builtin)
+    - will use the **standalone** **base64.decode** plugin with version **v0.3.0** 
+      (no fallback to builtin)
+
+:::info
+To read more about how to register standalone processors in Conduit, please
+refer to [WASM processors](/docs/processors/wasm-processors.mdx).
+:::
