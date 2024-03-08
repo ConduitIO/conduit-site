@@ -47,7 +47,7 @@ pipelines:                      # A list of pipeline configurations
           - id: proc1                 # Processor ID [required]
             plugin: custom.javascript # Processor plugin name [required]
             workers: 2                # Number of parallel workers
-            settings:                 # A map of configuration keys and values for the processor (specific to the chosen type)
+            settings:                 # A map of configuration keys and values for the processor (specific to the chosen processor plugin)
               script: >
                 function process(record) {
                   return record; // pass through
@@ -55,8 +55,8 @@ pipelines:                      # A list of pipeline configurations
     processors:                      # A list of processor configurations, processors are attached to the pipeline
       - id: proc2                    # Processor ID [required]
         plugin: field.set            # Processor type [required]
-        settings:                    # A map of configuration keys and values for the processor (specific to the chosen type)
-          field: .Payload.After.key  # You can use environment variables by wrapping them in a dollar sign and curly braces ${}
+        settings:                    # A map of configuration keys and values for the processor (specific to the chosen processor plugin)
+          field: .Payload.After.key
           value: ${ENV_VAR}          # You can use environment variables by wrapping them in a dollar sign and curly braces ${}
     dead-letter-queue:          # Dead-letter queue (DLQ) configuration
       plugin: "builtin:file"    # DLQ Connector plugin
