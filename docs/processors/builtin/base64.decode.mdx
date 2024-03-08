@@ -1,0 +1,84 @@
+---
+IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
+
+title: 'base64.decode'
+sidebar_position: 2
+---
+
+import ReactDiffViewer from 'react-diff-viewer';
+import Chip from '@mui/material/Chip';
+import Box from "@mui/system/Box";
+
+# `base64.decode`
+
+Decode a field to base64.
+
+## Description
+
+The processor will decode the value of the target field from base64 and store the
+result in the target field. It is not allowed to decode the `.Position` field.
+
+## Configuration parameters
+
+<table class="no-margin-table">
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Default</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>`field`</td>
+      <td>string</td>
+      <td><Chip label="null" /></td>
+      <td>
+Field is the target field, as it would be addressed in a Go template (e.g. `.Payload.After.foo`).
+Note that it is not allowed to base64 decode the `.Position` field.
+      </td>
+    </tr>
+  </table>
+
+## Examples
+
+### Decode a base64 encoded string
+
+This example decodes the base64 encoded string stored in
+`.Payload.After`. Note that the result is a string, so if you want to
+further process the result (e.g. parse the string as JSON), you need to chain
+other processors (e.g. [`json.decode`](/docs/processors/builtin/json.decode)).
+
+#### Configuration parameters
+
+<table class="no-margin-table">
+  <tr>
+    <th>Name</th>
+    <th>Value</th>
+  </tr>
+  <tr>
+    <td>`field`</td>
+    <td>`.Payload.After.foo`</td>
+  </tr>
+</table>
+
+#### Record difference
+
+```mdx-code-block
+<Box className='diff-viewer'>
+  <ReactDiffViewer
+    styles={{
+      diffContainer: {
+        overflowX: 'auto',
+        overflowY: 'hidden',
+      },
+    }}
+    leftTitle={'Before'}
+    rightTitle={'After'}
+    oldValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": \"test-key\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"foo\": \"YmFy\"\n    }\n  }\n}"}
+    newValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": \"test-key\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"foo\": \"bar\"\n    }\n  }\n}"}
+    hideLineNumbers={false}
+    showDiffOnly={false}
+    splitView={true}
+  />
+</Box>
+```
+
