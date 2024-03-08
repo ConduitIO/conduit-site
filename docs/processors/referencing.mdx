@@ -1,0 +1,39 @@
+---
+title: "Referencing Processors"
+sidebar_position: 5
+---
+
+The name, used to reference a processor plugin in a pipeline configuration file
+or API requests, is using the following format:
+
+`[PLUGIN-TYPE:]PLUGIN-NAME[@VERSION]`
+
+- `PLUGIN-TYPE` (`builtin`, `standalone` or `any`)
+    - Defines if the specified plugin should be builtin or standalone.
+    - If `any`, Conduit will use a standalone plugin if it exists and fall back
+      to a builtin plugin.
+    - Default is `any`.
+- `PLUGIN-NAME`
+    - Defines the name of the plugin as specified in the plugin specifications,
+      it has to be an exact match.
+- `VERSION`
+    - Defines the plugin version as specified in the plugin specifications, it
+      has to be an exact match.
+    - If `latest`, Conduit will use the latest semantic version.
+    - Default is `latest`.
+
+Examples:
+
+- `base64.decode`
+    - will use the **latest** **standalone** **base64.decode** plugin
+    - will fall back to the **latest** **builtin** **base64.decode** plugin if
+      the standalone plugin wasn't found
+- `base64.decode@v0.2.0`
+    - will use the **standalone** **base64.decode** plugin with version **v0.2.0**
+    - will fall back to a **builtin** **base64.decode** plugin with version **v0.2.0** 
+      if the standalone plugin wasn't found
+- `builtin:base64.decode`
+    - will use the **latest** **builtin** **base64.decode** plugin
+- `standalone:base64.decode@v0.3.0`
+    - will use the **standalone** **base64.decode** plugin with version **v0.3.0** (
+      no fallback to builtin)
