@@ -46,6 +46,7 @@ pipelines:                      # A list of pipeline configurations
         processors:                   # A list of processor configurations, processors are attached to the connector
           - id: proc1                 # Processor ID [required]
             plugin: custom.javascript # Processor plugin name [required]
+            condition: "{{ eq .Metadata.foo "bar" }}"  # Condition (Go template expression) that dictates if the record will be passed to the processor or not.
             workers: 2                # Number of parallel workers
             settings:                 # A map of configuration keys and values for the processor (specific to the chosen processor plugin)
               script: >
@@ -268,7 +269,7 @@ beginning.
 - **Default**: None
 - **Description**: This node contains the configuration of a single processor.
 
-### plugin
+### id
 
 - **Data Type**: String
 - **Required**: Yes
@@ -286,6 +287,15 @@ beginning.
   [processors documentation](/docs/processors/builtin) to find the list of builtin processors
    we provide. Also, check [Building processors](/docs/processors/building-processors)
   for how to build and use your own WASM processor.
+
+### condition
+
+- **Data Type**: String
+- **Required**: No
+- **Default**: `True` (all records will passed to the processor)
+- **Description**: a Go template expression that will be used as a condition to pass the record to the processor or not.
+the Go template expression will be evaluated, and the evaluated value should either be `True` or `False`, `True` means
+the record will be passed to the processor, `False` means it will be skipped.
 
 ### settings
 
