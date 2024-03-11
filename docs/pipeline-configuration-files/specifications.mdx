@@ -291,7 +291,7 @@ beginning.
 
 - **Data Type**: String
 - **Required**: No
-- **Default**: `True` (all records will passed to the processor)
+- **Default**: `true` (all records will be passed to the processor)
 - **Description**: A [Go template expression](https://pkg.go.dev/text/template) that will be used as a condition to pass the record to the processor or not.
 The Go template expression will be evaluated using each record and needs to produce `true` or `false`. If it produces `true`
 the record will be passed to the processor, `false` means it will continue down the pipeline without getting processed.
