@@ -34,7 +34,7 @@ When processing records in Conduit, you can always expect a similar structure to
 {
     "position": "c3RhbmRpbmc=",
     "operation": "update",
-    "metadata": "{
+    "metadata": {
         "file.path": "./example.in",
         "opencdc.readAt": "1663858188836816000",
         "opencdc.version": "v1"
@@ -72,7 +72,7 @@ As part of an OpenCDC record, there will be a set of fields provided that will v
 ```json
 {
     ...
-    "metadata": "{
+    "metadata": {
         "opencdc.createdAt": "1663858188836816000",
         "opencdc.readAt": "1663858188836816000",
         "opencdc.version": "v1",
@@ -93,7 +93,7 @@ Only available in records once they are read by a **source plugin**:
 ```json
 {
     ...
-    "metadata": "{
+    "metadata": {
         "conduit.source.connector.id": "connectorID",
         "conduit.source.plugin.name": "example",
         "conduit.source.plugin.version": "v1",
@@ -111,7 +111,7 @@ Only available in records once they are written by a **destination plugin**:
 ```json
 {
     ...
-    "metadata": "{
+    "metadata": {
         "conduit.destination.plugin.name": "example",
         "conduit.destination.plugin.version": "v1",
         ...
