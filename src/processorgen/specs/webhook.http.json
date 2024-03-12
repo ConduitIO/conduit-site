@@ -1,7 +1,7 @@
 {
   "specification": {
     "name": "webhook.http",
-    "summary": "Trigger a HTTP request for every record.",
+    "summary": "Trigger an HTTP request for every record.",
     "description": "A processor that sends an HTTP request to the specified URL, retries on error and \nsaves the response body and, optionally, the response status.",
     "version": "v0.1.0",
     "author": "Meroxa, Inc.",
@@ -42,7 +42,7 @@
       },
       "request.body": {
         "default": ".",
-        "description": "Specifies which field from the input record should be used as the body in\nthe HTTP request. The value of this parameter should be a valid record\nfield reference (see [`sdk.NewReferenceResolver`](https://github.com/ConduitIO/conduit-processor-sdk/blob/02b60dc7acad11a2fcdf0a0188a13cf573648650/util.go#L53-L66)).",
+        "description": "Specifies which field from the input record should be used as the body in\nthe HTTP request.\n\nFor more information about the format, see [Referencing fields](https://conduit.io/docs/processors/referencing-fields).",
         "type": "string",
         "validations": []
       },
@@ -71,13 +71,13 @@
       },
       "response.body": {
         "default": ".Payload.After",
-        "description": "Specifies in which field should the response body be saved.\nThe value of this parameter should be a valid record field reference\n(see [`sdk.NewReferenceResolver`](https://github.com/ConduitIO/conduit-processor-sdk/blob/02b60dc7acad11a2fcdf0a0188a13cf573648650/util.go#L53-L66)).",
+        "description": "Specifies in which field should the response body be saved.\n\nFor more information about the format, see [Referencing fields](https://conduit.io/docs/processors/referencing-fields).",
         "type": "string",
         "validations": []
       },
       "response.status": {
         "default": "",
-        "description": "Specifies in which field should the response status be saved.\nThe value of this parameter should be a valid record field reference\n(see [`sdk.NewReferenceResolver`](https://github.com/ConduitIO/conduit-processor-sdk/blob/02b60dc7acad11a2fcdf0a0188a13cf573648650/util.go#L53-L66)).\nIf no value is set, then the response status will NOT be saved.",
+        "description": "Specifies in which field should the response status be saved. If no value\nis set, then the response status will NOT be saved.\n\nFor more information about the format, see [Referencing fields](https://conduit.io/docs/processors/referencing-fields).",
         "type": "string",
         "validations": []
       }

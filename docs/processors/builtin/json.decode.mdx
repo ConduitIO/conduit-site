@@ -36,8 +36,10 @@ This processor is only applicable to fields under `.Key`, `.Payload`.Before and
       <td>string</td>
       <td><Chip label="null" /></td>
       <td>
-Field is the target field, as it would be addressed in a Go template (e.g. `.Payload.After.foo`).
-you can only decode fields that are under `.Key` and `.Payload`.
+Field is a reference to the target field. Only fields that are under
+`.Key` and `.Payload` can be decoded.
+
+For more information about the format, see [Referencing fields](https://conduit.io/docs/processors/referencing-fields).
       </td>
     </tr>
   </table>
