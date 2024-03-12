@@ -46,7 +46,7 @@ pipelines:                      # A list of pipeline configurations
         processors:                   # A list of processor configurations, processors are attached to the connector
           - id: proc1                 # Processor ID [required]
             plugin: custom.javascript # Processor plugin name [required]
-            condition: "{{ eq .Metadata.foo "bar" }}"  # Condition (Go template expression) that dictates if the record will be passed to the processor or not.
+            condition: '{{ eq .Metadata.foo "bar" }}'  # Condition (Go template expression) that dictates if the record will be passed to the processor or not.
             workers: 2                # Number of parallel workers
             settings:                 # A map of configuration keys and values for the processor (specific to the chosen processor plugin)
               script: >
