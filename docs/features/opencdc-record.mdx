@@ -120,7 +120,7 @@ Only available in records once they are written by a **destination plugin**:
 }
 ```
 
-When a record is sent to the [Dead-Letter Queue (DLQ)](/dead-letter-queue), you'll also see these extra fields that will give you an insight into why the landed in the DQL.
+When a record is sent to the [Dead-Letter Queue (DLQ)](/dead-letter-queue), you'll also see these extra fields that will give you an insight into why the record landed in the DLQ.
 
 - `conduit.dlq.nack.error` contains the error that caused a record to be nacked and pushed to the dead-letter queue.
 - `conduit.dlq.nack.node.id` is the ID of the internal node that nacked the record. 
@@ -129,7 +129,7 @@ When a record is sent to the [Dead-Letter Queue (DLQ)](/dead-letter-queue), you'
 
 These metadata fields will be provided by each connector implementation allowing them to add any necessary metadata. As previously mentioned, to avoid unintended conflicts of metadata keys, the convention these will follow are the same as before, indicating first the connector name that's adding them.
 
-Taking the same [previous record example](#representation), you'll notice there is a metadata key named `file.path`, which would indicate this is record processed by a `file` plugin.
+Taking the same [previous record example](#representation), you'll notice there is a metadata key named `file.path`, which would indicate this field was added by a `file` plugin.
 
 ```json
 {
