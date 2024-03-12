@@ -3,9 +3,8 @@ title: 'Referencing record fields'
 sidebar_position: 1
 ---
 
-Very often, processors can be configured to work on a specific field in a
-record (which is always in
-the [OpenCDC format](/docs/features/opencdc-record)). That is done through
+Many builtin processors can be configured to work on a specific field in an
+[OpenCDC record](/docs/features/opencdc-record). That is done through
 _field references_, strings that describe the path to a field in a record. That
 can be a field within an OpenCDC record (such as the metadata or the payload),
 but it can also be a nested field, as we will see in the examples below.
@@ -16,32 +15,78 @@ To reference one of the OpenCDC record fields, the following should be used:
 * `.Operation`
 * `.Key`
 * `.Metadata`
-* `.Payload`
+* `.Payload.Before`
+* `.Payload.After`
 
-To access a key in a map (e.g. the metadata) or a field in a structured field (
-e.g. a payload's `After` field), the dot, or the bracket notation can be used.
-The bracket notation is useful when the key name contains non-alphanumeric
-characters. The following examples demonstrate that:
+To access a key in a map (i.e. `.Metadata`) or a field in a structured field (
+i.e. `.Key`, `.Payload.Before` or `.Payload.After`), the dot or the bracket
+notation can be used. The bracket notation is useful when the key name contains
+non-alphanumeric characters.
 
-* `.Metadata.foo` references the value associated with the key `foo` in a
-  record's metadata.
-* `.Metadata["foo bar"]` references the value associated with the key `foo bar`
-  in a record's metadata. The dot notation (i.e. `.Metadata.foo bar`)cannot be
-  used here because the referenced key `foo bar` contains a non-alphanumeric
-  character (the space).
-* `.Payload.After.foo` references the field `foo` in the `After` field of a
-  record's payload. This is possible only if `After`'s type
-  is `opencdc.StructuredData`.
-* Arbitrary nesting is possible. Let's assume we have the following record:
-  ```go
-  opencdc.Record{
-      Payload: opencdc.Change{
-          After: opencdc.StructuredData{
-              "foo": map[string]interface{}{
-                  "bar baz": "qux",
-              },
-          },
-      },
-  }
-  ```
-  The reference `.Payload.After.foo["bar baz"]` will return the value `qux`.
+## Examples
+
+Below is an example OpenCDC record (left) and the field references that can be
+used to access the fields in the record (right):
+
+<table style={{backgroundColor: "#282A36"}}>
+    <tr>
+        <td>
+```json showLineNumbers
+{
+    "position": "c3RhbmRpbmc=",
+    "operation": "update",
+    "metadata": {
+        "foo": "bar",
+        "opencdc.readAt": "1663858188836816000"
+    },
+    "key": "cGFkbG9jay1rZXk=",
+    "payload": {
+        "before": "eWVsbG93",
+        "after": {
+            "boolField": true,
+            "nested": {
+                "non-alphanumeric key!": "baz"
+            }
+        }
+    }
+}
+```
+        </td>
+        <td>
+```text
+.
+.Position
+.Operation
+.Metadata
+.Metadata.foo / .Metadata["foo"]
+.Metadata["opencdc.readAt"]
+
+.Key
+.Payload
+.Payload.Before
+.Payload.After
+.Payload.After.boolField / .Payload.After["boolField"]
+.Payload.After.nested / .Payload.After["nested"]
+.Payload.After.nested["non-alphanumeric key!"] / .Payload.After["nested"]["non-alphanumeric key!"]
+
+
+
+
+```
+        </td>
+    </tr>
+</table>
+
+A few things to note:
+
+* `.` references the entire record (i.e. the JSON object above).
+* Fields `.Key` and `.Payload.Before` contain raw data (i.e. byte arrays), which
+  is represented as a base64-encoded string. We can not reference nested fields
+  in raw data. However, if the raw data is first parsed into structured data (e.g.
+  if it's a JSON string we can use the
+  [`json.decode`](/docs/processors/builtin/json.decode) processor), then we can
+  reference the fields in the structured data.
+* `.Metadata["opencdc.readAt"]` references the field on line 6 using the bracket
+  notation. The dot notation (i.e. `.Metadata.opencdc.readAt`) cannot be used
+  here because the referenced key `opencdc.readAt` contains a non-alphanumeric
+  character (the dot).
