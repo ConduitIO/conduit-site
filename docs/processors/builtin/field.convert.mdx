@@ -36,8 +36,11 @@ to parse it into structured data first.
       <td>string</td>
       <td><Chip label="null" /></td>
       <td>
-Field is the target field, as it would be addressed in a Go template (e.g. `.Payload.After.foo`).
-you can only convert fields that are under `.Key` and `.Payload`, and said fields should contain structured data.
+Field is the target field that should be converted.
+Note that you can only convert fields in structured data under `.Key` and
+`.Payload`.
+
+For more information about the format, see [Referencing fields](https://conduit.io/docs/processors/referencing-fields).
       </td>
     </tr>
     <tr>

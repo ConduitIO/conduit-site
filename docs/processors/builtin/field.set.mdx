@@ -36,8 +36,10 @@ Note that this processor only runs on structured data, if the record contains ra
       <td>string</td>
       <td><Chip label="null" /></td>
       <td>
-Field is the target field, as it would be addressed in a Go template (e.g. `.Payload.After.foo`).
-Note that it is not allowed to set the `.Position` field.
+Field is the target field that will be set. Note that it is not allowed
+to set the `.Position` field.
+
+For more information about the format, see [Referencing fields](https://conduit.io/docs/processors/referencing-fields).
       </td>
     </tr>
     <tr>
