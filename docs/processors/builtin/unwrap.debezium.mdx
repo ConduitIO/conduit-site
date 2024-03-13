@@ -11,7 +11,7 @@ import Box from "@mui/system/Box";
 
 # `unwrap.debezium`
 
-Unwraps a Debezium record from the input OpenCDC record.
+Unwraps a Debezium record from the input [OpenCDC record](https://conduit.io/docs/features/opencdc-record).
 
 ## Description
 
@@ -21,7 +21,7 @@ completely, except for the position.
 The Debezium record's metadata and the wrapping record's metadata is merged, with the Debezium metadata having precedence.
 
 This is useful in cases where Conduit acts as an intermediary between a Debezium source and a Debezium destination. 
-In such cases, the Debezium record is set as the OpenCDC record's payload, and needs to be unwrapped for further usage.
+In such cases, the Debezium record is set as the [OpenCDC record](https://conduit.io/docs/features/opencdc-record)'s payload,and needs to be unwrapped for further usage.
 
 ## Configuration parameters
 
