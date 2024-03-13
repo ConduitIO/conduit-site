@@ -3,11 +3,12 @@ title: "Conduit Architecture"
 sidebar_position: 2
 ---
 
-Here is an overview of the Conduit Architecture.
+Here is an overview of the internal Conduit Architecture.
 
 ![Conduit Architecture](/img/conduit/conduit-diagram.svg)
 
 Conduit is split into the following layers:
+
 * **API layer** - exposes the public APIs used to communicate with Conduit. It exposes 2 types of APIs:
   * **gRPC** - this is the main API provided by Conduit. The gRPC API definition can be found in
     [api.proto](https://github.com/ConduitIO/conduit/blob/main/proto/api/v1/api.proto), it can be used to generate code for the client.
@@ -34,10 +35,20 @@ Conduit is split into the following layers:
       The Connector Service manages the creation of connectors and permanently stores them in the Connector Store. A
       connector can be configured to reference a number of processors, which will be executed only on records that are
       received from or forwarded to that specific connector.
+      * **Connector Plugin** - interfaces with Conduit on one side, and with the standalone connector plugin on the
+      other and facilitates the communication between them. A standalone connector plugin is a separate process that
+      implements the interface defined in
+      [conduit-connector-protocol](https://github.com/ConduitIO/conduit-connector-protocol) and provides the read/write
+      functionality for a specific resource (e.g. a database).
     * **Processor** - processors are stateless components that operate on a single record and can execute arbitrary
       actions before forwarding the record to the next node in the pipeline. A processor can also choose to drop a
       record without forwarding it. They can be attached either to a connector or to a pipeline, based on that they are
       either processing only records that flow from/to a connector or all records that flow through a pipeline.
+      * **Processor Plugin** - interfaces with Conduit on one side, and with the standalone processor plugin on the
+      other and facilitates the communication between them. A standalone processor plugin is a WASM binary that
+      implements the interface defined in
+      [conduit-processor-sdk](https://github.com/ConduitIO/conduit-processor-sdk) and provides the logic for processing
+      a record (e.g. transforming its content).
   * **Pipeline Engine** - the pipeline engine consists of nodes that can be connected together with Go channels to form
     a data pipeline.
     * **Node** - a node is a lightweight component that runs in its own goroutine and runs as long as the incoming channel
@@ -48,10 +59,3 @@ Conduit is split into the following layers:
 * **Persistence** - this layer is used directly by the orchestration layer and indirectly by the core layer (through
   stores) to persist data. It provides the functionality of creating transactions and storing, retrieving and deleting
   arbitrary data like configurations or state.
-* **Plugins** - while this is not a layer in the same sense as the other layers, it is a component separate from
-  everything else. It interfaces with the connector on one side and with Conduit plugins on the other and facilitates
-  the communication between them. A Conduit plugin is a separate process that implements the interface defined in
-  [conduit-connector-protocol](https://github.com/ConduitIO/conduit-connector-protocol) and provides the
-  read/write functionality for a specific resource (e.g. a database).
-
-For more see [GitHub](https://github.com/ConduitIO/conduit/blob/main/docs/architecture.md).
