@@ -30,6 +30,14 @@ needs to happen for different sources or destinations, you have two options:
 2. If records from some, but not all, sources (or destinations) need to be processed in the same way, then you need to
    create multiple processors (one for each source or destination) and configure them in the same way.
 
+## Supported processors
+
+Currently Conduit supports different types of processors:
+
+- [Built-in processors](/docs/processors/builtin) that will perform the most common operations you could expect such as filtering fields, replacing fields, posting payloads to a HTTP endpoint, etc. 
+- [Custom processors](/docs/processors/standalone-processors) are the ones you could write yourself to do anything that's not already covered by the [Built-in](/docs/processors/builtin) ones.
+
+
 ## Creating a processor through a pipeline configuration file
 
 Creating a pipeline processor through a pipeline configuration file can be done as below:
@@ -93,10 +101,3 @@ POST /v1/processors
 
 The request to create a processor is described
 in [api.swagger.json](https://github.com/ConduitIO/conduit/blob/main/pkg/web/openapi/swagger-ui/api/v1/api.swagger.json).
-
-## Supported processors
-
-Conduit provides a number of [built-in processors](/docs/processors/builtin), such as filtering fields, replacing them,
-posting payloads to HTTP endpoints etc.
-
-Conduit also provides the ability to write [custom processors](/docs/processors/standalone-processors).
