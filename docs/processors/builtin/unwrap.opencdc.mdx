@@ -11,15 +11,15 @@ import Box from "@mui/system/Box";
 
 # `unwrap.opencdc`
 
-Unwraps an OpenCDC record saved in one of the record's fields.
+Unwraps an [OpenCDC record](https://conduit.io/docs/features/opencdc-record) saved in one of the record's fields.
 
 ## Description
 
 The `unwrap.opencdc` processor is useful in situations where a record goes through intermediate
-systems before being written to a final destination. In these cases, the original OpenCDC record is part of the payload
+systems before being written to a final destination. In these cases, the original [OpenCDC record](https://conduit.io/docs/features/opencdc-record) is part of the payload
 read from the intermediate system and needs to be unwrapped before being written.
 
-Note: if the wrapped OpenCDC record is not in a structured data field, then it's assumed that it's stored in JSON format.
+Note: if the wrapped [OpenCDC record](https://conduit.io/docs/features/opencdc-record) is not in a structured data field, then it's assumed that it's stored in JSON format.
 
 ## Configuration parameters
 
@@ -43,9 +43,9 @@ Field is a reference to the field which contains the OpenCDC record
 
 ## Examples
 
-### Unwrap an OpenCDC record
+### Unwrap an [OpenCDC record](https://conduit.io/docs/features/opencdc-record)
 
-In this example we use the `unwrap.opencdc` processor to unwrap the OpenCDC record found in the record's `.Payload.After` field.
+In this example we use the `unwrap.opencdc` processor to unwrap the [OpenCDC record](https://conduit.io/docs/features/opencdc-record) found in the record's `.Payload.After` field.
 
 #### Configuration parameters
 
