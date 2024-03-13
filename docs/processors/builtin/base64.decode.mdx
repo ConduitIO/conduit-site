@@ -32,8 +32,10 @@ result in the target field. It is not allowed to decode the `.Position` field.
       <td>string</td>
       <td><Chip label="null" /></td>
       <td>
-Field is the target field, as it would be addressed in a Go template (e.g. `.Payload.After.foo`).
-Note that it is not allowed to base64 decode the `.Position` field.
+Field is the reference to the target field. Note that it is not allowed to
+base64 decode the `.Position` field.
+
+For more information about the format, see [Referencing fields](https://conduit.io/docs/processors/referencing-fields).
       </td>
     </tr>
   </table>
