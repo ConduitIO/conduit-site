@@ -51,8 +51,8 @@ sequenceDiagram
    This call is blocking and will return when a command is available.
 4. Conduit populates the allocated memory with a command and returns the size of
    the command or an error code. See [error codes](#error-codes) for more a list
-   of possible error codes. See [Commands](#commands)
-   for more information about the command format.
+   of possible error codes. See [`command_request`](#command_request) for more
+   information about the command format.
 5. In case Conduit returns an error code, the processor should exit with the
    error code.
 6. The processor parses and executes the command. Note that everything except
@@ -60,7 +60,7 @@ sequenceDiagram
    processor SDK.
 7. The processor calls `command_response` to send the result back to Conduit.
    This call should happen even if the command execution failed (the result
-   should include the error). See [Commands](#commands)
+   should include the error). See [`command_response`](#command_response)
    for more information about the response format.
 8. Conduit acknowledges the result and the processor can continue retrieving
    the next command.
