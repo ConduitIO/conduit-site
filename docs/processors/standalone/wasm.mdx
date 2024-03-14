@@ -2,15 +2,15 @@
 sidebar_position: 2
 ---
 
-# How it works under the hood (WASM)
+# How it works under the hood (Wasm)
 
 Here we will describe how a standalone processor communicates with Conduit under
 the hood. This is useful to understand when writing a processor SDK.
 
 ## Overview
 
-A standalone processor is a plugin that is compiled into WebAssembly (WASM) and
-interacts with Conduit using two host functions: `command_request` and
+A standalone processor is a plugin that is compiled into [WebAssembly](https://webassembly.org)
+(Wasm) and interacts with Conduit using two host functions: `command_request` and
 `command_response`. The plugin is expected to continuously call these functions,
 allocate memory as needed, parse commands, execute them, and respond back to the
 host.
