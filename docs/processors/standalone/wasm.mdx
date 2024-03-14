@@ -70,6 +70,13 @@ sequenceDiagram
 Conduit exposes a module named `conduit` with host functions, that allow the
 processor to interact with Conduit.
 
+Example host function import in Go:
+
+```go
+//go:wasmimport conduit command_request
+func _commandRequest(ptr unsafe.Pointer, size uint32) uint32
+```
+
 All host functions accept two arguments:
 
 1. A pointer to a memory address where Conduit can retrieve the request and/or
@@ -86,13 +93,6 @@ The data in the memory buffer is always serialized using
 in the [Buf schema registry](https://buf.build/conduitio/conduit-processor-sdk/docs/main:processor.v1).
 
 ### `command_request`
-
-Example host function import in Go:
-
-```go
-//go:wasmimport conduit command_request
-func _commandRequest(ptr unsafe.Pointer, size uint32) uint32
-```
 
 The processor should call this function to retrieve a command request from
 Conduit. The function is blocking and will return only when a command is
@@ -133,16 +133,26 @@ The processor should call this function to send a
 [`CommandResponse`](#commandresponse) back to Conduit. The function returns 0 if
 the response was successfully received, or an [error code](#error-codes).
 
-- [`Specify.Response`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:processor.v1#processor.v1.Specify.Response) -
-  TBD
-- [`Configure.Response`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:processor.v1#processor.v1.Configure.Response) -
-  TBD
-- [`Open.Response`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:processor.v1#processor.v1.Open.Response) -
-  TBD
-- [`Process.Response`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:processor.v1#processor.v1.Process.Response) -
-  TBD
-- [`Teardown.Response`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:processor.v1#processor.v1.Teardown.Response) -
-  TBD
+The memory address sent to `command_response` should contain a
+[`CommandResponse`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:processor.v1#processor.v1.CommandResponse):
+
+- [`Specify.Response`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:processor.v1#processor.v1.Specify.Response)
+  should be sent in response to a
+  [`Specify.Request`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:processor.v1#processor.v1.Specify.Request).
+- [`Configure.Response`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:processor.v1#processor.v1.Configure.Response)
+  should be sent in response to a
+  [`Configure.Request`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:processor.v1#processor.v1.Configure.Request).
+- [`Open.Response`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:processor.v1#processor.v1.Open.Response)
+  should be sent in response to a
+  [`Open.Request`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:processor.v1#processor.v1.Open.Request).
+- [`Process.Response`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:processor.v1#processor.v1.Process.Response)
+  should be sent in response to a
+  [`Process.Request`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:processor.v1#processor.v1.Process.Request).
+- [`Teardown.Response`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:processor.v1#processor.v1.Teardown.Response)
+  should be sent in response to a
+  [`Teardown.Request`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:processor.v1#processor.v1.Teardown.Request).
+- [`Error`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:processor.v1#processor.v1.Error)
+  should be sent in response to any command request that failed to be processed.
 
 ## Error codes
 
