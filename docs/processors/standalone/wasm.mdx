@@ -164,3 +164,56 @@ Current error codes:
 - `4,294,967,291` - memory out of range. Internal error in Conduit, where it
   tried to write into the allocated memory, but failed to do so, as the size was
   insufficient.
+
+## Logging
+
+The processor can log messages to `stderr` and `stdout` and they will show up in
+the Conduit logs. Even though no specific format is enforced, it is recommended
+to emit logs in a JSON format, as Conduit will be able to parse and display them
+in a more readable way.
+
+There are a few standard fields that should be included in every log message:
+
+- `level` - The log level, one of `trace`, `debug`, `info`, `warn`, `error`. If
+  the log level is not specified, the message will be logged without a level.
+- `message` - The log message.
+
+Conduit will automatically add the following fields to all messages:
+
+- `time` - Will contain the time when the log was emitted.
+- `processor_id` - The unique identifier of the processor entity in Conduit
+  associated with this plugin instance.
+
+Example log message emitted by the plugin:
+
+```json
+{
+  "level": "info",
+  "contextual-info": "some contextual info",
+  "message": "Processor is running"
+}
+```
+
+:::tip
+
+Please be mindful of the log level you use. Processors are executed in the
+hot-path of the data processing pipeline and excessive logging can have a
+negative impact on the performance of the pipeline.
+
+Also make sure you respect the log level set by Conduit in the environment
+variable `CONDUIT_LOG_LEVEL` to reduce unnecessary verbosity.
+
+:::
+
+## Environment variables
+
+When Conduit starts the processor, it will set the following environment
+variables:
+
+- `CONDUIT_LOG_LEVEL` indicates the log level that the processor should use.
+  This is useful to control the verbosity of the logs emitted by the processor.
+  The log level can be one of `trace`, `debug`, `info`, `warn`, `error`.
+- `CONDUIT_PROCESSOR_ID` is the unique identifier of the processor entity in
+  Conduit associated with this plugin instance. Note that Conduit will
+  automatically add this ID to log messages emmitted by the plugin, so you don't
+  have to attach it manually.
