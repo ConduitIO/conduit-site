@@ -2,18 +2,48 @@
 sidebar_position: 2
 ---
 
-# How it works under the hood (Wasm)
+# How it works
 
-Here we will describe how a standalone processor communicates with Conduit under
-the hood. This is useful to understand when writing a processor SDK.
+Here we will describe how Conduit runs standalone processors under the hood.
+This is useful to understand when writing a processor SDK.
 
-## Overview
+## Why WebAssembly?
 
-A standalone processor is a plugin that is compiled into [WebAssembly](https://webassembly.org)
-(Wasm) and interacts with Conduit using two host functions: `command_request` and
-`command_response`. The plugin is expected to continuously call these functions,
-allocate memory as needed, parse commands, execute them, and respond back to the
-host.
+Conduit uses [WebAssembly](https://webassembly.org) (Wasm) to run standalone
+processors. Wasm is a binary instruction format, designed as a portable target
+for compilation of high-level languages like C/C++, Rust, Java and
+[more](https://webassembly.org/getting-started/developers-guide/). Wasm binaries
+are run using a Wasm runtime, in our case the [wazero](https://wazero.io)
+runtime.
+
+The main reason for using Wasm is to provide a secure and portable execution
+environment for the processor. Wasm is designed to be run in a sandboxed
+environment, which means that the processor cannot access the host system
+directly. This is important to ensure that the processor cannot access or modify
+the host system, and that it cannot access or modify other processors running in
+the same environment.
+
+### WASI support and limitations
+
+Conduit uses [WASI](https://wasi.dev) (WebAssembly System Interface) to
+provide a set of standard APIs that the processor can use to interact with the
+host system. Since WASI is still a work in progress, we are currently using the
+interface defined in [WASI preview 1](https://github.com/WebAssembly/WASI/blob/main/legacy/preview1/docs.md).
+
+:::info
+
+Because the processor has access to a limited set of system calls, it is not
+possible to use all the features of the host system. For example, the processor
+cannot access the file system, network, or any other system resource directly.
+
+:::
+
+## Processor lifecycle
+
+A standalone processor is a plugin, compiled into a Wasm binary which interacts
+with Conduit using two host functions: `command_request` and `command_response`.
+The plugin is expected to continuously call these functions, allocate memory as
+needed, parse commands, execute them, and respond back to the host.
 
 Below is a sequence diagram that shows the high level interaction between Conduit
 and a standalone processor.
