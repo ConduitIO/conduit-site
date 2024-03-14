@@ -21,22 +21,28 @@ attached to a single parent, which can be either a connector or a pipeline:
 - **Pipeline processors** receive all messages that flow through the pipeline, regardless of the
    source or destination. Pipeline processors are created by specifying the pipeline as the parent entity.
 
-Given that every processor can have one (and only one) parent, processors cannot be shared. In case the same processing
-needs to happen for different sources or destinations, you have two options:
-
-1. If records from all sources (or all destinations) need to be processed in the same way, then you can create
-   a **pipeline processor**.
-2. If records from some, but not all, sources (or destinations) need to be processed in the same way, then you need to
-   create multiple processors (one for each source or destination) and configure them in the same way.
 
 ## Supported processors
 
 Whenit comes to using a processor either on a connector, or a pipeline, Conduit supports different types:
 
 - [Built-in processors](/docs/processors/builtin) will perform the most common operations you could expect such as filtering fields, replacing fields, posting payloads to a HTTP endpoint, etc. These are already coming as part of Conduit, and you can simply start using them with a bit of configuration. [Check out this document to see everything that's available](/docs/processors/builtin).
-- [Custom processors](/docs/processors/standalone-processors) are the ones you could write yourself to do anything that's not already covered by the [Built-in](/docs/processors/builtin) ones. [Here's](/docs/processors/standalone-processors) more information about them. Using our [Wasm processor](/docs/processors/) you can even write your processor in your own coding language of choice.
+- [Standalone processors](/docs/processors/standalone-processors) are the ones you could write yourself to do anything that's not already covered by the [Built-in](/docs/processors/builtin) ones. [Here's](/docs/processors/standalone-processors) more information about them.
 
-## Creating a processor through a pipeline configuration file
+## How to use a processor for your pipeline or connector
+
+In these following examples, we're using the [`json.decode`](/docs/processors/builtin/json.decode), but you could use [any other you'd like](/docs/processors/builtin/).
+
+:::note
+
+When referencing the name of a processor there are different ways you can make sure you're using the one you'd like. Please, check out the [Referencing Processors](/docs/processors/referencing) documentation for more information.
+
+:::
+
+
+### Through a pipeline configuration file
+
+#### Using a pipeline processor
 
 Creating a pipeline processor through a pipeline configuration file can be done as below:
 
@@ -49,10 +55,12 @@ pipelines:
     # ...
     processors:
       - id: extract-name
-        type: extractfieldpayload
+        plugin: json.decode
         settings:
           field: name
 ```
+
+#### Using a connector processor
 
 Similarly, we can configure a connector processor, i.e. a processor attached to a connector:
 
@@ -65,7 +73,7 @@ pipelines:
         # other connector configuration
         processors:
           - id: extract-name
-            type: extractfieldpayload
+            plugin: json.decode
             settings:
               field: name
       # other connectors
@@ -73,29 +81,79 @@ pipelines:
 
 The documentation about pipeline configuration files can be found [here](/docs/configuration/pipeline-configuration-files).
 
-## Creating a processor through the HTTP API
+### Through the HTTP API
 
-Processors are created through the `/processors` endpoint. Here's an example:
+The processor endpoints live under the `/v1/processors` namespace, and if you'd like to use our [HTTP API](/api) t attach a processor to either connector or a pipeline, here's how you could do it.
+
+#### Using a pipeline processor
 
 ```json lines
-POST /v1/processors
+POST /v1/processor
 {
-  // type of the processor in Conduit
-  "type": "extractfieldpayload",
   "parent": {
-    // type of parent: TYPE_CONNECTOR or TYPE_PIPELINE
-    "type": "TYPE_CONNECTOR",
-    // parent ID (connector ID in this case)
-    "id": "aed07589-44d8-4c68-968c-1f6c5197f13b"
+    "type": "TYPE_PIPELINE",
+    "id": "pipeline-id"
   },
   "config": {
     "settings": {
-      // configuration map for this processor
       "field": "name"
-    }
-  }
+    },
+    "workers": 0
+  },
+  "condition": "string",
+  "plugin": "json.decode"
 }
 ```
 
-The request to create a processor is described
-in [api.swagger.json](https://github.com/ConduitIO/conduit/blob/main/pkg/web/openapi/swagger-ui/api/v1/api.swagger.json).
+#### Using a connector processor
+
+```json lines
+POST /v1/processor
+{
+  "parent": {
+    "type": "TYPE_CONNECTOR",
+    "id": "connector-id"
+  },
+  "config": {
+    "settings": {
+      "field": "name"
+    },
+    "workers": 0
+  },
+  "condition": "string",
+  "plugin": "json.decode"
+}
+```
+
+#### Check the processor was successfully created
+
+To list all processors that are registered in your pipeline (either connector or pipeline processors) you can make the following request:
+
+```json lines
+GET /v1/processors
+[
+  {
+    "condition": "string",
+    "config": {
+      "settings": {},
+      "workers": 0
+    },
+    "createdAt": "1970-01-01T00:00:00.000Z",
+    "id": "string",
+    "parent": {
+      "id": "string",
+      "type": "TYPE_UNSPECIFIED"
+    },
+    "plugin": "json.decode",
+    "updatedAt": "1970-01-01T00:00:00.000Z"
+  }
+]
+```
+
+:::tip
+
+To list all the different API HTTP requests you could perform check out [our API](/api). These are also described in our [api.swagger.json](https://github.com/ConduitIO/conduit/blob/main/pkg/web/openapi/swagger-ui/api/v1/api.swagger.json).
+
+:::
+
+
