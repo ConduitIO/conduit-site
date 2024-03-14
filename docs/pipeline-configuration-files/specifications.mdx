@@ -23,7 +23,7 @@ configuration file, will be provisioned in the order in which they are defined.
 You can get a quick overview of the fields by looking at the following example:
 
 ```yaml title="example_pipeline.yml"
-version: 2.0                    # Parser version
+version: 2.2                    # Parser version
 
 pipelines:                      # A list of pipeline configurations
   - id: pipeline1               # Pipeline ID [required]
@@ -71,8 +71,8 @@ pipelines:                      # A list of pipeline configurations
 
 - **Data Type**: String
 - **Required**: No
-- **Default**: latest (`2.0`)
-- **Allowed Values**: `1.0`, `1.1`, `2.0`
+- **Default**: latest (`2.2`)
+- **Allowed Values**: `1.0`, `1.1`, `2.0`, `2.1` , `2.2` 
 - **Description**: Version defines the schema version for the pipeline
   configuration file and controls which parser is used to decode it.
 
