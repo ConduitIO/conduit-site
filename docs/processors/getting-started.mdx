@@ -4,39 +4,37 @@ sidebar_label: "Getting Started"
 sidebar_position: 0
 ---
 
-A processor is a component that operates on a single record that flows through a pipeline. It can either change the
-record (i.e. **transform** it) or **filter** it out based on some criteria. Since they are part of pipelines, making 
+A processor is a component that operates on a single record that flows through a pipeline. It can either **transform** the record, or **filter** it out based on some criteria. Since they are part of pipelines, making 
 yourself familiar with [pipeline semantics](/docs/features/pipeline-semantics) is highly recommended.
 
 ![Pipeline](/img/pipeline_example.svg)
 
-Processors are **optional** components in a pipeline, i.e. a pipeline can be started without them. They are always
-attached to a single parent, which can be either a connector or a pipeline. With that, we can say that we have the following
-types of processors:
+Processors are **optional** components in a pipeline (i.e. a pipeline can be started without them), and they are always
+attached to a single parent, which can be either a connector or a pipeline:
 
-1. **Source processors**: these processors only receive messages originating at a specific source connector. Source
+- **Connector processors**:
+  - **Source processors** only receive messages originating at a specific source connector. Source
    processors are created by specifying the corresponding source connector as the parent entity.
-2. **Pipeline processors**: these processors receive all messages that flow through the pipeline, regardless of the
-   source or destination. Pipeline processors are created by specifying the pipeline as the parent entity.
-3. **Destination processors**: these processors receive only messages that are meant to be sent to a specific
+   - **Destination processors** only receive messages that are meant to be sent to a specific
    destination connector. Destination processors are created by specifying the corresponding destination connector as
    the parent entity.
+- **Pipeline processors** receive all messages that flow through the pipeline, regardless of the
+   source or destination. Pipeline processors are created by specifying the pipeline as the parent entity.
 
 Given that every processor can have one (and only one) parent, processors cannot be shared. In case the same processing
 needs to happen for different sources or destinations, you have two options:
 
 1. If records from all sources (or all destinations) need to be processed in the same way, then you can create
-   a pipeline processor
+   a **pipeline processor**.
 2. If records from some, but not all, sources (or destinations) need to be processed in the same way, then you need to
    create multiple processors (one for each source or destination) and configure them in the same way.
 
 ## Supported processors
 
-Currently Conduit supports different types of processors:
+Whenit comes to using a processor either on a connector, or a pipeline, Conduit supports different types:
 
-- [Built-in processors](/docs/processors/builtin) that will perform the most common operations you could expect such as filtering fields, replacing fields, posting payloads to a HTTP endpoint, etc. 
-- [Custom processors](/docs/processors/standalone-processors) are the ones you could write yourself to do anything that's not already covered by the [Built-in](/docs/processors/builtin) ones.
-
+- [Built-in processors](/docs/processors/builtin) will perform the most common operations you could expect such as filtering fields, replacing fields, posting payloads to a HTTP endpoint, etc. These are already coming as part of Conduit, and you can simply start using them with a bit of configuration. [Check out this document to see everything that's available](/docs/processors/builtin).
+- [Custom processors](/docs/processors/standalone-processors) are the ones you could write yourself to do anything that's not already covered by the [Built-in](/docs/processors/builtin) ones. [Here's](/docs/processors/standalone-processors) more information about them. Using our [Wasm processor](/docs/processors/) you can even write your processor in your own coding language of choice.
 
 ## Creating a processor through a pipeline configuration file
 
