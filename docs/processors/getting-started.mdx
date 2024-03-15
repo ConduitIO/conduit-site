@@ -4,38 +4,50 @@ sidebar_label: "Getting Started"
 sidebar_position: 0
 ---
 
-A processor is a component that operates on a single record that flows through a pipeline. It can either change the
-record (i.e. **transform** it) or **filter** it out based on some criteria. Since they are part of pipelines, making 
+A processor is a component that operates on a single record that flows through a pipeline. It can either **transform** the record, or **filter** it out based on some criteria. Since they are part of pipelines, making 
 yourself familiar with [pipeline semantics](/docs/features/pipeline-semantics) is highly recommended.
 
 ![Pipeline](/img/pipeline_example.svg)
 
-Processors are **optional** components in a pipeline, i.e. a pipeline can be started without them. They are always
-attached to a single parent, which can be either a connector or a pipeline. With that, we can say that we have the following
-types of processors:
+Processors are **optional** components in a pipeline (i.e. a pipeline can be started without them), and they are always
+attached to a single parent, which can be either a connector or a pipeline:
 
-1. **Source processors**: these processors only receive messages originating at a specific source connector. Source
+- **Connector processors**:
+  - **Source processors** only receive messages originating at a specific source connector. Source
    processors are created by specifying the corresponding source connector as the parent entity.
-2. **Pipeline processors**: these processors receive all messages that flow through the pipeline, regardless of the
-   source or destination. Pipeline processors are created by specifying the pipeline as the parent entity.
-3. **Destination processors**: these processors receive only messages that are meant to be sent to a specific
+   - **Destination processors** only receive messages that are meant to be sent to a specific
    destination connector. Destination processors are created by specifying the corresponding destination connector as
    the parent entity.
+- **Pipeline processors** receive all messages that flow through the pipeline, regardless of the
+   source or destination. Pipeline processors are created by specifying the pipeline as the parent entity.
 
-Given that every processor can have one (and only one) parent, processors cannot be shared. In case the same processing
-needs to happen for different sources or destinations, you have two options:
 
-1. If records from all sources (or all destinations) need to be processed in the same way, then you can create
-   a pipeline processor
-2. If records from some, but not all, sources (or destinations) need to be processed in the same way, then you need to
-   create multiple processors (one for each source or destination) and configure them in the same way.
+## Processor types
 
-## Creating a processor through a pipeline configuration file
+When it comes to using a processor, Conduit supports different types:
+
+- [Built-in processors](/docs/processors/builtin) will perform the most common operations you could expect such as filtering fields, replacing fields, posting payloads to a HTTP endpoint, etc. These are already coming as part of Conduit, and you can simply start using them with a bit of configuration. [Check out this document to see everything that's available](/docs/processors/builtin).
+- [Standalone processors](/docs/processors/standalone-processors) are the ones you could write yourself to do anything that's not already covered by the [Built-in](/docs/processors/builtin) ones. [Here's](/docs/processors/standalone-processors) more information about them.
+
+## How to use a processor
+
+In these following examples, we're using the [`json.decode`](/docs/processors/builtin/json.decode), but you could use any other you'd like from our [Built-in](/docs/processors/builtin/) ones, or even [reference](/docs/processors/referencing) your own [Standalone processor](/docs/processors/standalone-processors).
+
+:::info
+
+When referencing the name of a processor plugin there are different ways you can make sure you're using the one you'd like. Please, check out the [Referencing Processors](/docs/processors/referencing) documentation for more information.
+
+:::
+
+
+### Using a [pipeline configuration file](/docs/pipeline-configuration-files/getting-started)
+
+#### Using a pipeline processor
 
 Creating a pipeline processor through a pipeline configuration file can be done as below:
 
 ```yaml
-version: 2.0
+version: 2.2
 pipelines:
   - id: example-pipeline
     connectors:
@@ -43,15 +55,17 @@ pipelines:
     # ...
     processors:
       - id: extract-name
-        type: extractfieldpayload
+        plugin: json.decode
         settings:
           field: name
 ```
 
+#### Using a connector processor
+
 Similarly, we can configure a connector processor, i.e. a processor attached to a connector:
 
 ```yaml
-version: 2.0
+version: 2.2
 pipelines:
   - id: example-pipeline
     connectors:
@@ -59,7 +73,7 @@ pipelines:
         # other connector configuration
         processors:
           - id: extract-name
-            type: extractfieldpayload
+            plugin: json.decode
             settings:
               field: name
       # other connectors
@@ -67,36 +81,17 @@ pipelines:
 
 The documentation about pipeline configuration files can be found [here](/docs/configuration/pipeline-configuration-files).
 
-## Creating a processor through the HTTP API
+### Using the [HTTP API](/api)
 
-Processors are created through the `/processors` endpoint. Here's an example:
+The processor endpoints live under the `/v1/processors` namespace, and to attach a processor to either connector or a pipeline, you could do a `POST` request to `/v1/processors` specifying `parent.type` as `TYPE_PIPELINE` or `TYPE_CONNECTOR`. Default value is `TYPE_UNSPECIFIED`. 
 
-```json lines
-POST /v1/processors
-{
-  // type of the processor in Conduit
-  "type": "extractfieldpayload",
-  "parent": {
-    // type of parent: TYPE_CONNECTOR or TYPE_PIPELINE
-    "type": "TYPE_CONNECTOR",
-    // parent ID (connector ID in this case)
-    "id": "aed07589-44d8-4c68-968c-1f6c5197f13b"
-  },
-  "config": {
-    "settings": {
-      // configuration map for this processor
-      "field": "name"
-    }
-  }
-}
-```
+[Here's](/api#post-/v1/processors) how the entire request could look like.
 
-The request to create a processor is described
-in [api.swagger.json](https://github.com/ConduitIO/conduit/blob/main/pkg/web/openapi/swagger-ui/api/v1/api.swagger.json).
 
-## Supported processors
+:::tip
 
-Conduit provides a number of [built-in processors](/docs/processors/builtin), such as filtering fields, replacing them,
-posting payloads to HTTP endpoints etc.
+To list all the different API HTTP requests you could perform check out our [HTTP API](/api). These are also described in our [api.swagger.json](https://github.com/ConduitIO/conduit/blob/main/pkg/web/openapi/swagger-ui/api/v1/api.swagger.json).
 
-Conduit also provides the ability to write [custom processors](/docs/processors/standalone-processors).
+:::
+
+
