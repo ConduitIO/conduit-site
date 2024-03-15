@@ -7,7 +7,7 @@ sidebar_position: 2
 Here we will describe how Conduit runs standalone processors under the hood.
 This is useful to understand when writing a processor SDK.
 
-## Why WebAssembly?
+## WebAssembly
 
 Conduit uses [WebAssembly](https://webassembly.org) (Wasm) to run standalone
 processors. Wasm is a binary instruction format, designed as a portable target
@@ -187,7 +187,7 @@ The memory address sent to `command_response` should contain a
 ## Error codes
 
 The last 100 numbers at the end of an `uin32` (between 4,294,967,195 and
-4,294,967,294) is reserved for error codes. If one of the host functions returns
+4,294,967,294) are reserved for error codes. If one of the host functions returns
 a number in this range it represents an error code and the plugin should stop
 running.
 
