@@ -83,7 +83,7 @@ The documentation about pipeline configuration files can be found [here](/docs/c
 
 ### Using the [HTTP API](/api)
 
-The processor endpoints live under the `/v1/processors` namespace, and to attach a processor to either connector or a pipeline, you could simply do a `POST` request to `/v1/processors` specifying `parent.type` as `TYPE_PIPELINE` or `TYPE_CONNECTOR`. Default value is `TYPE_UNSPECIFIED`. 
+The processor endpoints live under the `/v1/processors` namespace, and to attach a processor to either connector or a pipeline, you could do a `POST` request to `/v1/processors` specifying `parent.type` as `TYPE_PIPELINE` or `TYPE_CONNECTOR`. Default value is `TYPE_UNSPECIFIED`. 
 
 [Here's](/api#post-/v1/processors) how the entire request could look like.
 
