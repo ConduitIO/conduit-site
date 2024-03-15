@@ -22,16 +22,16 @@ attached to a single parent, which can be either a connector or a pipeline:
    source or destination. Pipeline processors are created by specifying the pipeline as the parent entity.
 
 
-## Supported processors
+## Processor types
 
-When it comes to using a processor either on a connector, or a pipeline, Conduit supports different types:
+When it comes to using a processor, Conduit supports different types:
 
 - [Built-in processors](/docs/processors/builtin) will perform the most common operations you could expect such as filtering fields, replacing fields, posting payloads to a HTTP endpoint, etc. These are already coming as part of Conduit, and you can simply start using them with a bit of configuration. [Check out this document to see everything that's available](/docs/processors/builtin).
 - [Standalone processors](/docs/processors/standalone-processors) are the ones you could write yourself to do anything that's not already covered by the [Built-in](/docs/processors/builtin) ones. [Here's](/docs/processors/standalone-processors) more information about them.
 
-## How to use a processor for your pipeline or connector
+## How to use a processor
 
-In these following examples, we're using the [`json.decode`](/docs/processors/builtin/json.decode), but you could use any other you'd like from our [Built-in](/docs/processors/builtin/) ones, or even [reference](/docs/processors/referencing) your own [Standalone processor]((/docs/processors/standalone-processors)).
+In these following examples, we're using the [`json.decode`](/docs/processors/builtin/json.decode), but you could use any other you'd like from our [Built-in](/docs/processors/builtin/) ones, or even [reference](/docs/processors/referencing) your own [Standalone processor](/docs/processors/standalone-processors).
 
 :::info
 
@@ -40,7 +40,7 @@ When referencing the name of a processor plugin there are different ways you can
 :::
 
 
-### Through a [pipeline configuration file](/docs/pipeline-configuration-files/getting-started)
+### Using a [pipeline configuration file](/docs/pipeline-configuration-files/getting-started)
 
 #### Using a pipeline processor
 
@@ -81,7 +81,7 @@ pipelines:
 
 The documentation about pipeline configuration files can be found [here](/docs/configuration/pipeline-configuration-files).
 
-### Through the [HTTP API](/api)
+### Using the [HTTP API](/api)
 
 The processor endpoints live under the `/v1/processors` namespace, and if you'd like to use our [HTTP API](/api) to attach a processor to either connector or a pipeline, here's how you could do it.
 
