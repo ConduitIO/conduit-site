@@ -83,72 +83,10 @@ The documentation about pipeline configuration files can be found [here](/docs/c
 
 ### Using the [HTTP API](/api)
 
-The processor endpoints live under the `/v1/processors` namespace, and if you'd like to use our [HTTP API](/api) to attach a processor to either connector or a pipeline, here's how you could do it.
+The processor endpoints live under the `/v1/processors` namespace, and to attach a processor to either connector or a pipeline, you could simply do a `POST` request to `/v1/processors` specifying `parent.type` as `TYPE_PIPELINE` or `TYPE_CONNECTOR`. Default value is `TYPE_UNSPECIFIED`. 
 
-#### Using a pipeline processor
+[Here's](/api#post-/v1/processors) how the entire request could look like.
 
-```json lines
-POST /v1/processor
-{
-  "parent": {
-    "type": "TYPE_PIPELINE",
-    "id": "pipeline-id"
-  },
-  "config": {
-    "settings": {
-      "field": "name"
-    },
-    "workers": 0
-  },
-  "condition": "string",
-  "plugin": "json.decode"
-}
-```
-
-#### Using a connector processor
-
-```json lines
-POST /v1/processor
-{
-  "parent": {
-    "type": "TYPE_CONNECTOR",
-    "id": "connector-id"
-  },
-  "config": {
-    "settings": {
-      "field": "name"
-    },
-    "workers": 0
-  },
-  "condition": "string",
-  "plugin": "json.decode"
-}
-```
-
-#### Check the processor was successfully created
-
-To list all processors that are registered in your pipeline (either connector or pipeline processors) you can make the following request:
-
-```json lines
-GET /v1/processors
-[
-  {
-    "condition": "string",
-    "config": {
-      "settings": {},
-      "workers": 0
-    },
-    "createdAt": "1970-01-01T00:00:00.000Z",
-    "id": "string",
-    "parent": {
-      "id": "string",
-      "type": "TYPE_UNSPECIFIED"
-    },
-    "plugin": "json.decode",
-    "updatedAt": "1970-01-01T00:00:00.000Z"
-  }
-]
-```
 
 :::tip
 
