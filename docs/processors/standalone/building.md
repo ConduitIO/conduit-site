@@ -1,6 +1,6 @@
 ---
 title: 'Build your own'
-sidebar_position: 0
+sidebar_position: 1
 ---
 
 You can build your own Conduit Standalone Processors using the [Processor SDK](https://github.com/ConduitIO/conduit-processor-sdk).
@@ -298,4 +298,3 @@ GOARCH=wasm GOOS=wasip1 go build -o processor.wasm cmd/processor/main.go
 Check [Standalone processors](/docs/processors/standalone/index.mdx) for details on how to use your standalone
 processor in a Conduit pipeline.
 
----
