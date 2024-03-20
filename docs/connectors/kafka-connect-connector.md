@@ -102,8 +102,6 @@ pipelines:
         plugin: builtin:file
         settings:
           path: "path/to/the/file.txt"
-
-
 ````
 3. Run Conduit! And see how simple it is to migrate to Conduit.
 
