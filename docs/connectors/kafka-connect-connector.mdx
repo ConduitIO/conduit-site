@@ -54,8 +54,7 @@ cd conduit-kafka-connect-wrapper
 
 Running `scripts/dist.sh` will create a directory called `dist` with following contents:
 1. A script (which runs the connector). This script starts a connector instance.
-1. The connector JAR itself.
-1. Directory `libs`. This is where you put the Kafka connector JARs and their dependencies (if any).
+1. Directory `libs`. This is where you add the connector JAR itself, and put the Kafka connector JARs and their dependencies (if any).
 
 Now that we have everything setup, we can add the Kafka Connect connectors.
 
@@ -75,7 +74,7 @@ You can also download them manually if needed, we will use the PostgreSQL Kafka 
 - [Aiven's Kafka Connect JDBC Connectors](https://github.com/aiven/jdbc-connector-for-apache-kafka)
 - [Postgres Connector JAR](https://repo1.maven.org/maven2/org/postgresql/postgresql/42.3.3/postgresql-42.3.3.jar)
 
-This connector allows you to connect to any [JDBC database](https://en.wikipedia.org/wiki/Java_Database_Connectivity#:~:text=Java%20Database%20Connectivity%20(JDBC)%20is,Edition%20platform%2C%20from%20Oracle%20Corporation.).
+This connector allows you to connect to any [JDBC database](https://en.wikipedia.org/wiki/Java_Database_Connectivity).
 
 ## Create Pipeline Configuration File
 
