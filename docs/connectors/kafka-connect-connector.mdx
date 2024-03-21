@@ -1,0 +1,117 @@
+---
+title: "Kafka Connect Connectors with Conduit"
+sidebar_position: 8
+---
+
+# Using Kafka Connect Connectors with Conduit
+
+The [Conduit Kafka Connect Wrapper connector](https://github.com/ConduitIO/conduit-kafka-connect-wrapper) is a special
+connector that allows you to use [Kafka Connect](https://docs.confluent.io/platform/current/connect/index.html) 
+connectors with Conduit. Conduit doesn't come bundled with Kafka Connect connectors, but you can use it to bring any
+Kafka Connect connector with Conduit.
+
+This connector gives you the ability to:
+
+- Easily migrate from Kafka Connect to Conduit.
+- Remove Kafka as a dependency to move data between data infrastructure.
+- Leverage a datastore if Conduit doesn't have a native connector.
+
+Since the Conduit Kafka Connect Wrapper itself is written in Java, but most of Conduit's connectors are written in Go,
+it also serves as a good example of the flexibility of the Conduit Plugin SDK.
+
+Let's begin.
+
+## How it works
+
+To use the Kafka Connect wrapper connector, you'll need to:
+
+1. Download the [`conduit-kafka-connect-wrapper`](https://github.com/ConduitIO/conduit-kafka-connect-wrapper) latest release,
+at the time of writing this, we'll go with [v0.4.3](https://github.com/ConduitIO/conduit-kafka-connect-wrapper/releases/tag/v0.4.3)
+and download the file `conduit-kafka-connect-wrapper-v0.4.3.zip`.
+1. Download Kafka Connect JARs and any dependencies you would like to add.
+1. Create a pipeline configuration file.
+1. Run Conduit.
+
+
+## Setup
+
+To begin, download the [`conduit-kafka-connect-wrapper`](https://github.com/ConduitIO/conduit-kafka-connect-wrapper) [latest release](https://github.com/ConduitIO/conduit-kafka-connect-wrapper/releases),
+at the time of writing this, we'll go with `v0.4.3` and download the file `conduit-kafka-connect-wrapper-v0.4.3.zip`.
+
+Downloading the release is our **preferred** option to get the connector JAR. However, another option to get the JAR file is
+to build it from source, this could be useful in case you added your own changes to the connector and wanted to test them
+out, to do that we will clone the connector:
+```
+git clone git@github.com:ConduitIO/conduit-kafka-connect-wrapper.git
+```
+
+Then, we need to build the connector. The Kafka Connect wrapper connector is written in Java, so it needs to be compiled.
+```bash
+cd conduit-kafka-connect-wrapper
+
+./scripts/dist.sh
+```
+
+Running `scripts/dist.sh` will create a directory called `dist` with following contents:
+1. A script (which runs the connector). This script starts a connector instance.
+1. Directory `libs`. This is where you add the connector JAR itself, and put the Kafka connector JARs and their dependencies (if any).
+
+Now that we have everything setup, we can add the Kafka Connect connectors.
+
+## Download a connector and its dependencies
+
+The `libs` directory is where you put the Kafka Connect connector JARs and their dependencies (if any). The wrapper 
+plugin will automatically load connectors and all the other dependencies from a `libs` directory.
+
+To download a connector from a Maven repository and all of its dependencies, you can use `scripts/download-connector.sh`.
+For example:
+```shell
+./scripts/download-connector.sh io.example jdbc-connector 2.1.3
+```
+For usage, run `./scripts/download-connector.sh --help`.
+
+You can also download them manually if needed, we will use the PostgreSQL Kafka Connect JDBC Connector. To install, add the following:
+- [Aiven's Kafka Connect JDBC Connectors](https://github.com/aiven/jdbc-connector-for-apache-kafka)
+- [Postgres Connector JAR](https://repo1.maven.org/maven2/org/postgresql/postgresql/42.3.3/postgresql-42.3.3.jar)
+
+This connector allows you to connect to any [JDBC database](https://en.wikipedia.org/wiki/Java_Database_Connectivity).
+
+## Create Pipeline Configuration File
+
+Now that the Kafka Connect connectors included in `lib`, we can use it in a pipeline configuration file.
+
+1. [Install Conduit](https://github.com/ConduitIO/conduit#installation-guide).
+2. Create a pipeline configuration file: Create a folder called `pipelines` at the same level as your Conduit 
+binary. Inside of that folder create a file named `jdbc-to-file.yml`, check [Specifications](https://conduit.io/docs/pipeline-configuration-files/specifications)
+for more details about Pipeline Configuration Files.
+
+````yaml
+version: 2.0
+pipelines:
+  - id: kafka-connect-pipeline
+    status: running
+    description: This pipeline is for testing
+    connectors:
+      - id: jdbc-kafka-connect
+        type: source
+        plugin: standalone:conduit-kafka-connect-wrapper
+        settings:
+          wrapper.connector.class: "io.aiven.connect.jdbc.JdbcSourceConnector",
+          connection.url: "jdbc:postgresql://localhost/conduit-test-db",
+          connection.user: "username",
+          connection.password: "password",
+          incrementing.column.name: "id",
+          mode: "incrementing",
+          tables: "customers",
+          topic.prefix: "my_topic_prefix"
+      - id: file-dest
+        type: destination
+        plugin: builtin:file
+        settings:
+          path: "path/to/the/file.txt"
+````
+3. Run Conduit! And see how simple it is to migrate to Conduit.
+
+Note that the `wrapper.connector.class` should be a class which is present on the classpath, i.e. in one of the JARs in
+the `libs` directory.
+For more information, check the [Wrapper Configuration](https://github.com/ConduitIO/conduit-kafka-connect-wrapper#configuration) section.
