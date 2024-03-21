@@ -8,7 +8,7 @@ These are processors you'd write yourself in cases the [Built-in](/docs/processo
 
 ## How to write one
 
-Thanks to our [Web Assembly (Wasm) processor](/docs/processors/standalone/how-it-works) you can start writing processors in any language that can be compiled to Web Assembly. As a start, Conduit already provides a [conduit-processor-sdk](https://github.com/ConduitIO/conduit-processor-sdk) that will let you [write a processor](/docs/processors/standalone/building) in Golang.
+Thanks to our [Web Assembly (Wasm) processor](/docs/processors/standalone/how-it-works) you can start writing processors in any language that can be compiled to Web Assembly. As a start, Conduit already provides a [conduit-processor-sdk](https://github.com/ConduitIO/conduit-processor-sdk) that will let you [write a processor](/docs/processors/standalone/building) in Go.
 
 ### Where to put them
 
@@ -33,7 +33,7 @@ However, in case you need to reference processors in a different location, you c
 
 ### Using the [conduit-processor-sdk](https://github.com/ConduitIO/conduit-processor-sdk)
 
-Assuming you use our [conduit-processor-sdk](https://github.com/ConduitIO/conduit-processor-sdk), this is how a processor **plugin** written in Golang could look like. In the following example, we're going to be adding a `processed` field to each record processed by our pipeline:
+Assuming you use our [conduit-processor-sdk](https://github.com/ConduitIO/conduit-processor-sdk), this is how a processor **plugin** written in Go could look like. In the following example, we're going to be adding a `processed` field to each record processed by our pipeline:
 
 ```go
 //go:build wasm
