@@ -9,7 +9,7 @@ The `condition` key follows the [Go templates](https://pkg.go.dev/text/template)
 
 If the expression evaluates to **true**, the processor will be executed; otherwise, it will be skipped. Essentially, unless the condition is met, all records will be processed by default.
 
-:::warning
+:::note
 Conduit will parse the output of the go template using [`strconv.ParseBool`](https://pkg.go.dev/strconv#ParseBool) which means that `1`, `t`, `T`, `TRUE`, `true` and `True` will all evaluate to `true`, while `0`, `f`, `F`, `FALSE`, `false`, `False` will be evaluated to `false`.
 :::
 
