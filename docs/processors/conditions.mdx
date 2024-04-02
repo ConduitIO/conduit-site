@@ -8,13 +8,19 @@ Even when a [processor](/docs/connectors/getting-started) is attached to a conne
 This can be accomplished by adding the `condition` key to the processor definition in our [Pipeline Configuration File](/docs/pipeline-configuration-files).
 
 
+## What conditions are allowed
+
+This `condition` key will use the [Go templates](https://pkg.go.dev/text/template) format, which means that any function provided by [sprig](https://masterminds.github.io/sprig/) can be used as a condition.
+
+When a returned value of this expression is **true**, then the processor will be executed, otherwise it will be skipped. This effectively means that by default all records will be processed unless the condition is met.
+
 :::warning
-This condition will use the [Go templates](https://pkg.go.dev/text/template) format, and when returned value of this expression returns **true**, then the processor will be executed, otherwise it will be skipped. This effectively means that by default all records will be processed unless the condition is met.
+Conduit will parse the output of the go template using [`strconv.ParseBool`](https://pkg.go.dev/strconv#ParseBool) which means that `1`, `t`, `T`, `TRUE`, `true` and `True` will all evaluate to `true`, while `0`, `f`, `F`, `FALSE`, `false`, `False` will be evaluated to `false`
 :::
 
 ## Example of a condition
 
-Here's an example of a simple condition. In this case, records **won't** be processed by the `json.decode` builtin processsor when the [OpenCDC Metadata](/docs/features/opencdc-record#fields) contains a key named `unexpected-key`.
+Here's an example of a simple condition. In this case, records **will** be processed by the `json.decode` builtin processsor when the [OpenCDC Metadata](/docs/features/opencdc-record#fields) contains a key named `key` which value is equal to `unexpected-value`.
 
 
 ```yaml
@@ -29,5 +35,5 @@ pipelines:
         plugin: json.decode
         settings:
           field: .Payload.After.name
-        condition: `{{ eq .Metadata.key "unexpected-key" }}`
+        condition: `{{ eq .Metadata.key "unexpected-value" }}`
 ```
