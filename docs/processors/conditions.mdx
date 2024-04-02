@@ -15,7 +15,7 @@ Conduit will parse the output of the go template using [`strconv.ParseBool`](htt
 
 ## Example of a condition
 
-Here's an example of a simple condition. In this case, records **will** be processed by the `json.decode` builtin processsor when the [OpenCDC Metadata](/docs/features/opencdc-record#fields) contains a key named `key` which value is equal to `unexpected-value`.
+Here's an example of a simple condition. In this case, records **will** be processed by the [`json.decode` builtin processsor](/docs/processors/builtin/json.decode) when the [OpenCDC Metadata](/docs/features/opencdc-record#fields) contains a key named `key` which value is equal to `expected-value`.
 
 
 ```yaml
@@ -30,5 +30,5 @@ pipelines:
         plugin: json.decode
         settings:
           field: .Payload.After.name
-        condition: `{{ eq .Metadata.key "unexpected-value" }}`
+        condition: `{{ eq .Metadata.key "expected-value" }}`
 ```
