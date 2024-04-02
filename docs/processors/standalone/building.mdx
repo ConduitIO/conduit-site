@@ -175,7 +175,7 @@ to be validated and stored to be used in other methods.
 This method should not open connections or any other resources. It should solely focus on parsing and validating the 
 configuration itself.
 
-To add custom validations, simply validate the parameters manually under this method, and return an error ithe `config`
+To add custom validations, simply validate the parameters manually under this method, and return an error if the `config`
 map is not valid. On the other hand, using the utility function below would apply the builtin validations to the configuration.
 
 The [Processor SDK](https://github.com/ConduitIO/conduit-processor-sdk) provides some useful utility functions to help implementing this method:
