@@ -1,4 +1,33 @@
 ---
-title: 'Processor Conditions'
+title: 'Conditional Execution'
 sidebar_position: 3
 ---
+
+Even when a [processor](/docs/connectors/getting-started) is attached to a connector or to a pipeline, we might want to include some conditions that need to be met for the processor to be executed at all.
+
+This can be accomplished by adding the `condition` key to the processor definition in our [Pipeline Configuration File](/docs/pipeline-configuration-files).
+
+
+:::warning
+This condition will use the [Go templates](https://pkg.go.dev/text/template) format, and when returned value of this expression returns **true**, then the processor will be executed, otherwise it will be skipped. This effectively mean that by default all records will be processed unless the condition is met.
+:::
+
+## Example of a condition
+
+Here's an example of a simple condition. In this case, records **won't** be processed by the `json.decode` builtin processsor when the [OpenCDC Metadata](/docs/features/opencdc-record#fields) contains a key named `unexpected-key`.
+
+
+```yaml
+version: 2.2
+pipelines:
+  - id: example-pipeline
+    connectors:
+    # define source and destination connectors
+    # ...
+    processors:
+      - id: extract-name
+        plugin: json.decode
+        settings:
+          field: name
+        condition: `{{ eq .Metadata.key "unexpected-key" }}`
+```
