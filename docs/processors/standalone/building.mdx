@@ -3,14 +3,15 @@ title: 'Build your own'
 sidebar_position: 1
 ---
 
-You can build your own Conduit Standalone Processors using the [Processor SDK](https://github.com/ConduitIO/conduit-processor-sdk).
-We currently only provide a Go SDK for processors. However, if you'd like to use another language for writing processor,
+You can build your own Conduit standalone processors in Go using the [Processor SDK](https://github.com/ConduitIO/conduit-processor-sdk).
+
+We currently only provide a Go SDK for processors. However, if you'd like to use another language for writing a processor,
 feel free to [open an issue](https://github.com/ConduitIO/conduit/issues/new?assignees=&labels=feature%2Ctriage&projects=&template=1-feature-request.yml&title=Processor+SDK+%3A+%3Clanguage%3E)
-and request a specific language, or you can check [Standalone processors under the hood (WASM)](/docs/processors/standalone/how-it-works)
-if you want to build your own.
+and request a specific language SDK. You can also read [how standalone processors work](/docs/processors/standalone/how-it-works)
+under the hood and build an SDK yourself.
 
 The [Processor SDK](https://github.com/ConduitIO/conduit-processor-sdk) exposes two ways of building processors, one for
-the very simple processors, the other is a bit more complicated, but gives us more control over the processor.
+simple processors without configuration parameters, and another that gives you full control over the processor.
 
 ## Using `sdk.NewProcesorFunc`
 
@@ -47,17 +48,38 @@ that contains some methods to be implemented. These methods are:
 
 ### Specification
 
-Specification has the metadata for the processor, like name, version, summary, description, and a list of parameters
-expected in the configuration. You can use `specification` to explain what the processor does and how, and add
-parameters to the processor, we also have builtin validations supported by conduit that can be used to validate
-the processor's parameters.
+Specification contains the metadata for the processor, which can be used to define how to reference the processor,
+describe what the processor does and the configuration parameters it expects. Here's a list of the fields in the
+`sdk.Specification` struct and their descriptions:
 
-Also, a conduit tool that is super helpful is `Paramgen`, it generates the code to return the `parameters` map from a
-certain Go struct, meaning we would only need to create a struct for the processor's parameters with specific tags for
-validations, and generate the `Parameters` map using one command. Check [ParamGen documentation](https://github.com/ConduitIO/conduit-commons/tree/main/paramgen)
-for more details.
+  * `Name`: the name of the processor. Note that the name should be unique across all processors, as it's used to
+    reference the processor in a pipeline (see [referencing processors](/docs/processors/referencing)).
+  * `Version`: the version of the processor. This should be a valid [semver](https://semver.org) version and needs to be
+    updated whenever the processor's behavior changes.
+  * `Summary`: a short description of what the processor does (ideally a one-liner).
+  * `Description`: a more detailed description of what the processor does. This field can contain markdown.
+  * `Author`: the author of the processor.
+  * `Parameters`: a map of the processor's configuration parameters. Each parameter should have a name, a type, a
+    description, and a list of validations. Note that the validations defined on a parameter are automatically executed
+    in `sdk.ParseConfig` (see [Configure](#configure)).
+
+Conduit also provides [`paramgen`](https://github.com/ConduitIO/conduit-commons/tree/main/paramgen), a helpful tool that
+generates the `Parameters` map from a Go struct. This allows us to create a configuration struct that contains the
+processor's parameters, define default values and validations using struct tags, and generate the `Parameters` map.
+Check out the [ParamGen readme](https://github.com/ConduitIO/conduit-commons/tree/main/paramgen) for more details.
+
+:::info
+
+Note that a processor's name and version need to be unique across all processors, as they are used to
+[reference](/docs/processors/referencing) the processor in a pipeline. If two processors have the same name and version,
+Conduit will refuse to load them.
+
+:::
 
 #### Example without PramGen
+
+You can define the `Specification` method as below and manually define the parameters map:
+
 ```go
 package example
 
@@ -65,8 +87,6 @@ import (
 	"context"
 
 	"github.com/conduitio/conduit-commons/config"
-	commons "github.com/conduitio/conduit-commons/config"
-	"github.com/conduitio/conduit-commons/opencdc"
 	sdk "github.com/conduitio/conduit-processor-sdk"
 )
 
@@ -74,7 +94,7 @@ func (p *AddFieldProcessor) Specification(context.Context) (sdk.Specification, e
 	return sdk.Specification{
 		Name:    "myAddFieldProcessor",
 		Summary: "Add a field to the record.",
-		Description: `This processor lets you configure a  field that will
+		Description: `This processor lets you configure a field that will
 be added to the record into field. If the payload is not
 structured data, this processor will panic.`,
 		Version: "v1.0.0",
@@ -83,15 +103,15 @@ structured data, this processor will panic.`,
 			"field": {
 				Type: config.ParameterTypeString,
 				Description: "Field is the target field that will be set.",
-				Validations: []commons.Validation{
-					commons.ValidationRequired{},
+				Validations: []config.Validation{
+					config.ValidationRequired{},
 				},
 			},
 			"name":  {
 				Type: config.ParameterTypeString,
 				Description: "Name is the value of the field to add.",
-				Validations: []commons.Validation{
-					commons.ValidationRequired{},
+				Validations: []config.Validation{
+					config.ValidationRequired{},
 				},
 			},
 		},
@@ -100,20 +120,22 @@ structured data, this processor will panic.`,
 ```
 
 #### Example with PramGen
+
 1. Add a struct that contains the needed parameters:
 
 ```go
 //go:generate paramgen -output=addField_paramgen.go addFieldConfig
 
 type addFieldConfig struct {
-// Field is the target field that will be set.
-Field string `json:"field" validate:"required"`
-// Name is the value of the field to add.
-Name string `json:"value" validate:"required"`
+	// Field is the target field that will be set.
+	Field string `json:"field" validate:"required"`
+	// Name is the value of the field to add.
+	Name string `json:"value" validate:"required"`
 }
 ```
 
 2. Generate the parameters by running:
+
 ````
 paramgen -output=addField_paramgen.go addFieldConfig
 ````
@@ -124,12 +146,14 @@ to make it simpler and shorter, example:
 
 ```go
 //go:generate paramgen -output=addField_paramgen.go addFieldConfig
+
 type addFieldConfig struct {
 	// Field is the target field that will be set.
 	Field string `json:"field" validate:"required"`
 	// Name is the value of the field to add.
 	Name string `json:"value" validate:"required"`
 }
+
 func (p *AddFieldProcessor) Specification(context.Context) (sdk.Specification, error) {
 	return sdk.Specification{
 		Name:    "myAddFieldProcessor",
@@ -139,11 +163,10 @@ be added to the record into field. If the payload is not
 structured data, this processor will panic.`,
 		Version: "v1.0.0",
 		Author:  "John Doe",
-		Parameters: addFieldConfig{}.Parameters(),
+		Parameters: addFieldConfig{}.Parameters(), // generated by paramgen
 	}, nil
 }
 ```
-
 
 ### Configure
 
@@ -152,7 +175,7 @@ to be validated and stored to be used in other methods.
 This method should not open connections or any other resources. It should solely focus on parsing and validating the 
 configuration itself.
 
-To add custom validations, simply validate the parameters manually under this method, and return an error of the `config`
+To add custom validations, simply validate the parameters manually under this method, and return an error if the `config`
 map is not valid. On the other hand, using the utility function below would apply the builtin validations to the configuration.
 
 The [Processor SDK](https://github.com/ConduitIO/conduit-processor-sdk) provides some useful utility functions to help implementing this method:
@@ -184,7 +207,7 @@ func (p *AddFieldProcessor) Configure(ctx context.Context, m map[string]string) 
 
 This function is used to open connections, start background jobs, or initialize resources that are needed for the processor.
 
-Note that implementing this function is **_Optional_**.
+Note that implementing this function is **_optional_**.
 
 ### Process
 
@@ -229,7 +252,7 @@ when records were not flushed).
 This function acts like a counterpart to [`Open`](#open), use this function to close any open connections or resources
 that were initialized under `Open`.
 
-Note that implementing this function is also **_Optional_**.
+Note that implementing this function is also **_optional_**.
 
 ### Entrypoint
 
@@ -238,30 +261,32 @@ should add a `go:build` tag to ensure that this file is only included in the bui
 
 the entrypoint will have to be in a separate package (i.e. folder), by Go convention it's normally under 
 `cmd/my-binary-name`, so it would look something like:
-````
+
+```
 .
 ├── my-processor.go    # actual processor implementation
 └── cmd
     └── processor
         └── main.go    # entrypoint
-````
+```
 
 Entry point example:
-````go
+
+```go
 //go:build wasm
 
 package main
 
 import (
 	sdk "github.com/conduitio/conduit-processor-sdk"
-	"github.com/conduitio/my-processor/simple"
+	"github.com/conduitio/my-processor/example"
 )
 
 func main() {
-	sdk.Run(simple.NewProcessor())
+	sdk.Run(example.NewProcessor())
 }
+```
 
-````
 Check [Compiling the processor](#compiling-the-processor) for what to do next, and how to compile the processor.
 
 ## Logging
@@ -277,9 +302,9 @@ Example:
 
 ```go
 func (p *AddFieldProcessor) Process(ctx context.Context, records []opencdc.Record) []sdk.ProcessedRecord {
-logger := sdk.Logger(ctx)
-logger.Trace().Msg("Processing records")
-// ...
+	logger := sdk.Logger(ctx)
+	logger.Trace().Msg("Processing records")
+	// ...
 }
 ```
 
@@ -290,9 +315,9 @@ the processor as a WebAssembly module. You can do this by setting the environmen
 when running `go build`. This will produce a WebAssembly module that can be used as a processor in Conduit.
 
 So, to compile the processor, run:
-````
+```sh
 GOARCH=wasm GOOS=wasip1 go build -o processor.wasm cmd/processor/main.go
-````
+```
 
 **_Congratulations!_** Now you have a new standalone processor.
 Check [Standalone processors](/docs/processors/standalone/index) for details on how to use your standalone
@@ -300,6 +325,6 @@ processor in a Conduit pipeline.
 
 :::note
 
-To get more standalone full processor examples, check our repository [Conduit Processor Examples](https://github.com/ConduitIO/conduit-processor-example).
+To see more standalone processor examples, check out our [example processor repository](https://github.com/ConduitIO/conduit-processor-example).
 
 :::
