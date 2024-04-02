@@ -9,7 +9,7 @@ This can be accomplished by adding the `condition` key to the processor definiti
 
 
 :::warning
-This condition will use the [Go templates](https://pkg.go.dev/text/template) format, and when returned value of this expression returns **true**, then the processor will be executed, otherwise it will be skipped. This effectively mean that by default all records will be processed unless the condition is met.
+This condition will use the [Go templates](https://pkg.go.dev/text/template) format, and when returned value of this expression returns **true**, then the processor will be executed, otherwise it will be skipped. This effectively means that by default all records will be processed unless the condition is met.
 :::
 
 ## Example of a condition
@@ -28,6 +28,6 @@ pipelines:
       - id: extract-name
         plugin: json.decode
         settings:
-          field: name
+          field: .Payload.After.name
         condition: `{{ eq .Metadata.key "unexpected-key" }}`
 ```
