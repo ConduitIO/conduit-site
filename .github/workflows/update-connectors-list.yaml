@@ -1,0 +1,28 @@
+name: "Update connectors' list"
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 8 * * 1'
+
+jobs:
+  update-connectors-list:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update connectors' list
+        working-directory: src/connectorgen
+        run: |
+          echo ${GITHUB_WORKSPACE}
+          ls ${GITHUB_WORKSPACE}
+          go run main.go ${GITHUB_WORKSPACE}/static/connectors.json
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6.0.2
+        with:
+          title: Update connectors' list
+          body: Automatic pull request for updating list of connectors
+          branch: update-connectors-list
