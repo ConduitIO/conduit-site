@@ -74,7 +74,6 @@ const config: Config = {
       items: [
         { to: '/', label: 'Home', position: 'left', activeBaseRegex: `///` },
         { type: 'doc', docId: 'introduction/getting-started', position: 'left', label: 'Documentation' },
-        { to: '/guides', label: 'Guides', position: 'left' },
         { to: '/api', label: 'HTTP API', position: 'left' },
         { to: 'https://github.com/ConduitIO/conduit/discussions', label: 'GitHub Discussions', position: 'right' },
         { to: 'https://discord.meroxa.com', label: 'Discord Community', position: 'right' },
