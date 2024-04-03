@@ -23,6 +23,26 @@ result in the target field. It is not allowed to decode the `.Position` field.
 ## Configuration parameters
 
 <Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "base64.decode"
+        settings:
+          # Field is the reference to the target field. Note that it is not
+          # allowed to base64 decode the `.Position` field.
+          # For more information about the format, see [Referencing
+          # fields](https://conduit.io/docs/processors/referencing-fields).
+          # Type: string
+          field: ""
+```
+  </TabItem>
   <TabItem value="table" label="Table">
   <table class="no-margin-table">
       <tr>
@@ -44,25 +64,6 @@ For more information about the format, see [Referencing fields](https://conduit.
       </tr>
     </table>
   </TabItem>
-  <TabItem value="yaml" label="YAML">
-```yaml
-version: 2.2
-pipelines:
-  - id: example
-    status: running
-    connectors:
-      # define source and destination ...
-    processors:
-      - id: example
-        plugin: "base64.decode"
-        settings:
-          # Field is the reference to the target field. Note that it is not
-          # allowed to base64 decode the `.Position` field.
-          # For more information about the format, see [Referencing
-          # fields](https://conduit.io/docs/processors/referencing-fields).
-          field: ""
-```
-  </TabItem>
 </Tabs>
 
 ## Examples
@@ -77,18 +78,6 @@ other processors (e.g. [`json.decode`](/docs/processors/builtin/json.decode)).
 #### Configuration parameters
 
 <Tabs groupId="config-params">
-  <TabItem value="table" label="Table">
-  <table class="no-margin-table">
-      <tr>
-        <th>Name</th>
-        <th>Value</th>
-      </tr>
-      <tr>
-        <td>`field`</td>
-        <td>`.Payload.After.foo`</td>
-      </tr>
-    </table>
-  </TabItem>
   <TabItem value="yaml" label="YAML">
 ```yaml
 version: 2.2
@@ -103,6 +92,18 @@ pipelines:
         settings:
           field: ".Payload.After.foo"
 ```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>`.Payload.After.foo`</td>
+      </tr>
+    </table>
   </TabItem>
 </Tabs>
 

@@ -27,6 +27,30 @@ Note that this processor only runs on structured data, if the record contains ra
 ## Configuration parameters
 
 <Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "field.set"
+        settings:
+          # Field is the target field that will be set. Note that it is not
+          # allowed to set the `.Position` field.
+          # For more information about the format, see [Referencing
+          # fields](https://conduit.io/docs/processors/referencing-fields).
+          # Type: string
+          field: ""
+          # Value is a Go template expression which will be evaluated and stored
+          # in `field` (e.g. `{{ .Payload.After }}`).
+          # Type: string
+          value: ""
+```
+  </TabItem>
   <TabItem value="table" label="Table">
   <table class="no-margin-table">
       <tr>
@@ -56,28 +80,6 @@ For more information about the format, see [Referencing fields](https://conduit.
       </tr>
     </table>
   </TabItem>
-  <TabItem value="yaml" label="YAML">
-```yaml
-version: 2.2
-pipelines:
-  - id: example
-    status: running
-    connectors:
-      # define source and destination ...
-    processors:
-      - id: example
-        plugin: "field.set"
-        settings:
-          # Field is the target field that will be set. Note that it is not
-          # allowed to set the `.Position` field.
-          # For more information about the format, see [Referencing
-          # fields](https://conduit.io/docs/processors/referencing-fields).
-          field: ""
-          # Value is a Go template expression which will be evaluated and stored
-          # in `field` (e.g. `{{ .Payload.After }}`).
-          value: ""
-```
-  </TabItem>
 </Tabs>
 
 ## Examples
@@ -90,22 +92,6 @@ added to `.Payload.After` and is set to `bar`.
 #### Configuration parameters
 
 <Tabs groupId="config-params">
-  <TabItem value="table" label="Table">
-  <table class="no-margin-table">
-      <tr>
-        <th>Name</th>
-        <th>Value</th>
-      </tr>
-      <tr>
-        <td>`field`</td>
-        <td>`.Payload.After.foo`</td>
-      </tr>
-      <tr>
-        <td>`value`</td>
-        <td>`bar`</td>
-      </tr>
-    </table>
-  </TabItem>
   <TabItem value="yaml" label="YAML">
 ```yaml
 version: 2.2
@@ -121,6 +107,22 @@ pipelines:
           field: ".Payload.After.foo"
           value: "bar"
 ```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>`.Payload.After.foo`</td>
+      </tr>
+      <tr>
+        <td>`value`</td>
+        <td>`bar`</td>
+      </tr>
+    </table>
   </TabItem>
 </Tabs>
 
@@ -155,22 +157,6 @@ This example sets the `.Operation` field to `update` for all records.
 #### Configuration parameters
 
 <Tabs groupId="config-params">
-  <TabItem value="table" label="Table">
-  <table class="no-margin-table">
-      <tr>
-        <th>Name</th>
-        <th>Value</th>
-      </tr>
-      <tr>
-        <td>`field`</td>
-        <td>`.Operation`</td>
-      </tr>
-      <tr>
-        <td>`value`</td>
-        <td>`update`</td>
-      </tr>
-    </table>
-  </TabItem>
   <TabItem value="yaml" label="YAML">
 ```yaml
 version: 2.2
@@ -186,6 +172,22 @@ pipelines:
           field: ".Operation"
           value: "update"
 ```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>`.Operation`</td>
+      </tr>
+      <tr>
+        <td>`value`</td>
+        <td>`update`</td>
+      </tr>
+    </table>
   </TabItem>
 </Tabs>
 
@@ -220,22 +222,6 @@ This example sets the `.Payload.After.postgres` field to `true` if the `.Metadat
 #### Configuration parameters
 
 <Tabs groupId="config-params">
-  <TabItem value="table" label="Table">
-  <table class="no-margin-table">
-      <tr>
-        <th>Name</th>
-        <th>Value</th>
-      </tr>
-      <tr>
-        <td>`field`</td>
-        <td>`.Payload.After.postgres`</td>
-      </tr>
-      <tr>
-        <td>`value`</td>
-        <td>`{{ eq .Metadata.table "postgres" }}`</td>
-      </tr>
-    </table>
-  </TabItem>
   <TabItem value="yaml" label="YAML">
 ```yaml
 version: 2.2
@@ -251,6 +237,22 @@ pipelines:
           field: ".Payload.After.postgres"
           value: "{{ eq .Metadata.table "postgres" }}"
 ```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>`.Payload.After.postgres`</td>
+      </tr>
+      <tr>
+        <td>`value`</td>
+        <td>`{{ eq .Metadata.table "postgres" }}`</td>
+      </tr>
+    </table>
   </TabItem>
 </Tabs>
 

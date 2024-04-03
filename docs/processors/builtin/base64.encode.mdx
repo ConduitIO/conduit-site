@@ -25,6 +25,26 @@ assign its value.
 ## Configuration parameters
 
 <Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "base64.encode"
+        settings:
+          # Field is a reference to the target field. Note that it is not
+          # allowed to base64 encode the `.Position` field.
+          # For more information about the format, see [Referencing
+          # fields](https://conduit.io/docs/processors/referencing-fields).
+          # Type: string
+          field: ""
+```
+  </TabItem>
   <TabItem value="table" label="Table">
   <table class="no-margin-table">
       <tr>
@@ -46,25 +66,6 @@ For more information about the format, see [Referencing fields](https://conduit.
       </tr>
     </table>
   </TabItem>
-  <TabItem value="yaml" label="YAML">
-```yaml
-version: 2.2
-pipelines:
-  - id: example
-    status: running
-    connectors:
-      # define source and destination ...
-    processors:
-      - id: example
-        plugin: "base64.encode"
-        settings:
-          # Field is a reference to the target field. Note that it is not
-          # allowed to base64 encode the `.Position` field.
-          # For more information about the format, see [Referencing
-          # fields](https://conduit.io/docs/processors/referencing-fields).
-          field: ""
-```
-  </TabItem>
 </Tabs>
 
 ## Examples
@@ -77,18 +78,6 @@ TThis example takes a record containing raw data in
 #### Configuration parameters
 
 <Tabs groupId="config-params">
-  <TabItem value="table" label="Table">
-  <table class="no-margin-table">
-      <tr>
-        <th>Name</th>
-        <th>Value</th>
-      </tr>
-      <tr>
-        <td>`field`</td>
-        <td>`.Key`</td>
-      </tr>
-    </table>
-  </TabItem>
   <TabItem value="yaml" label="YAML">
 ```yaml
 version: 2.2
@@ -103,6 +92,18 @@ pipelines:
         settings:
           field: ".Key"
 ```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>`.Key`</td>
+      </tr>
+    </table>
   </TabItem>
 </Tabs>
 
@@ -138,18 +139,6 @@ This example takes a record containing a string in
 #### Configuration parameters
 
 <Tabs groupId="config-params">
-  <TabItem value="table" label="Table">
-  <table class="no-margin-table">
-      <tr>
-        <th>Name</th>
-        <th>Value</th>
-      </tr>
-      <tr>
-        <td>`field`</td>
-        <td>`.Payload.After.foo`</td>
-      </tr>
-    </table>
-  </TabItem>
   <TabItem value="yaml" label="YAML">
 ```yaml
 version: 2.2
@@ -164,6 +153,18 @@ pipelines:
         settings:
           field: ".Payload.After.foo"
 ```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>`.Payload.After.foo`</td>
+      </tr>
+    </table>
   </TabItem>
 </Tabs>
 

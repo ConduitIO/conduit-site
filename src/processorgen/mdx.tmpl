@@ -22,6 +22,27 @@ import TabItem from '@theme/TabItem';
 ## Configuration parameters
 
 <Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "{{ .specification.name }}"
+        {{ if gt (len .specification.parameters) 0 -}}
+        settings:
+          {{- range $name, $param := .specification.parameters }}
+          {{ formatParameterDescriptionYAML $param.description }}
+          # Type: {{ $param.type }}
+          {{ $name }}: {{ formatParameterValueYAML $param.default }}
+          {{- end }}
+        {{- end }}
+```
+  </TabItem>
   <TabItem value="table" label="Table">
   {{ if eq (len .specification.parameters) 0 -}}
     No configuration parameters.
@@ -46,26 +67,6 @@ import TabItem from '@theme/TabItem';
     </table>
   {{- end }}
   </TabItem>
-  <TabItem value="yaml" label="YAML">
-```yaml
-version: 2.2
-pipelines:
-  - id: example
-    status: running
-    connectors:
-      # define source and destination ...
-    processors:
-      - id: example
-        plugin: "{{ .specification.name }}"
-        {{ if gt (len .specification.parameters) 0 -}}
-        settings:
-          {{- range $name, $param := .specification.parameters }}
-          {{ formatParameterDescriptionYAML $param.description }}
-          {{ $name }}: {{ formatParameterValueYAML $param.default }}
-          {{- end }}
-        {{- end }}
-```
-  </TabItem>
 </Tabs>
 
 ## Examples
@@ -82,24 +83,6 @@ pipelines:
 #### Configuration parameters
 
 <Tabs groupId="config-params">
-  <TabItem value="table" label="Table">
-  {{ if eq (len $e.config) 0 -}}
-    No configuration parameters.
-  {{- else -}}
-    <table class="no-margin-table">
-      <tr>
-        <th>Name</th>
-        <th>Value</th>
-      </tr>
-      {{- range $name, $value := $e.config }}
-      <tr>
-        <td>`{{ $name }}`</td>
-        <td>{{ formatParameterValueTable $value }}</td>
-      </tr>
-      {{- end }}
-    </table>
-  {{- end }}
-  </TabItem>
   <TabItem value="yaml" label="YAML">
 ```yaml
 version: 2.2
@@ -118,6 +101,24 @@ pipelines:
           {{- end }}
         {{- end }}
 ```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  {{ if eq (len $e.config) 0 -}}
+    No configuration parameters.
+  {{- else -}}
+    <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      {{- range $name, $value := $e.config }}
+      <tr>
+        <td>`{{ $name }}`</td>
+        <td>{{ formatParameterValueTable $value }}</td>
+      </tr>
+      {{- end }}
+    </table>
+  {{- end }}
   </TabItem>
 </Tabs>
 

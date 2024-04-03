@@ -42,6 +42,78 @@ This processor is the counterpart to [`avro.decode`](/docs/processors/builtin/av
 ## Configuration parameters
 
 <Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "avro.encode"
+        settings:
+          # The password to use with basic authentication. This option is
+          # required if auth.basic.username contains a value. If both
+          # auth.basic.username and auth.basic.password are empty basic
+          # authentication is disabled.
+          # Type: string
+          auth.basic.password: ""
+          # The username to use with basic authentication. This option is
+          # required if auth.basic.password contains a value. If both
+          # auth.basic.username and auth.basic.password are empty basic
+          # authentication is disabled.
+          # Type: string
+          auth.basic.username: ""
+          # The field that will be encoded.
+          # For more information about the format, see [Referencing
+          # fields](https://conduit.io/docs/processors/referencing-fields).
+          # Type: string
+          field: ".Payload.After"
+          # The subject name under which the inferred schema will be registered
+          # in the schema registry.
+          # Type: string
+          schema.autoRegister.subject: ""
+          # The subject of the schema in the schema registry used to encode the
+          # record.
+          # Type: string
+          schema.preRegistered.subject: ""
+          # The version of the schema in the schema registry used to encode the
+          # record.
+          # Type: int
+          schema.preRegistered.version: ""
+          # Strategy to use to determine the schema for the record. Available
+          # strategies are: * `preRegistered` (recommended) - Download an
+          # existing schema from the schema registry. This strategy is further
+          # configured with options starting with `schema.preRegistered.*`. *
+          # `autoRegister` (for development purposes) - Infer the schema from
+          # the record and register it in the schema registry. This strategy is
+          # further configured with options starting with
+          # `schema.autoRegister.*`.
+          # For more information about the behavior of each strategy read the
+          # main processor description.
+          # Type: string
+          schema.strategy: ""
+          # The path to a file containing PEM encoded CA certificates. If this
+          # option is empty, Conduit falls back to using the host's root CA set.
+          # Type: string
+          tls.ca.cert: ""
+          # The path to a file containing a PEM encoded certificate. This option
+          # is required if tls.client.key contains a value. If both
+          # tls.client.cert and tls.client.key are empty TLS is disabled.
+          # Type: string
+          tls.client.cert: ""
+          # The path to a file containing a PEM encoded private key. This option
+          # is required if tls.client.cert contains a value. If both
+          # tls.client.cert and tls.client.key are empty TLS is disabled.
+          # Type: string
+          tls.client.key: ""
+          # URL of the schema registry (e.g. http://localhost:8085)
+          # Type: string
+          url: ""
+```
+  </TabItem>
   <TabItem value="table" label="Table">
   <table class="no-margin-table">
       <tr>
@@ -159,67 +231,6 @@ TLS is disabled.
       </tr>
     </table>
   </TabItem>
-  <TabItem value="yaml" label="YAML">
-```yaml
-version: 2.2
-pipelines:
-  - id: example
-    status: running
-    connectors:
-      # define source and destination ...
-    processors:
-      - id: example
-        plugin: "avro.encode"
-        settings:
-          # The password to use with basic authentication. This option is
-          # required if auth.basic.username contains a value. If both
-          # auth.basic.username and auth.basic.password are empty basic
-          # authentication is disabled.
-          auth.basic.password: ""
-          # The username to use with basic authentication. This option is
-          # required if auth.basic.password contains a value. If both
-          # auth.basic.username and auth.basic.password are empty basic
-          # authentication is disabled.
-          auth.basic.username: ""
-          # The field that will be encoded.
-          # For more information about the format, see [Referencing
-          # fields](https://conduit.io/docs/processors/referencing-fields).
-          field: ".Payload.After"
-          # The subject name under which the inferred schema will be registered
-          # in the schema registry.
-          schema.autoRegister.subject: ""
-          # The subject of the schema in the schema registry used to encode the
-          # record.
-          schema.preRegistered.subject: ""
-          # The version of the schema in the schema registry used to encode the
-          # record.
-          schema.preRegistered.version: ""
-          # Strategy to use to determine the schema for the record. Available
-          # strategies are: * `preRegistered` (recommended) - Download an
-          # existing schema from the schema registry. This strategy is further
-          # configured with options starting with `schema.preRegistered.*`. *
-          # `autoRegister` (for development purposes) - Infer the schema from
-          # the record and register it in the schema registry. This strategy is
-          # further configured with options starting with
-          # `schema.autoRegister.*`.
-          # For more information about the behavior of each strategy read the
-          # main processor description.
-          schema.strategy: ""
-          # The path to a file containing PEM encoded CA certificates. If this
-          # option is empty, Conduit falls back to using the host's root CA set.
-          tls.ca.cert: ""
-          # The path to a file containing a PEM encoded certificate. This option
-          # is required if tls.client.key contains a value. If both
-          # tls.client.cert and tls.client.key are empty TLS is disabled.
-          tls.client.cert: ""
-          # The path to a file containing a PEM encoded private key. This option
-          # is required if tls.client.cert contains a value. If both
-          # tls.client.cert and tls.client.key are empty TLS is disabled.
-          tls.client.key: ""
-          # URL of the schema registry (e.g. http://localhost:8085)
-          url: ""
-```
-  </TabItem>
 </Tabs>
 
 ## Examples
@@ -234,6 +245,31 @@ and registered on the fly under the subject `example-autoRegister`.
 #### Configuration parameters
 
 <Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "avro.encode"
+        settings:
+          auth.basic.password: ""
+          auth.basic.username: ""
+          field: ".Payload.After"
+          schema.autoRegister.subject: "example-autoRegister"
+          schema.preRegistered.subject: ""
+          schema.preRegistered.version: ""
+          schema.strategy: "autoRegister"
+          tls.ca.cert: ""
+          tls.client.cert: ""
+          tls.client.key: ""
+          url: "http://127.0.0.1:54322"
+```
+  </TabItem>
   <TabItem value="table" label="Table">
   <table class="no-margin-table">
       <tr>
@@ -286,31 +322,6 @@ and registered on the fly under the subject `example-autoRegister`.
       </tr>
     </table>
   </TabItem>
-  <TabItem value="yaml" label="YAML">
-```yaml
-version: 2.2
-pipelines:
-  - id: example
-    status: running
-    connectors:
-      # define source and destination ...
-    processors:
-      - id: example
-        plugin: "avro.encode"
-        settings:
-          auth.basic.password: ""
-          auth.basic.username: ""
-          field: ".Payload.After"
-          schema.autoRegister.subject: "example-autoRegister"
-          schema.preRegistered.subject: ""
-          schema.preRegistered.version: ""
-          schema.strategy: "autoRegister"
-          tls.ca.cert: ""
-          tls.client.cert: ""
-          tls.client.key: ""
-          url: "http://127.0.0.1:54322"
-```
-  </TabItem>
 </Tabs>
 
 #### Record difference
@@ -359,6 +370,31 @@ The processor encodes the record's`.Key` field using the above schema.
 #### Configuration parameters
 
 <Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "avro.encode"
+        settings:
+          auth.basic.password: ""
+          auth.basic.username: ""
+          field: ".Key"
+          schema.autoRegister.subject: ""
+          schema.preRegistered.subject: "example-preRegistered"
+          schema.preRegistered.version: "1"
+          schema.strategy: "preRegistered"
+          tls.ca.cert: ""
+          tls.client.cert: ""
+          tls.client.key: ""
+          url: "http://127.0.0.1:54322"
+```
+  </TabItem>
   <TabItem value="table" label="Table">
   <table class="no-margin-table">
       <tr>
@@ -410,31 +446,6 @@ The processor encodes the record's`.Key` field using the above schema.
         <td>`http://127.0.0.1:54322`</td>
       </tr>
     </table>
-  </TabItem>
-  <TabItem value="yaml" label="YAML">
-```yaml
-version: 2.2
-pipelines:
-  - id: example
-    status: running
-    connectors:
-      # define source and destination ...
-    processors:
-      - id: example
-        plugin: "avro.encode"
-        settings:
-          auth.basic.password: ""
-          auth.basic.username: ""
-          field: ".Key"
-          schema.autoRegister.subject: ""
-          schema.preRegistered.subject: "example-preRegistered"
-          schema.preRegistered.version: "1"
-          schema.strategy: "preRegistered"
-          tls.ca.cert: ""
-          tls.client.cert: ""
-          tls.client.key: ""
-          url: "http://127.0.0.1:54322"
-```
   </TabItem>
 </Tabs>
 

@@ -55,7 +55,7 @@ func main() {
 			continue
 		}
 
-		log.Printf("⏳  %v ...", dirEntry.Name())
+		log.Printf("🔄 %v ...", dirEntry.Name())
 		log.SetPrefix("  ") // indent
 		exportProcessorDoc(
 			index,
@@ -71,7 +71,7 @@ func main() {
 }
 
 func exportProcessorDoc(index int, inputPath, outputPath string, t *template.Template) {
-	log.Printf("🕵️ decoding contents as JSON")
+	log.Printf("🕵️  decoding contents as JSON")
 
 	input, err := os.Open(inputPath)
 	if err != nil {
@@ -86,7 +86,7 @@ func exportProcessorDoc(index int, inputPath, outputPath string, t *template.Tem
 	}
 
 	procName := proc["specification"].(map[string]any)["name"].(string)
-	log.Printf("📄  generating %s.mdx", procName)
+	log.Printf("📄 generating %s.mdx", procName)
 
 	// inject index into the processor
 	proc["index"] = index

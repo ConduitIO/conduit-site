@@ -28,6 +28,26 @@ to parse it into structured data first.
 ## Configuration parameters
 
 <Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "field.exclude"
+        settings:
+          # Fields is a comma separated list of target fields which should be
+          # excluded.
+          # For more information about the format, see [Referencing
+          # fields](https://conduit.io/docs/processors/referencing-fields).
+          # Type: string
+          fields: ""
+```
+  </TabItem>
   <TabItem value="table" label="Table">
   <table class="no-margin-table">
       <tr>
@@ -48,25 +68,6 @@ For more information about the format, see [Referencing fields](https://conduit.
       </tr>
     </table>
   </TabItem>
-  <TabItem value="yaml" label="YAML">
-```yaml
-version: 2.2
-pipelines:
-  - id: example
-    status: running
-    connectors:
-      # define source and destination ...
-    processors:
-      - id: example
-        plugin: "field.exclude"
-        settings:
-          # Fields is a comma separated list of target fields which should be
-          # excluded.
-          # For more information about the format, see [Referencing
-          # fields](https://conduit.io/docs/processors/referencing-fields).
-          fields: ""
-```
-  </TabItem>
 </Tabs>
 
 ## Examples
@@ -78,18 +79,6 @@ Excluding all fields in `.Payload` results in an empty payload.
 #### Configuration parameters
 
 <Tabs groupId="config-params">
-  <TabItem value="table" label="Table">
-  <table class="no-margin-table">
-      <tr>
-        <th>Name</th>
-        <th>Value</th>
-      </tr>
-      <tr>
-        <td>`fields`</td>
-        <td>`.Payload`</td>
-      </tr>
-    </table>
-  </TabItem>
   <TabItem value="yaml" label="YAML">
 ```yaml
 version: 2.2
@@ -104,6 +93,18 @@ pipelines:
         settings:
           fields: ".Payload"
 ```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`fields`</td>
+        <td>`.Payload`</td>
+      </tr>
+    </table>
   </TabItem>
 </Tabs>
 
@@ -140,18 +141,6 @@ comma-separated list of fields. In this example, we exclude `.Metadata`,
 #### Configuration parameters
 
 <Tabs groupId="config-params">
-  <TabItem value="table" label="Table">
-  <table class="no-margin-table">
-      <tr>
-        <th>Name</th>
-        <th>Value</th>
-      </tr>
-      <tr>
-        <td>`fields`</td>
-        <td>`.Metadata,.Payload.After.foo,.Key.key1`</td>
-      </tr>
-    </table>
-  </TabItem>
   <TabItem value="yaml" label="YAML">
 ```yaml
 version: 2.2
@@ -166,6 +155,18 @@ pipelines:
         settings:
           fields: ".Metadata,.Payload.After.foo,.Key.key1"
 ```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`fields`</td>
+        <td>`.Metadata,.Payload.After.foo,.Key.key1`</td>
+      </tr>
+    </table>
   </TabItem>
 </Tabs>
 

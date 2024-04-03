@@ -23,6 +23,59 @@ saves the response body and, optionally, the response status.
 ## Configuration parameters
 
 <Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "webhook.http"
+        settings:
+          # Maximum number of retries for an individual record when backing off
+          # following an error.
+          # Type: float
+          backoffRetry.count: "0"
+          # The multiplying factor for each increment step.
+          # Type: float
+          backoffRetry.factor: "2"
+          # The maximum waiting time before retrying.
+          # Type: duration
+          backoffRetry.max: "5s"
+          # The minimum waiting time before retrying.
+          # Type: duration
+          backoffRetry.min: "100ms"
+          # Specifies which field from the input record should be used as the
+          # body in the HTTP request.
+          # For more information about the format, see [Referencing
+          # fields](https://conduit.io/docs/processors/referencing-fields).
+          # Type: string
+          request.body: "."
+          # The value of the `Content-Type` header.
+          # Type: string
+          request.contentType: "application/json"
+          # Method is the HTTP request method to be used.
+          # Type: string
+          request.method: "POST"
+          # URL used in the HTTP request.
+          # Type: string
+          request.url: ""
+          # Specifies in which field should the response body be saved.
+          # For more information about the format, see [Referencing
+          # fields](https://conduit.io/docs/processors/referencing-fields).
+          # Type: string
+          response.body: ".Payload.After"
+          # Specifies in which field should the response status be saved. If no
+          # value is set, then the response status will NOT be saved.
+          # For more information about the format, see [Referencing
+          # fields](https://conduit.io/docs/processors/referencing-fields).
+          # Type: string
+          response.status: ""
+```
+  </TabItem>
   <TabItem value="table" label="Table">
   <table class="no-margin-table">
       <tr>
@@ -121,49 +174,6 @@ For more information about the format, see [Referencing fields](https://conduit.
       </tr>
     </table>
   </TabItem>
-  <TabItem value="yaml" label="YAML">
-```yaml
-version: 2.2
-pipelines:
-  - id: example
-    status: running
-    connectors:
-      # define source and destination ...
-    processors:
-      - id: example
-        plugin: "webhook.http"
-        settings:
-          # Maximum number of retries for an individual record when backing off
-          # following an error.
-          backoffRetry.count: "0"
-          # The multiplying factor for each increment step.
-          backoffRetry.factor: "2"
-          # The maximum waiting time before retrying.
-          backoffRetry.max: "5s"
-          # The minimum waiting time before retrying.
-          backoffRetry.min: "100ms"
-          # Specifies which field from the input record should be used as the
-          # body in the HTTP request.
-          # For more information about the format, see [Referencing
-          # fields](https://conduit.io/docs/processors/referencing-fields).
-          request.body: "."
-          # The value of the `Content-Type` header.
-          request.contentType: "application/json"
-          # Method is the HTTP request method to be used.
-          request.method: "POST"
-          # URL used in the HTTP request.
-          request.url: ""
-          # Specifies in which field should the response body be saved.
-          # For more information about the format, see [Referencing
-          # fields](https://conduit.io/docs/processors/referencing-fields).
-          response.body: ".Payload.After"
-          # Specifies in which field should the response status be saved. If no
-          # value is set, then the response status will NOT be saved.
-          # For more information about the format, see [Referencing
-          # fields](https://conduit.io/docs/processors/referencing-fields).
-          response.status: ""
-```
-  </TabItem>
 </Tabs>
 
 ## Examples
@@ -180,6 +190,30 @@ value of the HTTP response's code in the metadata field `http_status`.
 #### Configuration parameters
 
 <Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "webhook.http"
+        settings:
+          backoffRetry.count: "0"
+          backoffRetry.factor: "2"
+          backoffRetry.max: "5s"
+          backoffRetry.min: "100ms"
+          request.body: ".Payload.After"
+          request.contentType: "application/json"
+          request.method: "POST"
+          request.url: "http://127.0.0.1:54321"
+          response.body: ".Payload.After"
+          response.status: ".Metadata["http_status"]"
+```
+  </TabItem>
   <TabItem value="table" label="Table">
   <table class="no-margin-table">
       <tr>
@@ -227,30 +261,6 @@ value of the HTTP response's code in the metadata field `http_status`.
         <td>`.Metadata["http_status"]`</td>
       </tr>
     </table>
-  </TabItem>
-  <TabItem value="yaml" label="YAML">
-```yaml
-version: 2.2
-pipelines:
-  - id: example
-    status: running
-    connectors:
-      # define source and destination ...
-    processors:
-      - id: example
-        plugin: "webhook.http"
-        settings:
-          backoffRetry.count: "0"
-          backoffRetry.factor: "2"
-          backoffRetry.max: "5s"
-          backoffRetry.min: "100ms"
-          request.body: ".Payload.After"
-          request.contentType: "application/json"
-          request.method: "POST"
-          request.url: "http://127.0.0.1:54321"
-          response.body: ".Payload.After"
-          response.status: ".Metadata["http_status"]"
-```
   </TabItem>
 </Tabs>
 

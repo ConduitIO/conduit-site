@@ -33,6 +33,31 @@ To find out what's possible with the JS processor, also refer to the documentati
 ## Configuration parameters
 
 <Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "custom.javascript"
+        settings:
+          # JavaScript code for this processor. It needs to have a function
+          # `process()` that accept a record and returns a record. The
+          # `process()` function can either modify the input record and return
+          # it, or create a new record. If a record needs to be filtered
+          # (dropped from the pipeline), then the `process()` function should
+          # return `null`.
+          # Type: string
+          script: ""
+          # The path to a .js file containing the processor code.
+          # Type: string
+          script.path: ""
+```
+  </TabItem>
   <TabItem value="table" label="Table">
   <table class="no-margin-table">
       <tr>
@@ -65,6 +90,17 @@ then the `process()` function should return `null`.
       </tr>
     </table>
   </TabItem>
+</Tabs>
+
+## Examples
+
+### Modify a record's metadata and payload using JavaScript
+
+In this example we use the `custom.javascript` processor to add a metadata key to the input record. It also prepends "hello, " to `.Payload.After`.
+
+#### Configuration parameters
+
+<Tabs groupId="config-params">
   <TabItem value="yaml" label="YAML">
 ```yaml
 version: 2.2
@@ -77,28 +113,17 @@ pipelines:
       - id: example
         plugin: "custom.javascript"
         settings:
-          # JavaScript code for this processor. It needs to have a function
-          # `process()` that accept a record and returns a record. The
-          # `process()` function can either modify the input record and return
-          # it, or create a new record. If a record needs to be filtered
-          # (dropped from the pipeline), then the `process()` function should
-          # return `null`.
-          script: ""
-          # The path to a .js file containing the processor code.
+          script: |
+            function process(rec) {
+              rec.Metadata["processed"] = "true";
+              let existing = String.fromCharCode.apply(String, rec.Payload.After);
+              rec.Payload.After = RawData("hello, " + existing);
+              return rec;
+            }
+
           script.path: ""
 ```
   </TabItem>
-</Tabs>
-
-## Examples
-
-### Modify a record's metadata and payload using JavaScript
-
-In this example we use the `custom.javascript` processor to add a metadata key to the input record. It also prepends "hello, " to `.Payload.After`.
-
-#### Configuration parameters
-
-<Tabs groupId="config-params">
   <TabItem value="table" label="Table">
   <table class="no-margin-table">
       <tr>
@@ -123,29 +148,6 @@ function process(rec) {
         <td><Chip label="null" /></td>
       </tr>
     </table>
-  </TabItem>
-  <TabItem value="yaml" label="YAML">
-```yaml
-version: 2.2
-pipelines:
-  - id: example
-    status: running
-    connectors:
-      # define source and destination ...
-    processors:
-      - id: example
-        plugin: "custom.javascript"
-        settings:
-          script: |
-            function process(rec) {
-              rec.Metadata["processed"] = "true";
-              let existing = String.fromCharCode.apply(String, rec.Payload.After);
-              rec.Payload.After = RawData("hello, " + existing);
-              return rec;
-            }
-
-          script.path: ""
-```
   </TabItem>
 </Tabs>
 

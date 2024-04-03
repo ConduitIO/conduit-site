@@ -29,6 +29,54 @@ This processor is the counterpart to [`avro.encode`](/docs/processors/builtin/av
 ## Configuration parameters
 
 <Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "avro.decode"
+        settings:
+          # The password to use with basic authentication. This option is
+          # required if auth.basic.username contains a value. If both
+          # auth.basic.username and auth.basic.password are empty basic
+          # authentication is disabled.
+          # Type: string
+          auth.basic.password: ""
+          # The username to use with basic authentication. This option is
+          # required if auth.basic.password contains a value. If both
+          # auth.basic.username and auth.basic.password are empty basic
+          # authentication is disabled.
+          # Type: string
+          auth.basic.username: ""
+          # The field that will be decoded.
+          # For more information about the format, see [Referencing
+          # fields](https://conduit.io/docs/processors/referencing-fields).
+          # Type: string
+          field: ".Payload.After"
+          # The path to a file containing PEM encoded CA certificates. If this
+          # option is empty, Conduit falls back to using the host's root CA set.
+          # Type: string
+          tls.ca.cert: ""
+          # The path to a file containing a PEM encoded certificate. This option
+          # is required if tls.client.key contains a value. If both
+          # tls.client.cert and tls.client.key are empty TLS is disabled.
+          # Type: string
+          tls.client.cert: ""
+          # The path to a file containing a PEM encoded private key. This option
+          # is required if tls.client.cert contains a value. If both
+          # tls.client.cert and tls.client.key are empty TLS is disabled.
+          # Type: string
+          tls.client.key: ""
+          # URL of the schema registry (e.g. http://localhost:8085)
+          # Type: string
+          url: ""
+```
+  </TabItem>
   <TabItem value="table" label="Table">
   <table class="no-margin-table">
       <tr>
@@ -106,47 +154,6 @@ TLS is disabled.
       </tr>
     </table>
   </TabItem>
-  <TabItem value="yaml" label="YAML">
-```yaml
-version: 2.2
-pipelines:
-  - id: example
-    status: running
-    connectors:
-      # define source and destination ...
-    processors:
-      - id: example
-        plugin: "avro.decode"
-        settings:
-          # The password to use with basic authentication. This option is
-          # required if auth.basic.username contains a value. If both
-          # auth.basic.username and auth.basic.password are empty basic
-          # authentication is disabled.
-          auth.basic.password: ""
-          # The username to use with basic authentication. This option is
-          # required if auth.basic.password contains a value. If both
-          # auth.basic.username and auth.basic.password are empty basic
-          # authentication is disabled.
-          auth.basic.username: ""
-          # The field that will be decoded.
-          # For more information about the format, see [Referencing
-          # fields](https://conduit.io/docs/processors/referencing-fields).
-          field: ".Payload.After"
-          # The path to a file containing PEM encoded CA certificates. If this
-          # option is empty, Conduit falls back to using the host's root CA set.
-          tls.ca.cert: ""
-          # The path to a file containing a PEM encoded certificate. This option
-          # is required if tls.client.key contains a value. If both
-          # tls.client.cert and tls.client.key are empty TLS is disabled.
-          tls.client.cert: ""
-          # The path to a file containing a PEM encoded private key. This option
-          # is required if tls.client.cert contains a value. If both
-          # tls.client.cert and tls.client.key are empty TLS is disabled.
-          tls.client.key: ""
-          # URL of the schema registry (e.g. http://localhost:8085)
-          url: ""
-```
-  </TabItem>
 </Tabs>
 
 ## Examples
@@ -172,6 +179,27 @@ In this example we use the following schema:
 #### Configuration parameters
 
 <Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "avro.decode"
+        settings:
+          auth.basic.password: ""
+          auth.basic.username: ""
+          field: ".Key"
+          tls.ca.cert: ""
+          tls.client.cert: ""
+          tls.client.key: ""
+          url: "http://127.0.0.1:54322"
+```
+  </TabItem>
   <TabItem value="table" label="Table">
   <table class="no-margin-table">
       <tr>
@@ -207,27 +235,6 @@ In this example we use the following schema:
         <td>`http://127.0.0.1:54322`</td>
       </tr>
     </table>
-  </TabItem>
-  <TabItem value="yaml" label="YAML">
-```yaml
-version: 2.2
-pipelines:
-  - id: example
-    status: running
-    connectors:
-      # define source and destination ...
-    processors:
-      - id: example
-        plugin: "avro.decode"
-        settings:
-          auth.basic.password: ""
-          auth.basic.username: ""
-          field: ".Key"
-          tls.ca.cert: ""
-          tls.client.cert: ""
-          tls.client.key: ""
-          url: "http://127.0.0.1:54322"
-```
   </TabItem>
 </Tabs>
 

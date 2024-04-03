@@ -27,6 +27,26 @@ In such cases, the Debezium record is set as the [OpenCDC record](https://condui
 ## Configuration parameters
 
 <Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "unwrap.kafkaconnect"
+        settings:
+          # Field is a reference to the field that contains the Kafka Connect
+          # record.
+          # For more information about the format, see [Referencing
+          # fields](https://conduit.io/docs/processors/referencing-fields).
+          # Type: string
+          field: ".Payload.After"
+```
+  </TabItem>
   <TabItem value="table" label="Table">
   <table class="no-margin-table">
       <tr>
@@ -47,25 +67,6 @@ For more information about the format, see [Referencing fields](https://conduit.
       </tr>
     </table>
   </TabItem>
-  <TabItem value="yaml" label="YAML">
-```yaml
-version: 2.2
-pipelines:
-  - id: example
-    status: running
-    connectors:
-      # define source and destination ...
-    processors:
-      - id: example
-        plugin: "unwrap.kafkaconnect"
-        settings:
-          # Field is a reference to the field that contains the Kafka Connect
-          # record.
-          # For more information about the format, see [Referencing
-          # fields](https://conduit.io/docs/processors/referencing-fields).
-          field: ".Payload.After"
-```
-  </TabItem>
 </Tabs>
 
 ## Examples
@@ -82,18 +83,6 @@ We also see how the key is unwrapped too. In this case, the key comes in as stru
 #### Configuration parameters
 
 <Tabs groupId="config-params">
-  <TabItem value="table" label="Table">
-  <table class="no-margin-table">
-      <tr>
-        <th>Name</th>
-        <th>Value</th>
-      </tr>
-      <tr>
-        <td>`field`</td>
-        <td>`.Payload.After`</td>
-      </tr>
-    </table>
-  </TabItem>
   <TabItem value="yaml" label="YAML">
 ```yaml
 version: 2.2
@@ -108,6 +97,18 @@ pipelines:
         settings:
           field: ".Payload.After"
 ```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>`.Payload.After`</td>
+      </tr>
+    </table>
   </TabItem>
 </Tabs>
 

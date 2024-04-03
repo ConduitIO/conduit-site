@@ -27,6 +27,31 @@ to parse it into structured data first.
 ## Configuration parameters
 
 <Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "field.convert"
+        settings:
+          # Field is the target field that should be converted. Note that you
+          # can only convert fields in structured data under `.Key` and
+          # `.Payload`.
+          # For more information about the format, see [Referencing
+          # fields](https://conduit.io/docs/processors/referencing-fields).
+          # Type: string
+          field: ""
+          # Type is the target field type after conversion, available options
+          # are: string, int, float, bool.
+          # Type: string
+          type: ""
+```
+  </TabItem>
   <TabItem value="table" label="Table">
   <table class="no-margin-table">
       <tr>
@@ -57,29 +82,6 @@ For more information about the format, see [Referencing fields](https://conduit.
       </tr>
     </table>
   </TabItem>
-  <TabItem value="yaml" label="YAML">
-```yaml
-version: 2.2
-pipelines:
-  - id: example
-    status: running
-    connectors:
-      # define source and destination ...
-    processors:
-      - id: example
-        plugin: "field.convert"
-        settings:
-          # Field is the target field that should be converted. Note that you
-          # can only convert fields in structured data under `.Key` and
-          # `.Payload`.
-          # For more information about the format, see [Referencing
-          # fields](https://conduit.io/docs/processors/referencing-fields).
-          field: ""
-          # Type is the target field type after conversion, available options
-          # are: string, int, float, bool.
-          type: ""
-```
-  </TabItem>
 </Tabs>
 
 ## Examples
@@ -91,22 +93,6 @@ This example takes the `float` in field `.Key.id` and changes its data type to `
 #### Configuration parameters
 
 <Tabs groupId="config-params">
-  <TabItem value="table" label="Table">
-  <table class="no-margin-table">
-      <tr>
-        <th>Name</th>
-        <th>Value</th>
-      </tr>
-      <tr>
-        <td>`field`</td>
-        <td>`.Key.id`</td>
-      </tr>
-      <tr>
-        <td>`type`</td>
-        <td>`string`</td>
-      </tr>
-    </table>
-  </TabItem>
   <TabItem value="yaml" label="YAML">
 ```yaml
 version: 2.2
@@ -122,6 +108,22 @@ pipelines:
           field: ".Key.id"
           type: "string"
 ```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>`.Key.id`</td>
+      </tr>
+      <tr>
+        <td>`type`</td>
+        <td>`string`</td>
+      </tr>
+    </table>
   </TabItem>
 </Tabs>
 
@@ -156,22 +158,6 @@ This example takes the `int` in field `.Payload.After.done` and changes its data
 #### Configuration parameters
 
 <Tabs groupId="config-params">
-  <TabItem value="table" label="Table">
-  <table class="no-margin-table">
-      <tr>
-        <th>Name</th>
-        <th>Value</th>
-      </tr>
-      <tr>
-        <td>`field`</td>
-        <td>`.Payload.After.done`</td>
-      </tr>
-      <tr>
-        <td>`type`</td>
-        <td>`bool`</td>
-      </tr>
-    </table>
-  </TabItem>
   <TabItem value="yaml" label="YAML">
 ```yaml
 version: 2.2
@@ -187,6 +173,22 @@ pipelines:
           field: ".Payload.After.done"
           type: "bool"
 ```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>`.Payload.After.done`</td>
+      </tr>
+      <tr>
+        <td>`type`</td>
+        <td>`bool`</td>
+      </tr>
+    </table>
   </TabItem>
 </Tabs>
 
@@ -221,22 +223,6 @@ This example takes the string in field `.Key.id` and changes its data type to `i
 #### Configuration parameters
 
 <Tabs groupId="config-params">
-  <TabItem value="table" label="Table">
-  <table class="no-margin-table">
-      <tr>
-        <th>Name</th>
-        <th>Value</th>
-      </tr>
-      <tr>
-        <td>`field`</td>
-        <td>`.Key.id`</td>
-      </tr>
-      <tr>
-        <td>`type`</td>
-        <td>`int`</td>
-      </tr>
-    </table>
-  </TabItem>
   <TabItem value="yaml" label="YAML">
 ```yaml
 version: 2.2
@@ -252,6 +238,22 @@ pipelines:
           field: ".Key.id"
           type: "int"
 ```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>`.Key.id`</td>
+      </tr>
+      <tr>
+        <td>`type`</td>
+        <td>`int`</td>
+      </tr>
+    </table>
   </TabItem>
 </Tabs>
 
