@@ -5,6 +5,9 @@ found on GitHub. It works by fetching all dependents of the Conduit Connector
 SDK and then adding information about the connector (found in the repository),
 the available releases, etc.
 
+The repositories are sorted by URL, making it possible to more easily review the
+changes.
+
 # Usage
 
 ## GitHub workflow
