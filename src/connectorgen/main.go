@@ -44,7 +44,8 @@ var excludedRepositories = []string{
 	"WeirdMagician/conduit-connector-google-cloudstorage",
 }
 
-var assertArchToGOARCH = map[string]string{
+// maps architectures found in asset names to GOARCH
+var assetArchToGOARCH = map[string]string{
 	"x86_64": "amd64",
 	"i386":   "386",
 }
@@ -165,6 +166,8 @@ func main() {
 
 	var repositories []Repository
 	for _, repo := range reposList {
+		fmt.Printf("Processing %v\n", repo)
+
 		repoInfo, err := fetchRepoInfo(ctx, client, repo)
 		if err != nil {
 			fmt.Printf("Error fetching repository info for %s: %v\n", repo, err)
@@ -181,6 +184,7 @@ func main() {
 		repositories = append(repositories, repoInfo)
 	}
 
+	fmt.Println("- 🪚 Building connector.json...")
 	slices.SortFunc(repositories, func(a, b Repository) int {
 		return strings.Compare(a.URL, b.URL)
 	})
@@ -200,7 +204,7 @@ func main() {
 }
 
 func fetchDependents(ctx context.Context, client *github.Client, repo string) ([]string, error) {
-	fmt.Printf("fetching dependents for %v\n", repo)
+	fmt.Println("- 📥 Fetching dependents...")
 
 	c := ghdeps.NewCrawler(repo)
 	if err := c.All(); err != nil {
@@ -219,7 +223,7 @@ func fetchDependents(ctx context.Context, client *github.Client, repo string) ([
 }
 
 func fetchRepoInfo(ctx context.Context, client *github.Client, repo string) (Repository, error) {
-	fmt.Printf("%v fetching repository info\n", repo)
+	fmt.Println("- 📥 Fetching repository information...")
 
 	repoInfo, _, err := client.Repositories.Get(ctx, strings.Split(repo, "/")[0], strings.Split(repo, "/")[1])
 	if err != nil {
@@ -237,7 +241,7 @@ func fetchRepoInfo(ctx context.Context, client *github.Client, repo string) (Rep
 }
 
 func fetchReleases(ctx context.Context, client *github.Client, repo string) ([]Release, error) {
-	fmt.Printf("%v fetching releases\n", repo)
+	fmt.Println("- 📥 Fetching releases...")
 
 	releases, _, err := client.Repositories.ListReleases(
 		ctx,
@@ -253,8 +257,7 @@ func fetchReleases(ctx context.Context, client *github.Client, repo string) ([]R
 	for _, release := range releases {
 		releaseAssets, err := fetchReleaseAssets(ctx, client, repo, release)
 		if err != nil {
-			fmt.Printf("Error fetching assets for release %s: %v\n", release.GetTagName(), err)
-			continue
+			return nil, fmt.Errorf("failed fetching assets for release %v: %w", release.GetTagName(), err)
 		}
 
 		releasesList = append(releasesList, Release{
@@ -273,7 +276,7 @@ func fetchReleases(ctx context.Context, client *github.Client, repo string) ([]R
 }
 
 func fetchReleaseAssets(ctx context.Context, client *github.Client, repo string, release *github.RepositoryRelease) ([]Asset, error) {
-	fmt.Printf("%v fetching release assets for %v\n", repo, release.GetTagName())
+	fmt.Printf("- 📥 Fetching release assets for %v...\n", release.GetTagName())
 
 	assets, _, err := client.Repositories.ListReleaseAssets(
 		ctx,
@@ -325,7 +328,7 @@ func extractOSArch(asset *github.ReleaseAsset, tagName string) (string, string, 
 
 	assetOS, assetArch, _ := strings.Cut(osArch, "_")
 	assetOS = strings.ToLower(assetOS)
-	if arch, ok := assertArchToGOARCH[assetArch]; ok {
+	if arch, ok := assetArchToGOARCH[assetArch]; ok {
 		assetArch = arch
 	}
 

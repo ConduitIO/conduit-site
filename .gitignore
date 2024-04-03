@@ -26,3 +26,5 @@ yarn-error.log*
 .netlify
 .vercel
 .env
+
+src/connectorgen/connectors.json
