@@ -3,7 +3,7 @@ title: 'Conditional Execution'
 sidebar_position: 3
 ---
 
-When a [processor](/docs/connectors/getting-started) is attached to a connector or to a pipeline, we may still want to specify conditions for its execution. To do this, we simply add a `condition` key to the processor definition in our [Pipeline Configuration File](/docs/pipeline-configuration-files).
+When a [processor](/docs/connectors/getting-started) is attached to a connector or to a pipeline, we may still want to specify conditions for its execution. To do this, we can add a `condition` key to the processor definition in the [Pipeline Configuration File](/docs/processors/getting-started#using-a-pipeline-configuration-file), or using the [HTTP API](/docs/processors/getting-started#using-the-http-api) including this parameter in the [POST request](/api#post-/v1/processors)
 
 The `condition` key follows the [Go templates](https://pkg.go.dev/text/template) format, allowing the use of any function provided by [sprig](https://masterminds.github.io/sprig/).
 
