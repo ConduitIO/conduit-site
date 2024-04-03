@@ -16,8 +16,6 @@ jobs:
       - name: Update connectors' list
         working-directory: src/connectorgen
         run: |
-          echo ${GITHUB_WORKSPACE}
-          ls ${GITHUB_WORKSPACE}
           go run main.go ${GITHUB_WORKSPACE}/static/connectors.json
 
       - name: Create Pull Request
