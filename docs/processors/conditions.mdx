@@ -1,0 +1,34 @@
+---
+title: 'Conditional Execution'
+sidebar_position: 3
+---
+
+When a [processor](/docs/connectors/getting-started) is attached to a connector or to a pipeline, we may still want to specify conditions for its execution. To do this, we can add a `condition` key to the processor definition in the [Pipeline Configuration File](/docs/processors/getting-started#using-a-pipeline-configuration-file), or using the [HTTP API](/docs/processors/getting-started#using-the-http-api) including this parameter in the [POST request](/api#post-/v1/processors)
+
+The `condition` key follows the [Go templates](https://pkg.go.dev/text/template) format, allowing the use of any function provided by [sprig](https://masterminds.github.io/sprig/).
+
+If the expression evaluates to **true**, the processor will be executed; otherwise, it will be skipped. Essentially, unless the condition is met, all records will be processed by default.
+
+:::note
+Conduit will parse the output of the go template using [`strconv.ParseBool`](https://pkg.go.dev/strconv#ParseBool) which means that `1`, `t`, `T`, `TRUE`, `true` and `True` will all evaluate to `true`, while `0`, `f`, `F`, `FALSE`, `false`, `False` will be evaluated to `false`.
+:::
+
+## Example of a condition
+
+Here's an example of a simple condition. In this case, records **will** be processed by the [`json.decode` builtin processsor](/docs/processors/builtin/json.decode) when the [OpenCDC Metadata](/docs/features/opencdc-record#fields) contains a key named `key` which value is equal to `expected-value`.
+
+
+```yaml
+version: 2.2
+pipelines:
+  - id: example-pipeline
+    connectors:
+    # define source and destination connectors
+    # ...
+    processors:
+      - id: extract-name
+        plugin: json.decode
+        settings:
+          field: .Payload.After.name
+        condition: `{{ eq .Metadata.key "expected-value" }}`
+```
