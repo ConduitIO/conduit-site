@@ -74,7 +74,6 @@ const config: Config = {
       items: [
         { to: '/', label: 'Home', position: 'left', activeBaseRegex: `///` },
         { type: 'doc', docId: 'introduction/getting-started', position: 'left', label: 'Documentation' },
-        { to: '/guides', label: 'Guides', position: 'left' },
         { to: '/api', label: 'HTTP API', position: 'left' },
         { to: 'https://github.com/ConduitIO/conduit/discussions', label: 'GitHub Discussions', position: 'right' },
         { to: 'https://discord.meroxa.com', label: 'Discord Community', position: 'right' },
@@ -132,7 +131,7 @@ const config: Config = {
     },
     announcementBar: {
       id: 'announcement-bar-2', // increment on change
-      content: `Conduit 0.9 is here! <a class='cta' href='https://github.com/ConduitIO/conduit/releases/latest' target='_blank' rel='noreferrer noopener'>See what's new</a>.`,
+      content: `Conduit 0.9.1 is here! <a class='cta' href='https://github.com/ConduitIO/conduit/releases/latest' target='_blank' rel='noreferrer noopener'>See what's new</a>.`,
       isCloseable: true,
     },
     colorMode: {
