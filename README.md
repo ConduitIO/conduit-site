@@ -4,7 +4,6 @@ This app is built using [Docusaurus 3](https://docusaurus.io/).
 
 The Conduit Documentation contains:
 - Conduit Documentation
-- Conduit Guides
 
 ## Getting Started
 
