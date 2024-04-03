@@ -16,13 +16,13 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"os"
 	"slices"
 	"strings"
 	"time"
 
+	"github.com/goccy/go-json"
 	"github.com/gofri/go-github-ratelimit/github_ratelimit"
 	"github.com/google/go-github/v61/github"
 	"github.com/otiai10/gh-dependents/ghdeps"
