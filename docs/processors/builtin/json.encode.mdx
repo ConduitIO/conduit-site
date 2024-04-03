@@ -8,6 +8,8 @@ sidebar_position: 11
 import ReactDiffViewer from 'react-diff-viewer';
 import Chip from '@mui/material/Chip';
 import Box from "@mui/system/Box";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # `json.encode`
 
@@ -23,25 +25,49 @@ This processor is only applicable to fields under `.Key`, `.Payload`.Before and
 
 ## Configuration parameters
 
-<table class="no-margin-table">
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Default</th>
-      <th>Description</th>
-    </tr>
-    <tr>
-      <td>`field`</td>
-      <td>string</td>
-      <td><Chip label="null" /></td>
-      <td>
-Field is a reference to the target field. Only fields that are under
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "json.encode"
+        settings:
+          # Field is a reference to the target field. Only fields that are under
+          # `.Key` and `.Payload` can be encoded.
+          # For more information about the format, see [Referencing
+          # fields](https://conduit.io/docs/processors/referencing-fields).
+          # Type: string
+          field: ""
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  Field is a reference to the target field. Only fields that are under
 `.Key` and `.Payload` can be encoded.
 
 For more information about the format, see [Referencing fields](https://conduit.io/docs/processors/referencing-fields).
-      </td>
-    </tr>
-  </table>
+        </td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
 
 ## Examples
 
@@ -52,16 +78,35 @@ This example takes a record containing a map in
 
 #### Configuration parameters
 
-<table class="no-margin-table">
-  <tr>
-    <th>Name</th>
-    <th>Value</th>
-  </tr>
-  <tr>
-    <td>`field`</td>
-    <td>`.Payload.Before.foo`</td>
-  </tr>
-</table>
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "json.encode"
+        settings:
+          field: ".Payload.Before.foo"
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>`.Payload.Before.foo`</td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
 
 #### Record difference
 
@@ -94,16 +139,35 @@ This example takes a record containing structured data in
 
 #### Configuration parameters
 
-<table class="no-margin-table">
-  <tr>
-    <th>Name</th>
-    <th>Value</th>
-  </tr>
-  <tr>
-    <td>`field`</td>
-    <td>`.Key`</td>
-  </tr>
-</table>
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "json.encode"
+        settings:
+          field: ".Key"
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>`.Key`</td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
 
 #### Record difference
 

@@ -8,6 +8,8 @@ sidebar_position: {{ .index }}
 import ReactDiffViewer from 'react-diff-viewer';
 import Chip from '@mui/material/Chip';
 import Box from "@mui/system/Box";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # `{{ .specification.name }}`
 
@@ -19,28 +21,53 @@ import Box from "@mui/system/Box";
 
 ## Configuration parameters
 
-{{ if eq (len .specification.parameters) 0 -}}
-  No configuration parameters.
-{{- else -}}
-  <table class="no-margin-table">
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Default</th>
-      <th>Description</th>
-    </tr>
-    {{- range $name, $param := .specification.parameters }}
-    <tr>
-      <td>`{{ $name }}`</td>
-      <td>{{ $param.type }}</td>
-      <td>{{ formatParameterValue $param.default }}</td>
-      <td>
-{{ $param.description }}
-      </td>
-    </tr>
-    {{- end }}
-  </table>
-{{- end }}
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "{{ .specification.name }}"
+        {{ if gt (len .specification.parameters) 0 -}}
+        settings:
+          {{- range $name, $param := .specification.parameters }}
+          {{ formatParameterDescriptionYAML $param.description }}
+          # Type: {{ $param.type }}
+          {{ $name }}: {{ formatParameterValueYAML $param.default }}
+          {{- end }}
+        {{- end }}
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  {{ if eq (len .specification.parameters) 0 -}}
+    No configuration parameters.
+  {{- else -}}
+    <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+      </tr>
+      {{- range $name, $param := .specification.parameters }}
+      <tr>
+        <td>`{{ $name }}`</td>
+        <td>{{ $param.type }}</td>
+        <td>{{ formatParameterValueTable $param.default }}</td>
+        <td>
+  {{ $param.description }}
+        </td>
+      </tr>
+      {{- end }}
+    </table>
+  {{- end }}
+  </TabItem>
+</Tabs>
 
 ## Examples
 
@@ -55,22 +82,45 @@ import Box from "@mui/system/Box";
 
 #### Configuration parameters
 
-{{ if eq (len $e.config) 0 -}}
-No configuration parameters.
-{{- else -}}
-<table class="no-margin-table">
-  <tr>
-    <th>Name</th>
-    <th>Value</th>
-  </tr>
-  {{- range $name, $value := $e.config }}
-  <tr>
-    <td>`{{ $name }}`</td>
-    <td>{{ formatParameterValue $value }}</td>
-  </tr>
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "{{ $.specification.name }}"
+        {{ if gt (len $e.config) 0 -}}
+        settings:
+          {{- range $name, $value := $e.config }}
+          {{ $name }}: {{ formatParameterValueYAML $value }}
+          {{- end }}
+        {{- end }}
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  {{ if eq (len $e.config) 0 -}}
+    No configuration parameters.
+  {{- else -}}
+    <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      {{- range $name, $value := $e.config }}
+      <tr>
+        <td>`{{ $name }}`</td>
+        <td>{{ formatParameterValueTable $value }}</td>
+      </tr>
+      {{- end }}
+    </table>
   {{- end }}
-</table>
-{{- end }}
+  </TabItem>
+</Tabs>
 
 #### Record difference
 
