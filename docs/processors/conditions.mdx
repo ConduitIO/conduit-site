@@ -7,7 +7,7 @@ When a [processor](/docs/connectors/getting-started) is attached to a connector 
 
 The `condition` key follows the [Go templates](https://pkg.go.dev/text/template) format, allowing the use of any function provided by [sprig](https://masterminds.github.io/sprig/).
 
-If the expression evaluates to **true**, the processor will be executed; otherwise, the record will continue as if the processor didn't exist.
+If the expression evaluates to **true**, the processor will be executed; otherwise, the record will continue to flow in the pipeline without being processed by this processor.
 
 :::note
 Conduit will parse the output of the go template using [`strconv.ParseBool`](https://pkg.go.dev/strconv#ParseBool) which means that `1`, `t`, `T`, `TRUE`, `true` and `True` will all evaluate to `true`, while `0`, `f`, `F`, `FALSE`, `false`, `False` will be evaluated to `false`. If an expression can't be evaluated as a boolean, the processor will return an error.
