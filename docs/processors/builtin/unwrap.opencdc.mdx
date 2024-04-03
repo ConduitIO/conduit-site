@@ -8,6 +8,8 @@ sidebar_position: 14
 import ReactDiffViewer from 'react-diff-viewer';
 import Chip from '@mui/material/Chip';
 import Box from "@mui/system/Box";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # `unwrap.opencdc`
 
@@ -23,24 +25,46 @@ Note: if the wrapped [OpenCDC record](https://conduit.io/docs/features/opencdc-r
 
 ## Configuration parameters
 
-<table class="no-margin-table">
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Default</th>
-      <th>Description</th>
-    </tr>
-    <tr>
-      <td>`field`</td>
-      <td>string</td>
-      <td>`.Payload.After`</td>
-      <td>
-Field is a reference to the field that contains the OpenCDC record.
+<Tabs groupId="config-params">
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>string</td>
+        <td>`.Payload.After`</td>
+        <td>
+  Field is a reference to the field that contains the OpenCDC record.
 
 For more information about the format, see [Referencing fields](https://conduit.io/docs/processors/referencing-fields).
-      </td>
-    </tr>
-  </table>
+        </td>
+      </tr>
+    </table>
+  </TabItem>
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "unwrap.opencdc"
+        settings:
+          # Field is a reference to the field that contains the OpenCDC record.
+          # For more information about the format, see [Referencing
+          # fields](https://conduit.io/docs/processors/referencing-fields).
+          field: ".Payload.After"
+```
+  </TabItem>
+</Tabs>
 
 ## Examples
 
@@ -50,16 +74,35 @@ In this example we use the `unwrap.opencdc` processor to unwrap the [OpenCDC rec
 
 #### Configuration parameters
 
-<table class="no-margin-table">
-  <tr>
-    <th>Name</th>
-    <th>Value</th>
-  </tr>
-  <tr>
-    <td>`field`</td>
-    <td>`.Payload.After`</td>
-  </tr>
-</table>
+<Tabs groupId="config-params">
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>`.Payload.After`</td>
+      </tr>
+    </table>
+  </TabItem>
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "unwrap.opencdc"
+        settings:
+          field: ".Payload.After"
+```
+  </TabItem>
+</Tabs>
 
 #### Record difference
 

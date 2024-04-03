@@ -8,6 +8,8 @@ sidebar_position: 1
 import ReactDiffViewer from 'react-diff-viewer';
 import Chip from '@mui/material/Chip';
 import Box from "@mui/system/Box";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # `avro.encode`
 
@@ -39,73 +41,75 @@ This processor is the counterpart to [`avro.decode`](/docs/processors/builtin/av
 
 ## Configuration parameters
 
-<table class="no-margin-table">
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Default</th>
-      <th>Description</th>
-    </tr>
-    <tr>
-      <td>`auth.basic.password`</td>
-      <td>string</td>
-      <td><Chip label="null" /></td>
-      <td>
-The password to use with basic authentication. This option is required if
+<Tabs groupId="config-params">
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td>`auth.basic.password`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  The password to use with basic authentication. This option is required if
 auth.basic.username contains a value. If both auth.basic.username and auth.basic.password
 are empty basic authentication is disabled.
-      </td>
-    </tr>
-    <tr>
-      <td>`auth.basic.username`</td>
-      <td>string</td>
-      <td><Chip label="null" /></td>
-      <td>
-The username to use with basic authentication. This option is required if
+        </td>
+      </tr>
+      <tr>
+        <td>`auth.basic.username`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  The username to use with basic authentication. This option is required if
 auth.basic.password contains a value. If both auth.basic.username and auth.basic.password
 are empty basic authentication is disabled.
-      </td>
-    </tr>
-    <tr>
-      <td>`field`</td>
-      <td>string</td>
-      <td>`.Payload.After`</td>
-      <td>
-The field that will be encoded.
+        </td>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>string</td>
+        <td>`.Payload.After`</td>
+        <td>
+  The field that will be encoded.
 
 For more information about the format, see [Referencing fields](https://conduit.io/docs/processors/referencing-fields).
-      </td>
-    </tr>
-    <tr>
-      <td>`schema.autoRegister.subject`</td>
-      <td>string</td>
-      <td><Chip label="null" /></td>
-      <td>
-The subject name under which the inferred schema will be registered in the schema registry.
-      </td>
-    </tr>
-    <tr>
-      <td>`schema.preRegistered.subject`</td>
-      <td>string</td>
-      <td><Chip label="null" /></td>
-      <td>
-The subject of the schema in the schema registry used to encode the record.
-      </td>
-    </tr>
-    <tr>
-      <td>`schema.preRegistered.version`</td>
-      <td>int</td>
-      <td><Chip label="null" /></td>
-      <td>
-The version of the schema in the schema registry used to encode the record.
-      </td>
-    </tr>
-    <tr>
-      <td>`schema.strategy`</td>
-      <td>string</td>
-      <td><Chip label="null" /></td>
-      <td>
-Strategy to use to determine the schema for the record.
+        </td>
+      </tr>
+      <tr>
+        <td>`schema.autoRegister.subject`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  The subject name under which the inferred schema will be registered in the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`schema.preRegistered.subject`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  The subject of the schema in the schema registry used to encode the record.
+        </td>
+      </tr>
+      <tr>
+        <td>`schema.preRegistered.version`</td>
+        <td>int</td>
+        <td><Chip label="null" /></td>
+        <td>
+  The version of the schema in the schema registry used to encode the record.
+        </td>
+      </tr>
+      <tr>
+        <td>`schema.strategy`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  Strategy to use to determine the schema for the record.
 Available strategies are:
 * `preRegistered` (recommended) - Download an existing schema from the schema registry.
    This strategy is further configured with options starting with `schema.preRegistered.*`.
@@ -114,46 +118,109 @@ Available strategies are:
   `schema.autoRegister.*`.
 
 For more information about the behavior of each strategy read the main processor description.
-      </td>
-    </tr>
-    <tr>
-      <td>`tls.ca.cert`</td>
-      <td>string</td>
-      <td><Chip label="null" /></td>
-      <td>
-The path to a file containing PEM encoded CA certificates. If this option is empty,
+        </td>
+      </tr>
+      <tr>
+        <td>`tls.ca.cert`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  The path to a file containing PEM encoded CA certificates. If this option is empty,
 Conduit falls back to using the host's root CA set.
-      </td>
-    </tr>
-    <tr>
-      <td>`tls.client.cert`</td>
-      <td>string</td>
-      <td><Chip label="null" /></td>
-      <td>
-The path to a file containing a PEM encoded certificate. This option is required
+        </td>
+      </tr>
+      <tr>
+        <td>`tls.client.cert`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  The path to a file containing a PEM encoded certificate. This option is required
 if tls.client.key contains a value. If both tls.client.cert and tls.client.key are empty
 TLS is disabled.
-      </td>
-    </tr>
-    <tr>
-      <td>`tls.client.key`</td>
-      <td>string</td>
-      <td><Chip label="null" /></td>
-      <td>
-The path to a file containing a PEM encoded private key. This option is required
+        </td>
+      </tr>
+      <tr>
+        <td>`tls.client.key`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  The path to a file containing a PEM encoded private key. This option is required
 if tls.client.cert contains a value. If both tls.client.cert and tls.client.key are empty
 TLS is disabled.
-      </td>
-    </tr>
-    <tr>
-      <td>`url`</td>
-      <td>string</td>
-      <td><Chip label="null" /></td>
-      <td>
-URL of the schema registry (e.g. http://localhost:8085)
-      </td>
-    </tr>
-  </table>
+        </td>
+      </tr>
+      <tr>
+        <td>`url`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  URL of the schema registry (e.g. http://localhost:8085)
+        </td>
+      </tr>
+    </table>
+  </TabItem>
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "avro.encode"
+        settings:
+          # The password to use with basic authentication. This option is
+          # required if auth.basic.username contains a value. If both
+          # auth.basic.username and auth.basic.password are empty basic
+          # authentication is disabled.
+          auth.basic.password: ""
+          # The username to use with basic authentication. This option is
+          # required if auth.basic.password contains a value. If both
+          # auth.basic.username and auth.basic.password are empty basic
+          # authentication is disabled.
+          auth.basic.username: ""
+          # The field that will be encoded.
+          # For more information about the format, see [Referencing
+          # fields](https://conduit.io/docs/processors/referencing-fields).
+          field: ".Payload.After"
+          # The subject name under which the inferred schema will be registered
+          # in the schema registry.
+          schema.autoRegister.subject: ""
+          # The subject of the schema in the schema registry used to encode the
+          # record.
+          schema.preRegistered.subject: ""
+          # The version of the schema in the schema registry used to encode the
+          # record.
+          schema.preRegistered.version: ""
+          # Strategy to use to determine the schema for the record. Available
+          # strategies are: * `preRegistered` (recommended) - Download an
+          # existing schema from the schema registry. This strategy is further
+          # configured with options starting with `schema.preRegistered.*`. *
+          # `autoRegister` (for development purposes) - Infer the schema from
+          # the record and register it in the schema registry. This strategy is
+          # further configured with options starting with
+          # `schema.autoRegister.*`.
+          # For more information about the behavior of each strategy read the
+          # main processor description.
+          schema.strategy: ""
+          # The path to a file containing PEM encoded CA certificates. If this
+          # option is empty, Conduit falls back to using the host's root CA set.
+          tls.ca.cert: ""
+          # The path to a file containing a PEM encoded certificate. This option
+          # is required if tls.client.key contains a value. If both
+          # tls.client.cert and tls.client.key are empty TLS is disabled.
+          tls.client.cert: ""
+          # The path to a file containing a PEM encoded private key. This option
+          # is required if tls.client.cert contains a value. If both
+          # tls.client.cert and tls.client.key are empty TLS is disabled.
+          tls.client.key: ""
+          # URL of the schema registry (e.g. http://localhost:8085)
+          url: ""
+```
+  </TabItem>
+</Tabs>
 
 ## Examples
 
@@ -166,56 +233,85 @@ and registered on the fly under the subject `example-autoRegister`.
 
 #### Configuration parameters
 
-<table class="no-margin-table">
-  <tr>
-    <th>Name</th>
-    <th>Value</th>
-  </tr>
-  <tr>
-    <td>`auth.basic.password`</td>
-    <td><Chip label="null" /></td>
-  </tr>
-  <tr>
-    <td>`auth.basic.username`</td>
-    <td><Chip label="null" /></td>
-  </tr>
-  <tr>
-    <td>`field`</td>
-    <td>`.Payload.After`</td>
-  </tr>
-  <tr>
-    <td>`schema.autoRegister.subject`</td>
-    <td>`example-autoRegister`</td>
-  </tr>
-  <tr>
-    <td>`schema.preRegistered.subject`</td>
-    <td><Chip label="null" /></td>
-  </tr>
-  <tr>
-    <td>`schema.preRegistered.version`</td>
-    <td><Chip label="null" /></td>
-  </tr>
-  <tr>
-    <td>`schema.strategy`</td>
-    <td>`autoRegister`</td>
-  </tr>
-  <tr>
-    <td>`tls.ca.cert`</td>
-    <td><Chip label="null" /></td>
-  </tr>
-  <tr>
-    <td>`tls.client.cert`</td>
-    <td><Chip label="null" /></td>
-  </tr>
-  <tr>
-    <td>`tls.client.key`</td>
-    <td><Chip label="null" /></td>
-  </tr>
-  <tr>
-    <td>`url`</td>
-    <td>`http://127.0.0.1:54322`</td>
-  </tr>
-</table>
+<Tabs groupId="config-params">
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`auth.basic.password`</td>
+        <td><Chip label="null" /></td>
+      </tr>
+      <tr>
+        <td>`auth.basic.username`</td>
+        <td><Chip label="null" /></td>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>`.Payload.After`</td>
+      </tr>
+      <tr>
+        <td>`schema.autoRegister.subject`</td>
+        <td>`example-autoRegister`</td>
+      </tr>
+      <tr>
+        <td>`schema.preRegistered.subject`</td>
+        <td><Chip label="null" /></td>
+      </tr>
+      <tr>
+        <td>`schema.preRegistered.version`</td>
+        <td><Chip label="null" /></td>
+      </tr>
+      <tr>
+        <td>`schema.strategy`</td>
+        <td>`autoRegister`</td>
+      </tr>
+      <tr>
+        <td>`tls.ca.cert`</td>
+        <td><Chip label="null" /></td>
+      </tr>
+      <tr>
+        <td>`tls.client.cert`</td>
+        <td><Chip label="null" /></td>
+      </tr>
+      <tr>
+        <td>`tls.client.key`</td>
+        <td><Chip label="null" /></td>
+      </tr>
+      <tr>
+        <td>`url`</td>
+        <td>`http://127.0.0.1:54322`</td>
+      </tr>
+    </table>
+  </TabItem>
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "avro.encode"
+        settings:
+          auth.basic.password: ""
+          auth.basic.username: ""
+          field: ".Payload.After"
+          schema.autoRegister.subject: "example-autoRegister"
+          schema.preRegistered.subject: ""
+          schema.preRegistered.version: ""
+          schema.strategy: "autoRegister"
+          tls.ca.cert: ""
+          tls.client.cert: ""
+          tls.client.key: ""
+          url: "http://127.0.0.1:54322"
+```
+  </TabItem>
+</Tabs>
 
 #### Record difference
 
@@ -262,56 +358,85 @@ The processor encodes the record's`.Key` field using the above schema.
 
 #### Configuration parameters
 
-<table class="no-margin-table">
-  <tr>
-    <th>Name</th>
-    <th>Value</th>
-  </tr>
-  <tr>
-    <td>`auth.basic.password`</td>
-    <td><Chip label="null" /></td>
-  </tr>
-  <tr>
-    <td>`auth.basic.username`</td>
-    <td><Chip label="null" /></td>
-  </tr>
-  <tr>
-    <td>`field`</td>
-    <td>`.Key`</td>
-  </tr>
-  <tr>
-    <td>`schema.autoRegister.subject`</td>
-    <td><Chip label="null" /></td>
-  </tr>
-  <tr>
-    <td>`schema.preRegistered.subject`</td>
-    <td>`example-preRegistered`</td>
-  </tr>
-  <tr>
-    <td>`schema.preRegistered.version`</td>
-    <td>`1`</td>
-  </tr>
-  <tr>
-    <td>`schema.strategy`</td>
-    <td>`preRegistered`</td>
-  </tr>
-  <tr>
-    <td>`tls.ca.cert`</td>
-    <td><Chip label="null" /></td>
-  </tr>
-  <tr>
-    <td>`tls.client.cert`</td>
-    <td><Chip label="null" /></td>
-  </tr>
-  <tr>
-    <td>`tls.client.key`</td>
-    <td><Chip label="null" /></td>
-  </tr>
-  <tr>
-    <td>`url`</td>
-    <td>`http://127.0.0.1:54322`</td>
-  </tr>
-</table>
+<Tabs groupId="config-params">
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`auth.basic.password`</td>
+        <td><Chip label="null" /></td>
+      </tr>
+      <tr>
+        <td>`auth.basic.username`</td>
+        <td><Chip label="null" /></td>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>`.Key`</td>
+      </tr>
+      <tr>
+        <td>`schema.autoRegister.subject`</td>
+        <td><Chip label="null" /></td>
+      </tr>
+      <tr>
+        <td>`schema.preRegistered.subject`</td>
+        <td>`example-preRegistered`</td>
+      </tr>
+      <tr>
+        <td>`schema.preRegistered.version`</td>
+        <td>`1`</td>
+      </tr>
+      <tr>
+        <td>`schema.strategy`</td>
+        <td>`preRegistered`</td>
+      </tr>
+      <tr>
+        <td>`tls.ca.cert`</td>
+        <td><Chip label="null" /></td>
+      </tr>
+      <tr>
+        <td>`tls.client.cert`</td>
+        <td><Chip label="null" /></td>
+      </tr>
+      <tr>
+        <td>`tls.client.key`</td>
+        <td><Chip label="null" /></td>
+      </tr>
+      <tr>
+        <td>`url`</td>
+        <td>`http://127.0.0.1:54322`</td>
+      </tr>
+    </table>
+  </TabItem>
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "avro.encode"
+        settings:
+          auth.basic.password: ""
+          auth.basic.username: ""
+          field: ".Key"
+          schema.autoRegister.subject: ""
+          schema.preRegistered.subject: "example-preRegistered"
+          schema.preRegistered.version: "1"
+          schema.strategy: "preRegistered"
+          tls.ca.cert: ""
+          tls.client.cert: ""
+          tls.client.key: ""
+          url: "http://127.0.0.1:54322"
+```
+  </TabItem>
+</Tabs>
 
 #### Record difference
 

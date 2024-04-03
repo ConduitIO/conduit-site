@@ -8,6 +8,8 @@ sidebar_position: 5
 import ReactDiffViewer from 'react-diff-viewer';
 import Chip from '@mui/material/Chip';
 import Box from "@mui/system/Box";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # `field.convert`
 
@@ -24,34 +26,61 @@ to parse it into structured data first.
 
 ## Configuration parameters
 
-<table class="no-margin-table">
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Default</th>
-      <th>Description</th>
-    </tr>
-    <tr>
-      <td>`field`</td>
-      <td>string</td>
-      <td><Chip label="null" /></td>
-      <td>
-Field is the target field that should be converted.
+<Tabs groupId="config-params">
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  Field is the target field that should be converted.
 Note that you can only convert fields in structured data under `.Key` and
 `.Payload`.
 
 For more information about the format, see [Referencing fields](https://conduit.io/docs/processors/referencing-fields).
-      </td>
-    </tr>
-    <tr>
-      <td>`type`</td>
-      <td>string</td>
-      <td><Chip label="null" /></td>
-      <td>
-Type is the target field type after conversion, available options are: string, int, float, bool.
-      </td>
-    </tr>
-  </table>
+        </td>
+      </tr>
+      <tr>
+        <td>`type`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  Type is the target field type after conversion, available options are: string, int, float, bool.
+        </td>
+      </tr>
+    </table>
+  </TabItem>
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "field.convert"
+        settings:
+          # Field is the target field that should be converted. Note that you
+          # can only convert fields in structured data under `.Key` and
+          # `.Payload`.
+          # For more information about the format, see [Referencing
+          # fields](https://conduit.io/docs/processors/referencing-fields).
+          field: ""
+          # Type is the target field type after conversion, available options
+          # are: string, int, float, bool.
+          type: ""
+```
+  </TabItem>
+</Tabs>
 
 ## Examples
 
@@ -61,20 +90,40 @@ This example takes the `float` in field `.Key.id` and changes its data type to `
 
 #### Configuration parameters
 
-<table class="no-margin-table">
-  <tr>
-    <th>Name</th>
-    <th>Value</th>
-  </tr>
-  <tr>
-    <td>`field`</td>
-    <td>`.Key.id`</td>
-  </tr>
-  <tr>
-    <td>`type`</td>
-    <td>`string`</td>
-  </tr>
-</table>
+<Tabs groupId="config-params">
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>`.Key.id`</td>
+      </tr>
+      <tr>
+        <td>`type`</td>
+        <td>`string`</td>
+      </tr>
+    </table>
+  </TabItem>
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "field.convert"
+        settings:
+          field: ".Key.id"
+          type: "string"
+```
+  </TabItem>
+</Tabs>
 
 #### Record difference
 
@@ -106,20 +155,40 @@ This example takes the `int` in field `.Payload.After.done` and changes its data
 
 #### Configuration parameters
 
-<table class="no-margin-table">
-  <tr>
-    <th>Name</th>
-    <th>Value</th>
-  </tr>
-  <tr>
-    <td>`field`</td>
-    <td>`.Payload.After.done`</td>
-  </tr>
-  <tr>
-    <td>`type`</td>
-    <td>`bool`</td>
-  </tr>
-</table>
+<Tabs groupId="config-params">
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>`.Payload.After.done`</td>
+      </tr>
+      <tr>
+        <td>`type`</td>
+        <td>`bool`</td>
+      </tr>
+    </table>
+  </TabItem>
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "field.convert"
+        settings:
+          field: ".Payload.After.done"
+          type: "bool"
+```
+  </TabItem>
+</Tabs>
 
 #### Record difference
 
@@ -151,20 +220,40 @@ This example takes the string in field `.Key.id` and changes its data type to `i
 
 #### Configuration parameters
 
-<table class="no-margin-table">
-  <tr>
-    <th>Name</th>
-    <th>Value</th>
-  </tr>
-  <tr>
-    <td>`field`</td>
-    <td>`.Key.id`</td>
-  </tr>
-  <tr>
-    <td>`type`</td>
-    <td>`int`</td>
-  </tr>
-</table>
+<Tabs groupId="config-params">
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>`.Key.id`</td>
+      </tr>
+      <tr>
+        <td>`type`</td>
+        <td>`int`</td>
+      </tr>
+    </table>
+  </TabItem>
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "field.convert"
+        settings:
+          field: ".Key.id"
+          type: "int"
+```
+  </TabItem>
+</Tabs>
 
 #### Record difference
 
