@@ -8,6 +8,8 @@ sidebar_position: 15
 import ReactDiffViewer from 'react-diff-viewer';
 import Chip from '@mui/material/Chip';
 import Box from "@mui/system/Box";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # `webhook.http`
 
@@ -20,102 +22,159 @@ saves the response body and, optionally, the response status.
 
 ## Configuration parameters
 
-<table class="no-margin-table">
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Default</th>
-      <th>Description</th>
-    </tr>
-    <tr>
-      <td>`backoffRetry.count`</td>
-      <td>float</td>
-      <td>`0`</td>
-      <td>
-Maximum number of retries for an individual record when backing off following an error.
-      </td>
-    </tr>
-    <tr>
-      <td>`backoffRetry.factor`</td>
-      <td>float</td>
-      <td>`2`</td>
-      <td>
-The multiplying factor for each increment step.
-      </td>
-    </tr>
-    <tr>
-      <td>`backoffRetry.max`</td>
-      <td>duration</td>
-      <td>`5s`</td>
-      <td>
-The maximum waiting time before retrying.
-      </td>
-    </tr>
-    <tr>
-      <td>`backoffRetry.min`</td>
-      <td>duration</td>
-      <td>`100ms`</td>
-      <td>
-The minimum waiting time before retrying.
-      </td>
-    </tr>
-    <tr>
-      <td>`request.body`</td>
-      <td>string</td>
-      <td>`.`</td>
-      <td>
-Specifies which field from the input record should be used as the body in
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "webhook.http"
+        settings:
+          # Maximum number of retries for an individual record when backing off
+          # following an error.
+          # Type: float
+          backoffRetry.count: "0"
+          # The multiplying factor for each increment step.
+          # Type: float
+          backoffRetry.factor: "2"
+          # The maximum waiting time before retrying.
+          # Type: duration
+          backoffRetry.max: "5s"
+          # The minimum waiting time before retrying.
+          # Type: duration
+          backoffRetry.min: "100ms"
+          # Specifies which field from the input record should be used as the
+          # body in the HTTP request.
+          # For more information about the format, see [Referencing
+          # fields](https://conduit.io/docs/processors/referencing-fields).
+          # Type: string
+          request.body: "."
+          # The value of the `Content-Type` header.
+          # Type: string
+          request.contentType: "application/json"
+          # Method is the HTTP request method to be used.
+          # Type: string
+          request.method: "POST"
+          # URL used in the HTTP request.
+          # Type: string
+          request.url: ""
+          # Specifies in which field should the response body be saved.
+          # For more information about the format, see [Referencing
+          # fields](https://conduit.io/docs/processors/referencing-fields).
+          # Type: string
+          response.body: ".Payload.After"
+          # Specifies in which field should the response status be saved. If no
+          # value is set, then the response status will NOT be saved.
+          # For more information about the format, see [Referencing
+          # fields](https://conduit.io/docs/processors/referencing-fields).
+          # Type: string
+          response.status: ""
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td>`backoffRetry.count`</td>
+        <td>float</td>
+        <td>`0`</td>
+        <td>
+  Maximum number of retries for an individual record when backing off following an error.
+        </td>
+      </tr>
+      <tr>
+        <td>`backoffRetry.factor`</td>
+        <td>float</td>
+        <td>`2`</td>
+        <td>
+  The multiplying factor for each increment step.
+        </td>
+      </tr>
+      <tr>
+        <td>`backoffRetry.max`</td>
+        <td>duration</td>
+        <td>`5s`</td>
+        <td>
+  The maximum waiting time before retrying.
+        </td>
+      </tr>
+      <tr>
+        <td>`backoffRetry.min`</td>
+        <td>duration</td>
+        <td>`100ms`</td>
+        <td>
+  The minimum waiting time before retrying.
+        </td>
+      </tr>
+      <tr>
+        <td>`request.body`</td>
+        <td>string</td>
+        <td>`.`</td>
+        <td>
+  Specifies which field from the input record should be used as the body in
 the HTTP request.
 
 For more information about the format, see [Referencing fields](https://conduit.io/docs/processors/referencing-fields).
-      </td>
-    </tr>
-    <tr>
-      <td>`request.contentType`</td>
-      <td>string</td>
-      <td>`application/json`</td>
-      <td>
-The value of the `Content-Type` header.
-      </td>
-    </tr>
-    <tr>
-      <td>`request.method`</td>
-      <td>string</td>
-      <td>`POST`</td>
-      <td>
-Method is the HTTP request method to be used.
-      </td>
-    </tr>
-    <tr>
-      <td>`request.url`</td>
-      <td>string</td>
-      <td><Chip label="null" /></td>
-      <td>
-URL used in the HTTP request.
-      </td>
-    </tr>
-    <tr>
-      <td>`response.body`</td>
-      <td>string</td>
-      <td>`.Payload.After`</td>
-      <td>
-Specifies in which field should the response body be saved.
+        </td>
+      </tr>
+      <tr>
+        <td>`request.contentType`</td>
+        <td>string</td>
+        <td>`application/json`</td>
+        <td>
+  The value of the `Content-Type` header.
+        </td>
+      </tr>
+      <tr>
+        <td>`request.method`</td>
+        <td>string</td>
+        <td>`POST`</td>
+        <td>
+  Method is the HTTP request method to be used.
+        </td>
+      </tr>
+      <tr>
+        <td>`request.url`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  URL used in the HTTP request.
+        </td>
+      </tr>
+      <tr>
+        <td>`response.body`</td>
+        <td>string</td>
+        <td>`.Payload.After`</td>
+        <td>
+  Specifies in which field should the response body be saved.
 
 For more information about the format, see [Referencing fields](https://conduit.io/docs/processors/referencing-fields).
-      </td>
-    </tr>
-    <tr>
-      <td>`response.status`</td>
-      <td>string</td>
-      <td><Chip label="null" /></td>
-      <td>
-Specifies in which field should the response status be saved. If no value
+        </td>
+      </tr>
+      <tr>
+        <td>`response.status`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  Specifies in which field should the response status be saved. If no value
 is set, then the response status will NOT be saved.
 
 For more information about the format, see [Referencing fields](https://conduit.io/docs/processors/referencing-fields).
-      </td>
-    </tr>
-  </table>
+        </td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
 
 ## Examples
 
@@ -130,52 +189,80 @@ value of the HTTP response's code in the metadata field `http_status`.
 
 #### Configuration parameters
 
-<table class="no-margin-table">
-  <tr>
-    <th>Name</th>
-    <th>Value</th>
-  </tr>
-  <tr>
-    <td>`backoffRetry.count`</td>
-    <td>`0`</td>
-  </tr>
-  <tr>
-    <td>`backoffRetry.factor`</td>
-    <td>`2`</td>
-  </tr>
-  <tr>
-    <td>`backoffRetry.max`</td>
-    <td>`5s`</td>
-  </tr>
-  <tr>
-    <td>`backoffRetry.min`</td>
-    <td>`100ms`</td>
-  </tr>
-  <tr>
-    <td>`request.body`</td>
-    <td>`.Payload.After`</td>
-  </tr>
-  <tr>
-    <td>`request.contentType`</td>
-    <td>`application/json`</td>
-  </tr>
-  <tr>
-    <td>`request.method`</td>
-    <td>`POST`</td>
-  </tr>
-  <tr>
-    <td>`request.url`</td>
-    <td>`http://127.0.0.1:54321`</td>
-  </tr>
-  <tr>
-    <td>`response.body`</td>
-    <td>`.Payload.After`</td>
-  </tr>
-  <tr>
-    <td>`response.status`</td>
-    <td>`.Metadata["http_status"]`</td>
-  </tr>
-</table>
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "webhook.http"
+        settings:
+          backoffRetry.count: "0"
+          backoffRetry.factor: "2"
+          backoffRetry.max: "5s"
+          backoffRetry.min: "100ms"
+          request.body: ".Payload.After"
+          request.contentType: "application/json"
+          request.method: "POST"
+          request.url: "http://127.0.0.1:54321"
+          response.body: ".Payload.After"
+          response.status: ".Metadata["http_status"]"
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`backoffRetry.count`</td>
+        <td>`0`</td>
+      </tr>
+      <tr>
+        <td>`backoffRetry.factor`</td>
+        <td>`2`</td>
+      </tr>
+      <tr>
+        <td>`backoffRetry.max`</td>
+        <td>`5s`</td>
+      </tr>
+      <tr>
+        <td>`backoffRetry.min`</td>
+        <td>`100ms`</td>
+      </tr>
+      <tr>
+        <td>`request.body`</td>
+        <td>`.Payload.After`</td>
+      </tr>
+      <tr>
+        <td>`request.contentType`</td>
+        <td>`application/json`</td>
+      </tr>
+      <tr>
+        <td>`request.method`</td>
+        <td>`POST`</td>
+      </tr>
+      <tr>
+        <td>`request.url`</td>
+        <td>`http://127.0.0.1:54321`</td>
+      </tr>
+      <tr>
+        <td>`response.body`</td>
+        <td>`.Payload.After`</td>
+      </tr>
+      <tr>
+        <td>`response.status`</td>
+        <td>`.Metadata["http_status"]`</td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
 
 #### Record difference
 
