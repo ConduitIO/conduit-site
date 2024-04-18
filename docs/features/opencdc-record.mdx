@@ -70,75 +70,168 @@ expand its functionality. Notice that all these fields use a dot notation syntax
 to indicate what they refer to, preventing accidental clashes. Here are the ones
 you can find:
 
-### OpenCDC
+### `opencdc.createdAt`
 
-- `opencdc.createdAt` can contain the time when the record was created in the 3rd party system. The expected format is a Unix timestamp in nanoseconds.
-- `opencdc.readAt` can contain the time when the record was read from the 3rd party system. The expected format is a Unix timestamp in nanoseconds.
-- `opencdc.version` contains the version of the OpenCDC format (e.g., "v1"). This field exists to ensure the OpenCDC format version can be easily identified in case the record gets marshaled into a different untyped format (e.g. JSON).
-- `opencdc.collection` contains the name of the collection from which the record originated and/or where it should be written to.
+Contains the time when the record was created in the 3rd party system. The
+expected format is a Unix timestamp in nanoseconds.
 
 ```json5
 {
     // other record fields
     "metadata": {
         "opencdc.createdAt": "1663858188836816000",
-        "opencdc.readAt": "1663858188836816000",
-        "opencdc.version": "v1",
-        "opencdc.collection": "employees",
         // rest of metadata
     },
   // other record fields
 }
 ```
 
-### Conduit
+### `opencdc.readAt`
 
-The following metadata is only available in records once they are read by a **source plugin**:
-
-- `conduit.source.plugin.name` is the name of the source plugin that created the record.
-- `conduit.source.plugin.version` is the version of the source plugin that created the record.
-- `conduit.source.connector.id` is the ID of the source connector that received the record.
+Contains the time when the record was read from the 3rd party system. The
+expected format is a Unix timestamp in nanoseconds.
 
 ```json5
 {
     // other record fields
     "metadata": {
-        "conduit.source.connector.id": "connectorID",
-        "conduit.source.plugin.name": "example",
-        "conduit.source.plugin.version": "v1",
+        "opencdc.readAt": "1663858188836816000",
         // rest of metadata
     },
-    // other record fields
+  // other record fields
 }
 ```
 
-The following metadata is only available in records once they are written by a **destination plugin**:
+### `opencdc.version`
 
-- `conduit.destination.plugin.name` is the name of the destination plugin that has written the record.
-- `conduit.destination.plugin.version` is the version of the destination plugin that has written the record.
+Contains the version of the OpenCDC format (e.g., "v1"). This field exists to
+ensure the OpenCDC format version can be easily identified in case the record
+gets marshaled into a different untyped format (e.g. JSON).
 
 ```json5
 {
     // other record fields
     "metadata": {
-        "conduit.destination.plugin.name": "example",
-        "conduit.destination.plugin.version": "v1",
+        "opencdc.version": "v1",
         // rest of metadata
     },
-    // other record fields
+  // other record fields
 }
 ```
 
-When a record is sent to the [Dead-Letter Queue (DLQ)](/dead-letter-queue), you'll also see these extra fields that will give you an insight into why the record landed in the DLQ.
+### `opencdc.collection`
 
-- `conduit.dlq.nack.error` contains the error that caused a record to be nacked and pushed to the dead-letter queue.
-- `conduit.dlq.nack.node.id` is the ID of the internal node that nacked the record. 
+Contains the name of the collection from which the record originated and/or
+where it should be written to.
 
-### Connector
+:::note
+It's up to the connector to populate this field. In other words, not all records
+may have this field.
+:::
 
-These metadata fields will be provided by each connector implementation allowing them to add any necessary metadata. As previously mentioned, to avoid unintended conflicts of metadata keys, the convention these will follow are the same as before, indicating first the connector name that's adding them.
+```json5
+{
+    // other record fields
+    "metadata": {
+        "opencdc.collection": "employees",
+        // rest of metadata
+    },
+  // other record fields
+}
+```
+### `conduit.source.plugin.name`
 
-Taking the same [previous record example](#representation), you'll notice there is a metadata key named `file.path`, which would indicate this field was added by a `file` plugin.
+The name of the source plugin that created the record.
+
+
+```json5
+{
+  // other record fields
+  "metadata": {
+    "conduit.source.plugin.name": "builtin:file",
+    // rest of metadata
+  },
+  // other record fields
+}
+```
+
+### `conduit.source.plugin.version`
+
+The version of the source plugin that created the record.
+
+
+```json5
+{
+  // other record fields
+  "metadata": {
+    "conduit.source.plugin.version": "v1.0.2",
+    // rest of metadata
+  },
+  // other record fields
+}
+```
+
+### `conduit.source.connector.id`
+
+`conduit.source.connector.id` is the ID of the source connector that received the record.
+
+```json5
+{
+  // other record fields
+  "metadata": {
+    "conduit.source.connector.id": "connectorID",
+    // rest of metadata
+  },
+  // other record fields
+}
+```
+### `conduit.destination.plugin.name`
+
+The name of the destination plugin that has written the record.
+
+```json5
+{
+  // other record fields
+  "metadata": {
+    "conduit.destination.plugin.name": "builtin:file",
+    // rest of metadata
+  },
+  // other record fields
+}
+```
+
+
+### `conduit.destination.plugin.version`
+
+The version of the destination plugin that has written the record.
+
+```json5
+{
+  // other record fields
+  "metadata": {
+    "conduit.destination.plugin.version": "v0.9.1",
+    // rest of metadata
+  },
+  // other record fields
+}
+```
+
+### `conduit.dlq.nack.error` 
+Contains the error that caused a record to be nacked and pushed to the [dead-letter queue (DLQ)](/dead-letter-queue).
+
+### `conduit.dlq.nack.node.id` 
+The ID of the internal node that nacked the record. 
+
+### Connector-specific metadata
+
+These metadata fields will be provided by each connector implementation allowing
+them to add any necessary metadata. As previously mentioned, to avoid unintended
+conflicts of metadata keys, the convention these will follow are the same as
+before, indicating first the connector name that's adding them.
+
+Taking the same [previous record example](#representation), you'll notice there
+is a metadata key named `file.path`, which would indicate this field was added
+by a `file` plugin.
 
 ```json5
 {
