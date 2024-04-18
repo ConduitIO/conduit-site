@@ -8,6 +8,8 @@ sidebar_position: 7
 import ReactDiffViewer from 'react-diff-viewer';
 import Chip from '@mui/material/Chip';
 import Box from "@mui/system/Box";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # `field.rename`
 
@@ -25,27 +27,52 @@ to parse it into structured data first.
 
 ## Configuration parameters
 
-<table class="no-margin-table">
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Default</th>
-      <th>Description</th>
-    </tr>
-    <tr>
-      <td>`mapping`</td>
-      <td>string</td>
-      <td><Chip label="null" /></td>
-      <td>
-Mapping is a comma separated list of keys and values for fields and their
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "field.rename"
+        settings:
+          # Mapping is a comma separated list of keys and values for fields and
+          # their new names (keys and values are separated by colons ":").
+          # For example: `.Metadata.key:id,.Payload.After.foo:bar`.
+          # For more information about the format, see [Referencing
+          # fields](https://conduit.io/docs/processors/referencing-fields).
+          # Type: string
+          mapping: ""
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td>`mapping`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  Mapping is a comma separated list of keys and values for fields and their
 new names (keys and values are separated by colons ":").
 
 For example: `.Metadata.key:id,.Payload.After.foo:bar`.
 
 For more information about the format, see [Referencing fields](https://conduit.io/docs/processors/referencing-fields).
-      </td>
-    </tr>
-  </table>
+        </td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
 
 ## Examples
 
@@ -56,16 +83,35 @@ This example renames the fields in `.Metadata` and
 
 #### Configuration parameters
 
-<table class="no-margin-table">
-  <tr>
-    <th>Name</th>
-    <th>Value</th>
-  </tr>
-  <tr>
-    <td>`mapping`</td>
-    <td>`.Metadata.key1:newKey,.Payload.After.foo:newFoo`</td>
-  </tr>
-</table>
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "field.rename"
+        settings:
+          mapping: ".Metadata.key1:newKey,.Payload.After.foo:newFoo"
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`mapping`</td>
+        <td>`.Metadata.key1:newKey,.Payload.After.foo:newFoo`</td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
 
 #### Record difference
 

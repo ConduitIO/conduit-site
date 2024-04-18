@@ -8,6 +8,8 @@ sidebar_position: 9
 import ReactDiffViewer from 'react-diff-viewer';
 import Chip from '@mui/material/Chip';
 import Box from "@mui/system/Box";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # `filter`
 
@@ -24,7 +26,25 @@ to this processor, otherwise all records will be filtered out.
 
 ## Configuration parameters
 
-No configuration parameters.
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "filter"
+        
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  No configuration parameters.
+  </TabItem>
+</Tabs>
 
 ## Examples
 
@@ -34,7 +54,25 @@ No configuration parameters.
 
 #### Configuration parameters
 
-No configuration parameters.
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "filter"
+        
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  No configuration parameters.
+  </TabItem>
+</Tabs>
 
 #### Record difference
 
