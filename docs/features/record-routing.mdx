@@ -1,0 +1,104 @@
+---
+title: 'Record routing'
+sidebar_position: 4
+keywords: [ 'synchronization', 'collections', 'routing' ]
+---
+
+## Overview
+
+Record routing in Conduit makes it easier to build one-to-many and many-to-many
+pipeline topologies. Or, in other words, it's possible to:
+
+* route data from one source to multiple collections in one destination
+* route data from multiple sources to multiple destinations.
+
+Through this, a number of use cases are possible:
+
+* Keep two instances synchronized. For examples, two database instances with
+  multiple tables in each can be kept in sync with a single pipeline with only
+  one source and one destination connector.
+* Route data from one collection (table, topic, index, etc.) to multiple
+  collections.
+
+## How does it work
+
+The [OpenCDC format](/docs/features/opencdc-record) recommends that a record's
+source or destination collection is written to its metadata using
+the [`opencdc.collection` key](/docs/features/opencdc-record#opencdccollection).
+
+Then, a destination connector can utilize that information and write the record
+to the correct collection.
+
+:::note
+It's the connectors that eventually provide the ability to read from multiple
+source collections, or write to multiple destination collections. Consult the
+connector documentation to check if it supports this feature.
+:::
+
+## Example
+
+Let's assume we have a pipeline that streams data from two Kafka
+topics, `employees_finance` and `employees_legal` to PostgreSQL.
+
+```yaml
+---
+version: 2.2
+pipelines:
+  - id: example-pipeline
+    status: running
+    name: example-pipeline
+    description: 'Kafka to PostgreSQL'
+    connectors:
+      - id: kafka-source
+        type: source
+        plugin: "builtin:kafka"
+        name: kafka-source
+        settings:
+          servers: "localhost:9092"
+          topics: "employees_finance,employees_legal"
+
+      - id: pg-destination
+        type: destination
+        plugin: "builtin:postgres"
+        name: pg-destination
+        settings:
+          url: "postgresql://username:password@localhost/testdb?sslmode=disable"
+          table: "employees"
+```
+
+The Kafka connector will connectors like below:
+
+```json lines
+{
+    "metadata": {
+        "opencdc.collection": "employees_finance",
+        // rest of metadata
+    },
+    "payload": {
+        "after": {
+            "name": "John"
+        }
+    }
+    // other record fields
+}
+{
+    "metadata": {
+        "opencdc.collection": "employees_legal",
+        // rest of metadata
+    },
+    "payload": {
+        "after": {
+            "name": "Adam"
+        }
+    }
+    // other record fields
+}
+```
+
+The PostgreSQL destination connector will check the value in
+the `opencdc.collection` metadata field. Based on that will write John's
+information record to the `employees_finance` table and Adam's information to
+the `employees_legal` table.
+
+If the `opencdc.collection` metadata field is missing, then the record will be
+written to the default table, which is `employees` in our case.
