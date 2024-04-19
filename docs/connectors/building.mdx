@@ -35,19 +35,19 @@ A Conduit Connector can serve as a source, destination, or both. Implement a sou
 
 ### Connector Component Files
 
-### `spec.go`
+#### `spec.go`
 
 This file defines the public-facing characteristics of the connector such as its name and capabilities. Begin by updating placeholder values with the specific details of your connector.
 
 ![spec.go](/img/spec-go.png)
 
-### `config.go`
+#### `config.go`
 
 This file holds configuration parameters shared between source and destination, if applicable. If separate configuration is required for source and destination, distinct `config.go` files should be created for each.
 
 ![config.go](/img/config-go.png)
 
-### `paramgen_src` and `paramgen_dst`
+#### `paramgen_src` and `paramgen_dst`
 
 These files are created using the [paramgen](https://github.com/ConduitIO/conduit-connector-sdk/tree/main/cmd/paramgen) tool, which generates code from the Config struct to provide a map of configuration parameters.
 
@@ -57,7 +57,7 @@ An example usage of the `paramgen` tool to generate a new map after updating a c
 
 ![paramgen.go](/img/paramgen-go.png)
 
-### `source.go` and `destination.go`
+#### `source.go` and `destination.go`
 
 Define the principal operation logic of your connector within these files. Both types of connectors must handle configuration, establish connections, perform read/write operations, and properly close connections upon completion. Auxiliary functions for the configuration lifecycle are provided by the template.
 
