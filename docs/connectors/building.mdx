@@ -3,19 +3,89 @@ title: "Building Connectors"
 sidebar_position: 5
 ---
 
-Conduit connectors can be built in any programming language that supports gRPC.
-To make it easier to write connectors we provide
-a [Connector SDK](https://github.com/ConduitIO/conduit-connector-sdk) written in
-Go. Using the SDK is the recommended way of writing a Conduit connector.
+## Developing Custom Connectors
 
-## Conduit connector template
+The Conduit platform offers extensibility through the development of connectors, which can be written in any programming language that supports [gRPC](https://grpc.io/). For ease of development, a Go-based [Connector SDK](https://github.com/ConduitIO/conduit-connector-sdk) is provided and its use is the recommended approach for creating Conduit connectors.
 
-The easiest way to start implementing your own Conduit connector is by using the
-[Conduit connector template](https://github.com/ConduitIO/conduit-connector-template).
-It contains the basic project structure as well as some additional utilities
-like GitHub actions and a Makefile.
+## Initializing a Conduit Connector Project
 
-Find out more about the template and how to use it in the readme.
+To begin the development of a custom Conduit connector, developers should initialize their project using the [Conduit connector template](https://github.com/ConduitIO/conduit-connector-template). This template streamlines the setup process by providing a fundamental project structure, along with utility configurations for GitHub actions and a Makefile.
+
+Included in the Conduit Connector Template are:
+
+- Base code for configuring the connector's source and destination.
+- Sample unit tests to validate connector functionality.
+- A preconfigured Makefile to assist with common build tasks.
+- GitHub Actions Workflows for continuous integration including building, testing, linting, and automated release creation upon tag push.
+- Dependabot configurations to automate dependency updates and minor version auto-merging.
+- Issue and Pull Request templates for consistent contribution practices.
+- A README template to guide project documentation.
+
+### Steps to Use the Connector Template
+
+1. On the repository's main page, select "Use this template".
+2. Provide the new repository details as prompted.
+3. Upon repository creation, clone it to your local development environment.
+4. Execute the `./setup.sh` script with the desired module name, e.g., `./setup.sh github.com/awesome-org/conduit-connector-file`.
+5. (Optional) Define code owners in the `CODEOWNERS` file.
+
+## Connector Development Lifecycle
+
+A Conduit Connector can serve as a source, destination, or both. Implement a source connector by defining a struct that satisfies the [sdk.Source](<https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#Source>) interface, or create a destination connector by creating a struct that satisfies [sdk.Destination](<https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#Destination>).
+
+### Connector Component Files
+
+### `spec.go`
+
+This file defines the public-facing characteristics of the connector such as its name and capabilities. Begin by updating placeholder values with the specific details of your connector.
+
+![spec.go](/img/spec-go.png)
+
+### `config.go`
+
+This file holds configuration parameters shared between source and destination, if applicable. If separate configuration is required for source and destination, distinct `config.go` files should be created for each.
+
+![config.go](/img/config-go.png)
+
+### `paramgen_src` and `paramgen_dst`
+
+These files are created using the [paramgen](https://github.com/ConduitIO/conduit-connector-sdk/tree/main/cmd/paramgen) tool, which generates code from the Config struct to provide a map of configuration parameters.
+
+An example usage of the `paramgen` tool to generate a new map after updating a config struct is as follows:
+
+```paramgen -path=./source -output=paramgen_src.go SourceConfig```
+
+![paramgen.go](/img/paramgen-go.png)
+
+### `source.go` and `destination.go`
+
+Define the principal operation logic of your connector within these files. Both types of connectors must handle configuration, establish connections, perform read/write operations, and properly close connections upon completion. Auxiliary functions for the configuration lifecycle are provided by the template.
+
+- **`Configure()`**: Validates and stores configuration data for the connector. Any complex validation logic should be implemented here.
+![configure-func.go](/img/configure-func.png)
+- **`Open()`**: (Source connectors only) Prepares the connector to start producing records based on the last known successful position.
+![open-func.go](/img/open-func.png)
+- **`Write()`**: (Destination connectors only) Writes records received from the Conduit pipeline directly to the destination.
+![write-func.go](/img/write-func.png)
+
+### Building and Launching the Connector
+
+Utilize the included `Makefile` for compiling a binary of your connector:
+
+```bash
+make build
+
+```
+
+Place the resulting binary file in Conduit's `connectors` directory. Run Conduit with:
+
+```bash
+./conduit
+
+```
+
+Access the Conduit UI at `http://localhost:8080/ui` to manage and observe your custom connector within the available connectors list.
+
 
 ## Supported data types
 
