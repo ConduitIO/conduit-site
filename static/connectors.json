@@ -430,7 +430,7 @@
             "browser_download_url": "https://github.com/ConduitIO/conduit-connector-generator/releases/download/v0.5.0/conduit-connector-generator_0.5.0_Darwin_arm64.tar.gz",
             "created_at": "2023-07-19T11:51:47Z",
             "updated_at": "2023-07-19T11:51:47Z",
-            "download_count": 1,
+            "download_count": 2,
             "size": 4556752
           },
           {
@@ -441,7 +441,7 @@
             "browser_download_url": "https://github.com/ConduitIO/conduit-connector-generator/releases/download/v0.5.0/conduit-connector-generator_0.5.0_Darwin_x86_64.tar.gz",
             "created_at": "2023-07-19T11:51:47Z",
             "updated_at": "2023-07-19T11:51:48Z",
-            "download_count": 7,
+            "download_count": 8,
             "size": 4723561
           },
           {
@@ -2931,6 +2931,15 @@
     ]
   },
   {
+    "nameWithOwner": "GevorgGal/conduit-connector-influxdb",
+    "description": "",
+    "createdAt": "2024-04-18 01:04:24 +0000 UTC",
+    "url": "https://github.com/GevorgGal/conduit-connector-influxdb",
+    "stargazerCount": 0,
+    "forkCount": 0,
+    "releases": []
+  },
+  {
     "nameWithOwner": "ViniciusMiana/conduit-connector-pulsar",
     "description": "Provides a source and a destination Pulsar connector, for Conduit.",
     "createdAt": "2023-12-07 00:47:43 +0000 UTC",
@@ -4198,7 +4207,7 @@
             "browser_download_url": "https://github.com/conduitio-labs/conduit-connector-http/releases/download/v0.1.0/conduit-connector-http_0.1.0_Darwin_arm64.tar.gz",
             "created_at": "2024-04-04T19:13:44Z",
             "updated_at": "2024-04-04T19:13:45Z",
-            "download_count": 0,
+            "download_count": 1,
             "size": 5234234
           },
           {
@@ -5629,7 +5638,7 @@
             "browser_download_url": "https://github.com/conduitio-labs/conduit-connector-salesforce/releases/download/v0.3.0/conduit-connector-salesforce_0.3.0_Darwin_arm64.tar.gz",
             "created_at": "2022-10-03T13:34:27Z",
             "updated_at": "2022-10-03T13:34:27Z",
-            "download_count": 4,
+            "download_count": 5,
             "size": 4402201
           },
           {
