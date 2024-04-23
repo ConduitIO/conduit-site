@@ -14,17 +14,17 @@ pipeline topologies. Or, in other words, it's possible to:
 
 Through this, a number of use cases are possible:
 
-* Keep two instances synchronized. For examples, two database instances with
+* Keep two instances synchronized. For example, two database instances with
   multiple tables in each can be kept in sync with a single pipeline with only
   one source and one destination connector.
 * Route data from one collection (table, topic, index, etc.) to multiple
   collections on a single server.
 * Route data to different instances or different systems altogether.
 
-This can be done it two ways:
+This can be done in two ways:
 
-* by using a connector that supports writing to multiple collections
-* by using filter processors
+* by using a connector that supports writing to multiple collections,
+* by using filter processors.
 
 ## Using a connector that supports writing to multiple collections
 
@@ -37,7 +37,7 @@ to the correct collection.
 
 :::note
 It's the connectors that eventually provide the ability to read from multiple
-source collections, or write to multiple destination collections. Consult the
+source collections or write to multiple destination collections. Consult the
 connector documentation to check if it supports this feature.
 :::
 
@@ -108,9 +108,6 @@ the `opencdc.collection` metadata field. Based on that, it will write John's
 information to the `employees_finance` table and Adam's information to
 the `employees_legal` table.
 
-If the `opencdc.collection` metadata field is missing, the record will then be
-written to the default table, which is `employees` in our case.
-
 ## Using a `filter` processor with a condition
 
 In some cases, records from a single source collection need to be written to
@@ -159,9 +156,10 @@ pipelines:
           url: "postgresql://username:password@localhost/finance-db?sslmode=disable"
           table: "employees"
         processors:
-        - id: employees_finance_only
-          plugin: "filter"
-          condition: `{{index .Metadata "department" | eq "finance" | not}}`
+          - id: employees_finance_only
+            plugin: "filter"
+            # Filter out records where the metadata field "department" is NOT set to "finance".
+            condition: `{{index .Metadata.department | eq "finance" | not}}`
      
       - id: legal
         type: destination
