@@ -2931,15 +2931,6 @@
     ]
   },
   {
-    "nameWithOwner": "GevorgGal/conduit-connector-influxdb",
-    "description": "",
-    "createdAt": "2024-04-18 01:04:24 +0000 UTC",
-    "url": "https://github.com/GevorgGal/conduit-connector-influxdb",
-    "stargazerCount": 0,
-    "forkCount": 0,
-    "releases": []
-  },
-  {
     "nameWithOwner": "ViniciusMiana/conduit-connector-pulsar",
     "description": "Provides a source and a destination Pulsar connector, for Conduit.",
     "createdAt": "2023-12-07 00:47:43 +0000 UTC",
@@ -5474,7 +5465,7 @@
     "createdAt": "2024-01-10 15:58:08 +0000 UTC",
     "url": "https://github.com/conduitio-labs/conduit-connector-pinecone",
     "stargazerCount": 0,
-    "forkCount": 0,
+    "forkCount": 1,
     "releases": []
   },
   {
