@@ -29,6 +29,12 @@ Included in the Conduit Connector Template are:
 4. Execute the `./setup.sh` script with the desired module name, e.g., `./setup.sh github.com/awesome-org/conduit-connector-file`.
 5. (Optional) Define code owners in the `CODEOWNERS` file.
 
+:::note
+
+By convention the name of the repository should be conduit-connector-[connector name]. So if you would like to reference the connector using foo, the repository should be named conduit-connector-foo.
+
+:::
+
 ## Connector Development Lifecycle
 
 A Conduit Connector can serve as a source, destination, or both. Implement a source connector by defining a struct that satisfies the [sdk.Source](<https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#Source>) interface, or create a destination connector by creating a struct that satisfies [sdk.Destination](<https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#Destination>).
