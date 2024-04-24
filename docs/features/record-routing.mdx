@@ -171,5 +171,6 @@ pipelines:
         processors:
         - id: employees_legal_only
           plugin: "filter"
-          condition: `{{index .Metadata "department" | eq "legal" | not}}`
+          # Filter out records where the metadata field "department" is NOT set to "legal".
+          condition: `{{ eq .Metadata.department "legal" | not }}`
 ```
