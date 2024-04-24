@@ -159,7 +159,7 @@ pipelines:
           - id: employees_finance_only
             plugin: "filter"
             # Filter out records where the metadata field "department" is NOT set to "finance".
-            condition: `{{index .Metadata.department | eq "finance" | not}}`
+            condition: `{{ eq .Metadata.department "finance" | not }}`
      
       - id: legal
         type: destination
@@ -169,7 +169,7 @@ pipelines:
           url: "postgresql://username:password@localhost/legal-db?sslmode=disable"
           table: "employees"
         processors:
-        - id: employees_legal_only
-          plugin: "filter"
-          condition: `{{index .Metadata "department" | eq "legal" | not}}`
+          - id: employees_legal_only
+            plugin: "filter"
+            condition: `{{ eq .Metadata.department "legal" | not }}`
 ```
