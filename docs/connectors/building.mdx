@@ -39,13 +39,31 @@ A Conduit Connector can serve as a source, destination, or both. Implement a sou
 
 This file defines the public-facing characteristics of the connector such as its name and capabilities. Begin by updating placeholder values with the specific details of your connector.
 
-![spec.go](/img/spec-go.png)
+```go
+var version = "v0.1.0"
+
+// Specification returns the connector's specification.
+func Specification() sdk.Specification {
+ return sdk.Specification{
+  Name:        "file-sync",
+  Summary:     "<describe your connector>",
+  Description: "<describe your connector in detail>",
+  Version:     version,
+  Author:      "<your name>",
+ }
+}
+```
 
 #### `config.go`
 
 This file holds configuration parameters shared between source and destination, if applicable. If separate configuration is required for source and destination, distinct `config.go` files should be created for each.
 
-![config.go](/img/config-go.png)
+```go
+type Config struct {
+ // Directory is the file path to the directory that will be watched for file changes
+ Directory string `json:"directory" validate:"required,regex=^(/[^/ ]*)+/?$"`
+}
+```
 
 #### `paramgen_src` and `paramgen_dst`
 
@@ -55,18 +73,160 @@ An example usage of the `paramgen` tool to generate a new map after updating a c
 
 ```paramgen -path=./source -output=paramgen_src.go SourceConfig```
 
-![paramgen.go](/img/paramgen-go.png)
+```go
+// paramgen_src
+func (SourceConfig) Parameters() map[string]sdk.Parameter {
+ return map[string]sdk.Parameter{
+  "directory": {
+   Default:     "",
+   Description: "directory is the file path to the directory that will be watched for file changes directory string `json:\"directory\" validate:\"required,regex=^(/[^/ ]*)+/?$\"`",
+   Type:        sdk.ParameterTypeString,
+   Validations: []sdk.Validation{},
+  },
+ }
+}
+```
+
+```go
+// paramgen_dst
+func (DestinationConfig) Parameters() map[string]sdk.Parameter {
+ return map[string]sdk.Parameter{
+  "directory": {
+   Default:     "",
+   Description: "directory is the file path to the directory that will be watched for file changes directory string `json:\"directory\" validate:\"required,regex=^(/[^/ ]*)+/?$\"`",
+   Type:        sdk.ParameterTypeString,
+   Validations: []sdk.Validation{},
+  },
+ }
+}
+
+```
 
 #### `source.go` and `destination.go`
 
 Define the principal operation logic of your connector within these files. Both types of connectors must handle configuration, establish connections, perform read/write operations, and properly close connections upon completion. Auxiliary functions for the configuration lifecycle are provided by the template.
 
 - **`Configure()`**: Validates and stores configuration data for the connector. Any complex validation logic should be implemented here.
-![configure-func.go](/img/configure-func.png)
-- **`Open()`**: (Source connectors only) Prepares the connector to start producing records based on the last known successful position.
-![open-func.go](/img/open-func.png)
+
+```go
+func (s *Source) Configure(ctx context.Context, cfg map[string]string) error {
+ sdk.Logger(ctx).Info().Msg("Configuring Source...")
+ err := sdk.Util.ParseConfig(cfg, &s.config)
+ if err != nil {
+  return fmt.Errorf("invalid config: %w", err)
+ }
+ return nil
+}
+```
+```go
+func (s *Source) Open(ctx context.Context, pos sdk.Position) error {
+ configDirPath := s.config.Directory
+ files, err := ioutil.ReadDir(configDirPath)
+ if err != nil {
+  return fmt.Errorf("error reading directory '%s': %w", configDirPath, err)
+ }
+
+ for _, f := range files {
+  sdk.Logger(ctx).Info().Msgf(" - %s\n", f.Name())
+ }
+
+ w, err := fsnotify.NewWatcher()
+ if err != nil {
+  return fmt.Errorf("error creating fsnotify watcher: %w", err)
+ }
+ s.watcher = w
+
+ s.createCooldown = 2 * time.Second
+ return s.watcher.Add(s.config.Directory)
+}
+```
+
+- **`Read()`**: (a Source only function)
+Gathers data from the configured data source and formats it into a `sdk.Record` that is returned from the function. The returned `sdk.Record` is queued into the pipeline to be consumed by a Destination connector.
+
+```go
+func (s *Source) Read(ctx context.Context) (sdk.Record, error) {
+ for {
+  select {
+  case event, ok := <-s.watcher.Events:
+   if !ok {
+    return sdk.Record{}, fmt.Errorf("events channel was closed")
+   }
+
+   if event.Op&fsnotify.Create == fsnotify.Create {
+    sdk.Logger(ctx).Info().Msgf("Detected new file: %s", event.Name)
+
+    // Mark the file as recently created to avoid processing if it is modified shortly after being created
+    s.markAsRecentlyCreated(event.Name)
+
+    // Read the newly created file
+    fileContent, err := ioutil.ReadFile(event.Name)
+    if err != nil {
+     return sdk.Record{}, err
+    }
+
+    recordKey := sdk.RawData(filepath.Base(event.Name))
+    recordValue := sdk.RawData(fileContent)
+
+    // Return a Record reflecting that a new file has been created
+    return sdk.Util.Source.NewRecordCreate(
+     sdk.Position(recordKey),
+     map[string]string{
+      MetadataFilePath: event.Name,
+     },
+     recordKey,
+     recordValue,
+    ), nil
+   }
+
+   // If the event is not a Create event, continue listening without doing anything
+   continue
+
+  case err, ok := <-s.watcher.Errors:
+   if !ok {
+    return sdk.Record{}, fmt.Errorf("errors channel was closed")
+   }
+   return sdk.Record{}, fmt.Errorf("error on watcher: %w", err)
+
+  case <-ctx.Done():
+   return sdk.Record{}, ctx.Err()
+  }
+ }
+}
+```
 - **`Write()`**: (Destination connectors only) Writes records received from the Conduit pipeline directly to the destination.
-![write-func.go](/img/write-func.png)
+```go
+func (d *Destination) Write(ctx context.Context, recs []sdk.Record) (int, error) {
+ outputDir := d.config.Directory
+
+ for i, r := range recs {
+  fileName, ok := r.Key.(sdk.RawData)
+  if !ok || len(fileName) == 0 {
+   return i, fmt.Errorf("record key is invalid or not provided, record index: %v", i)
+  }
+
+  filePath := filepath.Join(outputDir, string(fileName))
+  if err := d.writeToFile(filePath, r.Payload.After.Bytes()); err != nil {
+   return i, fmt.Errorf("failed to write record to file '%s', record index: %v, error: %w", filePath, i, err)
+  }
+  sdk.Logger(ctx).Info().Msgf("Wrote file %s to directory %s\n", string(fileName), outputDir)
+ }
+ return len(recs), nil
+}
+```go
+func (s *Source) Teardown(ctx context.Context) error {
+
+ if s.watcher != nil {
+  err := s.watcher.Close()
+  if err != nil {
+   // Log the error or handle it as needed
+   sdk.Logger(ctx).Error().Msgf("Failed to close fsnotify watcher: %v", err)
+   return fmt.Errorf("failed to close fsnotify watcher: %w", err)
+  }
+ }
+ return nil
+}
+```
 
 ### Building and Launching the Connector
 
