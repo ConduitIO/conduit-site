@@ -102,6 +102,24 @@ func (DestinationConfig) Parameters() map[string]sdk.Parameter {
 
 ```
 
+We recommend adding a `go:generate` comment which runs paramgen at the top of the Connector file
+
+```go
+package filesync
+
+//go:generate paramgen -output=paramgen_src.go SourceConfig
+
+...rest of Source connector code
+```
+
+```go
+package filesync
+
+//go:generate paramgen -output=paramgen_dest.go DestinationConfig
+
+...rest of Destination connector code
+```
+
 #### `source.go` and `destination.go`
 
 Define the principal operation logic of your connector within these files. Both types of connectors must handle configuration, establish connections, perform read/write operations, and properly close connections upon completion. Auxiliary functions for the configuration lifecycle are provided by the template.
