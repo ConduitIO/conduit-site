@@ -65,7 +65,7 @@ type Config struct {
 }
 ```
 
-#### `paramgen_src` and `paramgen_dst`
+#### `paramgen_src.go` and `paramgen_dst.go`
 
 These files are created using the [paramgen](https://github.com/ConduitIO/conduit-connector-sdk/tree/main/cmd/paramgen) tool, which generates code from the Config struct to provide a map of configuration parameters.
 
@@ -106,6 +106,15 @@ func (DestinationConfig) Parameters() map[string]sdk.Parameter {
 
 Define the principal operation logic of your connector within these files. Both types of connectors must handle configuration, establish connections, perform read/write operations, and properly close connections upon completion. Auxiliary functions for the configuration lifecycle are provided by the template.
 
+- **`Parameters()`**: A map of named Parameters that describe how to configure the connector. This map is typically generate using `paramgen`
+
+```go
+func (s *Source) Parameters() map[string]sdk.Parameter {
+ return s.config.Parameters()
+}
+
+```
+
 - **`Configure()`**: Validates and stores configuration data for the connector. Any complex validation logic should be implemented here.
 
 ```go
@@ -118,6 +127,9 @@ func (s *Source) Configure(ctx context.Context, cfg map[string]string) error {
  return nil
 }
 ```
+
+- **`Open()`**: Prepares the connector to start producing records based on the last known successful position. If needed, the connector should open connections in this function.
+
 ```go
 func (s *Source) Open(ctx context.Context, pos sdk.Position) error {
  configDirPath := s.config.Directory
@@ -194,7 +206,9 @@ func (s *Source) Read(ctx context.Context) (sdk.Record, error) {
  }
 }
 ```
+
 - **`Write()`**: (Destination connectors only) Writes records received from the Conduit pipeline directly to the destination.
+
 ```go
 func (d *Destination) Write(ctx context.Context, recs []sdk.Record) (int, error) {
  outputDir := d.config.Directory
@@ -213,6 +227,10 @@ func (d *Destination) Write(ctx context.Context, recs []sdk.Record) (int, error)
  }
  return len(recs), nil
 }
+```
+
+- **`Teardown()`**: Teardown signals to the connector that there will be no more calls to any other function. Any connections that were created in the `Open()` function should be closed here.
+
 ```go
 func (s *Source) Teardown(ctx context.Context) error {
 
