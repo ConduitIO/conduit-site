@@ -257,16 +257,9 @@ pipelines:
       - id: example
         plugin: "avro.encode"
         settings:
-          auth.basic.password: ""
-          auth.basic.username: ""
           field: ".Payload.After"
           schema.autoRegister.subject: "example-autoRegister"
-          schema.preRegistered.subject: ""
-          schema.preRegistered.version: ""
           schema.strategy: "autoRegister"
-          tls.ca.cert: ""
-          tls.client.cert: ""
-          tls.client.key: ""
           url: "http://127.0.0.1:54322"
 ```
   </TabItem>
@@ -277,14 +270,6 @@ pipelines:
         <th>Value</th>
       </tr>
       <tr>
-        <td>`auth.basic.password`</td>
-        <td><Chip label="null" /></td>
-      </tr>
-      <tr>
-        <td>`auth.basic.username`</td>
-        <td><Chip label="null" /></td>
-      </tr>
-      <tr>
         <td>`field`</td>
         <td>`.Payload.After`</td>
       </tr>
@@ -293,28 +278,8 @@ pipelines:
         <td>`example-autoRegister`</td>
       </tr>
       <tr>
-        <td>`schema.preRegistered.subject`</td>
-        <td><Chip label="null" /></td>
-      </tr>
-      <tr>
-        <td>`schema.preRegistered.version`</td>
-        <td><Chip label="null" /></td>
-      </tr>
-      <tr>
         <td>`schema.strategy`</td>
         <td>`autoRegister`</td>
-      </tr>
-      <tr>
-        <td>`tls.ca.cert`</td>
-        <td><Chip label="null" /></td>
-      </tr>
-      <tr>
-        <td>`tls.client.cert`</td>
-        <td><Chip label="null" /></td>
-      </tr>
-      <tr>
-        <td>`tls.client.key`</td>
-        <td><Chip label="null" /></td>
       </tr>
       <tr>
         <td>`url`</td>
@@ -382,16 +347,10 @@ pipelines:
       - id: example
         plugin: "avro.encode"
         settings:
-          auth.basic.password: ""
-          auth.basic.username: ""
           field: ".Key"
-          schema.autoRegister.subject: ""
           schema.preRegistered.subject: "example-preRegistered"
           schema.preRegistered.version: "1"
           schema.strategy: "preRegistered"
-          tls.ca.cert: ""
-          tls.client.cert: ""
-          tls.client.key: ""
           url: "http://127.0.0.1:54322"
 ```
   </TabItem>
@@ -402,20 +361,8 @@ pipelines:
         <th>Value</th>
       </tr>
       <tr>
-        <td>`auth.basic.password`</td>
-        <td><Chip label="null" /></td>
-      </tr>
-      <tr>
-        <td>`auth.basic.username`</td>
-        <td><Chip label="null" /></td>
-      </tr>
-      <tr>
         <td>`field`</td>
         <td>`.Key`</td>
-      </tr>
-      <tr>
-        <td>`schema.autoRegister.subject`</td>
-        <td><Chip label="null" /></td>
       </tr>
       <tr>
         <td>`schema.preRegistered.subject`</td>
@@ -428,18 +375,6 @@ pipelines:
       <tr>
         <td>`schema.strategy`</td>
         <td>`preRegistered`</td>
-      </tr>
-      <tr>
-        <td>`tls.ca.cert`</td>
-        <td><Chip label="null" /></td>
-      </tr>
-      <tr>
-        <td>`tls.client.cert`</td>
-        <td><Chip label="null" /></td>
-      </tr>
-      <tr>
-        <td>`tls.client.key`</td>
-        <td><Chip label="null" /></td>
       </tr>
       <tr>
         <td>`url`</td>
