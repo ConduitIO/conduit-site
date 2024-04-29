@@ -414,6 +414,105 @@
     "forkCount": 1,
     "releases": [
       {
+        "tag_name": "v0.6.0",
+        "name": "v0.6.0",
+        "body": "## Changelog\n* 5e16fd47643d16ec041eb3489f53443d52404b30: Generate multiple collections (#73) (@lovromazgon)\n* c731ead21cb3f153c8111141ff6628390c95a873: specify generated operation (#72) (@maha-hajja)\n* c430bf04a11b17e03d033272d14c823b1ff2e2e7: update SDK to 0.9.1 (#74) (@lovromazgon)\n\n",
+        "draft": false,
+        "prerelease": false,
+        "published_at": "2024-04-24T18:12:00Z",
+        "html_url": "https://github.com/ConduitIO/conduit-connector-generator/releases/tag/v0.6.0",
+        "assets": [
+          {
+            "name": "conduit-connector-generator_0.6.0_Darwin_arm64.tar.gz",
+            "os": "darwin",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://github.com/ConduitIO/conduit-connector-generator/releases/download/v0.6.0/conduit-connector-generator_0.6.0_Darwin_arm64.tar.gz",
+            "created_at": "2024-04-24T18:11:58Z",
+            "updated_at": "2024-04-24T18:11:58Z",
+            "download_count": 0,
+            "size": 5708142
+          },
+          {
+            "name": "conduit-connector-generator_0.6.0_Darwin_x86_64.tar.gz",
+            "os": "darwin",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://github.com/ConduitIO/conduit-connector-generator/releases/download/v0.6.0/conduit-connector-generator_0.6.0_Darwin_x86_64.tar.gz",
+            "created_at": "2024-04-24T18:11:58Z",
+            "updated_at": "2024-04-24T18:11:58Z",
+            "download_count": 0,
+            "size": 5964858
+          },
+          {
+            "name": "conduit-connector-generator_0.6.0_Linux_arm64.tar.gz",
+            "os": "linux",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://github.com/ConduitIO/conduit-connector-generator/releases/download/v0.6.0/conduit-connector-generator_0.6.0_Linux_arm64.tar.gz",
+            "created_at": "2024-04-24T18:11:58Z",
+            "updated_at": "2024-04-24T18:11:58Z",
+            "download_count": 0,
+            "size": 5447762
+          },
+          {
+            "name": "conduit-connector-generator_0.6.0_Linux_i386.tar.gz",
+            "os": "linux",
+            "arch": "386",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://github.com/ConduitIO/conduit-connector-generator/releases/download/v0.6.0/conduit-connector-generator_0.6.0_Linux_i386.tar.gz",
+            "created_at": "2024-04-24T18:11:59Z",
+            "updated_at": "2024-04-24T18:11:59Z",
+            "download_count": 0,
+            "size": 5523825
+          },
+          {
+            "name": "conduit-connector-generator_0.6.0_Linux_x86_64.tar.gz",
+            "os": "linux",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://github.com/ConduitIO/conduit-connector-generator/releases/download/v0.6.0/conduit-connector-generator_0.6.0_Linux_x86_64.tar.gz",
+            "created_at": "2024-04-24T18:11:58Z",
+            "updated_at": "2024-04-24T18:11:58Z",
+            "download_count": 0,
+            "size": 5830746
+          },
+          {
+            "name": "conduit-connector-generator_0.6.0_Windows_arm64.tar.gz",
+            "os": "windows",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://github.com/ConduitIO/conduit-connector-generator/releases/download/v0.6.0/conduit-connector-generator_0.6.0_Windows_arm64.tar.gz",
+            "created_at": "2024-04-24T18:11:59Z",
+            "updated_at": "2024-04-24T18:11:59Z",
+            "download_count": 0,
+            "size": 5540709
+          },
+          {
+            "name": "conduit-connector-generator_0.6.0_Windows_i386.tar.gz",
+            "os": "windows",
+            "arch": "386",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://github.com/ConduitIO/conduit-connector-generator/releases/download/v0.6.0/conduit-connector-generator_0.6.0_Windows_i386.tar.gz",
+            "created_at": "2024-04-24T18:11:59Z",
+            "updated_at": "2024-04-24T18:11:59Z",
+            "download_count": 0,
+            "size": 5760278
+          },
+          {
+            "name": "conduit-connector-generator_0.6.0_Windows_x86_64.tar.gz",
+            "os": "windows",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://github.com/ConduitIO/conduit-connector-generator/releases/download/v0.6.0/conduit-connector-generator_0.6.0_Windows_x86_64.tar.gz",
+            "created_at": "2024-04-24T18:11:59Z",
+            "updated_at": "2024-04-24T18:11:59Z",
+            "download_count": 0,
+            "size": 6003267
+          }
+        ]
+      },
+      {
         "tag_name": "v0.5.0",
         "name": "v0.5.0",
         "body": "## Changelog\n* a22b9952abc1f0ee4db3eb922b62c3a282ed2e3f: Bump SDK version to v0.7.0 (#55) (@hariso)\n\n",
@@ -819,6 +918,105 @@
     "stargazerCount": 7,
     "forkCount": 4,
     "releases": [
+      {
+        "tag_name": "v0.8.0",
+        "name": "v0.8.0",
+        "body": "## Changelog\n* fb070a658dc83c83cf5c8260d07bf861f6bb9d8e: Destination - route records to topic based on metadata (#130) (@lovromazgon)\n* bdd435dbda15e5efdc39bc2478f92b5aaaf6ca34: Set `opencdc.collection` metadata (#129) (@lovromazgon)\n* 4aa60573e900a7036d0254b0f24db9e299346313: add scarf pixel (#135) (@maha-hajja)\n* a545a62969f200b86cdb728093a7950036280a42: add the ability to read from multiple Kafka topics (#131) (@maha-hajja)\n\n",
+        "draft": false,
+        "prerelease": false,
+        "published_at": "2024-04-25T13:10:00Z",
+        "html_url": "https://github.com/ConduitIO/conduit-connector-kafka/releases/tag/v0.8.0",
+        "assets": [
+          {
+            "name": "conduit-connector-kafka_0.8.0_Darwin_arm64.tar.gz",
+            "os": "darwin",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://github.com/ConduitIO/conduit-connector-kafka/releases/download/v0.8.0/conduit-connector-kafka_0.8.0_Darwin_arm64.tar.gz",
+            "created_at": "2024-04-25T13:09:58Z",
+            "updated_at": "2024-04-25T13:09:59Z",
+            "download_count": 0,
+            "size": 6228903
+          },
+          {
+            "name": "conduit-connector-kafka_0.8.0_Darwin_x86_64.tar.gz",
+            "os": "darwin",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://github.com/ConduitIO/conduit-connector-kafka/releases/download/v0.8.0/conduit-connector-kafka_0.8.0_Darwin_x86_64.tar.gz",
+            "created_at": "2024-04-25T13:09:59Z",
+            "updated_at": "2024-04-25T13:09:59Z",
+            "download_count": 0,
+            "size": 6567934
+          },
+          {
+            "name": "conduit-connector-kafka_0.8.0_Linux_arm64.tar.gz",
+            "os": "linux",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://github.com/ConduitIO/conduit-connector-kafka/releases/download/v0.8.0/conduit-connector-kafka_0.8.0_Linux_arm64.tar.gz",
+            "created_at": "2024-04-25T13:09:58Z",
+            "updated_at": "2024-04-25T13:09:59Z",
+            "download_count": 0,
+            "size": 5934075
+          },
+          {
+            "name": "conduit-connector-kafka_0.8.0_Linux_i386.tar.gz",
+            "os": "linux",
+            "arch": "386",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://github.com/ConduitIO/conduit-connector-kafka/releases/download/v0.8.0/conduit-connector-kafka_0.8.0_Linux_i386.tar.gz",
+            "created_at": "2024-04-25T13:09:58Z",
+            "updated_at": "2024-04-25T13:09:59Z",
+            "download_count": 0,
+            "size": 6066386
+          },
+          {
+            "name": "conduit-connector-kafka_0.8.0_Linux_x86_64.tar.gz",
+            "os": "linux",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://github.com/ConduitIO/conduit-connector-kafka/releases/download/v0.8.0/conduit-connector-kafka_0.8.0_Linux_x86_64.tar.gz",
+            "created_at": "2024-04-25T13:09:58Z",
+            "updated_at": "2024-04-25T13:09:58Z",
+            "download_count": 0,
+            "size": 6403975
+          },
+          {
+            "name": "conduit-connector-kafka_0.8.0_Windows_arm64.tar.gz",
+            "os": "windows",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://github.com/ConduitIO/conduit-connector-kafka/releases/download/v0.8.0/conduit-connector-kafka_0.8.0_Windows_arm64.tar.gz",
+            "created_at": "2024-04-25T13:09:58Z",
+            "updated_at": "2024-04-25T13:09:58Z",
+            "download_count": 0,
+            "size": 6029677
+          },
+          {
+            "name": "conduit-connector-kafka_0.8.0_Windows_i386.tar.gz",
+            "os": "windows",
+            "arch": "386",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://github.com/ConduitIO/conduit-connector-kafka/releases/download/v0.8.0/conduit-connector-kafka_0.8.0_Windows_i386.tar.gz",
+            "created_at": "2024-04-25T13:09:58Z",
+            "updated_at": "2024-04-25T13:09:58Z",
+            "download_count": 0,
+            "size": 6349891
+          },
+          {
+            "name": "conduit-connector-kafka_0.8.0_Windows_x86_64.tar.gz",
+            "os": "windows",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://github.com/ConduitIO/conduit-connector-kafka/releases/download/v0.8.0/conduit-connector-kafka_0.8.0_Windows_x86_64.tar.gz",
+            "created_at": "2024-04-25T13:09:58Z",
+            "updated_at": "2024-04-25T13:09:58Z",
+            "download_count": 0,
+            "size": 6614876
+          }
+        ]
+      },
       {
         "tag_name": "v0.7.2",
         "name": "v0.7.2",
@@ -2123,9 +2321,108 @@
     "description": "Conduit connector for PostgreSQL",
     "createdAt": "2022-03-07 16:06:24 +0000 UTC",
     "url": "https://github.com/ConduitIO/conduit-connector-postgres",
-    "stargazerCount": 9,
+    "stargazerCount": 10,
     "forkCount": 4,
     "releases": [
+      {
+        "tag_name": "v0.7.0",
+        "name": "v0.7.0",
+        "body": "## Changelog\n* e7c451cf1749d724a59496379c7c7945ebd62c25: Multiple collections support in the destination (#131) (@hariso)\n* 8062fb61e4233c3577feeffcf37705dc4446a251: New snapshot iterator and position format (#132) (@lyuboxa)\n* 43acfeb689acd51ee43d5ae53bd9bc8471022df1: doc: update readme (#130) (@raulb)\n* 4466f41c5565e381e899ed504110cf38b58b1d57: feat(cdc): read from multiple tables (#129) (@raulb)\n* 13d4cadbbdfc88c51985b8a7deb5dd4523929eef: refactor: remove `key` field and update table field (#135) (@raulb)\n\n",
+        "draft": false,
+        "prerelease": false,
+        "published_at": "2024-04-24T17:57:04Z",
+        "html_url": "https://github.com/ConduitIO/conduit-connector-postgres/releases/tag/v0.7.0",
+        "assets": [
+          {
+            "name": "conduit-connector-postgres_0.7.0_Darwin_arm64.tar.gz",
+            "os": "darwin",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://github.com/ConduitIO/conduit-connector-postgres/releases/download/v0.7.0/conduit-connector-postgres_0.7.0_Darwin_arm64.tar.gz",
+            "created_at": "2024-04-24T17:57:03Z",
+            "updated_at": "2024-04-24T17:57:03Z",
+            "download_count": 0,
+            "size": 6172378
+          },
+          {
+            "name": "conduit-connector-postgres_0.7.0_Darwin_x86_64.tar.gz",
+            "os": "darwin",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://github.com/ConduitIO/conduit-connector-postgres/releases/download/v0.7.0/conduit-connector-postgres_0.7.0_Darwin_x86_64.tar.gz",
+            "created_at": "2024-04-24T17:57:03Z",
+            "updated_at": "2024-04-24T17:57:03Z",
+            "download_count": 0,
+            "size": 6507246
+          },
+          {
+            "name": "conduit-connector-postgres_0.7.0_Linux_arm64.tar.gz",
+            "os": "linux",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://github.com/ConduitIO/conduit-connector-postgres/releases/download/v0.7.0/conduit-connector-postgres_0.7.0_Linux_arm64.tar.gz",
+            "created_at": "2024-04-24T17:57:02Z",
+            "updated_at": "2024-04-24T17:57:02Z",
+            "download_count": 0,
+            "size": 5865396
+          },
+          {
+            "name": "conduit-connector-postgres_0.7.0_Linux_i386.tar.gz",
+            "os": "linux",
+            "arch": "386",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://github.com/ConduitIO/conduit-connector-postgres/releases/download/v0.7.0/conduit-connector-postgres_0.7.0_Linux_i386.tar.gz",
+            "created_at": "2024-04-24T17:57:03Z",
+            "updated_at": "2024-04-24T17:57:03Z",
+            "download_count": 0,
+            "size": 5951708
+          },
+          {
+            "name": "conduit-connector-postgres_0.7.0_Linux_x86_64.tar.gz",
+            "os": "linux",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://github.com/ConduitIO/conduit-connector-postgres/releases/download/v0.7.0/conduit-connector-postgres_0.7.0_Linux_x86_64.tar.gz",
+            "created_at": "2024-04-24T17:57:02Z",
+            "updated_at": "2024-04-24T17:57:02Z",
+            "download_count": 0,
+            "size": 6340070
+          },
+          {
+            "name": "conduit-connector-postgres_0.7.0_Windows_arm64.tar.gz",
+            "os": "windows",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://github.com/ConduitIO/conduit-connector-postgres/releases/download/v0.7.0/conduit-connector-postgres_0.7.0_Windows_arm64.tar.gz",
+            "created_at": "2024-04-24T17:57:02Z",
+            "updated_at": "2024-04-24T17:57:02Z",
+            "download_count": 0,
+            "size": 5963793
+          },
+          {
+            "name": "conduit-connector-postgres_0.7.0_Windows_i386.tar.gz",
+            "os": "windows",
+            "arch": "386",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://github.com/ConduitIO/conduit-connector-postgres/releases/download/v0.7.0/conduit-connector-postgres_0.7.0_Windows_i386.tar.gz",
+            "created_at": "2024-04-24T17:57:02Z",
+            "updated_at": "2024-04-24T17:57:02Z",
+            "download_count": 0,
+            "size": 6243281
+          },
+          {
+            "name": "conduit-connector-postgres_0.7.0_Windows_x86_64.tar.gz",
+            "os": "windows",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://github.com/ConduitIO/conduit-connector-postgres/releases/download/v0.7.0/conduit-connector-postgres_0.7.0_Windows_x86_64.tar.gz",
+            "created_at": "2024-04-24T17:57:03Z",
+            "updated_at": "2024-04-24T17:57:03Z",
+            "download_count": 0,
+            "size": 6560557
+          }
+        ]
+      },
       {
         "tag_name": "v0.6.0",
         "name": "v0.6.0",
