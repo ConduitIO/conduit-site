@@ -1,0 +1,36 @@
+---
+title: "Connector Configuration Files"
+sidebar_position: 2
+---
+
+There special files that should be implemented to describe your connector.
+
+### `spec.go`
+
+This file defines the public-facing characteristics of the connector such as its name and capabilities. Begin by updating placeholder values with the specific details of your connector.
+
+```go
+var version = "v0.1.0"
+
+// Specification returns the connector's specification.
+func Specification() sdk.Specification {
+ return sdk.Specification{
+  Name:        "file-sync",
+  Summary:     "<describe your connector>",
+  Description: "<describe your connector in detail>",
+  Version:     version,
+  Author:      "<your name>",
+ }
+}
+```
+
+### `config.go`
+
+This file holds configuration parameters shared between source and destination, if applicable. If separate configuration is required for source and destination, distinct `config.go` files should be created for each.
+
+```go
+type Config struct {
+ // Directory is the file path to the directory that will be watched for file changes
+ Directory string `json:"directory" validate:"required,regex=^(/[^/ ]*)+/?$"`
+}
+```

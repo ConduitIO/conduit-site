@@ -1,0 +1,58 @@
+---
+title: "Using a Custom Connector"
+sidebar_position: 5
+---
+
+## Adding the Connector to Conduit
+
+The Conduit Connector template includes a `Makefile` that can be used to generate a binary version of your connector
+
+```bash
+make build
+```
+
+After the command runs you should see a binary file with the name of the connector in the local directory.
+
+To run the Connector, you will need to put it in a directory that Conduit is able to access.  By default, this directory is the `connectors` directory located alongside the Conduit binary.  Move your newly created Connector binary into the `connectors` directory and run Conduit using the following command:
+
+```bash
+./conduit
+```
+
+Navigate to the Conduit UI (by default located at [http://localhost:8080/ui](http://localhost:8080/ui) while Conduit is running) to see your Connector in the list of available Connectors
+
+![Custom Connector in Conduit UI](/img/conduit-custom-connector-ui-screenshot.png)
+
+## Using the Connector in a Conduit Pipeline
+
+Although you can use the Connector directly within the Conduit UI, the recommended way to use the Connector is define a [pipeline configuration file](/docs/pipeline-configuration-files/getting-started.mdx).
+When using custom Connectors in a pipeline configuration, they are prefixed with phrase 'standalone' unlike built in Connectors which are prefixed with 'builtin'. For example, to use a custom Connector named `file-sync` it would look as follows: `plugin: standalone:file-sync@[replace-with-connector-version]`
+
+Below is an example of using a custom Connector in a pipeline configuration file:
+
+``` yaml title="pipelines/use-custom-connector.yml"
+version: 2.2
+pipelines:
+  - id: use-custom-connector
+    # run pipeline on startup
+    status: running
+    description: >
+      Example pipeline reading to use a custom file sync connector.
+
+    connectors:
+      - id: source-sync
+        type: source
+        # use the custom file-sync plugin as the source
+        plugin: standalone:file-sync@v0.1.0
+        settings:
+          # use ./data as the directory input to the file-sync connector; the connnector will watch for new files in this directory
+          directory: ./data
+
+      - id: destination-sync
+        type: destination
+        # use the custom file-sync plugin as the destination
+        plugin: standalone:file-sync@v0.1.0
+        settings:
+        # use ./new_destination as the directory input to the file-sync connector; the connnector will write files from the pipeline to this directory
+          directory: ./new_destination
+```
