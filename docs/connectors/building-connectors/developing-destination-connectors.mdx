@@ -30,7 +30,7 @@ This file provides the main functionality of your Destination Connector.
     }
     ```
 
-- **`Parameters()`**: A map of named Parameters that describe how to configure the connector. This map is typically generate using `paramgen`
+- **`Parameters()`**: A map of named Parameters that describe how to configure the connector. This map is typically generated using [`paramgen`](https://github.com/ConduitIO/conduit-commons/tree/main/paramgen).
 
     ```go
     func (d *Destination) Parameters() map[string]sdk.Parameter {
