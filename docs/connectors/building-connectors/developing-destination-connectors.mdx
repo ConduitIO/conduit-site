@@ -21,7 +21,7 @@ This file provides the main functionality of your Destination Connector.
     }
     ```
 
-- **`NewDestination()`**: A constructor function for your Destination struct. Note that this is the same function that should be set as the value of Connector.NewDestination. The constructor should be used to wrap your Destination in the default middleware. You can add additional middleware, but unless you have a very good reason, you should always include the default middleware.
+- **`NewDestination()`**: A constructor function for your Destination struct. Note that this is the same function that should be set as the value of `Connector.NewDestination`. The constructor should be used to wrap your Destination in the default middleware. You can add additional middleware, but unless you have a very good reason, you should always include the default middleware.
 
     ```go
     func NewDestination() sdk.Destination {
