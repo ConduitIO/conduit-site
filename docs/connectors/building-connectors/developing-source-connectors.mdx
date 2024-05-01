@@ -48,11 +48,13 @@ This file provides the main functionality of your Source Connector.
 
     ```go
     func (s *Source) Configure(ctx context.Context, cfg map[string]string) error {
-        err := sdk.Util.ParseConfig(cfg, &s.config)
-        if err != nil {
-            return fmt.Errorf("invalid config: %w", err)
-        }
-        return nil
+    sdk.Logger(ctx).Info().Msg("Configuring Source...")
+    err := sdk.Util.ParseConfig(cfg, &s.config)
+    if err != nil {
+        return fmt.Errorf("invalid config: %w", err)
+    }
+    // add custom validations here
+    return nil
     }
     ```
 

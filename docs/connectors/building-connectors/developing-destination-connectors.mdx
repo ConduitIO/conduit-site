@@ -11,7 +11,7 @@ You need to implement the functions required by Destination and provide your own
 
 This file provides the main functionality of your Destination Connector.
 
-- **`Destination`** Struct: Every Destination implementation needs to include an [UnimplementedDestination](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#UnimplementedDestination) to satisfy the interface. This allows us to potentially change the interface in the future while remaining backwards compatible with existing Destination implementations.  This struct can be modified to add additional fields that can be accessed throughout the lifecycle of the Connector
+- **`Destination`** Struct: Every Destination implementation needs to include an [UnimplementedDestination](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#UnimplementedDestination) to satisfy the interface. This allows us to potentially change the interface in the future while remaining backward compatible with existing Destination implementations.  This struct can be modified to add additional fields that can be accessed throughout the lifecycle of the Connector.
 
     ```go
     type Destination struct {
@@ -21,7 +21,7 @@ This file provides the main functionality of your Destination Connector.
     }
     ```
 
-- **`NewDestination()`**: A constructor function for your Destination struct. Note that this is the same function that should be set as the value of Connector.NewDestination. The constructor should be used to wrap your Destination in the default middleware. You can add additional middleware, but unless you have a very good reason, you should always include the default middleware.
+- **`NewDestination()`**: A constructor function for your Destination struct. Note that this is the same function that should be set as the value of `Connector.NewDestination`. The constructor should be used to wrap your Destination in the default middleware. You can add additional middleware, but unless you have a very good reason, you should always include the default middleware.
 
     ```go
     func NewDestination() sdk.Destination {
@@ -30,7 +30,7 @@ This file provides the main functionality of your Destination Connector.
     }
     ```
 
-- **`Parameters()`**: A map of named Parameters that describe how to configure the connector. This map is typically generate using `paramgen`
+- **`Parameters()`**: A map of named Parameters that describe how to configure the connector. This map is typically generated using [`paramgen`](https://github.com/ConduitIO/conduit-commons/tree/main/paramgen).
 
     ```go
     func (d *Destination) Parameters() map[string]sdk.Parameter {

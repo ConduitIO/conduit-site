@@ -5,7 +5,7 @@ sidebar_position: 5
 
 ## Adding the Connector to Conduit
 
-The Conduit Connector template includes a `Makefile` that can be used to generate a binary version of your connector
+The Conduit Connector template includes a `Makefile` that can be used to build a binary version of your connector.
 
 ```bash
 make build
@@ -13,7 +13,7 @@ make build
 
 After the command runs you should see a binary file with the name of the connector in the local directory.
 
-To run the Connector, you will need to put it in a directory that Conduit is able to access.  By default, this directory is the `connectors` directory located alongside the Conduit binary.  Move your newly created Connector binary into the `connectors` directory and run Conduit using the following command:
+To run the Connector, you will need to move it to a directory that Conduit can access.  By default, this directory is the `connectors` directory located alongside the Conduit binary.  Move your newly created Connector binary into the `connectors` directory and run Conduit using the following command:
 
 ```bash
 ./conduit
