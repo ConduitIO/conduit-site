@@ -11,7 +11,7 @@ You need to implement the functions required by Destination and provide your own
 
 This file provides the main functionality of your Destination Connector.
 
-- **`Destination`** Struct: Every Destination implementation needs to include an [UnimplementedDestination](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#UnimplementedDestination) to satisfy the interface. This allows us to potentially change the interface in the future while remaining backwards compatible with existing Destination implementations.  This struct can be modified to add additional fields that can be accessed throughout the lifecycle of the Connector
+- **`Destination`** Struct: Every Destination implementation needs to include an [UnimplementedDestination](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#UnimplementedDestination) to satisfy the interface. This allows us to potentially change the interface in the future while remaining backward compatible with existing Destination implementations.  This struct can be modified to add additional fields that can be accessed throughout the lifecycle of the Connector.
 
     ```go
     type Destination struct {
