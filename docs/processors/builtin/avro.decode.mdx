@@ -191,12 +191,7 @@ pipelines:
       - id: example
         plugin: "avro.decode"
         settings:
-          auth.basic.password: ""
-          auth.basic.username: ""
           field: ".Key"
-          tls.ca.cert: ""
-          tls.client.cert: ""
-          tls.client.key: ""
           url: "http://127.0.0.1:54322"
 ```
   </TabItem>
@@ -207,28 +202,8 @@ pipelines:
         <th>Value</th>
       </tr>
       <tr>
-        <td>`auth.basic.password`</td>
-        <td><Chip label="null" /></td>
-      </tr>
-      <tr>
-        <td>`auth.basic.username`</td>
-        <td><Chip label="null" /></td>
-      </tr>
-      <tr>
         <td>`field`</td>
         <td>`.Key`</td>
-      </tr>
-      <tr>
-        <td>`tls.ca.cert`</td>
-        <td><Chip label="null" /></td>
-      </tr>
-      <tr>
-        <td>`tls.client.cert`</td>
-        <td><Chip label="null" /></td>
-      </tr>
-      <tr>
-        <td>`tls.client.key`</td>
-        <td><Chip label="null" /></td>
       </tr>
       <tr>
         <td>`url`</td>
