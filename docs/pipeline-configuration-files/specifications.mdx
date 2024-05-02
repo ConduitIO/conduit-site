@@ -97,6 +97,9 @@ pipelines:                      # A list of pipeline configurations
 - **Data Type**: String
 - **Required**: Yes
 - **Default**: None
+- **Allowed Values**: Strings containing alphanumeric characters (letters `A-Z`, both
+uppercase and lowercase, and digits `0-9`), as well as hyphens `-`, underscores `_`,
+colons `:`, and periods `.`, with a *max length* of *128* characters.
 - **Description**: ID of the [`pipeline`](#pipeline). It should uniquely
   identify the pipeline across all pipelines. If multiple pipelines use the same
   ID, none of them will be provisioned.
@@ -119,6 +122,7 @@ start from the beginning.
 - **Data Type**: String
 - **Required**: No
 - **Default**: Same as pipeline [`id`](#id)
+- **Allowed Values**: Strings with a length limit of *128* characters.
 - **Description**: Human readable name for the pipeline. Needs to be unique
   across all pipelines (it is used as a label in pipeline
   [metrics](/docs/features/metrics)).
@@ -128,6 +132,7 @@ start from the beginning.
 - **Data Type**: String
 - **Required**: No
 - **Default**: None
+- **Allowed Values**: Strings with a length limit of *8192* characters.
 - **Description**: Human readable description of the pipeline.
 
 ### connectors
@@ -205,6 +210,9 @@ start from the beginning.
 - **Data Type**: String
 - **Required**: Yes
 - **Default**: None
+- **Allowed Values**: Strings containing alphanumeric characters (letters `A-Z`, both
+uppercase and lowercase, and digits `0-9`), as well as hyphens `-`, underscores `_`,
+colons `:`, and periods `.`, with a *max length* of *256* characters.
 - **Description**: ID of the [`connector`](#connector). It should uniquely
   identify the connector inside the pipeline. If multiple connectors inside the
   pipeline use the same ID, provisioning will fail.
@@ -240,6 +248,7 @@ beginning.
 - **Data Type**: String
 - **Required**: No
 - **Default**: Same as connector [`id`](#id-1)
+- **Allowed Values**: Strings with a length limit of *256* characters.
 - **Description**: Human readable name for the connector.
 
 ### settings
