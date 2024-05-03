@@ -1,9 +1,9 @@
 ---
-title: "Connector Configuration Files"
+title: "Connector Specification"
 sidebar_position: 2
 ---
 
-There are special files that should be implemented to describe your connector.
+[Specification](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#Specification) contains general information regarding the plugin like its name and what it does.
 
 ### `spec.go`
 
@@ -21,16 +21,5 @@ func Specification() sdk.Specification {
   Version:     version,
   Author:      "<your name>",
  }
-}
-```
-
-### `config.go`
-
-This file holds configuration parameters shared between source and destination, if applicable. If separate configuration is required for source and destination, distinct `config.go` files should be created for each.
-
-```go
-type Config struct {
- // Directory is the file path to the directory that will be watched for file changes
- Directory string `json:"directory" validate:"required,regex=^(/[^/ ]*)+/?$"`
 }
 ```
