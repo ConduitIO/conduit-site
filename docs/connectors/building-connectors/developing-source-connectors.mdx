@@ -36,7 +36,7 @@ This file provides the main functionality of your Source Connector.
     }
     ```
 
-- **`Parameters()`**: A map of named Parameters that describe how to configure the connector. This map is typically generate using `paramgen`
+- **`Parameters()`**: A map of named Parameters that describe how to configure the connector. This map is typically generates using [`paramgen`](https://github.com/ConduitIO/conduit-commons/tree/main/paramgen).
 
     ```go
     func (s *Source) Parameters() map[string]sdk.Parameter {
