@@ -3,9 +3,9 @@ title: "Developing a Source Connector"
 sidebar_position: 3
 ---
 
-A Source is responsible for continuously reading data from a third party system and returning it in form of a [Record](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#Record).
+A Source is responsible for continuously reading data from a third party system and returning it in the form of an [SDK Record](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#Record).
 
-You need to implement the functions required by Source and provide your own implementations. Information about individual functions are listed below.
+You need to implement the functions required by the Source interface and provide your own implementations. Information about individual functions are listed below.
 
 ## `source.go`
 
@@ -13,7 +13,7 @@ This file provides the main functionality of your Source Connector.
 
 ### Source Connector Lifecycle Functions
 
-- **`Source`** Struct: Every Source implementation needs to include an [UnimplementedSource](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#UnimplementedSource) to satisfy the interface. This allows us to potentially change the interface in the future while remaining backwards compatible with existing Source implementations.  This struct can be modified to add additional fields that can be accessed throughout the lifecycle of the Connector
+- **`Source`** Struct: Every Source implementation needs to include an [UnimplementedSource](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#UnimplementedSource) to satisfy the interface. This allows us to potentially change the interface in the future while remaining backward compatible with existing Source implementations. This struct can be modified to add additional fields that can be accessed throughout the lifecycle of the Connector
 
     ```go
     type Source struct {
@@ -27,7 +27,7 @@ This file provides the main functionality of your Source Connector.
     }
     ```
 
-- **`NewSource()`**: A constructor function for your Source struct. Note that this is the same function that should be set as the value of Connector.NewSource. The constructor should be used to wrap your Source in the default middleware. You can add additional middleware, but unless you have a very good reason, you should always include the default middleware.
+- **`NewSource()`**: A constructor function for your Source struct. Note that this is the same function that should be set as the value of `Connector.NewSource`. The constructor should be used to wrap your Source in the default middleware. You can add additional middleware, but unless you have a very good reason, you should always include the default middleware.
 
     ```go
     func NewSource() sdk.Source {
@@ -36,7 +36,7 @@ This file provides the main functionality of your Source Connector.
     }
     ```
 
-- **`Parameters()`**: A map of named Parameters that describe how to configure the connector. This map is typically generate using `paramgen`
+- **`Parameters()`**: A map of named Parameters that describe how to configure the connector. This map is typically generates using [`paramgen`](https://github.com/ConduitIO/conduit-commons/tree/main/paramgen).
 
     ```go
     func (s *Source) Parameters() map[string]sdk.Parameter {
