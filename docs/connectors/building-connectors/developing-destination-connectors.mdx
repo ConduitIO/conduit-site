@@ -75,7 +75,7 @@ This file provides the main functionality of your Destination Connector.
     }
     ```
 
-- **`Write()`**: Writes len(records) from a slice of sdk.Record objects received from the Conduit pipeline to the destination right away without caching.  It should return the number of records written from the slice and any error encountered that caused the write to stop early.
+- **`Write()`**: Writes len(records) from a slice of `sdk.Record` objects received from the Conduit pipeline to the destination right away without caching.  It should return the number of records written from the slice and any error encountered that caused the write to stop early.
 
     ```go
     func (d *Destination) Write(ctx context.Context, recs []sdk.Record) (int, error) {
