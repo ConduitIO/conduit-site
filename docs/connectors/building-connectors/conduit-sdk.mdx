@@ -1,21 +1,12 @@
 ---
-title: "Building Connectors"
-sidebar_position: 5
+title: "Developing Custom Connectors"
+sidebar_position: 0
 ---
 
 Conduit connectors can be built in any programming language that supports gRPC.
 To make it easier to write connectors we provide
 a [Connector SDK](https://github.com/ConduitIO/conduit-connector-sdk) written in
 Go. Using the SDK is the recommended way of writing a Conduit connector.
-
-## Conduit connector template
-
-The easiest way to start implementing your own Conduit connector is by using the
-[Conduit connector template](https://github.com/ConduitIO/conduit-connector-template).
-It contains the basic project structure as well as some additional utilities
-like GitHub actions and a Makefile.
-
-Find out more about the template and how to use it in the readme.
 
 ## Supported data types
 
@@ -25,6 +16,7 @@ in its key or any part of the payload, then there are certain limitations in the
 data types it can send to Conduit.
 
 The following data types are supported:
+
 * `bool`
 * `int`, `int32`, `int64`, `uint`, `uint32`, `uint64`
 * `float32`, `float64`
@@ -37,3 +29,13 @@ A notable limitation is timestamps, i.e. `time.Time` values are not supported.
 
 One way to support other values is to encode source data to a `[]byte` (e.g. using
 a JSON encoding) and then store the value as `record.RawData`.
+
+
+## Conduit connector template
+
+The easiest way to start implementing your own Conduit connector is by using the
+[Conduit connector template](https://github.com/ConduitIO/conduit-connector-template).
+It contains the basic project structure as well as some additional utilities
+like GitHub actions and a Makefile.
+
+Find out more about the template and how to use it in the readme.
