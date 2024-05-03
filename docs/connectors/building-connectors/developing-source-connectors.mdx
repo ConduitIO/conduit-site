@@ -13,7 +13,7 @@ This file provides the main functionality of your Source Connector.
 
 ### Source Connector Lifecycle Functions
 
-- **`Source`** Struct: Every Source implementation needs to include an [UnimplementedSource](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#UnimplementedSource) to satisfy the interface. This allows us to potentially change the interface in the future while remaining backwards compatible with existing Source implementations.  This struct can be modified to add additional fields that can be accessed throughout the lifecycle of the Connector
+- **`Source`** Struct: Every Source implementation needs to include an [UnimplementedSource](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#UnimplementedSource) to satisfy the interface. This allows us to potentially change the interface in the future while remaining backward compatible with existing Source implementations. This struct can be modified to add additional fields that can be accessed throughout the lifecycle of the Connector
 
     ```go
     type Source struct {
