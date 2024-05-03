@@ -27,7 +27,7 @@ This file provides the main functionality of your Source Connector.
     }
     ```
 
-- **`NewSource()`**: A constructor function for your Source struct. Note that this is the same function that should be set as the value of Connector.NewSource. The constructor should be used to wrap your Source in the default middleware. You can add additional middleware, but unless you have a very good reason, you should always include the default middleware.
+- **`NewSource()`**: A constructor function for your Source struct. Note that this is the same function that should be set as the value of `Connector.NewSource`. The constructor should be used to wrap your Source in the default middleware. You can add additional middleware, but unless you have a very good reason, you should always include the default middleware.
 
     ```go
     func NewSource() sdk.Source {
