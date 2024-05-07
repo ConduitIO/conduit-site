@@ -20,10 +20,10 @@ function HeaderSection() {
   const {siteConfig} = useDocusaurusContext();
   return (
       <>
-        <img referrerPolicy="no-referrer-when-downgrade"
-             src="https://static.scarf.sh/a.png?x-pxid=80cfd08d-1f82-4068-960a-cee31e1ae3fa"/>
         <div style={{'background': 'linear-gradient(289.62deg, #20BED9 -11.02%, #0B525D 97.11%)'}}
              className="max-w-full">
+          <img referrerPolicy="no-referrer-when-downgrade"
+               src="https://static.scarf.sh/a.png?x-pxid=80cfd08d-1f82-4068-960a-cee31e1ae3fa"/>
           <HomepageNavbar/>
           <Wrapper className='py-12'>
             <SplitPair data-reversed data-skewed="60:40">
@@ -31,7 +31,6 @@ function HeaderSection() {
                 <h1 className="font-bold text-5xl lg:text-5xl md:text-5xl text-white">
                   Data Integration for Production Data Stores
                 </h1>
-
                 <p className='mt-10 text-white'>
                   {siteConfig.tagline}
                 </p>
