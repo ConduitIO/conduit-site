@@ -19,51 +19,55 @@ import styles from './index.module.css';
 function HeaderSection() {
   const {siteConfig} = useDocusaurusContext();
   return (
-    <>
-      <div style={{ 'background': 'linear-gradient(289.62deg, #20BED9 -11.02%, #0B525D 97.11%)' }} className="max-w-full">
-        <HomepageNavbar />
-        <Wrapper className='py-12'>
-          <SplitPair data-reversed data-skewed="60:40">
-            <Stack className="basis-3/5">
-              <h1 className="font-bold text-5xl lg:text-5xl md:text-5xl text-white">
-                Data Integration for Production Data Stores
-              </h1>
+      <>
+        <img referrerPolicy="no-referrer-when-downgrade"
+             src="https://static.scarf.sh/a.png?x-pxid=80cfd08d-1f82-4068-960a-cee31e1ae3fa"/>
+        <div style={{'background': 'linear-gradient(289.62deg, #20BED9 -11.02%, #0B525D 97.11%)'}}
+             className="max-w-full">
+          <HomepageNavbar/>
+          <Wrapper className='py-12'>
+            <SplitPair data-reversed data-skewed="60:40">
+              <Stack className="basis-3/5">
+                <h1 className="font-bold text-5xl lg:text-5xl md:text-5xl text-white">
+                  Data Integration for Production Data Stores
+                </h1>
 
-              <p className='mt-10 text-white'>
-                {siteConfig.tagline}
-              </p>
+                <p className='mt-10 text-white'>
+                  {siteConfig.tagline}
+                </p>
 
-              <div className='mt-6'>
-                <a href="https://github.com/ConduitIO/conduit"
-                   className="inline-flex items-center mb-5 px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-700 mr-4 hover:text-white hover:bg-orange-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  <span>Download</span>
-                </a>
+                <div className='mt-6'>
+                  <a href="https://github.com/ConduitIO/conduit"
+                     className="inline-flex items-center mb-5 px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-700 mr-4 hover:text-white hover:bg-orange-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                    <span>Download</span>
+                  </a>
 
-                <a href="/docs/introduction/getting-started"
-                   className={clsx(styles['bg-transparent-200'], "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white hover:text-gray-600 hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500")}
-                >
-                  <span>Documentation</span>
-                </a>
+                  <a href="/docs/introduction/getting-started"
+                     className={clsx(styles['bg-transparent-200'], "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white hover:text-gray-600 hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500")}
+                  >
+                    <span>Documentation</span>
+                  </a>
+                </div>
+              </Stack>
+              <div className="basis-2/5">
+                <img className="w-full h-46 md:h-96 mx-auto" src="/img/conduit/server-illustration.svg"
+                     alt="Data Transformation Visual"/>
               </div>
-            </Stack>
-            <div className="basis-2/5">
-              <img className="w-full h-46 md:h-96 mx-auto" src="/img/conduit/server-illustration.svg" alt="Data Transformation Visual" />
-            </div>
-          </SplitPair>
-        </Wrapper>
-        <DiagonalDivider className="text-white" />
-      </div>
-    </>
+            </SplitPair>
+          </Wrapper>
+          <DiagonalDivider className="text-white"/>
+        </div>
+      </>
   );
 }
 
 function FeaturesSection() {
   return (
-    <>
-      <Wrapper className="py-12">
-        <HomepageFeatures />
-      </Wrapper>
+      <>
+        <Wrapper className="py-12">
+          <HomepageFeatures/>
+        </Wrapper>
       <DiagonalDivider className="color-light text-slate-100" />
     </>
 )
