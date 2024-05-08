@@ -2,7 +2,7 @@
 title: 'Conditional Execution'
 sidebar_position: 3
 ---
-![scarf pixel](https://static.scarf.sh/a.png?x-pxid=33ce4d9e-1948-4cab-846a-7e6cd33b8cae)
+
 When a [processor](/docs/connectors/getting-started) is attached to a connector or to a pipeline, we may still
 want to specify conditions for its execution. To do this, we can add a `condition`
 key to the processor definition in the [Pipeline Configuration File](/docs/processors/getting-started#using-a-pipeline-configuration-file), or using
@@ -50,3 +50,5 @@ pipelines:
           field: .Payload.After.name
         condition: `{{ eq .Metadata.key "expected-value" }}`
 ```
+
+![scarf pixel](https://static.scarf.sh/a.png?x-pxid=33ce4d9e-1948-4cab-846a-7e6cd33b8cae)

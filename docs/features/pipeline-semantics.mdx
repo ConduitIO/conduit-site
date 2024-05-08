@@ -2,7 +2,7 @@
 title: "Pipeline Semantics"
 sidebar_position: 5
 ---
-![scarf pixel](https://static.scarf.sh/a.png?x-pxid=8c8ff6d5-2756-41a3-b4ca-3ca2be381842)
+
 This document describes the inner workings of a Conduit pipeline, its structure, and behavior. It also describes a
 Conduit message and its lifecycle as it flows through the pipeline.
 
@@ -179,3 +179,5 @@ that case, the context that is shared by all nodes will get canceled, signaling 
 should stop running as soon as possible. Messages that are in the pipeline won't be drained, instead, they are dropped
 and will be requested from the source again once the pipeline is restarted. The error returned from the first node
 that failed will be stored in the pipeline and can be retrieved through the API.
+
+![scarf pixel](https://static.scarf.sh/a.png?x-pxid=8c8ff6d5-2756-41a3-b4ca-3ca2be381842)

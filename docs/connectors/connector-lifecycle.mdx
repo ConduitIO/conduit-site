@@ -2,7 +2,7 @@
 title: "Connector Lifecycle"
 sidebar_position: 7
 ---
-![scarf pixel](https://static.scarf.sh/a.png?x-pxid=2fa824d7-fd94-4cf9-a5c8-ea63c9860213)
+
 :::info
 This document describes the lifecycle of a connector implemented in Go using the
 [Connector SDK](https://github.com/ConduitIO/conduit-connector-sdk), which
@@ -193,3 +193,5 @@ Edge cases explained:
 - If a connector is updated and deleted without being started in between, the
   On Deleted event will receive the configuration that was active the last time
   the connector successfully started.
+
+![scarf pixel](https://static.scarf.sh/a.png?x-pxid=2fa824d7-fd94-4cf9-a5c8-ea63c9860213)
