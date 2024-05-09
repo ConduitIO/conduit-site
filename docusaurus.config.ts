@@ -73,7 +73,7 @@ const config: Config = {
       },
       items: [
         { to: '/', label: 'Home', position: 'left', activeBaseRegex: `///` },
-        { type: 'doc', docId: 'introduction/getting-started', position: 'left', label: 'Documentation' },
+        { to: '/docs',  position: 'left', label: 'Documentation' },
         { to: '/api', label: 'HTTP API', position: 'left' },
         { to: 'https://github.com/ConduitIO/conduit/discussions', label: 'GitHub Discussions', position: 'right' },
         { to: 'https://discord.meroxa.com', label: 'Discord Community', position: 'right' },
@@ -119,7 +119,7 @@ const config: Config = {
           title: 'Resources',
           items: [
             { label: 'Connectors', to: '/docs/connectors/connector-list' },
-            { label: 'Documentation', to: '/docs/introduction/what-is-conduit' },
+            { label: 'Documentation', to: '/docs' },
             { label: 'Join our Discord', to: 'https://discord.meroxa.com' },
             { label: 'Issues', to: 'https://github.com/ConduitIO/conduit/issues' },
             { label: 'GitHub Discussions', to: 'https://github.com/ConduitIO/conduit/discussions' },
@@ -151,7 +151,6 @@ const config: Config = {
       additionalLanguages: ['bash', 'diff', 'json', 'hcl', 'yaml'],
     },
   } satisfies Preset.ThemeConfig,
-
   plugins: [
     async function tailwindPlugin(context, options) {
       return {
@@ -177,6 +176,17 @@ const config: Config = {
         },
       };
     },
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        redirects: [
+          {
+            from: '/docs',
+            to: '/docs/getting-started/introduction',
+          },
+        ],
+      },
+    ],
   ],
 };
 
