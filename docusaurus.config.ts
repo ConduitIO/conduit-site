@@ -182,7 +182,7 @@ const config: Config = {
         redirects: [
           {
             from: '/docs',
-            to: '/docs/getting-started/introduction',
+            to: '/docs/introduction/getting-started',
           },
         ],
       },
