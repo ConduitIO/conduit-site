@@ -105,7 +105,7 @@ function CommunitySection() {
                 <h2 className='text-4xl font-bold pb-10 text-white'>Get up.<br/>Get involved. <br/>Get into it.</h2>
                 <p className="pb-10 text-md text-white">The Conduit Community is the ultimate resource of information to
                     help you get started and optimize your infrastructure to build and deploy connectors.</p>
-                <img referrerPolicy="no-referrer-when-downgrade"
+                <img referrerPolicy="no-referrer-when-downgrade" alt="scarf pixel conduit-site-landing-page"
                      src="https://static.scarf.sh/a.png?x-pxid=80cfd08d-1f82-4068-960a-cee31e1ae3fa"/>
                 <div>
                     <a href="https://github.com/ConduitIO/conduit"
