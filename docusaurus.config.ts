@@ -176,17 +176,6 @@ const config: Config = {
         },
       };
     },
-    [
-      '@docusaurus/plugin-client-redirects',
-      {
-        redirects: [
-          {
-            from: '/docs',
-            to: '/docs/introduction/getting-started',
-          },
-        ],
-      },
-    ],
   ],
 };
 
