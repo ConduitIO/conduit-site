@@ -22,7 +22,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/goccy/go-json"
+	json "github.com/goccy/go-json"
 	"github.com/gofri/go-github-ratelimit/github_ratelimit"
 	"github.com/google/go-github/v61/github"
 	"github.com/otiai10/gh-dependents/ghdeps"
@@ -303,11 +303,12 @@ func fetchReleaseAssets(ctx context.Context, client *github.Client, repo string,
 		}
 
 		assetsList = append(assetsList, Asset{
-			Name:            asset.GetName(),
-			OS:              assetOS,
-			Arch:            assetArch,
-			ContentType:     asset.GetContentType(),
-			BrowserDownload: asset.GetBrowserDownloadURL(),
+			Name:        asset.GetName(),
+			OS:          assetOS,
+			Arch:        assetArch,
+			ContentType: asset.GetContentType(),
+			// use our conduit-connectors-releases scarf package link
+			BrowserDownload: strings.Replace(asset.GetBrowserDownloadURL(), "github.com", "conduit.gateway.scarf.sh/connector/download", 1),
 			CreatedAt:       asset.GetCreatedAt().Time,
 			UpdatedAt:       asset.GetUpdatedAt().Time,
 			DownloadCount:   asset.GetDownloadCount(),
