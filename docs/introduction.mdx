@@ -5,6 +5,8 @@ sidebar_label: "Introduction"
 slug: /
 ---
 
+# TODO: 🐝 Consolidate
+
 <img
   alt="Conduit Logo"
   style={{ maxWidth: "400px", marginTop: 0 }}
@@ -249,3 +251,50 @@ Now that you've got the basics of running Conduit and creating a pipeline covere
 - [Pipelines](/docs/pipeline-configuration-files/getting-started)
 - [Processors](/docs/processors/getting-started)
 - [Conduit Architecture](/docs/introduction/architecture)
+
+-----
+
+
+
+Conduit is a new open-source project, written in [Go](https://go.dev/), that
+delivers real-time data integration for developers. It aims to provide the best
+user experience for building and running real-time data pipelines.
+
+Out of the box, Conduit comes with:
+
+- A UI
+- Common connectors 
+- Processors
+- Observability
+
+The batteries are included 🔋
+
+### It’s simple, yet powerful
+
+Eliminate the multi-step process you go through today. Just download the binary
+and start building. Conduit pipelines run in their own goroutines and are
+connected using Go channels. This makes Conduit pipelines incredibly performant
+on multi-core machines.
+
+### It’s real-time
+
+Conduit pipelines listen for changes to a database, data warehouse, etc., and
+allows your data applications to act upon those changes in real-time.
+
+### It’s extensible
+
+Conduit connectors are plugins that communicate with Conduit via a gRPC
+interface. This means that plugins can be written in any language as long as
+they conform to the required interface. Check out
+our [connector docs](/docs/connectors/installing)!
+
+## Get involved
+
+Here are your next steps:
+
+- [Join the Discord Community](https://discord.meroxa.com/)
+- [Request features/ ask questions about Conduit in GitHub Discussions](https://github.com/ConduitIO/conduit/discussions)
+- [Send bug reports to GitHub Issues](https://github.com/ConduitIO/conduit/issues)
+- [Show us love on Twitter](https://twitter.com/ConduitIO)
+
+![scarf pixel conduit-site-docs-introduction](https://static.scarf.sh/a.png?x-pxid=01346572-0d57-4df3-8399-1425db913a0a)
