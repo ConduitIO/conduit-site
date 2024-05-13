@@ -10,13 +10,17 @@ import TabItem from '@theme/TabItem';
   <TabItem value="homebrew" label="Homebrew" default>
     The recommended way of running Conduit on a local machine is using the latest version of Conduit available on [Homebrew](https://brew.sh/) which you can instally by running the following command:
     
-
 ```
 brew install conduit
 ```
 
+### Run
+
 Once installed, you can start Conduit by running:
 
+```shell
+conduit
+```
 
   </TabItem>
   <TabItem value="binary" label="Using a pre-built binary">
@@ -40,40 +44,14 @@ In the directory in which you expanded the archive. Execute the Conduit binary:
 
 ```shell
 ./conduit
-             ....
-         .::::::::::.
-       .:::::‘‘‘‘:::::.
-      .::::        ::::.
- .::::::::          ::::::::.
- `::::::::          ::::::::‘
-      `::::        ::::‘
-       `:::::....:::::‘
-         `::::::::::‘        Conduit v0.10.0 linux/amd64
-             ‘‘‘‘
-2024-02-20T21:37:45+00:00 INF All 0 tables opened in 0s component=badger.DB
-2024-02-20T21:37:45+00:00 INF Discard stats nextEmptySlot: 0 component=badger.DB
-2024-02-20T21:37:45+00:00 INF Set nextTxnTs to 0 component=badger.DB
-2024-02-20T21:37:45+00:00 INF builtin plugins initialized component=builtin.Registry count=6
-2024-02-20T21:37:45+00:00 WRN could not read plugin directory error="open /app/connectors: no such file or directory" component=standalone.Registry
-2024-02-20T21:37:45+00:00 INF standalone plugins initialized component=standalone.Registry count=0 plugin_path=/app/connectors
-2024-02-20T21:37:45+00:00 INF processors initialized component=processor.Service count=0
-2024-02-20T21:37:45+00:00 INF connectors initialized component=connector.Service count=0
-2024-02-20T21:37:45+00:00 INF pipelines initialized component=pipeline.Service count=0
-2024-02-20T21:37:45+00:00 INF pipeline configs provisioned component=provisioning.Service created=[] deleted=[] pipelines_path=./pipelines
-2024-02-20T21:37:45+00:00 INF grpc server started address=[::]:8084
-2024-02-20T21:37:45+00:00 INF http server started address=[::]:8080
-2024-02-20T21:37:45+00:00 INF
-2024-02-20T21:37:45+00:00 INF click here to navigate to Conduit UI: http://localhost:8080/ui
-2024-02-20T21:37:45+00:00 INF click here to navigate to explore the HTTP API: http://localhost:8080/openapi
-2024-02-20T21:37:45+00:00 INF
 ```
-
-You should now be able to interact with the Conduit UI and HTTP API on port 8080.
   </TabItem>
   
   <TabItem value="docker" label="Docker">
     We distribute [Docker](https://docs.docker.com/) images to ease the use of Conduit in a containerized environment. To see details about how our images are built please feel free to take a look at the `Dockerfile` [here](https://github.com/ConduitIO/conduit/blob/main/Dockerfile).
 Conduit's Docker images are hosted on [GitHub](https://github.com/ConduitIO/conduit/pkgs/container/conduit).
+
+### Run
 
 After you install Docker, you can pull the Conduit image by running the following command:
 
@@ -93,7 +71,10 @@ docker run -it -p 8080:8080 \
   conduit.docker.scarf.sh/conduitio/conduit
 ```
 
-**Helpful Tip:** If you're using Docker, check out [Watchtower](https://containrrr.dev/watchtower/). After we push an update, Watchtower will keep your Conduit container updated by gracefully shutting down your existing container and restarting it with the same options used when initially deployed.
+:::tip
+If you're using Docker, check out [Watchtower](https://containrrr.dev/watchtower/). After we push an update, Watchtower will keep your Conduit container updated by gracefully shutting down your existing container and restarting it with the same options used when initially deployed.
+:::
+
   </TabItem>
   <TabItem value="source" label="Building from source">
 Before you can build Conduit from source, you need to have Go 1.21 or higher installed. The Go website has [comprehensive instructions](https://go.dev/doc/install) on how to get the language installed on your machine. Once installed, you can follow the rest of the instructions.
@@ -136,6 +117,36 @@ You will have a new binary built for your architecture and machine. All that's l
   </TabItem>
 </Tabs>
 
+You should now be able to interact with the Conduit UI and HTTP API on port 8080:
+
+```shell
+             ....
+         .::::::::::.
+       .:::::‘‘‘‘:::::.
+      .::::        ::::.
+ .::::::::          ::::::::.
+ `::::::::          ::::::::‘
+      `::::        ::::‘
+       `:::::....:::::‘
+         `::::::::::‘        Conduit v0.10.0 linux/amd64
+             ‘‘‘‘
+2024-02-20T21:37:45+00:00 INF All 0 tables opened in 0s component=badger.DB
+2024-02-20T21:37:45+00:00 INF Discard stats nextEmptySlot: 0 component=badger.DB
+2024-02-20T21:37:45+00:00 INF Set nextTxnTs to 0 component=badger.DB
+2024-02-20T21:37:45+00:00 INF builtin plugins initialized component=builtin.Registry count=6
+2024-02-20T21:37:45+00:00 WRN could not read plugin directory error="open /app/connectors: no such file or directory" component=standalone.Registry
+2024-02-20T21:37:45+00:00 INF standalone plugins initialized component=standalone.Registry count=0 plugin_path=/app/connectors
+2024-02-20T21:37:45+00:00 INF processors initialized component=processor.Service count=0
+2024-02-20T21:37:45+00:00 INF connectors initialized component=connector.Service count=0
+2024-02-20T21:37:45+00:00 INF pipelines initialized component=pipeline.Service count=0
+2024-02-20T21:37:45+00:00 INF pipeline configs provisioned component=provisioning.Service created=[] deleted=[] pipelines_path=./pipelines
+2024-02-20T21:37:45+00:00 INF grpc server started address=[::]:8084
+2024-02-20T21:37:45+00:00 INF http server started address=[::]:8080
+2024-02-20T21:37:45+00:00 INF
+2024-02-20T21:37:45+00:00 INF click here to navigate to Conduit UI: http://localhost:8080/ui
+2024-02-20T21:37:45+00:00 INF click here to navigate to explore the HTTP API: http://localhost:8080/openapi
+2024-02-20T21:37:45+00:00 INF
+```
 
 ## Next Steps
 
@@ -143,5 +154,6 @@ Now that you have Conduit installed it's time to explore some other topics.
 
 - [Pipelines](/docs/pipeline-configuration-files/getting-started)
 - [Connectors](/docs/connectors/getting-started)
+- [Processors](/docs/processors/getting-started)
 
 ![scarf pixel conduit-site-docs-running](https://static.scarf.sh/a.png?x-pxid=db6468a8-7998-463e-800f-58a619edd9b3)
