@@ -186,6 +186,18 @@ const config: Config = {
             to: '/docs',
           },
         ],
+        createRedirects(existingPath) {
+          if (existingPath.includes('/docs/running')) {
+            const installingPath = '/docs/getting-started/installing-and-running'
+            return [
+              existingPath.replace('/docs/running/binary', installingPath),
+              existingPath.replace('/docs/running/docker', installingPath),
+              existingPath.replace('/docs/running/homebrew', installingPath),
+              existingPath.replace('/docs/running/source', installingPath),
+            ];
+          }
+          return undefined; // Return a falsy value: no redirect created
+        },
       },
     ],
   ],
