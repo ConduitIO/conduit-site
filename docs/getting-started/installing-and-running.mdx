@@ -3,9 +3,12 @@ title: "Installing and running"
 sidebar_position: 0
 ---
 
-## Running Conduit using a pre-built binary
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
-The recommended way of running Conduit on a local machine is using a pre-built binary. Below we'll walk through getting Conduit installed and running on your system.
+<Tabs>
+  <TabItem value="binary" label="Using a pre-built binary" default>
+    The recommended way of running Conduit on a local machine is using a pre-built binary. Below we'll walk through getting Conduit installed and running on your system.
 
 ### Download
 
@@ -57,9 +60,8 @@ In the directory in which you expanded the archive. Execute the Conduit binary:
 ```
 
 You should now be able to interact with the Conduit UI and HTTP API on port 8080.
-
-## Building from source
-
+  </TabItem>
+  <TabItem value="source" label="Building from source">
 Before you can build Conduit from source, you need to have Go 1.21 or higher installed. The Go website has [comprehensive instructions](https://go.dev/doc/install) on how to get the language installed on your machine. Once installed, you can follow the rest of the instructions.
 
 1. Start by downloading the source code from the latest stable release on the Conduit [Releases Page](https://github.com/ConduitIO/conduit/releases/latest). Alternatively, you can run this command to automatically download the latest stable source to your current directory:
@@ -97,18 +99,16 @@ You will have a new binary built for your architecture and machine. All that's l
 ```shell
 ./conduit
 ```
-
-## Installing Conduit with Homebrew
-
-On MacOS we provide the option of installing Conduit via Homebrew
+  </TabItem>
+  <TabItem value="homebrew" label="Homebrew">
+    On MacOS we provide the option of installing Conduit via Homebrew
 
 ```
 brew install conduit
 ```
-
-## Running Conduit with Docker
-
-We distribute [Docker](https://docs.docker.com/) images to ease the use of Conduit in a containerized environment. To see details about how our images are built please feel free to take a look at the `Dockerfile` [here](https://github.com/ConduitIO/conduit/blob/main/Dockerfile).
+  </TabItem>
+  <TabItem value="docker" label="Docker">
+    We distribute [Docker](https://docs.docker.com/) images to ease the use of Conduit in a containerized environment. To see details about how our images are built please feel free to take a look at the `Dockerfile` [here](https://github.com/ConduitIO/conduit/blob/main/Dockerfile).
 Conduit's Docker images are hosted on [GitHub](https://github.com/ConduitIO/conduit/pkgs/container/conduit).
 
 After you install Docker, you can pull the Conduit image by running the following command:
@@ -130,6 +130,9 @@ docker run -it -p 8080:8080 \
 ```
 
 **Helpful Tip:** If you're using Docker, check out [Watchtower](https://containrrr.dev/watchtower/). After we push an update, Watchtower will keep your Conduit container updated by gracefully shutting down your existing container and restarting it with the same options used when initially deployed.
+  </TabItem>
+</Tabs>
+
 
 ## Next Steps
 
