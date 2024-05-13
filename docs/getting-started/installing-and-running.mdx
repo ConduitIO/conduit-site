@@ -67,7 +67,7 @@ Before you can build Conduit from source, you need to have Go 1.21 or higher ins
 1. Start by downloading the source code from the latest stable release on the Conduit [Releases Page](https://github.com/ConduitIO/conduit/releases/latest). Alternatively, you can run this command to automatically download the latest stable source to your current directory:
 
 ```shell
-$ TAG=$(curl -s https://api.github.com/repos/ConduitIO/conduit/releases/latest | grep "tag_name\": \"v[0-9.]*" | awk -F \" '/tag_name\": \"*\"/{print $(NF-1)}') && curl -o conduit.tgz -L https://github.com/ConduitIO/conduit/tarball/$TAG
+$ TAG=v0.10.0 curl -o conduit.tar.gz -L https://github.com/ConduitIO/conduit/archive/refs/tags/$TAG.tar.gz
 ```
 
 A file called `conduit.tgz` will be in your current directory. The next step is to expand the source:
