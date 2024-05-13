@@ -1,8 +1,8 @@
 ---
-title: 'Getting Started with Conduit'
 sidebar_position: 0
 hide_title: true
-sidebar_label: "Getting Started"
+sidebar_label: "Introduction"
+slug: /
 ---
 
 <img
@@ -20,34 +20,51 @@ and [any datastore you can build a plugin for](/docs/connectors/building).
 It's written in [Go](https://go.dev/), compiles to a binary, and is designed to
 be easy to use and [deploy](/docs/running/binary).
 
+Out of the box, Conduit comes with:
+
+- A UI
+- Common connectors 
+- Processors
+- Observability
+
 In this getting started guide we'll use a pre-built binary, but Conduit can also be run using [Docker](/docs/running/docker).
+
+## Some of its features
+
+### It’s simple, yet powerful
+
+Eliminate the multi-step process you go through today. Just download the binary
+and start building. Conduit pipelines run in their own goroutines and are
+connected using Go channels. This makes Conduit pipelines incredibly performant
+on multi-core machines.
+
+### It’s real-time
+
+Conduit pipelines listen for changes to a database, data warehouse, etc., and
+allows your data applications to act upon those changes in real-time.
+
+### It’s extensible
+
+Conduit connectors are plugins that communicate with Conduit via a gRPC
+interface. This means that plugins can be written in any language as long as
+they conform to the required interface. Check out
+our [connector docs](/docs/connectors)!
 
 ## Installing
 
-To get started:
-
-1. [Download the latest Conduit release](https://github.com/ConduitIO/conduit/releases/latest).
-2. Unzip:
-
-If you're on Mac, it will look something like this:
+The easiest way to get started with Conduit on your macOS or Linux system is to install it using [Homebrew](https://brew.sh/). Simply run the following command in your terminal:
 
 ```shell
-tar zxvf conduit_0.10.0_Darwin_x86_64.tar.gz
+brew install conduit
 ```
 
-Depending on your operating system you may need to make the conduit binary executable.
-```shell
-chmod a+x conduit
-```
+If Homebrew is not supported on your system, you can still install Conduit following one of the different options provided in [our installation page](/docs/getting-started/installing-and-running). 
 
 ## Starting Conduit
 Now that we have Conduit installed let's start it up to see what happens.
 
 ```shell
 ./conduit
-```
-
-```shell
              ....
          .::::::::::.
        .:::::‘‘‘‘:::::.
