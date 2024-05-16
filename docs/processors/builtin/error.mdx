@@ -37,11 +37,34 @@ pipelines:
     processors:
       - id: example
         plugin: "error"
-        
+        settings:
+          # Error message to be returned. This can be a Go
+          # [template](https://pkg.go.dev/text/template) executed on each
+          # [`Record`](https://pkg.go.dev/github.com/conduitio/conduit-commons/opencdc#Record)
+          # being processed.
+          # Type: string
+          message: "error processor triggered"
 ```
   </TabItem>
   <TabItem value="table" label="Table">
-  No configuration parameters.
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td>`message`</td>
+        <td>string</td>
+        <td>`error processor triggered`</td>
+        <td>
+  Error message to be returned. This can be a Go [template](https://pkg.go.dev/text/template)
+executed on each [`Record`](https://pkg.go.dev/github.com/conduitio/conduit-commons/opencdc#Record)
+being processed.
+        </td>
+      </tr>
+    </table>
   </TabItem>
 </Tabs>
 
