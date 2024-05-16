@@ -60,7 +60,7 @@ pipelines:
           request.body: ""
           # Deprecated: use `headers.Content-Type` instead.
           # Type: string
-          request.contentType: "application/json"
+          request.contentType: ""
           # Method is the HTTP request method to be used.
           # Type: string
           request.method: "GET"
@@ -149,7 +149,7 @@ For more information about the format, see [Referencing fields](https://conduit.
       <tr>
         <td>`request.contentType`</td>
         <td>string</td>
-        <td>`application/json`</td>
+        <td><Chip label="null" /></td>
         <td>
   Deprecated: use `headers.Content-Type` instead.
         </td>
@@ -206,8 +206,8 @@ For more information about the format, see [Referencing fields](https://conduit.
 This example shows how to use the HTTP processor to send a record's `.Payload.After` field to a dummy HTTP server
 that replies back with a greeting.
 
-The record's `.Payload.After` is overwritten with the response. Additionally, the example shows how to store the
-value of the HTTP response's code in the metadata field `http_status`.
+The record's `.Payload.After` is overwritten with the response. Additionally, the example shows how to set a request
+header and how to store the value of the HTTP response's code in the metadata field `http_status`.
 
 #### Configuration parameters
 
@@ -228,8 +228,8 @@ pipelines:
           backoffRetry.factor: "2"
           backoffRetry.max: "5s"
           backoffRetry.min: "100ms"
+          headers.content-type: "application/json"
           request.body: ".Payload.After"
-          request.contentType: "application/json"
           request.method: "GET"
           request.url: "http://127.0.0.1:54321"
           response.body: ".Payload.After"
@@ -259,12 +259,12 @@ pipelines:
         <td>`100ms`</td>
       </tr>
       <tr>
-        <td>`request.body`</td>
-        <td>`.Payload.After`</td>
+        <td>`headers.content-type`</td>
+        <td>`application/json`</td>
       </tr>
       <tr>
-        <td>`request.contentType`</td>
-        <td>`application/json`</td>
+        <td>`request.body`</td>
+        <td>`.Payload.After`</td>
       </tr>
       <tr>
         <td>`request.method`</td>
@@ -337,7 +337,6 @@ pipelines:
           backoffRetry.factor: "2"
           backoffRetry.max: "5s"
           backoffRetry.min: "100ms"
-          request.contentType: "application/json"
           request.method: "GET"
           request.url: "http://127.0.0.1:54321/{{.Payload.After.name}}"
           response.body: ".Payload.After.response"
@@ -364,10 +363,6 @@ pipelines:
       <tr>
         <td>`backoffRetry.min`</td>
         <td>`100ms`</td>
-      </tr>
-      <tr>
-        <td>`request.contentType`</td>
-        <td>`application/json`</td>
       </tr>
       <tr>
         <td>`request.method`</td>
