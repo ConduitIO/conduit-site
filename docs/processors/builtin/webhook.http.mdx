@@ -55,10 +55,12 @@ pipelines:
           # and its value (e.g. `headers.Authorization: "Bearer key"`).
           # Type: string
           headers.*: ""
-          # Specifies which field from the input record should be used as the
-          # body in the HTTP request.
-          # For more information about the format, see [Referencing
-          # fields](https://conduit.io/docs/processors/referencing-fields).
+          # Specifies the body that will be sent in the HTTP request. The field
+          # accepts a Go [templates](https://pkg.go.dev/text/template) that's
+          # evaluated using the
+          # [opencdc.Record](https://pkg.go.dev/github.com/conduitio/conduit-commons/opencdc#Record)
+          # as input. By default, the body is empty.
+          # To send the whole record as JSON you can use `{{ toJson . }}`.
           # Type: string
           request.body: ""
           # Deprecated: use `headers.Content-Type` instead.
@@ -143,10 +145,12 @@ pipelines:
         <td>string</td>
         <td><Chip label="null" /></td>
         <td>
-  Specifies which field from the input record should be used as the body in
-the HTTP request.
+  Specifies the body that will be sent in the HTTP request. The field accepts
+a Go [templates](https://pkg.go.dev/text/template) that's evaluated using the
+[opencdc.Record](https://pkg.go.dev/github.com/conduitio/conduit-commons/opencdc#Record)
+as input. By default, the body is empty.
 
-For more information about the format, see [Referencing fields](https://conduit.io/docs/processors/referencing-fields).
+To send the whole record as JSON you can use `{{ toJson . }}`.
         </td>
       </tr>
       <tr>
@@ -206,8 +210,8 @@ For more information about the format, see [Referencing fields](https://conduit.
 ### Send a request to an HTTP server
 
 
-This example shows how to use the HTTP processor to send a record's `.Payload.After` field to a dummy HTTP server
-that replies back with a greeting.
+This example shows how to use the HTTP processor to send a record's `.Payload.After` field as a string to a dummy
+HTTP server that replies back with a greeting.
 
 The record's `.Payload.After` is overwritten with the response. Additionally, the example shows how to set a request
 header and how to store the value of the HTTP response's code in the metadata field `http_status`.
@@ -232,7 +236,7 @@ pipelines:
           backoffRetry.max: "5s"
           backoffRetry.min: "100ms"
           headers.content-type: "application/json"
-          request.body: ".Payload.After"
+          request.body: "{{ printf "%s" .Payload.After }}"
           request.method: "GET"
           request.url: "http://127.0.0.1:54321"
           response.body: ".Payload.After"
@@ -267,7 +271,7 @@ pipelines:
       </tr>
       <tr>
         <td>`request.body`</td>
-        <td>`.Payload.After`</td>
+        <td>`{{ printf "%s" .Payload.After }}`</td>
       </tr>
       <tr>
         <td>`request.method`</td>
