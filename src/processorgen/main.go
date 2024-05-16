@@ -198,27 +198,32 @@ func formatParameterValueYAML(value string) string {
 }
 
 // formatRecord formats a record as an escaped string.
-func formatRecord(recordMap map[string]any) string {
-	if len(recordMap) == 0 {
+func formatRecord(rec map[string]any) string {
+	var input any
+
+	switch {
+	case len(rec) == 0:
 		return ""
+	case rec["error"] != nil:
+		input = rec
+	default:
+		// store the record in a struct so we control the order of the fields in JSON
+		input = record{
+			Position:  rec["position"],
+			Operation: rec["operation"],
+			Metadata:  rec["metadata"],
+			Key:       rec["key"],
+			Payload: struct {
+				Before any `json:"before"`
+				After  any `json:"after"`
+			}{
+				Before: rec["payload"].(map[string]any)["before"],
+				After:  rec["payload"].(map[string]any)["after"],
+			},
+		}
 	}
 
-	// store the record in a struct so we control the order of the fields in JSON
-	r := record{
-		Position:  recordMap["position"],
-		Operation: recordMap["operation"],
-		Metadata:  recordMap["metadata"],
-		Key:       recordMap["key"],
-		Payload: struct {
-			Before any `json:"before"`
-			After  any `json:"after"`
-		}{
-			Before: recordMap["payload"].(map[string]any)["before"],
-			After:  recordMap["payload"].(map[string]any)["after"],
-		},
-	}
-
-	b, err := json.MarshalIndent(r, "", "  ")
+	b, err := json.MarshalIndent(input, "", "  ")
 	if err != nil {
 		return fmt.Sprintf("failed to marshal record: %v", err)
 	}
