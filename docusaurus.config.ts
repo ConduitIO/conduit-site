@@ -18,7 +18,7 @@ const config: Config = {
   organizationName: 'conduitio', // Usually your GitHub org/user name.
   projectName: 'conduit-site', // Usually your repo name.
 
-  onBrokenLinks: 'ignore',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
   onDuplicateRoutes: 'warn',
 
@@ -78,6 +78,36 @@ const config: Config = {
         { to: 'https://github.com/ConduitIO/conduit/discussions', label: 'GitHub Discussions', position: 'right' },
         { to: 'https://discord.meroxa.com', label: 'Discord Community', position: 'right' },
       ],
+    },
+    algolia: { // https://docusaurus.io/docs/search#using-algolia-docsearch
+      // The application ID provided by Algolia
+      appId: '37HOKUPXLR', // 
+
+      // Search API key: it is safe to commit it
+      apiKey: '6a3c0c5d80ffbcba9eb001201f9128b8',
+
+      indexName: 'conduit',
+
+      // TODO: This should be true when enabling multiple versions: https://docusaurus.io/docs/search#contextual-search
+      contextualSearch: false, 
+
+      // Optional: Specify domains where the navigation should occur through window.location instead on history.push. Useful when our Algolia config crawls multiple documentation sites and we want to navigate with window.location.href to them.
+      // externalUrlRegex: '',
+
+      // Optional: Replace parts of the item URLs from Algolia. Useful when using the same search index for multiple deployments using a different baseUrl. You can use regexp or string in the `from` param. For example: localhost:3000 vs myCompany.com/docs
+      // replaceSearchResultPathname: {
+      //   from: 'https://conduit.io', 
+      //   to: 'http://localhost:3000',
+      // },
+
+      // Optional: Algolia search parameters
+      // searchParameters: {},
+
+      // This creates a custom page where the search is displayed. This can be useful when sharing a specific list of urls.
+      searchPagePath: 'docs/search', // 
+
+      // Optional: whether the insights feature is enabled or not on Docsearch (`false` by default)
+      insights: true,
     },
     footer: {
       style: 'dark',
