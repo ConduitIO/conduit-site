@@ -6728,15 +6728,6 @@
     "releases": []
   },
   {
-    "nameWithOwner": "hariso/conduit-connector-s3",
-    "description": "Conduit connector for Amazon S3",
-    "createdAt": "2024-05-17 12:30:24 +0000 UTC",
-    "url": "https://github.com/hariso/conduit-connector-s3",
-    "stargazerCount": 0,
-    "forkCount": 0,
-    "releases": []
-  },
-  {
     "nameWithOwner": "lovromazgon/conduit-connector-kafka-broker",
     "description": "Experimental connector that acts as a Kafka broker and accepts data produced by Kafka producers.",
     "createdAt": "2024-03-28 14:43:44 +0000 UTC",
