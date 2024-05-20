@@ -39,6 +39,18 @@ const config: Config = {
     [
       'classic',
       {
+        sitemap: {
+          lastmod: 'date',
+          changefreq: 'weekly',
+          priority: 0.5,
+          ignorePatterns: ['/tags/**'],
+          filename: 'sitemap.xml',
+          createSitemapItems: async (params) => {
+            const {defaultCreateSitemapItems, ...rest} = params;
+            const items = await defaultCreateSitemapItems(rest);
+            return items;
+          },
+        },
         gtag: {
           trackingID: 'G-QKF0TW3J6Z',
           anonymizeIP: true,
