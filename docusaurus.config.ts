@@ -88,17 +88,14 @@ const config: Config = {
 
       indexName: 'conduit',
 
-      // TODO: This should be true when enabling multiple versions: https://docusaurus.io/docs/search#contextual-search
-      contextualSearch: false, 
+      // Facets could be configured via https://dashboard.algolia.com/apps/37HOKUPXLR/explorer/configuration/conduit/facets. It's important to note that the facets need to be enabled in the Algolia dashboard.
+      contextualSearch: false,
+      // searchParameters: {
+      //   facetFilters: ['language:en', ''],
+      // },
 
       // Optional: Specify domains where the navigation should occur through window.location instead on history.push. Useful when our Algolia config crawls multiple documentation sites and we want to navigate with window.location.href to them.
       // externalUrlRegex: '',
-
-      // Optional: Replace parts of the item URLs from Algolia. Useful when using the same search index for multiple deployments using a different baseUrl. You can use regexp or string in the `from` param. For example: localhost:3000 vs myCompany.com/docs
-      // replaceSearchResultPathname: {
-      //   from: 'https://conduit.io', 
-      //   to: 'http://localhost:3000',
-      // },
 
       // Optional: Algolia search parameters
       // searchParameters: {},
