@@ -3525,15 +3525,6 @@
     ]
   },
   {
-    "nameWithOwner": "EnigmaForLife/shared",
-    "description": "",
-    "createdAt": "2023-04-14 11:15:15 +0000 UTC",
-    "url": "https://github.com/EnigmaForLife/shared",
-    "stargazerCount": 0,
-    "forkCount": 0,
-    "releases": []
-  },
-  {
     "nameWithOwner": "ViniciusMiana/conduit-connector-pulsar",
     "description": "Provides a source and a destination Pulsar connector, for Conduit.",
     "createdAt": "2023-12-07 00:47:43 +0000 UTC",

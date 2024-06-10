@@ -43,6 +43,7 @@ var excludedRepositories = []string{
 	"tsinghgill/conduit-connector-notion",
 	"WeirdMagician/conduit-connector-google-cloudstorage",
 	"GevorgGal/conduit-connector-influxdb",
+	"EnigmaForLife/shared",
 }
 
 // maps architectures found in asset names to GOARCH
