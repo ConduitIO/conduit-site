@@ -5,7 +5,7 @@
     "createdAt": "2022-02-22 12:18:32 +0000 UTC",
     "url": "https://github.com/ConduitIO/conduit-connector-file",
     "stargazerCount": 3,
-    "forkCount": 1,
+    "forkCount": 2,
     "releases": [
       {
         "tag_name": "v0.6.0",
@@ -411,7 +411,7 @@
     "createdAt": "2022-02-22 16:00:27 +0000 UTC",
     "url": "https://github.com/ConduitIO/conduit-connector-generator",
     "stargazerCount": 2,
-    "forkCount": 1,
+    "forkCount": 2,
     "releases": [
       {
         "tag_name": "v0.6.0",
@@ -916,7 +916,7 @@
     "createdAt": "2022-02-22 13:02:13 +0000 UTC",
     "url": "https://github.com/ConduitIO/conduit-connector-kafka",
     "stargazerCount": 8,
-    "forkCount": 4,
+    "forkCount": 5,
     "releases": [
       {
         "tag_name": "v0.8.0",
@@ -1916,7 +1916,7 @@
     "createdAt": "2022-11-04 17:21:08 +0000 UTC",
     "url": "https://github.com/ConduitIO/conduit-connector-log",
     "stargazerCount": 0,
-    "forkCount": 1,
+    "forkCount": 2,
     "releases": [
       {
         "tag_name": "v0.3.0",
@@ -2322,7 +2322,7 @@
     "createdAt": "2022-03-07 16:06:24 +0000 UTC",
     "url": "https://github.com/ConduitIO/conduit-connector-postgres",
     "stargazerCount": 12,
-    "forkCount": 5,
+    "forkCount": 6,
     "releases": [
       {
         "tag_name": "v0.7.4",
@@ -3223,7 +3223,7 @@
     "createdAt": "2022-02-17 14:40:01 +0000 UTC",
     "url": "https://github.com/ConduitIO/conduit-connector-s3",
     "stargazerCount": 8,
-    "forkCount": 2,
+    "forkCount": 3,
     "releases": [
       {
         "tag_name": "v0.5.1",
@@ -4301,7 +4301,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-clickhouse/releases/download/v0.1.0/conduit-connector-clickhouse_0.1.0_Darwin_arm64.tar.gz",
             "created_at": "2023-08-17T11:42:22Z",
             "updated_at": "2023-08-17T11:42:23Z",
-            "download_count": 2,
+            "download_count": 3,
             "size": 6745933
           },
           {
@@ -6840,7 +6840,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-redpanda/releases/download/v0.1.0/conduit-connector-redpanda_0.1.0_Darwin_arm64.tar.gz",
             "created_at": "2024-05-24T16:08:00Z",
             "updated_at": "2024-05-24T16:08:01Z",
-            "download_count": 0,
+            "download_count": 1,
             "size": 6228116
           },
           {
