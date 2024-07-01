@@ -935,7 +935,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-kafka/releases/download/v0.8.0/conduit-connector-kafka_0.8.0_Darwin_arm64.tar.gz",
             "created_at": "2024-04-25T13:09:58Z",
             "updated_at": "2024-04-25T13:09:59Z",
-            "download_count": 2,
+            "download_count": 4,
             "size": 6228903
           },
           {
@@ -1793,7 +1793,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-kafka/releases/download/v0.4.0/conduit-connector-kafka_0.4.0_Windows_i386.tar.gz",
             "created_at": "2023-01-31T17:13:24Z",
             "updated_at": "2023-01-31T17:13:24Z",
-            "download_count": 2,
+            "download_count": 3,
             "size": 5208428
           },
           {
@@ -2324,6 +2324,105 @@
     "stargazerCount": 12,
     "forkCount": 6,
     "releases": [
+      {
+        "tag_name": "v0.7.5",
+        "name": "v0.7.5",
+        "body": "## Changelog\n* 5ecd48eadec2f4881a41909942e48fa3149f350d: avro schema generator (#174) (@lyuboxa)\n\n",
+        "draft": false,
+        "prerelease": false,
+        "published_at": "2024-06-25T14:55:59Z",
+        "html_url": "https://github.com/ConduitIO/conduit-connector-postgres/releases/tag/v0.7.5",
+        "assets": [
+          {
+            "name": "conduit-connector-postgres_0.7.5_Darwin_arm64.tar.gz",
+            "os": "darwin",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.7.5/conduit-connector-postgres_0.7.5_Darwin_arm64.tar.gz",
+            "created_at": "2024-06-25T14:55:57Z",
+            "updated_at": "2024-06-25T14:55:58Z",
+            "download_count": 0,
+            "size": 6571361
+          },
+          {
+            "name": "conduit-connector-postgres_0.7.5_Darwin_x86_64.tar.gz",
+            "os": "darwin",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.7.5/conduit-connector-postgres_0.7.5_Darwin_x86_64.tar.gz",
+            "created_at": "2024-06-25T14:55:57Z",
+            "updated_at": "2024-06-25T14:55:58Z",
+            "download_count": 0,
+            "size": 6936107
+          },
+          {
+            "name": "conduit-connector-postgres_0.7.5_Linux_arm64.tar.gz",
+            "os": "linux",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.7.5/conduit-connector-postgres_0.7.5_Linux_arm64.tar.gz",
+            "created_at": "2024-06-25T14:55:57Z",
+            "updated_at": "2024-06-25T14:55:58Z",
+            "download_count": 0,
+            "size": 6243169
+          },
+          {
+            "name": "conduit-connector-postgres_0.7.5_Linux_i386.tar.gz",
+            "os": "linux",
+            "arch": "386",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.7.5/conduit-connector-postgres_0.7.5_Linux_i386.tar.gz",
+            "created_at": "2024-06-25T14:55:57Z",
+            "updated_at": "2024-06-25T14:55:57Z",
+            "download_count": 0,
+            "size": 6343920
+          },
+          {
+            "name": "conduit-connector-postgres_0.7.5_Linux_x86_64.tar.gz",
+            "os": "linux",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.7.5/conduit-connector-postgres_0.7.5_Linux_x86_64.tar.gz",
+            "created_at": "2024-06-25T14:55:57Z",
+            "updated_at": "2024-06-25T14:55:58Z",
+            "download_count": 0,
+            "size": 6760937
+          },
+          {
+            "name": "conduit-connector-postgres_0.7.5_Windows_arm64.tar.gz",
+            "os": "windows",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.7.5/conduit-connector-postgres_0.7.5_Windows_arm64.tar.gz",
+            "created_at": "2024-06-25T14:55:57Z",
+            "updated_at": "2024-06-25T14:55:57Z",
+            "download_count": 0,
+            "size": 6343092
+          },
+          {
+            "name": "conduit-connector-postgres_0.7.5_Windows_i386.tar.gz",
+            "os": "windows",
+            "arch": "386",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.7.5/conduit-connector-postgres_0.7.5_Windows_i386.tar.gz",
+            "created_at": "2024-06-25T14:55:57Z",
+            "updated_at": "2024-06-25T14:55:57Z",
+            "download_count": 0,
+            "size": 6650841
+          },
+          {
+            "name": "conduit-connector-postgres_0.7.5_Windows_x86_64.tar.gz",
+            "os": "windows",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.7.5/conduit-connector-postgres_0.7.5_Windows_x86_64.tar.gz",
+            "created_at": "2024-06-25T14:55:57Z",
+            "updated_at": "2024-06-25T14:55:57Z",
+            "download_count": 0,
+            "size": 6992954
+          }
+        ]
+      },
       {
         "tag_name": "v0.7.4",
         "name": "v0.7.4",
@@ -4029,7 +4128,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-bigquery/releases/download/v0.3.0/conduit-connector-bigquery_0.3.0_Windows_arm64.tar.gz",
             "created_at": "2022-09-27T14:07:38Z",
             "updated_at": "2022-09-27T14:07:39Z",
-            "download_count": 3,
+            "download_count": 4,
             "size": 4879565
           },
           {
@@ -6958,7 +7057,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-salesforce/releases/download/v0.3.0/conduit-connector-salesforce_0.3.0_Darwin_arm64.tar.gz",
             "created_at": "2022-10-03T13:34:27Z",
             "updated_at": "2022-10-03T13:34:27Z",
-            "download_count": 5,
+            "download_count": 6,
             "size": 4402201
           },
           {
@@ -7156,7 +7255,7 @@
     "description": "Conduit connector for Snowflake",
     "createdAt": "2022-07-18 16:14:39 +0000 UTC",
     "url": "https://github.com/conduitio-labs/conduit-connector-snowflake",
-    "stargazerCount": 0,
+    "stargazerCount": 1,
     "forkCount": 1,
     "releases": [
       {
