@@ -1,14 +1,14 @@
 ---
-title: "Additional Built-in Plugins"
+title: "Add Built-in Connectors"
 sidebar_position: 2
 ---
 
-Built-in plugins offer better performance when compared to standalone plugins,
+Built-in connectors offer better performance when compared to standalone connectors,
 which is why in some cases it's desirable to have a custom build of Conduit that
-includes additional plugins.
+includes additional connectors.
 
 The simplest way to achieve so is to write a small application that embeds
-Conduit (i.e. uses Conduit as a library) and adds a plugin or plugins to its
+Conduit (i.e. uses Conduit as a library) and adds one or more connectors to its
 default configuration.
 
 In the example below we will add
@@ -39,10 +39,10 @@ import (
 )
 
 func main() {
-	// Get the default configuration, including all built-in plugins
+	// Get the default configuration, including all built-in connectors
 	cfg := conduit.DefaultConfig()
 
-	// Add the HTTP connector to list of built-in plugins
+	// Add the HTTP connector to list of built-in connectors
 	cfg.ConnectorPlugins["http"] = http.Connector
 
 	conduit.Serve(cfg)
