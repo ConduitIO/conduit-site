@@ -15,8 +15,8 @@ The Conduit Documentation contains:
 2. Install NPM Modules:
 
 ```console
-yarn install
-```
+`yarn install
+````
 
 3. Start local development server:
 
