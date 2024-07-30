@@ -207,11 +207,14 @@ const config: Config = {
       '@docusaurus/plugin-client-redirects',
       {
         redirects: [
-          // /docs/introduction/getting-started -> /docs
           {
             from: '/docs/introduction/getting-started',
             to: '/docs',
           },
+          {
+            from: '/docs/introduction/architecture',
+            to: '/docs/getting-started/architecture'
+          }
         ],
         createRedirects(existingPath) {
           if (existingPath.includes('/docs/running')) {
