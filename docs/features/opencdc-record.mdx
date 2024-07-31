@@ -140,28 +140,9 @@ may have this field.
 }
 ```
 
-### `opencdc.key.schema.subject`
+### `opencdc.key.schema.version`, `opencdc.payload.schema.version`
 
-Contains the subject of the schema for the records's `.Key` field.
-
-:::note
-This field will only be populated when using structured data.
-:::
-
-```json5
-{
-    // other record fields
-    "metadata": {
-        "opencdc.key.schema.subject": "employees.key.v1",
-        // rest of metadata
-    },
-    // other record fields
-}
-```
-
-### `opencdc.key.schema.version`
-
-Contains the version of the schema for the records's `.Key` field.
+Contains the version of the schema of the record.
 
 :::note
 This field will only be populated when using structured data.
@@ -172,15 +153,16 @@ This field will only be populated when using structured data.
     // other record fields
     "metadata": {
         "opencdc.key.schema.version": "1.0.0",
+        "opencdc.payload.schema.version": "2.1.2",
         // rest of metadata
     },
     // other record fields
 }
 ```
 
-### `opencdc.payload.schema.subject`
+### `opencdc.key.schema.subject`, `opencdc.payload.schema.subject`
 
-Contains the subject of the schema for the records's `.Payload` field.
+Contains the subject of the schema of the record.
 
 :::note
 This field will only be populated when using structured data.
@@ -190,30 +172,13 @@ This field will only be populated when using structured data.
 {
     // other record fields
     "metadata": {
+        "opencdc.key.schema.subject": "employees.key.v1",
         "opencdc.payload.schema.subject": "employees.value.v2",
         // rest of metadata
     },
     // other record fields
 }
 ```
-
-### `opencdc.payload.schema.version`
-
-Contains the version of the schema for the records's `.Payload` field.
-
-:::note
-This field will only be populated when using structured data.
-:::
-
-```json5
-{
-    // other record fields
-    "metadata": {
-        "opencdc.payload.schema.version": "2.1.2",
-        // rest of metadata
-    },
-    // other record fields
-}
 
 ### `conduit.source.plugin.name`
 
