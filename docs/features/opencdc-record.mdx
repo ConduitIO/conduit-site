@@ -140,29 +140,11 @@ may have this field.
 }
 ```
 
-### `opencdc.key.schema.version`, `opencdc.payload.schema.version`
+### `opencdc.key.schema.*`
 
-Contains the version of the schema of the record.
+#### `opencdc.key.schema.subject`, `opencdc.key.schema.version`
 
-:::note
-This field will only be populated when using structured data.
-:::
-
-```json5
-{
-    // other record fields
-    "metadata": {
-        "opencdc.key.schema.version": "1.0.0",
-        "opencdc.payload.schema.version": "2.1.2",
-        // rest of metadata
-    },
-    // other record fields
-}
-```
-
-### `opencdc.key.schema.subject`, `opencdc.payload.schema.subject`
-
-Contains the subject of the schema of the record.
+Contains the subject and version of the schema for the records's `.Key` field.
 
 :::note
 This field will only be populated when using structured data.
@@ -173,7 +155,29 @@ This field will only be populated when using structured data.
     // other record fields
     "metadata": {
         "opencdc.key.schema.subject": "employees.key.v1",
+        "opencdc.key.schema.version": "1.0.0",
+        // rest of metadata
+    },
+    // other record fields
+}
+```
+
+### `opencdc.payload.schema.*`
+
+#### `opencdc.payload.schema.subject`, `opencdc.payload.schema.version`
+
+Contains the subject and version of the schema for the records's `.Payload` field.
+
+:::note
+This field will only be populated when using structured data.
+:::
+
+```json5
+{
+    // other record fields
+    "metadata": {
         "opencdc.payload.schema.subject": "employees.value.v2",
+        "opencdc.payload.schema.version": "2.1.2",
         // rest of metadata
     },
     // other record fields
