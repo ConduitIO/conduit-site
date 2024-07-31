@@ -70,6 +70,23 @@ expand its functionality. Notice that all these fields use a dot notation syntax
 to indicate what they refer to, preventing accidental clashes. Here are the ones
 you can find:
 
+### `opencdc.version`
+
+Contains the version of the OpenCDC format (e.g., "v1"). This field exists to
+ensure the OpenCDC format version can be easily identified in case the record
+gets marshaled into a different untyped format (e.g. JSON).
+
+```json5
+{
+    // other record fields
+    "metadata": {
+        "opencdc.version": "v1",
+        // rest of metadata
+    },
+    // other record fields
+}
+```
+
 ### `opencdc.createdAt`
 
 Contains the time when the record was created in the 3rd party system. The
@@ -102,23 +119,6 @@ expected format is a Unix timestamp in nanoseconds.
 }
 ```
 
-### `opencdc.version`
-
-Contains the version of the OpenCDC format (e.g., "v1"). This field exists to
-ensure the OpenCDC format version can be easily identified in case the record
-gets marshaled into a different untyped format (e.g. JSON).
-
-```json5
-{
-    // other record fields
-    "metadata": {
-        "opencdc.version": "v1",
-        // rest of metadata
-    },
-    // other record fields
-}
-```
-
 ### `opencdc.collection`
 
 Contains the name of the collection from which the record originated and/or
@@ -139,6 +139,82 @@ may have this field.
     // other record fields
 }
 ```
+
+### `opencdc.key.schema.subject`
+
+Contains the subject of the schema for the records's `.Key` field.
+
+:::note
+This field will only be populated when using structured data.
+:::
+
+```json5
+{
+    // other record fields
+    "metadata": {
+        "opencdc.key.schema.subject": "employees.key.v1",
+        // rest of metadata
+    },
+    // other record fields
+}
+```
+
+### `opencdc.key.schema.version`
+
+Contains the version of the schema for the records's `.Key` field.
+
+:::note
+This field will only be populated when using structured data.
+:::
+
+```json5
+{
+    // other record fields
+    "metadata": {
+        "opencdc.key.schema.version": "1.0.0",
+        // rest of metadata
+    },
+    // other record fields
+}
+```
+
+### `opencdc.payload.schema.subject`
+
+Contains the subject of the schema for the records's `.Payload` field.
+
+:::note
+This field will only be populated when using structured data.
+:::
+
+```json5
+{
+    // other record fields
+    "metadata": {
+        "opencdc.payload.schema.subject": "employees.value.v2",
+        // rest of metadata
+    },
+    // other record fields
+}
+```
+
+### `opencdc.payload.schema.version`
+
+Contains the version of the schema for the records's `.Payload` field.
+
+:::note
+This field will only be populated when using structured data.
+:::
+
+```json5
+{
+    // other record fields
+    "metadata": {
+        "opencdc.payload.schema.version": "2.1.2",
+        // rest of metadata
+    },
+    // other record fields
+}
+
 ### `conduit.source.plugin.name`
 
 The name of the source plugin that created the record.
