@@ -25,12 +25,19 @@ Every Destination implementation needs to include an [UnimplementedDestination](
 
 A constructor function for your Destination struct. Note that this is the same function that should be set as the value of `Connector.NewDestination`. The constructor should be used to wrap your Destination in the default middleware. You can add additional middleware, but unless you have a very good reason, you should always include the default middleware.
 
-    ```go
-    func NewDestination() sdk.Destination {
-        // Create Destination and wrap it in the default middleware.
-        return sdk.DestinationWithMiddleware(&Destination{}, sdk.DefaultDestinationMiddleware()...)
-    }
-    ```
+```go
+func NewDestination() sdk.Destination {
+    // Create Destination and wrap it in the default middleware.
+    return sdk.DestinationWithMiddleware(
+      &Destination{}, 
+      sdk.DefaultDestinationMiddleware(opts ...DestinationMiddlewareOption)...,
+    )
+}
+```
+
+**Additional options via `DestinationMiddlewareOption`**:
+
+Currently, the available destination middleware options can be found [here](https://github.com/ConduitIO/conduit-connector-sdk/blob/1cbe778fabc8f903e075872560e6a91049d2e978/destination_middleware.go#L44-L50).
 
 ### `Parameters()`
 

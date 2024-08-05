@@ -27,40 +27,64 @@ Every Source implementation needs to include an [UnimplementedSource](https://pk
 
 ### `NewSource()`
 
-A constructor function for your Source struct. Note that this is the same function that should be set as the value of `Connector.NewSource`. The constructor should be used to wrap your Source in the default middleware. You can add additional middleware, but unless you have a very good reason, you should always include the default middleware.
+A constructor function for your Source struct. Note that this is the same function that should be set as the value of `Connector.NewSource`. The constructor should be used to wrap your Source in the default `DefaultSourceMiddleware`. 
 
-    ```go
-    func NewSource() sdk.Source {
-        // Create Source and wrap it in the default middleware.
-        return sdk.SourceWithMiddleware(&Source{}, sdk.DefaultSourceMiddleware()...)
-    }
-    ```
+```go
+func NewSource() sdk.Source {
+    // Create Source and wrap it in the default middleware.
+    return sdk.SourceWithMiddleware(
+      &Source{}, 
+      sdk.DefaultSourceMiddleware(opts ...SourceMiddlewareOption)...,
+    )
+}
+```
+
+**Additional options via `SourceMiddlewareOption`**:
+
+In case you need to add additional middleware options, you can do so by passing it to the `sdk.SourceWithMiddleware` function via `sdk.DefaultSourceMiddleware(opts ...SourceMiddlewareOption)`. Currently, the available source middleware options can be cound [here](https://github.com/ConduitIO/conduit-connector-sdk/blob/1cbe778fabc8f903e075872560e6a91049d2e978/source_middleware.go#L42-L46).
+
+:::note
+If you're using a source connector that's not generating structured data (i.e. produces raw data), you might want to disable schema extraction by default by overwriting the `sdk.SourceWithSchemaExtractionConfig` options:
+
+```go
+sdk.SourceWithMiddleware(
+		&Source{},
+		sdk.DefaultSourceMiddleware(
+			// disable schema extraction by default, because the source produces raw data
+			sdk.SourceWithSchemaExtractionConfig{
+				PayloadEnabled: lang.Ptr(false),
+				KeyEnabled:     lang.Ptr(false),
+			},
+		)...,
+	)
+```
+:::
 
 ### `Parameters()`
 
 A map of named Parameters that describe how to configure the connector. This map is typically generates using [`paramgen`](https://github.com/ConduitIO/conduit-commons/tree/main/paramgen).
 
-    ```go
-    func (s *Source) Parameters() map[string]sdk.Parameter {
-        return s.config.Parameters()
-    }
-    ```
+```go
+func (s *Source) Parameters() map[string]sdk.Parameter {
+    return s.config.Parameters()
+}
+```
 
 ### `Configure()` 
 
 Validates and stores configuration data for the connector. Any complex validation logic should be implemented here.
 
-    ```go
-    func (s *Source) Configure(ctx context.Context, cfg map[string]string) error {
-    sdk.Logger(ctx).Info().Msg("Configuring Source...")
-    err := sdk.Util.ParseConfig(cfg, &s.config)
-    if err != nil {
-        return fmt.Errorf("invalid config: %w", err)
-    }
-    // add custom validations here
-    return nil
-    }
-    ```
+  ```go
+  func (s *Source) Configure(ctx context.Context, cfg map[string]string) error {
+  sdk.Logger(ctx).Info().Msg("Configuring Source...")
+  err := sdk.Util.ParseConfig(cfg, &s.config)
+  if err != nil {
+      return fmt.Errorf("invalid config: %w", err)
+  }
+  // add custom validations here
+  return nil
+  }
+  ```
 
 ### `Open()`
 
