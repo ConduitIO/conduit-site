@@ -321,7 +321,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-file/releases/download/v0.3.0/conduit-connector-file_0.3.0_Darwin_arm64.tar.gz",
             "created_at": "2022-09-27T14:05:36Z",
             "updated_at": "2022-09-27T14:05:37Z",
-            "download_count": 3,
+            "download_count": 4,
             "size": 4205633
           },
           {
@@ -529,7 +529,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-generator/releases/download/v0.5.0/conduit-connector-generator_0.5.0_Darwin_arm64.tar.gz",
             "created_at": "2023-07-19T11:51:47Z",
             "updated_at": "2023-07-19T11:51:47Z",
-            "download_count": 2,
+            "download_count": 3,
             "size": 4556752
           },
           {
@@ -1661,7 +1661,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-kafka/releases/download/v0.5.1/conduit-connector-kafka_0.5.1_Linux_i386.tar.gz",
             "created_at": "2023-05-17T12:27:18Z",
             "updated_at": "2023-05-17T12:27:18Z",
-            "download_count": 4,
+            "download_count": 6,
             "size": 5195923
           },
           {
@@ -1727,7 +1727,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-kafka/releases/download/v0.5.0/conduit-connector-kafka_0.5.0_Darwin_arm64.tar.gz",
             "created_at": "2023-04-11T12:34:03Z",
             "updated_at": "2023-04-11T12:34:04Z",
-            "download_count": 2,
+            "download_count": 3,
             "size": 5427988
           },
           {
@@ -1793,7 +1793,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-kafka/releases/download/v0.5.0/conduit-connector-kafka_0.5.0_Windows_i386.tar.gz",
             "created_at": "2023-04-11T12:34:02Z",
             "updated_at": "2023-04-11T12:34:03Z",
-            "download_count": 2,
+            "download_count": 3,
             "size": 5411665
           },
           {
@@ -2539,7 +2539,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.7.5/conduit-connector-postgres_0.7.5_Darwin_arm64.tar.gz",
             "created_at": "2024-06-25T14:55:57Z",
             "updated_at": "2024-06-25T14:55:58Z",
-            "download_count": 0,
+            "download_count": 2,
             "size": 6571361
           },
           {
@@ -2836,7 +2836,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.7.2/conduit-connector-postgres_0.7.2_Darwin_arm64.tar.gz",
             "created_at": "2024-05-24T07:44:09Z",
             "updated_at": "2024-05-24T07:44:09Z",
-            "download_count": 1,
+            "download_count": 2,
             "size": 6177321
           },
           {
@@ -3232,7 +3232,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.5.0/conduit-connector-postgres_0.5.0_Darwin_arm64.tar.gz",
             "created_at": "2023-07-19T11:55:22Z",
             "updated_at": "2023-07-19T11:55:23Z",
-            "download_count": 1,
+            "download_count": 2,
             "size": 5601083
           },
           {
@@ -3254,7 +3254,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.5.0/conduit-connector-postgres_0.5.0_Linux_arm64.tar.gz",
             "created_at": "2023-07-19T11:55:22Z",
             "updated_at": "2023-07-19T11:55:23Z",
-            "download_count": 1,
+            "download_count": 2,
             "size": 5068154
           },
           {
@@ -3452,7 +3452,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.3.0/conduit-connector-postgres_0.3.0_Linux_arm64.tar.gz",
             "created_at": "2022-09-27T14:06:07Z",
             "updated_at": "2022-09-27T14:06:07Z",
-            "download_count": 3,
+            "download_count": 4,
             "size": 4730820
           },
           {
@@ -4609,7 +4609,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-clickhouse/releases/download/v0.1.0/conduit-connector-clickhouse_0.1.0_Darwin_x86_64.tar.gz",
             "created_at": "2023-08-17T11:42:22Z",
             "updated_at": "2023-08-17T11:42:23Z",
-            "download_count": 2,
+            "download_count": 3,
             "size": 6980857
           },
           {
@@ -4856,7 +4856,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-elasticsearch/releases/download/v0.3.0/conduit-connector-elasticsearch_0.3.0_Linux_arm64.tar.gz",
             "created_at": "2022-09-30T17:27:43Z",
             "updated_at": "2022-09-30T17:27:43Z",
-            "download_count": 3,
+            "download_count": 4,
             "size": 8185463
           },
           {
@@ -4878,7 +4878,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-elasticsearch/releases/download/v0.3.0/conduit-connector-elasticsearch_0.3.0_Linux_x86_64.tar.gz",
             "created_at": "2022-09-30T17:27:43Z",
             "updated_at": "2022-09-30T17:27:43Z",
-            "download_count": 3,
+            "download_count": 5,
             "size": 9013399
           },
           {
@@ -4961,7 +4961,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-google-cloudstorage/releases/download/v0.3.0/conduit-connector-google-cloudstorage_0.3.0_Darwin_arm64.tar.gz",
             "created_at": "2022-10-13T10:41:29Z",
             "updated_at": "2022-10-13T10:41:30Z",
-            "download_count": 3,
+            "download_count": 4,
             "size": 5503849
           },
           {
@@ -5397,7 +5397,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-http/releases/download/v0.1.0/conduit-connector-http_0.1.0_Darwin_arm64.tar.gz",
             "created_at": "2024-04-04T19:13:44Z",
             "updated_at": "2024-04-04T19:13:45Z",
-            "download_count": 3,
+            "download_count": 6,
             "size": 5234234
           },
           {
@@ -5408,7 +5408,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-http/releases/download/v0.1.0/conduit-connector-http_0.1.0_Darwin_x86_64.tar.gz",
             "created_at": "2024-04-04T19:13:45Z",
             "updated_at": "2024-04-04T19:13:46Z",
-            "download_count": 1,
+            "download_count": 4,
             "size": 5415876
           },
           {
@@ -5441,7 +5441,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-http/releases/download/v0.1.0/conduit-connector-http_0.1.0_Linux_x86_64.tar.gz",
             "created_at": "2024-04-04T19:13:44Z",
             "updated_at": "2024-04-04T19:13:44Z",
-            "download_count": 3,
+            "download_count": 5,
             "size": 5166569
           },
           {
@@ -5982,7 +5982,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-nats-jetstream/releases/download/v0.3.1/conduit-connector-nats-jetstream_0.3.1_Linux_arm64.tar.gz",
             "created_at": "2023-05-11T18:58:04Z",
             "updated_at": "2023-05-11T18:58:05Z",
-            "download_count": 2,
+            "download_count": 3,
             "size": 4658342
           },
           {
@@ -6540,7 +6540,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-notion/releases/download/v0.3.0/conduit-connector-notion_0.3.0_Windows_arm64.tar.gz",
             "created_at": "2023-01-20T19:13:05Z",
             "updated_at": "2023-01-20T19:13:06Z",
-            "download_count": 2,
+            "download_count": 3,
             "size": 4171822
           },
           {
@@ -7539,7 +7539,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-snowflake/releases/download/v0.3.0/conduit-connector-snowflake_0.3.0_Windows_i386.tar.gz",
             "created_at": "2022-09-27T14:08:00Z",
             "updated_at": "2022-09-27T14:08:00Z",
-            "download_count": 3,
+            "download_count": 4,
             "size": 7010932
           },
           {
@@ -7659,7 +7659,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-sql-server/releases/download/v0.1.0/conduit-connector-sql-server_0.1.0_Windows_x86_64.tar.gz",
             "created_at": "2023-08-14T15:01:53Z",
             "updated_at": "2023-08-14T15:01:54Z",
-            "download_count": 1,
+            "download_count": 2,
             "size": 5309569
           }
         ]
@@ -7746,7 +7746,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-sqs/releases/download/v0.1.0/conduit-connector-sqs_0.1.0_Windows_arm64.tar.gz",
             "created_at": "2023-12-18T18:08:09Z",
             "updated_at": "2023-12-18T18:08:10Z",
-            "download_count": 1,
+            "download_count": 2,
             "size": 5655331
           },
           {
