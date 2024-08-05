@@ -189,7 +189,7 @@ The processor should call this function to create a new Schema in the schema reg
 The memory address sent to `create_schema` should contain a [`CreateSchemaRequest`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:procutils.v1#procutils.v1.CreateSchemaRequest),
 then Conduit will populate the memory buffer with a [`CreateSchemaResponse`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:procutils.v1#procutils.v1.CreateSchemaResponse).
 
-The returned integer represents the size of the response if the request was successful, 
+The returned integer represents the size of the response if the request was successful.
 If the allocated memory buffer is smaller than the returned response size, the processor
 should reallocate a larger buffer and call `create_schema` again.
 If the schema creation failed, an [error code](#error-codes) will be returned instead.
