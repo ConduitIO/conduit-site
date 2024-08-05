@@ -200,7 +200,7 @@ The processor should call this function to get a Schema from the schema registry
 The memory address sent to `get_schema` should contain a [`GetSchemaRequest`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:procutils.v1#procutils.v1.GetSchemaRequest),
 then Conduit will populate the memory buffer with a [`GetSchemaResponse`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:procutils.v1#procutils.v1.GetSchemaResponse).
 
-The returned integer represents the size of the response if the request was successful,
+The returned integer represents the size of the response if the request was successful.
 If the allocated memory buffer is smaller than the returned response size, the processor
 should reallocate a larger buffer and call `get_schema` again.
 If getting the schema fails, an [error code](#error-codes) will be returned instead.
