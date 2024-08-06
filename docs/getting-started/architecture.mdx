@@ -86,13 +86,13 @@ as soon as possible without draining the pipeline.
 
 ## Persistence layer
 
-This layer is used directly by the [Orchestration layer](#orchestration-layer) and indirectly by the [Core layer](#core-layer), and [Schema service](#schema-service) (through stores) to persist data. It provides the functionality of creating transactions and storing, retrieving and deleting arbitrary data like configurations or state. 
+This layer is used directly by the [Orchestration layer](#orchestration-layer) and indirectly by the [Core layer](#core-layer), and [Schema registry service](#schema-registry-service) (through stores) to persist data. It provides the functionality of creating transactions and storing, retrieving and deleting arbitrary data like configurations or state. 
 
 More info on [storage](/docs/features/storage).
 
 ## Connector utility services
 
-### Schema service
+### Schema registry service
 
 The schema service is responsible for managing the schema of the records that flow through the pipeline. It provides functionality to validate records against a schema and to infer a schema from a record. The schema is stored in the schema store and can be referenced by connectors and processors. This service runs separately from Conduit.
 
