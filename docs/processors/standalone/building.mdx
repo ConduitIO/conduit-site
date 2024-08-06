@@ -338,9 +338,10 @@ for _, record := range records {
     get, err := schema.Get(ctx, subject, version)
     // print the schema
     fmt.Println(string(get.Bytes))
-}
+    // rest of the code...
+    // ...
 ```
-   Example output:
+   Example output (the printed Schema):
 ```json
 {
   "name": "record",
