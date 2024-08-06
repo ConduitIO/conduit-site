@@ -46,6 +46,18 @@ pipelines:
           # fields](https://conduit.io/docs/processors/referencing-fields).
           # Type: string
           fields: ""
+          # Whether to decode the record key with a schema.
+          # Type: bool
+          sdk.schema.decode.key.enabled: "true"
+          # Whether to decode the record payload with a schema.
+          # Type: bool
+          sdk.schema.decode.payload.enabled: "true"
+          # Whether to encode the record key with a schema.
+          # Type: bool
+          sdk.schema.encode.key.enabled: "true"
+          # Whether to encode the record payload with a schema.
+          # Type: bool
+          sdk.schema.encode.payload.enabled: "true"
 ```
   </TabItem>
   <TabItem value="table" label="Table">
@@ -64,6 +76,38 @@ pipelines:
   Fields is a comma separated list of target fields which should be excluded.
 
 For more information about the format, see [Referencing fields](https://conduit.io/docs/processors/referencing-fields).
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.decode.key.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to decode the record key with a schema.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.decode.payload.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to decode the record payload with a schema.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.encode.key.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to encode the record key with a schema.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.encode.payload.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to encode the record payload with a schema.
         </td>
       </tr>
     </table>

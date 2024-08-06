@@ -54,18 +54,6 @@ pipelines:
       - id: example
         plugin: "avro.encode"
         settings:
-          # The password to use with basic authentication. This option is
-          # required if auth.basic.username contains a value. If both
-          # auth.basic.username and auth.basic.password are empty basic
-          # authentication is disabled.
-          # Type: string
-          auth.basic.password: ""
-          # The username to use with basic authentication. This option is
-          # required if auth.basic.password contains a value. If both
-          # auth.basic.username and auth.basic.password are empty basic
-          # authentication is disabled.
-          # Type: string
-          auth.basic.username: ""
           # The field that will be encoded.
           # For more information about the format, see [Referencing
           # fields](https://conduit.io/docs/processors/referencing-fields).
@@ -95,23 +83,18 @@ pipelines:
           # main processor description.
           # Type: string
           schema.strategy: ""
-          # The path to a file containing PEM encoded CA certificates. If this
-          # option is empty, Conduit falls back to using the host's root CA set.
-          # Type: string
-          tls.ca.cert: ""
-          # The path to a file containing a PEM encoded certificate. This option
-          # is required if tls.client.key contains a value. If both
-          # tls.client.cert and tls.client.key are empty TLS is disabled.
-          # Type: string
-          tls.client.cert: ""
-          # The path to a file containing a PEM encoded private key. This option
-          # is required if tls.client.cert contains a value. If both
-          # tls.client.cert and tls.client.key are empty TLS is disabled.
-          # Type: string
-          tls.client.key: ""
-          # URL of the schema registry (e.g. http://localhost:8085)
-          # Type: string
-          url: ""
+          # Whether to decode the record key with a schema.
+          # Type: bool
+          sdk.schema.decode.key.enabled: "true"
+          # Whether to decode the record payload with a schema.
+          # Type: bool
+          sdk.schema.decode.payload.enabled: "true"
+          # Whether to encode the record key with a schema.
+          # Type: bool
+          sdk.schema.encode.key.enabled: "true"
+          # Whether to encode the record payload with a schema.
+          # Type: bool
+          sdk.schema.encode.payload.enabled: "true"
 ```
   </TabItem>
   <TabItem value="table" label="Table">
@@ -121,26 +104,6 @@ pipelines:
         <th>Type</th>
         <th>Default</th>
         <th>Description</th>
-      </tr>
-      <tr>
-        <td>`auth.basic.password`</td>
-        <td>string</td>
-        <td><Chip label="null" /></td>
-        <td>
-  The password to use with basic authentication. This option is required if
-auth.basic.username contains a value. If both auth.basic.username and auth.basic.password
-are empty basic authentication is disabled.
-        </td>
-      </tr>
-      <tr>
-        <td>`auth.basic.username`</td>
-        <td>string</td>
-        <td><Chip label="null" /></td>
-        <td>
-  The username to use with basic authentication. This option is required if
-auth.basic.password contains a value. If both auth.basic.username and auth.basic.password
-are empty basic authentication is disabled.
-        </td>
       </tr>
       <tr>
         <td>`field`</td>
@@ -193,40 +156,35 @@ For more information about the behavior of each strategy read the main processor
         </td>
       </tr>
       <tr>
-        <td>`tls.ca.cert`</td>
-        <td>string</td>
-        <td><Chip label="null" /></td>
+        <td>`sdk.schema.decode.key.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
         <td>
-  The path to a file containing PEM encoded CA certificates. If this option is empty,
-Conduit falls back to using the host's root CA set.
+  Whether to decode the record key with a schema.
         </td>
       </tr>
       <tr>
-        <td>`tls.client.cert`</td>
-        <td>string</td>
-        <td><Chip label="null" /></td>
+        <td>`sdk.schema.decode.payload.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
         <td>
-  The path to a file containing a PEM encoded certificate. This option is required
-if tls.client.key contains a value. If both tls.client.cert and tls.client.key are empty
-TLS is disabled.
+  Whether to decode the record payload with a schema.
         </td>
       </tr>
       <tr>
-        <td>`tls.client.key`</td>
-        <td>string</td>
-        <td><Chip label="null" /></td>
+        <td>`sdk.schema.encode.key.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
         <td>
-  The path to a file containing a PEM encoded private key. This option is required
-if tls.client.cert contains a value. If both tls.client.cert and tls.client.key are empty
-TLS is disabled.
+  Whether to encode the record key with a schema.
         </td>
       </tr>
       <tr>
-        <td>`url`</td>
-        <td>string</td>
-        <td><Chip label="null" /></td>
+        <td>`sdk.schema.encode.payload.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
         <td>
-  URL of the schema registry (e.g. http://localhost:8085)
+  Whether to encode the record payload with a schema.
         </td>
       </tr>
     </table>
@@ -260,7 +218,6 @@ pipelines:
           field: ".Payload.After"
           schema.autoRegister.subject: "example-autoRegister"
           schema.strategy: "autoRegister"
-          url: "http://127.0.0.1:54322"
 ```
   </TabItem>
   <TabItem value="table" label="Table">
@@ -280,10 +237,6 @@ pipelines:
       <tr>
         <td>`schema.strategy`</td>
         <td>`autoRegister`</td>
-      </tr>
-      <tr>
-        <td>`url`</td>
-        <td>`http://127.0.0.1:54322`</td>
       </tr>
     </table>
   </TabItem>
@@ -351,7 +304,6 @@ pipelines:
           schema.preRegistered.subject: "example-preRegistered"
           schema.preRegistered.version: "1"
           schema.strategy: "preRegistered"
-          url: "http://127.0.0.1:54322"
 ```
   </TabItem>
   <TabItem value="table" label="Table">
@@ -375,10 +327,6 @@ pipelines:
       <tr>
         <td>`schema.strategy`</td>
         <td>`preRegistered`</td>
-      </tr>
-      <tr>
-        <td>`url`</td>
-        <td>`http://127.0.0.1:54322`</td>
       </tr>
     </table>
   </TabItem>
