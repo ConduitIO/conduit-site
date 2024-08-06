@@ -291,14 +291,14 @@ Check [Compiling the processor](#compiling-the-processor) for what to do next, a
 
 ## Schemas
 
-Processors have access to the Schemas in the used Schema Registry using two utility functions:
-1. `schema.Create` : You can use this utility function to create a new Schema and add it to the Schema Registry.
+Processors have access to the schemas in the used Schema Registry using two utility functions:
+1. `schema.Create` : You can use this utility function to create a new schema and add it to the Schema Registry.
 This function can be called in any of the main processor methods.
     
 **Example**:
 ```go
 func (p *setProcessor) Open(ctx context.Context) error {
-	// Add a new Schema to the Schema registry before starting to process the records.
+	// Add a new schema to the schema registry before starting to process the records.
 	schemaBytes := []byte(`{
           "name": "record",
           "type": "record",
@@ -322,7 +322,7 @@ func (p *setProcessor) Open(ctx context.Context) error {
 }
 ```
 
-2. `schema.Get`: You can use this utility function to get a Schema from the Schema Registry using
+2. `schema.Get`: You can use this utility function to get a schema from the Schema Registry using
   its `version` and `subject`. This function can be called in any of the main processor methods.
 
   **Example**:
@@ -330,18 +330,24 @@ func (p *setProcessor) Open(ctx context.Context) error {
 func (p *setProcessor) Process(ctx context.Context, records []opencdc.Record) []sdk.ProcessedRecord {
 out := make([]sdk.ProcessedRecord, 0, len(records))
 for _, record := range records {
-    // get the schema subject name from the metadata
-    subject := rec.Metadata[opencdc.MetadataPayloadSchemaSubject]
-    // get the schema version from the metadata
-    version, err := strconv.Atoi(rec.Metadata[opencdc.MetadataPayloadSchemaVersion])
-    // get the schema 
-    get, err := schema.Get(ctx, subject, version)
-    // print the schema
-    fmt.Println(string(get.Bytes))
-    // rest of the code...
-    // ...
+		// get the schema subject name from the metadata
+		subject, err := rec.Metadata.GetPayloadSchemaSubject()
+		if err != nil {
+			return append(out, sdk.ErrorRecord{Error: err})
+		}
+		// get the schema version from the metadata
+		version, err := rec.Metadata.GetPayloadSchemaVersion()
+		if err != nil {
+			return append(out, sdk.ErrorRecord{Error: err})
+		}
+		// get the schema using the subject and the version
+		get, err := schema.Get(ctx, subject, version)
+		// print the schema
+		fmt.Println(string(get.Bytes))
+        // rest of the code...
+        // ...
 ```
-   Example output (the printed Schema):
+   Example output (the printed schema):
 ```json
 {
   "name": "record",
