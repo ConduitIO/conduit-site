@@ -10,17 +10,15 @@ It is used internally in Conduit to store the schemas of records that are produc
 To use a external schema registry, you can use the following configuration options in your [pipeline configuration file](/docs/pipeline-configuration-files/getting-started)
 
 ```yaml
-# ...
 schema-registry:
   type: confluent
   confluent:
     connection-string: http://localhost:8081
-# ...
 ```
 
 Or when running Conduit from the command line you can use the following flags:
 
-```bash
+```shell
 $ ./conduit 
   -schema-registry.type=confluent 
   -schema-registry.confluent.connection-string=http://localhost:8081
