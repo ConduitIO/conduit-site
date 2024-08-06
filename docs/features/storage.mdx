@@ -1,6 +1,6 @@
 ---
 title: 'Storage'
-sidebar_position: 7
+sidebar_position: 8
 ---
 
 Conduit's own data (information about pipelines, connectors, etc.) can be stored
@@ -24,5 +24,7 @@ would be: `-db.postgres.connection-string=postgres://localhost:5432/conduitdb`.
 
 The full example in our case would be:
 ```shell
-./conduit -db.type=postgres -db.postgres.connection-string="postgresql://localhost:5432/conduitdb"
+./conduit 
+  -db.type=postgres 
+  -db.postgres.connection-string="postgresql://localhost:5432/conduitdb"
 ```

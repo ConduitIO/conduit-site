@@ -1,0 +1,31 @@
+---
+title: 'Schema Registry'
+sidebar_position: 7
+keywords: [ 'schema', 'avro', 'confluent' ]
+---
+
+It is used internally in Conduit to store the schemas of records that are produced by connectors that generate **structured data** (encoded into `avro`). The schema registry can either be embedded in a Go application or run as a standalone service exposing a REST API that's compatible with [Confluent's Schema registry](https://docs.confluent.io/current/schema-registry/develop/api.html).
+
+
+To use a external schema registry, you can use the following configuration options in your [pipeline configuration file](/docs/pipeline-configuration-files/getting-started)
+
+```yaml
+# ...
+schema-registry:
+  type: confluent
+  confluent:
+    connection-string: http://localhost:8081
+# ...
+```
+
+Or when running Conduit from the command line you can use the following flags:
+
+```bash
+$ ./conduit 
+  -schema-registry.type=confluent 
+  -schema-registry.confluent.connection-string=http://localhost:8081
+```
+
+When a record with structured data is processed, both schema subject and version are attached to the record metadata so it preserves all types when it comes to structured records. You can see examples on [`opencdc.payload.schema.*`](/docs/features/opencdc-record#opencdcpayloadschema).
+
+The Schema registry service will use the same [**persistence layer**](/docs/getting-started/architecture#persistence-layer) as the rest of Conduit. By default, it uses BadgerDB, but it can be configured to use PostgreSQL, SQLite, or in-memory storage. More info on [storage](/docs/features/storage).
