@@ -289,6 +289,123 @@ func main() {
 
 Check [Compiling the processor](#compiling-the-processor) for what to do next, and how to compile the processor.
 
+## Schemas
+
+Processors have access to the schemas in the used Schema Registry. By default, if the pipeline uses a schema
+registry and the processor gets a record with the schema info in the `Metadata`, then the processor will have
+a middleware enabled. The middleware will decode the records before they are passed to the processor
+using their corresponding schema from the schema registry, and encode them again after the processing is done. To
+change this default behaviour, you can change these processor's configurations accordingly:
+- `sdk.schema.decode.key.enabled`: Whether to decode the record key using its corresponding schema from the schema registry.
+- `sdk.schema.decode.payload.enabled`: Whether to decode the record payload using its corresponding schema from the schema registry.
+- `sdk.schema.encode.key.enabled`: Whether to encode the record key using its corresponding schema from the schema registry.
+- `sdk.schema.encode.payload.enabled`: Whether to encode the record payload using its corresponding schema from the schema registry.
+
+**Example** of a piepline configuration file with these parameters:
+```yaml
+version: 2.2
+pipelines:
+  - id: test
+    status: running
+    connectors:
+      - id: employees-source
+        type: source
+        plugin: standalone:generator
+        settings:
+          rate: 1
+          collections.str.format.type: structured
+          collections.str.format.options.id: int
+          collections.str.format.options.name: string
+          collections.str.format.options.admin: bool
+          collections.str.operations: create
+      - id: logger-dest
+        type: destination
+        plugin: standalone:log
+    processors:
+      - id: access-schema
+        plugin: standalone:processor-simple
+        sdk.schema.decode.key.enabled: false # disabling the default behaviour
+        sdk.schema.encode.key.enabled: false # disabling the default behaviour
+```
+
+Processors can access the Schema Registry and the schemas using two utility functions:
+1. `schema.Create` : You can use this utility function to create a new schema and add it to the Schema Registry.
+This function can be called in any of the main processor methods.
+    
+**Example**:
+```go
+func (p *exampleProcessor) Open(ctx context.Context) error {
+	// Add a new schema to the schema registry before starting to process the records.
+	schemaBytes := []byte(`{
+          "name": "record",
+          "type": "record",
+          "fields": [
+            {
+              "name": "admin",
+              "type": "boolean"
+            },
+            {
+              "name": "id",
+              "type": "int"
+            },
+            {
+              "name": "name",
+              "type": "string"
+            }
+          ]
+        }`)
+	_, err := schema.Create(ctx, schema.TypeAvro, "subject1", schemaBytes)
+	return err
+}
+```
+
+2. `schema.Get`: You can use this utility function to get a schema from the Schema Registry using
+  its `version` and `subject`. This function can be called in any of the main processor methods.
+
+  **Example**:
+```go
+func (p *exampleProcessor) Process(ctx context.Context, records []opencdc.Record) []sdk.ProcessedRecord {
+out := make([]sdk.ProcessedRecord, 0, len(records))
+for _, record := range records {
+		// get the schema subject name from the metadata
+		subject, err := rec.Metadata.GetPayloadSchemaSubject()
+		if err != nil {
+			return append(out, sdk.ErrorRecord{Error: err})
+		}
+		// get the schema version from the metadata
+		version, err := rec.Metadata.GetPayloadSchemaVersion()
+		if err != nil {
+			return append(out, sdk.ErrorRecord{Error: err})
+		}
+		// get the schema using the subject and the version
+		get, err := schema.Get(ctx, subject, version)
+		// print the schema
+		fmt.Println(string(get.Bytes))
+        // rest of the code...
+        // ...
+```
+   Example output (the printed schema):
+```json
+{
+  "name": "record",
+  "type": "record",
+  "fields": [
+    {
+      "name": "admin",
+      "type": "boolean"
+    },
+    {
+      "name": "id",
+      "type": "int"
+    },
+    {
+      "name": "name",
+      "type": "string"
+    }
+  ]
+}
+```
+
 ## Logging
 
 You can get a `zerolog.logger` instance from the context using the [`sdk.Logger`](https://pkg.go.dev/github.com/conduitio/conduit-processor-sdk#Logger)
