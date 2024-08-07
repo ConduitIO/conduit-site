@@ -217,7 +217,7 @@ const config: Config = {
           },
           {
             from: '/docs/connectors/output-formats',
-            to: '/docs/connectors/configuration-parameters/record-format'
+            to: '/docs/connectors/configuration-parameters/output-format'
           }
         ],
         createRedirects(existingPath) {
