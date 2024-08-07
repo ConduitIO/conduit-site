@@ -26,7 +26,13 @@ The HTTP API is generated using [grpc-gateway](https://github.com/grpc-ecosystem
 
 ## Orchestration layer
 
-The orchestration layer is responsible for coordinating the flow of operations between the core services. It also takes care of transactions, making sure that changes made to specific entities are not visible to the outside until the whole operation succeeded. There are 3 orchestrators, each responsible for actions related to one of the 3 main entities - pipelines, connectors and processors.
+The orchestration layer is responsible for coordinating the flow of operations between the core services. It also takes care of transactions, making sure that changes made to specific entities are not visible to the outside until the whole operation succeeded. There are five orchestrators, each responsible for actions related to one of the main entities:
+
+- Pipeline Orchestrator.
+- Connector Orchestrator.
+- Processor Orchestrator.
+- Connector Plugin Orchestrator.
+- Processor Plugin Orchestrator.
 
 ## Core layer 
 
