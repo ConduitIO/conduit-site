@@ -3,15 +3,14 @@ title: "Schema Extraction"
 sidebar_position: 2
 ---
 
-## Source configuration parameters
+Source and destination connectors can be configured to automatically extract the schema from the key and payload of a record. This is especially useful when the data is structured and the schema is known in advance. By default, Conduit extracts the schema from the key and payload of a record.
+
+## Configuration parameters
+
+These are these configuration parameters that control schema extraction on a source connector (Note that `sdk.schema.extract.payload.enabled` and `sdk.schema.extract.key.enabled` are also available on destination connectors):
 
 - `sdk.schema.extract.type`: The type of schema extraction to perform. The supported values are `JSON` and `avro`.
 - `sdk.schema.extract.payload.enabled`: A boolean value that indicates whether the payload should be extracted.
 - `sdk.schema.extract.payload.subject`: The subject of the payload schema.
 - `sdk.schema.extract.key.enabled`: A boolean value that indicates whether the key should be extracted.
 - `sdk.schema.extract.key.subject`: The subject of the key schema.
-
-## Destination configuration parameters
-
-- `sdk.schema.extract.payload.enabled`: A boolean value that indicates whether the payload should be extracted.
-- `sdk.schema.extract.key.enabled`: A boolean value that indicates whether the key should be extracted.
