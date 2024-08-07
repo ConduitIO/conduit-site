@@ -54,11 +54,10 @@ and [processors](/docs/processors/standalone/building#schemas).
 
 ## Schema Registry
 
-The schema registry is used internally in Conduit store the schemas of records.
-It can either be embedded as part of Conduit (**built-in type**) or run as a
-standalone service exposing a REST API that's compatible
-with [Confluent's Schema registry](https://docs.confluent.io/current/schema-registry/develop/api.html) (
-**confluent type**).
+Conduit uses a schema registry to store the schemas of records.
+You can either configure Conduit to use the built-in schema registry (default) or to
+connect to an external standalone service exposing a REST API that's compatible
+with [Confluent's Schema registry](https://docs.confluent.io/current/schema-registry/develop/api.html).
 
 To use an external schema registry, you can use the following configuration
 options in
