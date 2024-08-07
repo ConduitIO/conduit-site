@@ -5,15 +5,11 @@ sidebar_position: 3
 
 A Source is responsible for continuously reading data from a third party system and returning it in the form of an [SDK Record](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#Record).
 
-You need to implement the functions required by the Source interface and provide your own implementations. Information about individual functions are listed below.
+You need to implement the functions required by the Source interface and provide your own implementations. Information about individual functions are listed below. The **`source.go`** file is the main file where the functionality of your Source Connector is implemented.
 
-## `source.go`
+## `Source struct`
 
-This file provides the main functionality of your Source Connector.
-
-### Source Connector Lifecycle Functions
-
-- **`Source`** Struct: Every Source implementation needs to include an [UnimplementedSource](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#UnimplementedSource) to satisfy the interface. This allows us to potentially change the interface in the future while remaining backward compatible with existing Source implementations. This struct can be modified to add additional fields that can be accessed throughout the lifecycle of the Connector
+Every Source implementation needs to include an [UnimplementedSource](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#UnimplementedSource) to satisfy the interface. This allows us to potentially change the interface in the future while remaining backward compatible with existing Source implementations. This struct can be modified to add additional fields that can be accessed throughout the lifecycle of the Connector
 
     ```go
     type Source struct {
@@ -27,38 +23,72 @@ This file provides the main functionality of your Source Connector.
     }
     ```
 
-- **`NewSource()`**: A constructor function for your Source struct. Note that this is the same function that should be set as the value of `Connector.NewSource`. The constructor should be used to wrap your Source in the default middleware. You can add additional middleware, but unless you have a very good reason, you should always include the default middleware.
+## Source Connector Lifecycle Functions
 
-    ```go
-    func NewSource() sdk.Source {
-        // Create Source and wrap it in the default middleware.
-        return sdk.SourceWithMiddleware(&Source{}, sdk.DefaultSourceMiddleware()...)
-    }
-    ```
+### `NewSource()`
 
-- **`Parameters()`**: A map of named Parameters that describe how to configure the connector. This map is typically generates using [`paramgen`](https://github.com/ConduitIO/conduit-commons/tree/main/paramgen).
+A constructor function for your Source struct. Note that this is the same function that should be set as the value of `Connector.NewSource`. The constructor should be used to wrap your Source in the default `DefaultSourceMiddleware`. 
 
-    ```go
-    func (s *Source) Parameters() map[string]sdk.Parameter {
-        return s.config.Parameters()
-    }
-    ```
+```go
+func NewSource() sdk.Source {
+    // Create Source and wrap it in the default middleware.
+    return sdk.SourceWithMiddleware(
+      &Source{}, 
+      sdk.DefaultSourceMiddleware()...,
+    )
+}
+```
 
-- **`Configure()`**: Validates and stores configuration data for the connector. Any complex validation logic should be implemented here.
+**Additional options via `SourceMiddlewareOption`**:
 
-    ```go
-    func (s *Source) Configure(ctx context.Context, cfg map[string]string) error {
-    sdk.Logger(ctx).Info().Msg("Configuring Source...")
-    err := sdk.Util.ParseConfig(cfg, &s.config)
-    if err != nil {
-        return fmt.Errorf("invalid config: %w", err)
-    }
-    // add custom validations here
-    return nil
-    }
-    ```
+In case you need to add additional middleware options, you can do so by passing it to the `sdk.SourceWithMiddleware` function via `sdk.DefaultSourceMiddleware(opts ...SourceMiddlewareOption)`. Currently, the available source middleware options can be cound [here](https://github.com/ConduitIO/conduit-connector-sdk/blob/1cbe778fabc8f903e075872560e6a91049d2e978/source_middleware.go#L42-L46).
 
-- **`Open()`**: Prepares the connector to start producing records based on the last known successful position. If needed, the connector should open connections in this function.
+:::note
+If you're using a source connector that's not generating structured data (i.e. produces raw data), you might want to disable schema extraction by default by overwriting the `sdk.SourceWithSchemaExtractionConfig` options:
+
+```go
+sdk.SourceWithMiddleware(
+		&Source{},
+		sdk.DefaultSourceMiddleware(
+			// disable schema extraction by default, because the source produces raw data
+			sdk.SourceWithSchemaExtractionConfig{
+				PayloadEnabled: lang.Ptr(false),
+				KeyEnabled:     lang.Ptr(false),
+			},
+		)...,
+	)
+```
+:::
+
+### `Parameters()`
+
+A map of named Parameters that describe how to configure the connector. This map is typically generates using [`paramgen`](https://github.com/ConduitIO/conduit-commons/tree/main/paramgen).
+
+```go
+func (s *Source) Parameters() map[string]sdk.Parameter {
+    return s.config.Parameters()
+}
+```
+
+### `Configure()` 
+
+Validates and stores configuration data for the connector. Any complex validation logic should be implemented here.
+
+  ```go
+  func (s *Source) Configure(ctx context.Context, cfg map[string]string) error {
+  sdk.Logger(ctx).Info().Msg("Configuring Source...")
+  err := sdk.Util.ParseConfig(cfg, &s.config)
+  if err != nil {
+      return fmt.Errorf("invalid config: %w", err)
+  }
+  // add custom validations here
+  return nil
+  }
+  ```
+
+### `Open()`
+
+Prepares the connector to start producing records based on the last known successful position. If needed, the connector should open connections in this function.
 
     ```go
     func (s *Source) Open(ctx context.Context, pos sdk.Position) error {
@@ -83,7 +113,9 @@ This file provides the main functionality of your Source Connector.
     }
     ```
 
-- **`Read()`**: Gathers data from the configured data source and formats it into a `sdk.Record` that is returned from the function. The returned `sdk.Record` is queued into the pipeline to be consumed by a Destination connector.
+### `Read()`
+
+Gathers data from the configured data source and formats it into a `sdk.Record` that is returned from the function. The returned `sdk.Record` is queued into the pipeline to be consumed by a Destination connector.
 
     ```go
     func (s *Source) Read(ctx context.Context) (sdk.Record, error) {
@@ -136,7 +168,9 @@ This file provides the main functionality of your Source Connector.
     }
     ```
 
-- **`Ack()`**: Ack signals to the implementation that the record with the supplied position was successfully processed.
+### `Ack()`
+
+Ack signals to the implementation that the record with the supplied position was successfully processed.
 
     ```go
     func (s *Source) Ack(ctx context.Context, position sdk.Position) error {
@@ -145,7 +179,9 @@ This file provides the main functionality of your Source Connector.
     }
     ```
 
-- **`Teardown()`**: Teardown signals to the connector that there will be no more calls to any other function. Any connections that were created in the `Open()` function should be closed here.
+### `Teardown()`
+
+Teardown signals to the connector that there will be no more calls to any other function. Any connections that were created in the `Open()` function should be closed here.
 
     ```go
     func (s *Source) Teardown(ctx context.Context) error {

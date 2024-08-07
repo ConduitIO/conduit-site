@@ -183,6 +183,28 @@ The memory address sent to `command_response` should contain a
 - [`Error`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:processor.v1#processor.v1.Error)
   should be sent in response to any command request that failed to be processed.
 
+### `create_schema`
+
+The processor should call this function to create a new Schema in the schema registry.
+The memory address sent to `create_schema` should contain a [`CreateSchemaRequest`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:procutils.v1#procutils.v1.CreateSchemaRequest),
+then Conduit will populate the memory buffer with a [`CreateSchemaResponse`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:procutils.v1#procutils.v1.CreateSchemaResponse).
+
+The returned integer represents the size of the response if the request was successful.
+If the allocated memory buffer is smaller than the returned response size, the processor
+should reallocate a larger buffer and call `create_schema` again.
+If the schema creation failed, an [error code](#error-codes) will be returned instead.
+
+### `get_schema`
+
+The processor should call this function to get a Schema from the schema registry.
+The memory address sent to `get_schema` should contain a [`GetSchemaRequest`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:procutils.v1#procutils.v1.GetSchemaRequest),
+then Conduit will populate the memory buffer with a [`GetSchemaResponse`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:procutils.v1#procutils.v1.GetSchemaResponse).
+
+The returned integer represents the size of the response if the request was successful.
+If the allocated memory buffer is smaller than the returned response size, the processor
+should reallocate a larger buffer and call `get_schema` again.
+If getting the schema fails, an [error code](#error-codes) will be returned instead.
+
 ## Error codes
 
 The last 100 numbers at the end of an `uin32` (between 4,294,967,195 and
@@ -198,11 +220,20 @@ running.
 - `4,294,967,293` - unknown command request. Internal error in Conduit, where
   the command request failed to be marshaled into a proto message.
 - `4,294,967,292` - unknown command response. Internal error in Conduit, where
-  the command response failed to be unmarshaled from the proto message into a
+  the command response failed to be unmarshalled from the proto message into a
   struct.
 - `4,294,967,291` - memory out of range. Internal error in Conduit, where it
   tried to write into the allocated memory, but failed to do so, as the size was
   insufficient.
+- `4,294,967,290` - Internal error in Conduit, could be an error while 
+  marshalling/unmarshalling the buffer, or other reasons, the specific
+  error should be logged by Conduit.
+- `4,294,967,289` - Subject not found, an internal Conduit error where 
+  the Schema with this subject does not exist.
+- `4,294,967,288` - Version not found, an internal Conduit error where
+  the Schema with this Version does not exist.
+- `4,294,967,287` - Invalid schema, an internal Conduit error where
+  the Schema provided is invalid.
 
 ## Logging
 

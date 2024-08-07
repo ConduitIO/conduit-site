@@ -1,6 +1,6 @@
 ---
 title: 'Storage'
-sidebar_position: 7
+sidebar_position: 8
 ---
 
 Conduit's own data (information about pipelines, connectors, etc.) can be stored
@@ -14,15 +14,26 @@ for development purposes.
 
 The database type used can be configured with the `db.type` parameter (through
 any of the [configuration](/docs/features/configuration) options in Conduit).
-For example, the CLI flag to use a PostgresSQL database with Conduit is as
+
+For example, to configure a PostgresSQL database with Conduit, the CLI flag to use a is as
 follows: `-db.type=postgres`.
 
 Changing database parameters (e.g. the PostgreSQL connection string) is done
-through parameters of the following form: `db.<db type>.<parameter name>`. For
-example, the CLI flag to use a PostgreSQL instance listening on `localhost:5432`
-would be: `-db.postgres.connection-string=postgres://localhost:5432/conduitdb`.
+through parameters of the following form: `db.<db type>.<parameter name>`. 
 
-The full example in our case would be:
+For example, if we wanted to use a PostgreSQL instance listening on `localhost:5432` using command line flags:
+
 ```shell
-./conduit -db.type=postgres -db.postgres.connection-string="postgresql://localhost:5432/conduitdb"
+$ ./conduit 
+  -db.type=postgres 
+  -db.postgres.connection-string="postgresql://localhost:5432/conduitdb"
+```
+
+This can also be done using configuration options in your [Conduit configuration file](/docs/features/configuration):
+
+```yaml
+db:
+  type: postgres
+  postgres:
+    connection-string: postgresql://localhost:5432/conduitdb
 ```

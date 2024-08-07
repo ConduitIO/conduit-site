@@ -44,6 +44,22 @@ pipelines:
           # being processed.
           # Type: string
           message: "error processor triggered"
+          # Whether to decode the record key using its corresponding schema from
+          # the schema registry.
+          # Type: bool
+          sdk.schema.decode.key.enabled: "false"
+          # Whether to decode the record payload using its corresponding schema
+          # from the schema registry.
+          # Type: bool
+          sdk.schema.decode.payload.enabled: "false"
+          # Whether to encode the record key using its corresponding schema from
+          # the schema registry.
+          # Type: bool
+          sdk.schema.encode.key.enabled: "false"
+          # Whether to encode the record payload using its corresponding schema
+          # from the schema registry.
+          # Type: bool
+          sdk.schema.encode.payload.enabled: "false"
 ```
   </TabItem>
   <TabItem value="table" label="Table">
@@ -62,6 +78,38 @@ pipelines:
   Error message to be returned. This can be a Go [template](https://pkg.go.dev/text/template)
 executed on each [`Record`](https://pkg.go.dev/github.com/conduitio/conduit-commons/opencdc#Record)
 being processed.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.decode.key.enabled`</td>
+        <td>bool</td>
+        <td>`false`</td>
+        <td>
+  Whether to decode the record key using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.decode.payload.enabled`</td>
+        <td>bool</td>
+        <td>`false`</td>
+        <td>
+  Whether to decode the record payload using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.encode.key.enabled`</td>
+        <td>bool</td>
+        <td>`false`</td>
+        <td>
+  Whether to encode the record key using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.encode.payload.enabled`</td>
+        <td>bool</td>
+        <td>`false`</td>
+        <td>
+  Whether to encode the record payload using its corresponding schema from the schema registry.
         </td>
       </tr>
     </table>
