@@ -81,3 +81,12 @@ When the pipeline is run, `/tmp/file-destination.txt` will contain output simila
   }
 }
 ```
+
+Notice that the written record doesn't contain any schema information in its
+metadata. However, if you leave the schema extraction enabled, then you'll see
+something below in the record's metadata:
+
+```
+"opencdc.payload.schema.subject": "generator-to-file:file-src:users.payload",
+"opencdc.payload.schema.version": "1"
+```
