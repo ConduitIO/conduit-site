@@ -1,13 +1,12 @@
 ---
-title: "Output Formats"
-sidebar_position: 5
+title: "Output format"
+sidebar_position: 1
 ---
 
 One of the challenges to be solved when integrating Conduit with other systems, such as Kafka Connect and Debezium, is
 the data format. This is present in situations where raw data needs to be written, for example when writing messages to
-Kafka. By default, Conduit uses
-the [OpenCDC format](/docs/features/opencdc-record). Conduit
-also makes it possible to change the output format so that the data can be consumed by other systems.
+Kafka. By default, Conduit uses the [OpenCDC format](/docs/features/opencdc-record). Conduit also makes it possible to
+change the output format so that the data can be consumed by other systems.
 
 :::note
 
@@ -80,7 +79,6 @@ that the file destination outputs the records in the Debezium format. Additional
 be `employee` by setting the format options to `debezium.schema.name=employee`.
 
 ```yaml
----
 version: 2.2
 
 pipelines:
@@ -144,7 +142,6 @@ a `name` field and a `company` field. In this pipeline, we use the `template` re
 `id` field and then prefix it with `employee ID`.
 
 ```yaml
----
 version: 2.2
 
 pipelines:
