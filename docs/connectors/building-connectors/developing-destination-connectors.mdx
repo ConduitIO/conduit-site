@@ -30,7 +30,7 @@ func NewDestination() sdk.Destination {
     // Create Destination and wrap it in the default middleware.
     return sdk.DestinationWithMiddleware(
       &Destination{}, 
-      sdk.DefaultDestinationMiddleware(opts ...DestinationMiddlewareOption),
+      sdk.DefaultDestinationMiddleware()...,
     )
 }
 ```
