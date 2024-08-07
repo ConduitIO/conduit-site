@@ -3,32 +3,56 @@ title: 'OpenCDC record'
 sidebar_position: 4
 ---
 
-An OpenCDC record in Conduit aims to standardize the format of data records exchanged between different connectors within a data processing pipeline. The primary objective is to ensure compatibility between various combinations of source and destination connectors.
+An OpenCDC record in Conduit aims to standardize the format of data records
+exchanged between different connectors within a data processing pipeline. The
+primary objective is to ensure compatibility between various combinations of
+source and destination connectors.
 
 ## Benefits
 
-1. **Support for Operations**: The format should support representing records for `create`, `update`, `delete`, and `snapshot` operations.
-2. **Standard Metadata Fields**: Definition of standard metadata fields to provide essential information about each record. These can vary depending on the record. See [Metadata Fields](#metadata-fields) for more information.
-3. **Integration with Data Tools**: We believe that being strict about the record format Conduit consumes and produces will make it easier to integrate with other data processing tools.
+1. **Support for Operations**: The format should support representing records
+   for `create`, `update`, `delete`, and `snapshot` operations.
+2. **Standard Metadata Fields**: Definition of standard metadata fields to
+   provide essential information about each record. These can vary depending on
+   the record. See [Metadata Fields](#metadata-fields) for more information.
+3. **Integration with Data Tools**: We believe that being strict about the
+   record format Conduit consumes and produces will make it easier to integrate
+   with other data processing tools.
 
 ## Fields
 
-* `.Position` uniquely represents the position of record. This is used to track the position of a record in a source connector, enabling Conduit to resume a stopped pipeline.
-* `.Operation` defines what triggered the creation of a record. There are four possibilities: `create`, `update`, `delete` or `snapshot`. The first three operations are encountered during normal CDC operation, while `snapshot` is meant to represent records during an initial load. Depending on the operation, the record will contain either the payload before the change, after the change, both or none (see fields `.Payload.Before` and `.Payload.After`). 
+* `.Position` uniquely represents the position of record. This is used to track
+  the position of a record in a source connector, enabling Conduit to resume a
+  stopped pipeline.
+* `.Operation` defines what triggered the creation of a record. There are four
+  possibilities: `create`, `update`, `delete` or `snapshot`. The first three
+  operations are encountered during normal CDC operation, while `snapshot` is
+  meant to represent records during an initial load. Depending on the operation,
+  the record will contain either the payload before the change, after the
+  change, both or none (see fields `.Payload.Before` and `.Payload.After`).
 * `.Key` represents a value that should identify the entity (e.g. database row).
 * `.Metadata` contains additional information regarding the record.
-* `.Payload.Before` holds the payload before the operation ocurred. These could be present in operations such as `update` and `delete`.
-* `.Payload.After` holds the payload after the operation ocurred. These could be present in operations such as `create`, `snapshot` or `update`.
+* `.Payload.Before` holds the payload before the operation ocurred. These could
+  be present in operations such as `update` and `delete`.
+* `.Payload.After` holds the payload after the operation ocurred. These could be
+  present in operations such as `create`, `snapshot` or `update`.
 
 :::note
-We're indicating `.Position`, and not `.position` as defined in its [`Record` message](https://buf.build/conduitio/conduit-commons/docs/main:opencdc.v1#opencdc.v1.Record), to show its [Go template](https://pkg.go.dev/text/template) notation as used by the [Go representation of an OpenCDC record](https://github.com/ConduitIO/conduit-commons/blob/main/opencdc/record.go#L32). This field is public and must start with an uppercase letter.
+We're indicating `.Position`, and not `.position` as defined in
+its [`Record` message](https://buf.build/conduitio/conduit-commons/docs/main:opencdc.v1#opencdc.v1.Record),
+to show its [Go template](https://pkg.go.dev/text/template) notation as used by
+the [Go representation of an OpenCDC record](https://github.com/ConduitIO/conduit-commons/blob/main/opencdc/record.go#L32).
+This field is public and must start with an uppercase letter.
 :::
 
 ## Representation
 
-Conduit relies on [Protocol Buffers (protobuf)](https://protobuf.dev/) when it comes to defining an OpenCDC record to benefit from the several advantages that it provides. Its definition can be found in the [Buf Schema Registry](https://buf.build/conduitio/conduit-commons/docs/main:opencdc.v1).
+Conduit uses [Protocol Buffers (protobuf)](https://protobuf.dev/) to define an
+OpenCDC record. Its definition can be found in
+the [Buf Schema Registry](https://buf.build/conduitio/conduit-commons/docs/main:opencdc.v1).
 
-When processing records in Conduit, you can always expect a similar structure to the following:
+When processing records in Conduit, you can always expect a similar structure to
+the following:
 
 ```json
 {
@@ -56,8 +80,83 @@ When processing records in Conduit, you can always expect a similar structure to
 ```
 
 :::note
-`.Position`, `.Key`, and `.Payload.Before` are represented as `Base64` encoded in the example above because these will be a byte slice when represented as JSON.
+`.Position`, `.Key`, and `.Payload.Before` are represented as `Base64` encoded
+in the example above because these will be a byte slice when represented as
+JSON.
 :::
+
+## Data types
+
+
+There are no limitations when it comes to data types a source connector can read
+from a source. Certain type limitations might apply depending on how the data is
+moved internally in Conduit, from source connector to Conduit and from Conduit
+to destination connectors.
+
+The key and the payload data can be represented in two ways: raw and structured.
+
+## Raw data
+
+Raw data in Conduit is an array of bytes that can represent the source data in
+its original form (such as a file) or encoded in a certain way (for example, a
+JSON representation of a database row or an Avro encoded structure). It's
+represented by the `opencdc.RawData` Go type. For example, when writing a
+connector or a processor in Go, you can construct raw data like this:
+
+```go
+opencdc.RawData([]byte{1, 3, 5})
+```
+
+## Structured data
+
+Structured data in Conduit is a map in which the keys are field names and values
+are field values. An example of that is the below record's `.Payload.After`
+field: 
+
+
+```json5
+{
+    // other record fields
+    "payload": {
+        "before": "eWVsbG93",
+        "after": {
+            "bool_field": true,
+            "float_field": 1.2,
+            "int_field": 1,
+            "string_field": "orange"
+        }
+    }
+}
+```
+
+When writing a connector or a processor in Go, it's represented by
+the `opencdc.StructuredData` type. 
+
+The supported data types for values in `opencdc.StructuredData` depend on following:
+- connector or processor type (built-in or standalone)
+- [schema support](/docs/features/schema-support) (enabled or disabled).
+
+In built-in connectors, the field values can be of any Go type, given that
+there's no (de)serialization involved.
+
+In standalone connectors with schema middleware enabled (which is the default),
+any type that is supported by the [Apache Avro™ format](https://avro.apache.org)
+is also supported by Conduit.
+
+If the schema middleware is disabled in a connector, then the supported types
+are limited to what Protobuf allows as
+a [value](https://protobuf.dev/reference/protobuf/google.protobuf/#value). That
+translates to the following Go types:
+
+* `bool`
+* `int`, `int32`, `int64`, `uint`, `uint32`, `uint64`
+* `float32`, `float64`
+* `string`
+* `[]byte` (stored as a string, base64-encoded)
+* `map[string]interface{}` (a map of strings to any of the values that are supported)
+* `[]interface{}` (a slice of any value that is supported)
+
+A notable limitation is timestamps, i.e. `time.Time` values are not supported.
 
 ## Metadata fields
 
