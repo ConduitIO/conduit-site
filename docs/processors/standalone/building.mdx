@@ -363,28 +363,32 @@ func (p *exampleProcessor) Open(ctx context.Context) error {
   its `version` and `subject`. This function can be called in any of the main processor methods.
 
   **Example**:
-```go
-func (p *exampleProcessor) Process(ctx context.Context, records []opencdc.Record) []sdk.ProcessedRecord {
-out := make([]sdk.ProcessedRecord, 0, len(records))
-for _, record := range records {
-		// get the schema subject name from the metadata
-		subject, err := rec.Metadata.GetPayloadSchemaSubject()
-		if err != nil {
-			return append(out, sdk.ErrorRecord{Error: err})
-		}
-		// get the schema version from the metadata
-		version, err := rec.Metadata.GetPayloadSchemaVersion()
-		if err != nil {
-			return append(out, sdk.ErrorRecord{Error: err})
-		}
-		// get the schema using the subject and the version
-		get, err := schema.Get(ctx, subject, version)
-		// print the schema
-		fmt.Println(string(get.Bytes))
-        // rest of the code...
-        // ...
-```
-   Example output (the printed schema):
+  
+  ```go
+  func (p *exampleProcessor) Process(ctx context.Context, records []opencdc.Record) []sdk.ProcessedRecord {
+    out := make([]sdk.ProcessedRecord, 0, len(records))
+    for _, record := range records {
+      // get the schema subject name from the metadata
+      subject, err := rec.Metadata.GetPayloadSchemaSubject()
+      if err != nil {
+        return append(out, sdk.ErrorRecord{Error: err})
+      }
+      // get the schema version from the metadata
+      version, err := rec.Metadata.GetPayloadSchemaVersion()
+      if err != nil {
+        return append(out, sdk.ErrorRecord{Error: err})
+      }
+      // get the schema using the subject and the version
+      get, err := schema.Get(ctx, subject, version)
+      // print the schema
+      fmt.Println(string(get.Bytes))
+      }
+      return out
+  }
+  ```
+  
+  Example output (the printed schema):
+
 ```json
 {
   "name": "record",
