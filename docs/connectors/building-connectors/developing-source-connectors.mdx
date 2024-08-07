@@ -34,7 +34,7 @@ func NewSource() sdk.Source {
     // Create Source and wrap it in the default middleware.
     return sdk.SourceWithMiddleware(
       &Source{}, 
-      sdk.DefaultSourceMiddleware(opts ...SourceMiddlewareOption),
+      sdk.DefaultSourceMiddleware()...,
     )
 }
 ```
