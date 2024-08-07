@@ -15,7 +15,7 @@ for development purposes.
 The database type used can be configured with the `db.type` parameter (through
 any of the [configuration](/docs/features/configuration) options in Conduit).
 
-For example, the CLI flag to use a PostgresSQL database with Conduit is as
+For example, to configure a PostgresSQL database with Conduit, the CLI flag to use a is as
 follows: `-db.type=postgres`.
 
 Changing database parameters (e.g. the PostgreSQL connection string) is done
@@ -29,7 +29,7 @@ $ ./conduit
   -db.postgres.connection-string="postgresql://localhost:5432/conduitdb"
 ```
 
-This can also be done using configuration options in your [pipeline configuration file](/docs/pipeline-configuration-files/getting-started):
+This can also be done using configuration options in your [conduit configuration file](/docs/features/configuration):
 
 ```yaml
 db:
