@@ -39,16 +39,20 @@ pipelines:
       - id: example
         plugin: "filter"
         settings:
-          # Whether to decode the record key with a schema.
+          # Whether to decode the record key using its corresponding schema from
+          # the schema registry.
           # Type: bool
           sdk.schema.decode.key.enabled: "false"
-          # Whether to decode the record payload with a schema.
+          # Whether to decode the record payload using its corresponding schema
+          # from the schema registry.
           # Type: bool
           sdk.schema.decode.payload.enabled: "false"
-          # Whether to encode the record key with a schema.
+          # Whether to encode the record key using its corresponding schema from
+          # the schema registry.
           # Type: bool
           sdk.schema.encode.key.enabled: "false"
-          # Whether to encode the record payload with a schema.
+          # Whether to encode the record payload using its corresponding schema
+          # from the schema registry.
           # Type: bool
           sdk.schema.encode.payload.enabled: "false"
 ```
@@ -66,7 +70,7 @@ pipelines:
         <td>bool</td>
         <td>`false`</td>
         <td>
-  Whether to decode the record key with a schema.
+  Whether to decode the record key using its corresponding schema from the schema registry.
         </td>
       </tr>
       <tr>
@@ -74,7 +78,7 @@ pipelines:
         <td>bool</td>
         <td>`false`</td>
         <td>
-  Whether to decode the record payload with a schema.
+  Whether to decode the record payload using its corresponding schema from the schema registry.
         </td>
       </tr>
       <tr>
@@ -82,7 +86,7 @@ pipelines:
         <td>bool</td>
         <td>`false`</td>
         <td>
-  Whether to encode the record key with a schema.
+  Whether to encode the record key using its corresponding schema from the schema registry.
         </td>
       </tr>
       <tr>
@@ -90,7 +94,7 @@ pipelines:
         <td>bool</td>
         <td>`false`</td>
         <td>
-  Whether to encode the record payload with a schema.
+  Whether to encode the record payload using its corresponding schema from the schema registry.
         </td>
       </tr>
     </table>

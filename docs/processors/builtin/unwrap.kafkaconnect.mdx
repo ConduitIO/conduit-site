@@ -45,16 +45,20 @@ pipelines:
           # fields](https://conduit.io/docs/processors/referencing-fields).
           # Type: string
           field: ".Payload.After"
-          # Whether to decode the record key with a schema.
+          # Whether to decode the record key using its corresponding schema from
+          # the schema registry.
           # Type: bool
           sdk.schema.decode.key.enabled: "true"
-          # Whether to decode the record payload with a schema.
+          # Whether to decode the record payload using its corresponding schema
+          # from the schema registry.
           # Type: bool
           sdk.schema.decode.payload.enabled: "true"
-          # Whether to encode the record key with a schema.
+          # Whether to encode the record key using its corresponding schema from
+          # the schema registry.
           # Type: bool
           sdk.schema.encode.key.enabled: "true"
-          # Whether to encode the record payload with a schema.
+          # Whether to encode the record payload using its corresponding schema
+          # from the schema registry.
           # Type: bool
           sdk.schema.encode.payload.enabled: "true"
 ```
@@ -82,7 +86,7 @@ For more information about the format, see [Referencing fields](https://conduit.
         <td>bool</td>
         <td>`true`</td>
         <td>
-  Whether to decode the record key with a schema.
+  Whether to decode the record key using its corresponding schema from the schema registry.
         </td>
       </tr>
       <tr>
@@ -90,7 +94,7 @@ For more information about the format, see [Referencing fields](https://conduit.
         <td>bool</td>
         <td>`true`</td>
         <td>
-  Whether to decode the record payload with a schema.
+  Whether to decode the record payload using its corresponding schema from the schema registry.
         </td>
       </tr>
       <tr>
@@ -98,7 +102,7 @@ For more information about the format, see [Referencing fields](https://conduit.
         <td>bool</td>
         <td>`true`</td>
         <td>
-  Whether to encode the record key with a schema.
+  Whether to encode the record key using its corresponding schema from the schema registry.
         </td>
       </tr>
       <tr>
@@ -106,7 +110,7 @@ For more information about the format, see [Referencing fields](https://conduit.
         <td>bool</td>
         <td>`true`</td>
         <td>
-  Whether to encode the record payload with a schema.
+  Whether to encode the record payload using its corresponding schema from the schema registry.
         </td>
       </tr>
     </table>
