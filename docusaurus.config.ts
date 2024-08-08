@@ -207,6 +207,26 @@ const config: Config = {
       {
         redirects: [
           {
+            from: '/guides/build-a-conduit-connector',
+            to: '/docs/connectors/building-connectors/',
+          },
+          {
+            from: '/docs/connectors/building',
+            to: '/docs/connectors/building-connectors/',
+          },
+          {
+            from: '/docs/running/docker',
+            to: '/docs/getting-started/installing-and-running?option=docker',
+          },
+          {
+            from: '/docs/running/binary',
+            to: '/docs/getting-started/installing-and-running?option=binary',
+          },
+          {
+            from: '/docs/configuration/pipeline-configuration-files',
+            to: '/docs/pipeline-configuration-files/',
+          },
+          {
             from: '/docs/introduction/getting-started',
             to: '/docs',
           },
