@@ -18,7 +18,7 @@ const config: Config = {
   organizationName: 'conduitio', // Usually your GitHub org/user name.
   projectName: 'conduit-site', // Usually your repo name.
 
-  onBrokenLinks: 'warn',
+  onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   onDuplicateRoutes: 'warn',
 
@@ -208,6 +208,34 @@ const config: Config = {
       {
         redirects: [
           {
+            from: '/guides/build-a-conduit-connector',
+            to: '/docs/connectors/building-connectors/',
+          },
+          {
+            from: '/docs/connectors/building',
+            to: '/docs/connectors/building-connectors/',
+          },
+          {
+            from: '/docs/running/docker',
+            to: '/docs/getting-started/installing-and-running?option=docker',
+          },
+          {
+            from: '/docs/running/binary',
+            to: '/docs/getting-started/installing-and-running?option=binary',
+          },
+          {
+            from: '/docs/running/homebrew',
+            to: '/docs/getting-started/installing-and-running?option=homebrew',
+          },
+          {
+            from: '/docs/running/source',
+            to: '/docs/getting-started/installing-and-running?option=source',
+          },
+          {
+            from: '/docs/configuration/pipeline-configuration-files',
+            to: '/docs/pipeline-configuration-files/',
+          },
+          {
             from: '/docs/introduction/getting-started',
             to: '/docs',
           },
@@ -219,19 +247,7 @@ const config: Config = {
             from: '/docs/connectors/output-formats',
             to: '/docs/connectors/configuration-parameters/output-format'
           }
-        ],
-        createRedirects(existingPath) {
-          if (existingPath.includes('/docs/running')) {
-            const installingPath = '/docs/getting-started/installing-and-running'
-            return [
-              existingPath.replace('/docs/running/binary', installingPath),
-              existingPath.replace('/docs/running/docker', installingPath),
-              existingPath.replace('/docs/running/homebrew', installingPath),
-              existingPath.replace('/docs/running/source', installingPath),
-            ];
-          }
-          return undefined; // Return a falsy value: no redirect created
-        },
+        ]
       },
     ],
   ],

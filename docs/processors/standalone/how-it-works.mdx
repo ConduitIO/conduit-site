@@ -159,7 +159,7 @@ which can contain one of the following commands:
 ### `command_response`
 
 The processor should call this function to send a
-[`CommandResponse`](#commandresponse) back to Conduit. The function returns 0 if
+[`CommandResponse`](https://buf.build/conduitio/conduit-processor-sdk/docs/main:processor.v1#processor.v1.CommandResponse) back to Conduit. The function returns 0 if
 the response was successfully received, or an [error code](#error-codes).
 
 The memory address sent to `command_response` should contain a
