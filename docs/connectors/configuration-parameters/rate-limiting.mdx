@@ -12,7 +12,7 @@ Destination connectors can be configured to limit the rate at which records can 
 
 ## Example
 
-The pipeline will generate an infinite number of structured records in bursts during 5 seconds at a maximum rate, and write them to the log. When you run it, you'll notice that by using both `sdk.rate.perSecond` and `sdk.rate.burst`, the log destination connector will limit the rate of processed records to 1 burst per second.
+The pipeline will generate an infinite number of structured records in bursts during 5 seconds at a maximum rate, and write them to the log. When you run it, you'll notice that by using both `sdk.rate.perSecond` and `sdk.rate.burst`, the log destination connector will limit the rate of processed records 8 records per second in batches of 2 (i.e. 2 records every 250ms).
 
 ```yaml
 version: 2.2
@@ -42,6 +42,6 @@ pipelines:
           level: info
 
           # limit the rate of proccessing records
-          sdk.rate.perSecond: 1
-          sdk.rate.burst: 1
+          sdk.rate.perSecond: 8
+          sdk.rate.burst: 2
 ```
