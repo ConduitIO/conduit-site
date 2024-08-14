@@ -60,7 +60,8 @@ The first step is to change the window size and nack threshold:
 - If both the window size and the nack threshold are greater than 0, then nacked
   records will be sent to the dead-letter queue. Conduit will keep track of the
   number of nacks in the current window and stop the pipeline if the threshold
-  gets exceeded.
+  gets exceeded. Note that the window size needs to be greater than the nack
+  threshold, otherwise the threshold will never be reached.
 
 If the window settings are adjusted accordingly, then Conduit will route nacked
 records to the builtin log connector by default, causing nacked records to show
