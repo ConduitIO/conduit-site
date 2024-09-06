@@ -34,30 +34,30 @@ encode the data.
 ```yaml
 version: "2.2"
 pipelines:
-    - id: generator-to-file
-      status: running
-      name: generator-to-file
-      description: Generates a single record, no schema generated, writes to file
-      connectors:
-        - id: file-src
-          type: source
-          plugin: builtin:generator
-          name: file-src
-          settings:
-            recordCount: "1"
-            collections.users.format.type: structured
-            collections.users.format.options.id: int
-            collections.users.format.options.name: string
-        
-            sdk.schema.extract.payload.enabled: false
-            sdk.schema.extract.key.enabled: false
-        
-        - id: file-dest
-          type: destination
-          plugin: builtin:file
-          name: file-dest
-          settings:
-            path: /tmp/file-destination.txt
+  - id: generator-to-file
+    status: running
+    name: generator-to-file
+    description: Generates a single record, no schema generated, writes to file
+    connectors:
+      - id: file-src
+        type: source
+        plugin: builtin:generator
+        name: file-src
+        settings:
+          recordCount: "1"
+          collections.users.format.type: structured
+          collections.users.format.options.id: int
+          collections.users.format.options.name: string
+
+          sdk.schema.extract.payload.enabled: false
+          sdk.schema.extract.key.enabled: false
+
+      - id: file-dest
+        type: destination
+        plugin: builtin:file
+        name: file-dest
+        settings:
+          path: /tmp/file-destination.txt
 ```
 
 When the pipeline is run, `/tmp/file-destination.txt` will contain output similar to this:
