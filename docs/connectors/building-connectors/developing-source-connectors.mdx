@@ -41,7 +41,7 @@ func NewSource() sdk.Source {
 
 **Additional options via `SourceMiddlewareOption`**:
 
-In case you need to add additional middleware options, you can do so by passing it to the `sdk.SourceWithMiddleware` function via `sdk.DefaultSourceMiddleware(opts ...SourceMiddlewareOption)`. Currently, the available source middleware options can be cound [here](https://github.com/ConduitIO/conduit-connector-sdk/blob/1cbe778fabc8f903e075872560e6a91049d2e978/source_middleware.go#L42-L46).
+In case you need to add additional middleware options, you can do so by passing it to the `sdk.SourceWithMiddleware` function via `sdk.DefaultSourceMiddleware(opts ...SourceMiddlewareOption)`. Currently, the available source middleware options can be found [here](https://github.com/ConduitIO/conduit-connector-sdk/blob/1cbe778fabc8f903e075872560e6a91049d2e978/source_middleware.go#L42-L46).
 
 :::note
 If you're using a source connector that's not generating structured data (i.e. produces raw data), you might want to disable schema extraction by default by overwriting the `sdk.SourceWithSchemaExtractionConfig` options:
