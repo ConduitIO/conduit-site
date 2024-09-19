@@ -19,7 +19,7 @@ jobs:
           go run main.go ${GITHUB_WORKSPACE}/static/connectors.json
 
       - name: Create pull request
-        uses: peter-evans/create-pull-request@v6.0.2
+        uses: peter-evans/create-pull-request@v7.0.5
         with:
           title: Update connectors' list
           body: Automatic pull request for updating list of connectors
