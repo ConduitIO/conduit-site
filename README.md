@@ -9,20 +9,20 @@ The Conduit Documentation contains:
 
 1. Install Local Dependencies:
 
-- Yarn
-- Node.js version >= 18
+   - Yarn
+   - Node.js version >= 18
 
 2. Install NPM Modules:
 
-```console
-yarn install
-```
+    ```console
+    yarn install
+    ```
 
 3. Start local development server:
 
-```console
-yarn start
-```
+    ```console
+    yarn start
+    ```
 
 ## Deploying to Production
 
