@@ -1,5 +1,5 @@
 ---
-title: "How to build a generator-to-file pipeline"
+title: "How to build a generator-to-log pipeline"
 sidebar_position: 0
 ---
 
@@ -26,12 +26,14 @@ to a directory of your choice. In this guide, the directory will be
 
 ## Step 2: Create a pipeline configuration file
 
-Pipelines can be created through YAML configuration files, that are, by default, put into a directory called `pipelines`.
+Pipelines can be created through YAML configuration files, that are, by default,
+put into a directory called `pipelines`.
 
-With the following command, we'll create the `pipelines` directory and a file that will contain our pipeline's configuration:
+With the following command, we'll create the `pipelines` directory and a file
+that will contain our pipeline's configuration:
 
 ```bash
-mkdir pipelines && touch pipelines/generator-to-file.yaml
+mkdir pipelines && touch pipelines/generator-to-log.yaml
 ```
 The directory layout should be as below:
 
@@ -39,13 +41,13 @@ The directory layout should be as below:
 ~/conduit-playground
 ├── conduit
 └── pipelines
-    └── generator-to-file.yaml
+    └── generator-to-log.yaml
 ```
 
 
 ## Step 3: The pipeline's basics
 
-Next, write the following to `generator-to-file.yaml`:
+Next, write the following to `generator-to-log.yaml`:
 
 ```yaml
 version: "2.2"
@@ -54,7 +56,7 @@ pipelines:
       # Tells Conduit to run the pipeline automatically
       status: running
       name: pipeline1
-      description: A generator-to-file pipeline
+      description: A generator-to-log pipeline
       # The connectors will be configured in the following steps
       connectors:
         
@@ -107,10 +109,10 @@ To summarize the steps from above, we have the following directory structure:
 ~/conduit-playground
 ├── conduit
 └── pipelines
-    └── generator-to-file.yaml
+    └── generator-to-log.yaml
 ```
 
-The file `generator-to-file.yaml` has the following content:
+The file `generator-to-log.yaml` has the following content:
 
 ```yaml
 version: "2.2"
@@ -118,7 +120,7 @@ pipelines:
     - id: pipeline1
       status: running
       name: pipeline1
-      description: A generator-to-file pipeline
+      description: A generator-to-log pipeline
       connectors:
         - id: source1
           type: source
@@ -161,7 +163,8 @@ You'll also notice the following line:
 
 that confirms our pipeline was loaded.
 
-So, where do we see the results? We're using the log connector, so our test data will be in the logs:
+So, where do we see the results? We're using the log connector, so our test data
+will be in the logs:
 
 ```console
 2024-09-19T10:34:54+00:00 INF component=plugin connector_id=pipeline1:destination1 plugin_name=builtin:log plugin_type=destination record={"key":"Y29iYWx0aWM=","metadata":{"conduit.source.connector.id":"pipeline1:source1","opencdc.createdAt":"1726734894822378094","opencdc.payload.schema.subject":"pipeline1:source1:payload","opencdc.payload.schema.version":"1"},"operation":"create","payload":{"after":{"id":8433756117589358088,"name":"suspicious"},"before":null},"position":"MQ=="}
