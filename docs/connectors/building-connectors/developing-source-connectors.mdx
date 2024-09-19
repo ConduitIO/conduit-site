@@ -13,10 +13,10 @@ Every Source implementation needs to include an [UnimplementedSource](https://pk
 
 ```go
 type Source struct {
-	sdk.UnimplementedSource
+    sdk.UnimplementedSource
 
-	config SourceConfig
-	tail   *tail.Tail
+    config SourceConfig
+    tail   *tail.Tail
 }
 ```
 
@@ -46,15 +46,15 @@ If you're using a source connector that's not generating structured data (i.e. p
 
 ```go
 sdk.SourceWithMiddleware(
-		&Source{},
-		sdk.DefaultSourceMiddleware(
-			// disable schema extraction by default, because the source produces raw data
-			sdk.SourceWithSchemaExtractionConfig{
-				PayloadEnabled: lang.Ptr(false),
-				KeyEnabled:     lang.Ptr(false),
-			},
-		)...,
-	)
+        &Source{},
+        sdk.DefaultSourceMiddleware(
+            // disable schema extraction by default, because the source produces raw data
+            sdk.SourceWithSchemaExtractionConfig{
+                PayloadEnabled: lang.Ptr(false),
+                KeyEnabled:     lang.Ptr(false),
+            },
+        )...,
+    )
 ```
 :::
 
@@ -64,7 +64,7 @@ A map of named Parameters that describe how to configure the connector. This map
 
 ```go
 func (s *Source) Parameters() config.Parameters {
-	return s.config.Parameters()
+    return s.config.Parameters()
 }
 ```
 
@@ -101,38 +101,38 @@ within the file being read.
 
 ```go
 func (s *Source) Open(ctx context.Context, p opencdc.Position) error {
-	// parse the position
-	var offset int64
-	if p != nil {
-		var err error
-		offset, err = strconv.ParseInt(string(p), 10, 64)
-		if err != nil {
-			return fmt.Errorf("invalid position %v, expected a number", p)
-		}
-	}
+    // parse the position
+    var offset int64
+    if p != nil {
+        var err error
+        offset, err = strconv.ParseInt(string(p), 10, 64)
+        if err != nil {
+            return fmt.Errorf("invalid position %v, expected a number", p)
+        }
+    }
 
-	// seek to the position, i.e. the offset
-	sdk.Logger(ctx).Info().
-		Int64("position", offset).
-		Msgf("seeking...")
+    // seek to the position, i.e. the offset
+    sdk.Logger(ctx).Info().
+        Int64("position", offset).
+        Msgf("seeking...")
 
-	t, err := tail.TailFile(
-		s.config.Path,
-		tail.Config{
-			Follow: true,
-			Location: &tail.SeekInfo{
-				Offset: offset,
-				Whence: io.SeekStart,
-			},
-			Logger: tail.DiscardingLogger,
-		},
-	)
-	if err != nil {
-		return fmt.Errorf("could not tail file: %w", err)
-	}
+    t, err := tail.TailFile(
+        s.config.Path,
+        tail.Config{
+            Follow: true,
+            Location: &tail.SeekInfo{
+                Offset: offset,
+                Whence: io.SeekStart,
+            },
+            Logger: tail.DiscardingLogger,
+        },
+    )
+    if err != nil {
+        return fmt.Errorf("could not tail file: %w", err)
+    }
 
-	s.tail = t
-	return nil
+    s.tail = t
+    return nil
 }
 ```
 
@@ -142,22 +142,22 @@ Gathers data from the configured data source and formats it into a `opencdc.Reco
 
 ```go
 func (s *Source) Read(ctx context.Context) (opencdc.Record, error) {
-	select {
-	case line, ok := <-s.tail.Lines:
-		if !ok {
-			return opencdc.Record{}, s.tail.Err()
-		}
-		return sdk.Util.Source.NewRecordCreate(
-			opencdc.Position(strconv.FormatInt(line.SeekInfo.Offset, 10)),
-			map[string]string{
-				MetadataFilePath: s.config.Path,
-			},
-			opencdc.RawData(strconv.Itoa(line.Num)), // use line number as key
-			opencdc.RawData(line.Text),              // use line content as payload
-		), nil
-	case <-ctx.Done():
-		return opencdc.Record{}, ctx.Err()
-	}
+    select {
+    case line, ok := <-s.tail.Lines:
+        if !ok {
+            return opencdc.Record{}, s.tail.Err()
+        }
+        return sdk.Util.Source.NewRecordCreate(
+            opencdc.Position(strconv.FormatInt(line.SeekInfo.Offset, 10)),
+            map[string]string{
+                MetadataFilePath: s.config.Path,
+            },
+            opencdc.RawData(strconv.Itoa(line.Num)), // use line number as key
+            opencdc.RawData(line.Text),              // use line content as payload
+        ), nil
+    case <-ctx.Done():
+        return opencdc.Record{}, ctx.Err()
+    }
 }
 ```
 
@@ -167,8 +167,8 @@ func (s *Source) Read(ctx context.Context) (opencdc.Record, error) {
 
 ```go
 func (s *Source) Ack(ctx context.Context, position opencdc.Position) error {
-	sdk.Logger(ctx).Trace().Msg("record successfully processed")
-	return nil // no ack needed
+    sdk.Logger(ctx).Trace().Msg("record successfully processed")
+    return nil // no ack needed
 }
 ```
 
@@ -178,10 +178,10 @@ Teardown signals to the connector that there will be no more calls to any other 
 
 ```go
 func (s *Source) Teardown(context.Context) error {
-	if s.tail != nil {
-		return s.tail.Stop()
-	}
-	return nil
+    if s.tail != nil {
+        return s.tail.Stop()
+    }
+    return nil
 }
 ```
 

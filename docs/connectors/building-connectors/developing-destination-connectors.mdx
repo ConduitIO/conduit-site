@@ -45,7 +45,7 @@ A map of named Parameters that describe how to configure the connector. This map
 
 ```go
 func (d *Destination) Parameters() config.Parameters {
-	return d.config.Parameters()
+    return d.config.Parameters()
 }
 ```
 
@@ -55,12 +55,12 @@ Validates and stores configuration data for the connector. Any complex validatio
 
 ```go
 func (d *Destination) Configure(ctx context.Context, cfg config.Config) error {
-	err := sdk.Util.ParseConfig(ctx, cfg, &d.config, NewDestination().Parameters())
-	if err != nil {
-		return err
-	}
+    err := sdk.Util.ParseConfig(ctx, cfg, &d.config, NewDestination().Parameters())
+    if err != nil {
+        return err
+    }
     // add custom validations here
-	return nil
+    return nil
 }
 ```
 
@@ -70,14 +70,14 @@ Prepares the connector to start writing records. If needed, the connector should
 
 ```go
 func (d *Destination) Open(context.Context) error {
-	// opens or creates a file at the given path
-	file, err := d.openOrCreate(d.config.Path)
-	if err != nil {
-		return err
-	}
+    // opens or creates a file at the given path
+    file, err := d.openOrCreate(d.config.Path)
+    if err != nil {
+        return err
+    }
 
-	d.file = file
-	return nil
+    d.file = file
+    return nil
 }
 ```
 
@@ -87,13 +87,13 @@ Writes len(records) from a slice of `opencdc.Record`s received from the Conduit 
 
 ```go
 func (d *Destination) Write(_ context.Context, recs []opencdc.Record) (int, error) {
-	for i, r := range recs {
-		_, err := d.file.Write(append(r.Bytes(), '\n'))
-		if err != nil {
-			return i, err
-		}
-	}
-	return len(recs), nil
+    for i, r := range recs {
+        _, err := d.file.Write(append(r.Bytes(), '\n'))
+        if err != nil {
+            return i, err
+        }
+    }
+    return len(recs), nil
 }
 ```
 
@@ -103,10 +103,10 @@ Teardown signals to the connector that there will be no more calls to any other 
 
 ```go
 func (d *Destination) Teardown(context.Context) error {
-	if d.file != nil {
-		return d.file.Close()
-	}
-	return nil
+    if d.file != nil {
+        return d.file.Close()
+    }
+    return nil
 }
 ```
 
