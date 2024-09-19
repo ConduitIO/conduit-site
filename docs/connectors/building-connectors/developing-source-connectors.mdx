@@ -3,24 +3,13 @@ title: "Developing a Source Connector"
 sidebar_position: 3
 ---
 
-A Source is responsible for continuously reading data from a third party system
-and returning it in the form of
-an [OpenCDC Record](https://pkg.go.dev/github.com/conduitio/conduit-commons/opencdc#Record).
+A Source is responsible for continuously reading data from a third party system and returning it in the form of an [OpenCDC Record](https://pkg.go.dev/github.com/conduitio/conduit-commons/opencdc#Record).
 
-You need to implement the functions required by
-the [Source](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#Source)
-interface and provide your own implementations. Information about individual
-functions are listed below. The **`source.go`** file is the main file where the
-functionality of your source connector is implemented.
+You need to implement the functions required by the [Source](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#Source) interface and provide your own implementations. Information about individual functions are listed below. The **`source.go`** file is the main file where the functionality of your source connector is implemented.
 
 ## `Source struct`
 
-Every Source implementation needs to include
-an [UnimplementedSource](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#UnimplementedSource)
-to satisfy the interface. This allows us to potentially change the interface in
-the future while remaining backward compatible with existing Source
-implementations. This struct can be modified to add additional fields that can
-be accessed throughout the lifecycle of the Connector.
+Every Source implementation needs to include an [UnimplementedSource](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#UnimplementedSource) to satisfy the interface. This allows us to potentially change the interface in the future while remaining backward compatible with existing Source implementations. This struct can be modified to add additional fields that can be accessed throughout the lifecycle of the Connector.
 
 ```go
 type Source struct {
@@ -35,10 +24,7 @@ type Source struct {
 
 ### `NewSource()`
 
-A constructor function for your Source struct. Note that this is the same
-function that should be set as the value of `Connector.NewSource`. The
-constructor should be used to wrap your Source in the default
-`DefaultSourceMiddleware`.
+A constructor function for your Source struct. Note that this is the same function that should be set as the value of `Connector.NewSource`. The constructor should be used to wrap your Source in the default `DefaultSourceMiddleware`.
 
 ```go
 func NewSource() sdk.Source {
@@ -52,16 +38,11 @@ func NewSource() sdk.Source {
 
 **Additional options via `SourceMiddlewareOption`**:
 
-In case you need to add additional middleware options, you can do so by passing
-it to the `sdk.SourceWithMiddleware` function via
-`sdk.DefaultSourceMiddleware(opts ...SourceMiddlewareOption)`. Currently, the
-available source middleware options can be
-found [here](https://github.com/ConduitIO/conduit-connector-sdk/blob/1cbe778fabc8f903e075872560e6a91049d2e978/source_middleware.go#L42-L46).
+In case you need to add additional middleware options, you can do so by passing it to the `sdk.SourceWithMiddleware` function via `sdk.DefaultSourceMiddleware(opts ...SourceMiddlewareOption)`. Currently, the available source middleware options can be found [here](https://github.com/ConduitIO/conduit-connector-sdk/blob/1cbe778fabc8f903e075872560e6a91049d2e978/source_middleware.go#L42-L46).
 
 :::note
-If you're using a source connector that's not generating structured data (i.e.
-produces raw data), you might want to disable schema extraction by default by
-overwriting the `sdk.SourceWithSchemaExtractionConfig` options:
+
+If you're using a source connector that's not generating structured data (i.e. produces raw data), you might want to disable schema extraction by default by overwriting the `sdk.SourceWithSchemaExtractionConfig` options:
 
 ```go
 sdk.SourceWithMiddleware(
@@ -79,9 +60,7 @@ sdk.SourceWithMiddleware(
 
 ### `Parameters()`
 
-A map of named Parameters that describe how to configure the connector. This map
-is typically generates using [
-`paramgen`](https://github.com/ConduitIO/conduit-commons/tree/main/paramgen).
+A map of named Parameters that describe how to configure the connector. This map is typically generates using [ `paramgen`](https://github.com/ConduitIO/conduit-commons/tree/main/paramgen).
 
 ```go
 func (s *Source) Parameters() config.Parameters {
@@ -91,8 +70,7 @@ func (s *Source) Parameters() config.Parameters {
 
 ### `Configure()` 
 
-Validates and stores configuration data for the connector. Any complex
-validation logic should be implemented here.
+Validates and stores configuration data for the connector. Any complex validation logic should be implemented here.
 
 ```go
 func (s *Source) Configure(ctx context.Context, cfg config.Config) error {
@@ -107,12 +85,23 @@ func (s *Source) Configure(ctx context.Context, cfg config.Config) error {
 
 ### `Open()`
 
-Prepares the connector to start producing records based on the last known
-successful position. If needed, the connector should open connections in this
-function.
+Prepares the connector to start producing records based on the last known successful position. If needed, the connector should open connections in this function.
+
+Every record read by a source connector has
+a [position](https://conduit.io/docs/features/opencdc-record#fields) attached.
+The position given to `Open()` is the position of the record that was last read
+before the connector stopped, or `nil` if no records were read. Hence, a
+position needs to contain enough information for a source connector to resume
+reading records from where it exactly stopped.
+
+A position is a slice of bytes that can represent any data structure. In Conduit
+connectors, it's common to see that a position is actually a `struct`, that's
+marshalled into a JSON string. In the example below, the position is an offset
+within the file being read.
 
 ```go
 func (s *Source) Open(ctx context.Context, p opencdc.Position) error {
+	// parse the position
 	var offset int64
 	if p != nil {
 		var err error
@@ -122,6 +111,7 @@ func (s *Source) Open(ctx context.Context, p opencdc.Position) error {
 		}
 	}
 
+	// seek to the position, i.e. the offset
 	sdk.Logger(ctx).Info().
 		Int64("position", offset).
 		Msgf("seeking...")
@@ -148,9 +138,7 @@ func (s *Source) Open(ctx context.Context, p opencdc.Position) error {
 
 ### `Read()`
 
-Gathers data from the configured data source and formats it into a `opencdc.Record`
-that is returned from the function. The returned `opencdc.Record` is queued into the
-pipeline to be consumed by a Destination connector.
+Gathers data from the configured data source and formats it into a `opencdc.Record` that is returned from the function. The returned `opencdc.Record` is queued into the pipeline to be consumed by a Destination connector.
 
 ```go
 func (s *Source) Read(ctx context.Context) (opencdc.Record, error) {
@@ -175,10 +163,7 @@ func (s *Source) Read(ctx context.Context) (opencdc.Record, error) {
 
 ### `Ack()`
 
-`Ack` signals to the third party system that the record with the supplied
-position was successfully processed. It's worth that while some source connector
-need to implement this functionality (e.g. in the case of messaging brokers),
-others don't have to (e.g. a file source).
+`Ack` signals to the third party system that the record with the supplied position was successfully processed. It's worth that while some source connector need to implement this functionality (e.g. in the case of messaging brokers), others don't have to (e.g. a file source).
 
 ```go
 func (s *Source) Ack(ctx context.Context, position opencdc.Position) error {
@@ -189,9 +174,7 @@ func (s *Source) Ack(ctx context.Context, position opencdc.Position) error {
 
 ### `Teardown()`
 
-Teardown signals to the connector that there will be no more calls to any other
-function. Any connections that were created in the `Open()` function should be
-closed here.
+Teardown signals to the connector that there will be no more calls to any other function. Any connections that were created in the `Open()` function should be closed here.
 
 ```go
 func (s *Source) Teardown(context.Context) error {
