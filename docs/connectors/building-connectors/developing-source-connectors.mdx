@@ -163,7 +163,7 @@ func (s *Source) Read(ctx context.Context) (opencdc.Record, error) {
 
 ### `Ack()`
 
-`Ack` signals to the third party system that the record with the supplied position was successfully processed. It's worth that while some source connector need to implement this functionality (e.g. in the case of messaging brokers), others don't have to (e.g. a file source).
+`Ack` signals to the third party system that the record with the supplied position was successfully processed. It's worth noting that while some source connectors need to implement this functionality (e.g. in the case of messaging brokers), others don't have to (e.g. a file source).
 
 ```go
 func (s *Source) Ack(ctx context.Context, position opencdc.Position) error {
