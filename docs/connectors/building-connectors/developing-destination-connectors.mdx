@@ -3,13 +3,23 @@ title: "Developing a Destination Connector"
 sidebar_position: 4
 ---
 
-A Destination is responsible for writing an [OpenCDC Record](https://pkg.go.dev/github.com/conduitio/conduit-commons/opencdc#Record) to third party systems.
+A Destination is responsible for writing
+an [OpenCDC Record](https://pkg.go.dev/github.com/conduitio/conduit-commons/opencdc#Record)
+to third party systems.
 
-You need to implement the functions required by Destination and provide your own implementations. Information about individual functions are listed below. The **`destination.go`** file is the main file where the functionality of your Destination Connector is implemented.
+You need to implement the functions required by Destination and provide your own
+implementations. Information about individual functions are listed below. The *
+*`destination.go`** file is the main file where the functionality of your
+Destination Connector is implemented.
 
 ## `Destination struct`
 
-Every Destination implementation needs to include an [UnimplementedDestination](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#UnimplementedDestination) to satisfy the interface. This allows us to potentially change the interface in the future while remaining backward compatible with existing Destination implementations.  This struct can be modified to add additional fields that can be accessed throughout the lifecycle of the Connector.
+Every Destination implementation needs to include
+an [UnimplementedDestination](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#UnimplementedDestination)
+to satisfy the interface. This allows us to potentially change the interface in
+the future while remaining backward compatible with existing Destination
+implementations. This struct can be modified to add additional fields that can
+be accessed throughout the lifecycle of the Connector.
 
 ```go
 type Destination struct {
@@ -23,7 +33,11 @@ type Destination struct {
 
 ### `NewDestination()`
 
-A constructor function for your Destination struct. Note that this is the same function that should be set as the value of `Connector.NewDestination`. The constructor should be used to wrap your Destination in the default middleware. You can add additional middleware, but unless you have a very good reason, you should always include the default middleware.
+A constructor function for your Destination struct. Note that this is the same
+function that should be set as the value of `Connector.NewDestination`. The
+constructor should be used to wrap your Destination in the default middleware.
+You can add additional middleware, but unless you have a very good reason, you
+should always include the default middleware.
 
 ```go
 func NewDestination() sdk.Destination {
@@ -37,11 +51,14 @@ func NewDestination() sdk.Destination {
 
 **Additional options via `DestinationMiddlewareOption`**:
 
-Currently, the available destination middleware options can be found [here](https://github.com/ConduitIO/conduit-connector-sdk/blob/1cbe778fabc8f903e075872560e6a91049d2e978/destination_middleware.go#L44-L50).
+Currently, the available destination middleware options can be
+found [here](https://github.com/ConduitIO/conduit-connector-sdk/blob/1cbe778fabc8f903e075872560e6a91049d2e978/destination_middleware.go#L44-L50).
 
 ### `Parameters()`
 
-A map of named Parameters that describe how to configure the connector. This map is typically generated using [`paramgen`](https://github.com/ConduitIO/conduit-commons/tree/main/paramgen).
+A map of named Parameters that describe how to configure the connector. This map
+is typically generated using [
+`paramgen`](https://github.com/ConduitIO/conduit-commons/tree/main/paramgen).
 
 ```go
 func (d *Destination) Parameters() config.Parameters {
@@ -51,7 +68,8 @@ func (d *Destination) Parameters() config.Parameters {
 
 ### `Configure()`
 
-Validates and stores configuration data for the connector. Any complex validation logic should be implemented here.
+Validates and stores configuration data for the connector. Any complex
+validation logic should be implemented here.
 
 ```go
 func (d *Destination) Configure(ctx context.Context, cfg config.Config) error {
@@ -66,7 +84,8 @@ func (d *Destination) Configure(ctx context.Context, cfg config.Config) error {
 
 ### `Open()`
 
-Prepares the connector to start writing records. If needed, the connector should open connections in this function.
+Prepares the connector to start writing records. If needed, the connector should
+open connections in this function.
 
 ```go
 func (d *Destination) Open(context.Context) error {
@@ -83,7 +102,10 @@ func (d *Destination) Open(context.Context) error {
 
 ### `Write()`
 
-Writes len(records) from a slice of `opencdc.Record`s received from the Conduit pipeline to the destination right away without caching. It should return the number of records written from the slice and any error encountered that caused the write to stop early.
+Writes `len(records)` from a slice of `opencdc.Record`s received from the
+Conduit pipeline to the destination right away without caching. It should return
+the number of records written from the slice and any error encountered that
+caused the write to stop early.
 
 ```go
 func (d *Destination) Write(_ context.Context, recs []opencdc.Record) (int, error) {
@@ -99,7 +121,9 @@ func (d *Destination) Write(_ context.Context, recs []opencdc.Record) (int, erro
 
 ### `Teardown()`
 
-Teardown signals to the connector that there will be no more calls to any other function. Any connections that were created in the `Open()` function should be closed here.
+Teardown signals to the connector that there will be no more calls to any other
+function. Any connections that were created in the `Open()` function should be
+closed here.
 
 ```go
 func (d *Destination) Teardown(context.Context) error {
