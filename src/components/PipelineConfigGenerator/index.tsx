@@ -86,7 +86,13 @@ const PipelineConfigGenerator = () => {
       </label>
       <br />
       {generatedConfig && (
-        <pre>
+        <pre style={{ position: 'relative' }}>
+          <button 
+            onClick={() => navigator.clipboard.writeText(generatedConfig)} 
+                style={{ position: 'absolute', top: '10px', right: '10px', background: 'none', border: 'none', cursor: 'pointer' }}
+          >
+            <img src="https://img.icons8.com/ios/20/000000/copy.png" alt="Copy to clipboard" width="16" height="16" />
+          </button>
           <code className="language-yaml">{generatedConfig}</code>
         </pre>
       )}
