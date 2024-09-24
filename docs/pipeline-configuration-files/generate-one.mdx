@@ -1,9 +1,58 @@
 ---
-title: 'Create your own Pipeline Configuration File'
-sidebar_label: "Create your own Pipeline Configuration File"
+title: 'Getting Started with Pipeline Configuration Files'
+sidebar_label: "Getting Started NEW"
 sidebar_position: 3
 ---
 
 import PipelineConfigGenerator from '@site/src/components/PipelineConfigGenerator';
 
+Pipeline configuration files give you the ability to define pipelines that are
+provisioned by Conduit at startup. It's as simple as creating a YAML file that
+defines pipelines, connectors, processors, and their corresponding
+configurations.
+
+## Generate a pipeline configuration file
+
+:::tip
+
+In our [Conduit repository](https://github.com/ConduitIO/conduit), you can find [more examples](https://github.com/ConduitIO/conduit/tree/main/examples/pipelines), but to help you get started pick and choose your desired pipeline configuration. Check out the different [specifications](/docs/pipeline-configuration-files/specifications) to learn more about the different configuration options.
+
+:::
+
+Create a folder called `pipelines` at the same level as your Conduit binary.
+Inside of that folder create a file named `file-to-file.yml`.
+
+```shell
+│ # Conduit binary
+├── conduit
+│ # Folder with pipeline configurations
+└── pipelines
+    │ # Pipeline configuration file
+    └── file-to-file.yml
+```
+
+Copy following content into `file-to-file.yml`:
+
 <PipelineConfigGenerator />
+
+Now start Conduit. You should see a log line saying that the pipeline
+`file-to-file` was created:
+
+```shell
+$ ./conduit
+/.../
+2023-04-01T12:34:56+00:00 INF pipeline configs provisioned component=provisioning.Service created=["file-to-file"] deleted=[] pipelines_path=./pipelines
+/.../
+```
+
+Conduit is now running the pipeline `file-to-file` which continuously reads
+lines added to file `./example.in` and copies them to file `./example.out`. Try
+writing a line to `./example.in` and checking the content of `./example.out`.
+
+```shell
+$ echo "hello conduit" >> example.in
+$ cat example.out
+hello conduit
+```
+
+![scarf pixel conduit-site-docs-pipeline-config-files](https://static.scarf.sh/a.png?x-pxid=884d8c49-6ae7-41de-8868-17a3e99f28a0)
