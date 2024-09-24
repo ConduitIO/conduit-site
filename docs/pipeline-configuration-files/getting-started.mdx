@@ -4,21 +4,23 @@ sidebar_label: "Getting Started"
 sidebar_position: 0
 ---
 
+import PipelineConfigGenerator from '@site/src/components/PipelineConfigGenerator';
+
 Pipeline configuration files give you the ability to define pipelines that are
 provisioned by Conduit at startup. It's as simple as creating a YAML file that
 defines pipelines, connectors, processors, and their corresponding
 configurations.
 
-## Example pipeline
+## Generate a pipeline configuration file
 
 :::tip
 
-In our [Conduit repository](https://github.com/ConduitIO/conduit), you can find [more examples](https://github.com/ConduitIO/conduit/tree/main/examples/pipelines), but to ilustrate a simple use case we'll show a pipeline using a file as a source, and another file as a destination. Check out the different [specifications](/docs/pipeline-configuration-files/specifications) to see the different configuration options.
+In our [Conduit repository](https://github.com/ConduitIO/conduit), you can find [more examples](https://github.com/ConduitIO/conduit/tree/main/examples/pipelines), but to help you get started pick and choose your desired pipeline configuration. Check out the different [specifications](/docs/pipeline-configuration-files/specifications) to learn more about the different configuration options.
 
 :::
 
 Create a folder called `pipelines` at the same level as your Conduit binary.
-Inside of that folder create a file named `file-to-file.yml`.
+Inside of that folder create a file named `source-to-destination.yml`.
 
 ```shell
 │ # Conduit binary
@@ -26,40 +28,18 @@ Inside of that folder create a file named `file-to-file.yml`.
 │ # Folder with pipeline configurations
 └── pipelines
     │ # Pipeline configuration file
-    └── file-to-file.yml
+    └── source-to-destination.yml
 ```
 
-Copy following content into `file-to-file.yml`:
+### Choose your source connector
 
-``` yaml title="pipelines/file-to-file.yml"
-version: 2.2
-pipelines:
-  - id: file-to-file
-    # run pipeline on startup
-    status: running
-    description: >
-      Example pipeline reading from file "example.in" and writing into file "example.out".
+TODO: Include a list of source connectors here. Save which one is selected so it's sent to the react component.
 
-    connectors:
-      - id: example.in
-        type: source
-        # use the built-in file plugin as the source
-        plugin: builtin:file
-        settings:
-          # read data from example.in
-          path: ./example.in
+### Choose your destination connector
 
-      - id: example.out
-        type: destination
-        # use the built-in file plugin as the destination
-        plugin: builtin:file
-        settings:
-          # write data to example.out
-          path: ./example.out
-          # output the raw payload as a string
-          sdk.record.format: template
-          sdk.record.format.options: '{{ printf "%s" .Payload.After }}'
-```
+TODO: Include a list of destination connectors here. Save which one is selected so it's sent to the react component.
+
+<PipelineConfigGenerator />
 
 Now start Conduit. You should see a log line saying that the pipeline
 `file-to-file` was created:

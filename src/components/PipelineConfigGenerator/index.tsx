@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import yaml from 'js-yaml';
+import CodeBlock from '@theme/CodeBlock';
+import CopyButton from '@theme/CodeBlock/CopyButton';
+
+
 
 const PipelineConfigGenerator = () => {
   const [pipelineId, setPipelineId] = useState('file-to-file');
@@ -86,15 +90,17 @@ const PipelineConfigGenerator = () => {
       </label>
       <br />
       {generatedConfig && (
-        <pre style={{ position: 'relative' }}>
-          <button 
-            onClick={() => navigator.clipboard.writeText(generatedConfig)} 
-                style={{ position: 'absolute', top: '10px', right: '10px', background: 'none', border: 'none', cursor: 'pointer' }}
-          >
-            <img src="https://img.icons8.com/ios/20/000000/copy.png" alt="Copy to clipboard" width="16" height="16" />
-          </button>
-          <code className="language-yaml">{generatedConfig}</code>
-        </pre>
+        <div style={{ position: 'relative' }}>
+        <CodeBlock
+        language="yaml"
+        showLineNumbers >
+          <div className="buttonGroup_node_modules-@docusaurus-theme-classic-lib-theme-CodeBlock-Content-styles-module">
+          <CopyButton code={generatedConfig} />
+          </div>
+          {generatedConfig} 
+        </CodeBlock>
+        </div>
+      
       )}
     </div>
   );
