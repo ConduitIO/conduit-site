@@ -1,0 +1,21 @@
+name: file
+summary: A file source and destination plugin for Conduit.
+description: >
+  The file source allows you to listen to a local file and
+  detect any changes happening to it. Each change will create a new record. The
+  destination allows you to write record payloads to a destination file, each new
+  record payload is appended to the file in a new line.
+version: 0.1.0
+author: ConduitIO, Inc. 
+sourceParams:
+  - name: path
+    type: string
+    default: ""
+    description: The path to the file to listen to.
+    required: true
+destinationParams:
+  - name: path
+    type: string
+    default: ""
+    description: The path to the file to write to.
+    required: true

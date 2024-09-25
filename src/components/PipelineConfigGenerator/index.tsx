@@ -2,9 +2,66 @@ import React, { useState, useEffect } from 'react';
 import yaml from 'js-yaml';
 import CodeBlock from '@theme/CodeBlock';
 import CopyButton from '@theme/CodeBlock/CopyButton';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import Typography from '@mui/material/Typography';
 
 // TODO: Define latest version globally somewhere in the project so we can use it everywhere
 const LATEST_VERSION = '2.2';
+
+
+export class Connector {
+  description: string;
+}
+
+export interface ConnectorItemProps {
+  connector: Connector;
+}
+
+const ConnectorItem: React.FC<ConnectorItemProps> = (props) => (
+  <option value={props.connector.description}>{props.connector.description}</option>
+);
+
+interface ConnectorListProps {
+  connectors: Connector[];
+}
+
+const ConnectorList: React.FC<ConnectorListProps> = ({ connectors }) => {
+  return (
+    <select>
+      {connectors.map((connector) => (
+        <ConnectorItem key={connector.description} connector={connector} />
+      ))}
+    </select>
+  );
+};
+
+export const Connectors = ({url}) => {
+  const [connectors, setConnectors] = useState([])
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetch(url)
+      .then(response => response.json() )
+      .then(data => {
+        setConnectors(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return <p>Loading connectors...</p>;
+  }
+  if (error) {
+    return <p>Error: {error.message}</p>;
+  }
+  return <ConnectorList connectors={connectors} />
+}
+
 
 const PipelineConfigGenerator: React.FC = () => {
   const [sourceFile, setSourceFile] = useState('example.in');
@@ -86,8 +143,9 @@ const PipelineConfigGenerator: React.FC = () => {
 
       <h2>2. Choose your source connector</h2>
 
-      <p>TODO: Include a list of source connectors here. Save which one is selected so it's sent to the react component.</p>
-
+      {/* TODO: Filter out only the ones that are sources */}
+      <Connectors url={useBaseUrl('/connectors.json')} />
+      
       <h2>3. Choose your destination connector</h2>
 
       <p>TODO: Include a list of destination connectors here. Save which one is selected so it's sent to the react component.</p>
@@ -135,6 +193,7 @@ const PipelineConfigGenerator: React.FC = () => {
           </CodeBlock>
         </div>
       )}
+      <p>Now start Conduit. You should see a log line saying that the pipeline <code>{pipelineId}</code> was created:</p>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 [
   {
     "nameWithOwner": "ConduitIO/conduit-connector-file",
+    "specificationPath": "connectors/file-to-file.yml",
     "description": "Conduit connector for local files",
     "createdAt": "2022-02-22 12:18:32 +0000 UTC",
     "url": "https://github.com/ConduitIO/conduit-connector-file",
