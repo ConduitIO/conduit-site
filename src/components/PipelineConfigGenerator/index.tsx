@@ -3,12 +3,9 @@ import yaml from 'js-yaml';
 import CodeBlock from '@theme/CodeBlock';
 import CopyButton from '@theme/CodeBlock/CopyButton';
 import useBaseUrl from '@docusaurus/useBaseUrl';
-import Typography from '@mui/material/Typography';
 
 // TODO: Define latest version globally somewhere in the project so we can use it everywhere
 const LATEST_VERSION = '2.2';
-
-
 export class Connector {
   description: string;
 }
