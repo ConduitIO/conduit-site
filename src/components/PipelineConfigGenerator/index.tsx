@@ -5,41 +5,13 @@ import CopyButton from '@theme/CodeBlock/CopyButton';
 
 // TODO: Define latest version globally somewhere in the project so we can use it everywhere
 const LATEST_VERSION = '2.2';
-// interface PipelineIdInputProps {
-//   pipelineId: string;
-//   onChange: (newId: string) => void;
-// }
 
-interface PipelineConfigGeneratorProps {
-  pipelineId: string;
-}
-
-const PipelineIdInput: React.FC = () => {
-  const [pipelineId, setPipelineId] = useState('file-to-file');
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPipelineId(event.target.value);
-  };
-
-  return (
-    <div>
-      <label htmlFor="pipelineId">Pipeline ID:</label>
-      <input
-        type="text"
-        id="pipelineId"
-        value={pipelineId}
-        onChange={handleChange}
-        placeholder="Enter pipeline ID"
-      />
-    </div>
-  );
-};
-
-const PipelineConfigGenerator: React.FC<PipelineConfigGeneratorProps> = ({ pipelineId }) => {
+const PipelineConfigGenerator: React.FC = () => {
   const [sourceFile, setSourceFile] = useState('example.in');
   const [destinationFile, setDestinationFile] = useState('example.out');
   const [pipelineStatus, setPipelineStatus] = useState('running');
   const [generatedConfig, setGeneratedConfig] = useState('');
+  const [pipelineId, setPipelineId] = useState('source-to-destination');
 
   useEffect(() => {
     generateConfig();
@@ -83,6 +55,46 @@ const PipelineConfigGenerator: React.FC<PipelineConfigGeneratorProps> = ({ pipel
 
   return (
     <div>
+      <h2>1. Give your pipeline an ID</h2>
+
+      <p>Your pipeline ID is the unique identifier for your pipeline. It's used to distinguish your pipeline from other pipelines in the system. It must be unique within your pipeline configuration file.</p>
+
+      <div style={{
+        backgroundColor: '#f0f0f0',
+        borderRadius: '8px',
+        padding: '15px',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        marginBottom: '20px'
+      }}>
+        <input
+          id="pipelineId"
+          type="text"
+          value={pipelineId}
+          onChange={(e) => setPipelineId(e.target.value)}
+          style={{
+            width: '100%',
+            padding: '10px',
+            boxSizing: 'border-box',
+            fontSize: '16px',
+            border: '1px solid #ccc',
+            borderRadius: '5px',
+            backgroundColor: 'white'
+          }}
+          placeholder="e.g., my-first-pipeline"
+        />
+      </div>
+
+      <h2>2. Choose your source connector</h2>
+
+      <p>TODO: Include a list of source connectors here. Save which one is selected so it's sent to the react component.</p>
+
+      <h2>3. Choose your destination connector</h2>
+
+      <p>TODO: Include a list of destination connectors here. Save which one is selected so it's sent to the react component.</p>
+
+      <h2>4. Copy the generated pipeline configuration file</h2>
+
+      <p>Customize your pipeline configuration by adjusting the following settings:</p>
       <label>
         Source File:
         <input
@@ -111,20 +123,20 @@ const PipelineConfigGenerator: React.FC<PipelineConfigGeneratorProps> = ({ pipel
       <br />
       {generatedConfig && (
         <div style={{ position: 'relative' }}>
-        <CodeBlock
-        language="yaml"
-        showLineNumbers >
-          <div className="buttonGroup_node_modules-@docusaurus-theme-classic-lib-theme-CodeBlock-Content-styles-module">
-          <CopyButton code={generatedConfig} />
-          </div>
-          {generatedConfig} 
-        </CodeBlock>
+          <h4>Generated Configuration</h4>
+          <p>Here's your generated pipeline configuration in YAML format:</p>
+          <CodeBlock
+            language="yaml"
+            showLineNumbers >
+            <div className="buttonGroup_node_modules-@docusaurus-theme-classic-lib-theme-CodeBlock-Content-styles-module">
+              <CopyButton code={generatedConfig} />
+            </div>
+            {generatedConfig} 
+          </CodeBlock>
         </div>
-      
       )}
     </div>
   );
 };
 
-export { PipelineIdInput };
 export default PipelineConfigGenerator;
