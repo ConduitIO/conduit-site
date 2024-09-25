@@ -4,7 +4,7 @@ sidebar_label: "Getting Started"
 sidebar_position: 0
 ---
 
-import PipelineConfigGenerator from '@site/src/components/PipelineConfigGenerator';
+import PipelineConfigGenerator, { PipelineIdInput } from '@site/src/components/PipelineConfigGenerator';
 
 Pipeline configuration files give you the ability to define pipelines that are
 provisioned by Conduit at startup. It's as simple as creating a YAML file that
@@ -37,6 +37,8 @@ To help you get started, we've created a pipeline configuration generator that w
 ### 1. Give your pipeline an ID
 
 Your pipeline ID is the unique identifier for your pipeline. It's used to distinguish your pipeline from other pipelines in the system. It must be unique within your pipeline configuration file.
+
+<PipelineIdInput />
 
 ### 2. Choose your source connector
 

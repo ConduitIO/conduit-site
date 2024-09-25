@@ -3,10 +3,39 @@ import yaml from 'js-yaml';
 import CodeBlock from '@theme/CodeBlock';
 import CopyButton from '@theme/CodeBlock/CopyButton';
 
+// TODO: Define latest version globally somewhere in the project so we can use it everywhere
+const LATEST_VERSION = '2.2';
+// interface PipelineIdInputProps {
+//   pipelineId: string;
+//   onChange: (newId: string) => void;
+// }
 
+interface PipelineConfigGeneratorProps {
+  pipelineId: string;
+}
 
-const PipelineConfigGenerator = () => {
+const PipelineIdInput: React.FC = () => {
   const [pipelineId, setPipelineId] = useState('file-to-file');
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPipelineId(event.target.value);
+  };
+
+  return (
+    <div>
+      <label htmlFor="pipelineId">Pipeline ID:</label>
+      <input
+        type="text"
+        id="pipelineId"
+        value={pipelineId}
+        onChange={handleChange}
+        placeholder="Enter pipeline ID"
+      />
+    </div>
+  );
+};
+
+const PipelineConfigGenerator: React.FC<PipelineConfigGeneratorProps> = ({ pipelineId }) => {
   const [sourceFile, setSourceFile] = useState('example.in');
   const [destinationFile, setDestinationFile] = useState('example.out');
   const [pipelineStatus, setPipelineStatus] = useState('running');
@@ -18,7 +47,7 @@ const PipelineConfigGenerator = () => {
 
   const generateConfig = () => {
     const config = {
-      version: '2.2',
+      version: LATEST_VERSION,
       pipelines: [
         {
           id: pipelineId,
@@ -54,15 +83,6 @@ const PipelineConfigGenerator = () => {
 
   return (
     <div>
-      <label>
-        Pipeline ID:
-        <input
-          type="text"
-          value={pipelineId}
-          onChange={(e) => setPipelineId(e.target.value)}
-        />
-      </label>
-      <br />
       <label>
         Source File:
         <input
@@ -106,4 +126,5 @@ const PipelineConfigGenerator = () => {
   );
 };
 
+export { PipelineIdInput };
 export default PipelineConfigGenerator;
