@@ -27,11 +27,21 @@ interface ConnectorListProps {
 
 const ConnectorList: React.FC<ConnectorListProps> = ({ connectors }) => {
   return (
-    <select>
-      {connectors.map((connector) => (
-        <ConnectorItem key={connector.description} connector={connector} />
-      ))}
-    </select>
+    <div style={{
+      backgroundColor: '#f0f0f0',
+      borderRadius: '8px',
+      padding: '15px',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+      marginBottom: '20px',
+      overflow: 'auto',
+      maxHeight: '200px', // Added to limit the height of the div
+    }}>
+      <select style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '16px'}}>
+        {connectors.map((connector) => (
+          <ConnectorItem key={connector.description} connector={connector} />
+        ))}
+      </select>
+    </div>
   );
 };
 
@@ -61,7 +71,6 @@ export const Connectors = ({url}) => {
   }
   return <ConnectorList connectors={connectors} />
 }
-
 
 const PipelineConfigGenerator: React.FC = () => {
   const [sourceFile, setSourceFile] = useState('example.in');
