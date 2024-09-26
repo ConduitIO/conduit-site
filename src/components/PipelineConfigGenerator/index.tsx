@@ -33,7 +33,8 @@ export const Connectors = ({url}) => {
     fetch(url)
       .then(response => response.json() )
       .then(data => {
-        setConnectors(data);
+        const sourceConnectors = data.filter(connector => connector.source === "true");
+        setConnectors(sourceConnectors);
         setLoading(false);
       })
       .catch(err => {
