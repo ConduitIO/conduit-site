@@ -7,6 +7,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 // TODO: Define latest version globally somewhere in the project so we can use it everywhere
 const LATEST_VERSION = '2.2';
 export class Connector {
+  nameWithOwner: string;
   description: string;
   specificationPath: string;
 }
@@ -16,58 +17,12 @@ export interface ConnectorItemProps {
 }
 
 const ConnectorItem: React.FC<ConnectorItemProps> = (props) => (
-  <option value={props.connector.description}>{props.connector.description}</option>
+  <option value={props.connector.description}>{props.connector.nameWithOwner}</option>
 );
 
 interface ConnectorListProps {
   connectors: Connector[];
 }
-
-const ConnectorList: React.FC<ConnectorListProps> = ({ connectors }) => {
-  const [connectorNames, setConnectorNames] = useState<{ [key: string]: string }>({});
-
-  useEffect(() => {
-    const fetchConnectorNames = async () => {
-      const names: { [key: string]: string } = {};
-      for (const connector of connectors) {
-        try {
-          if (!connector.specificationPath) { continue; } // Simplified check
-
-          const response = await fetch(useBaseUrl(connector.specificationPath)); // Moved useBaseUrl here
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`); // Added error handling for fetch
-          }
-          const yamlData = await response.text();
-          const parsedData = yaml.load(yamlData);
-          names[connector.description] = parsedData.name; // Assuming the YAML has a 'name' property
-        } catch (error) {
-          console.error(`Error fetching ${connector.specificationPath}:`, error);
-        }
-      }
-      setConnectorNames(names);
-    };
-
-    fetchConnectorNames();
-  }, [connectors]);
-
-  return (
-    <div style={{
-      backgroundColor: '#f0f0f0',
-      borderRadius: '8px',
-      padding: '15px',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-      marginBottom: '20px',
-      overflow: 'auto',
-      maxHeight: '200px',
-    }}>
-      <select style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '16px'}}>
-        {Object.entries(connectorNames).map(([description, name]) => (
-          <option key={description} value={description}>{name}</option>
-        ))}
-      </select>
-    </div>
-  );
-};
 
 export const Connectors = ({url}) => {
   const [connectors, setConnectors] = useState([])
@@ -93,7 +48,24 @@ export const Connectors = ({url}) => {
   if (error) {
     return <p>Error: {error.message}</p>;
   }
-  return <ConnectorList connectors={connectors} />
+
+  return (
+    <div style={{
+      backgroundColor: '#f0f0f0',
+      borderRadius: '8px',
+      padding: '15px',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+      marginBottom: '20px',
+      overflow: 'auto',
+      maxHeight: '200px',
+    }}>
+      <select style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '16px'}}>
+        {connectors.map((connector) => (
+          <ConnectorItem key={connector.description} connector={connector} />
+        ))}
+      </select>
+    </div>
+  );
 }
 
 const PipelineConfigGenerator: React.FC = () => {
