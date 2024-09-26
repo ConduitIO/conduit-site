@@ -20,18 +20,15 @@ const ConnectorItem: React.FC<ConnectorItemProps> = (props) => (
   <option value={props.connector.description}>{props.connector.nameWithOwner}</option>
 );
 
-interface ConnectorListProps {
-  connectors: Connector[];
-}
-
 export const Connectors = ({url}) => {
-  const [connectors, setConnectors] = useState([])
+  const [connectors, setConnectors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedValue, setSelectedValue] = useState(''); // Track selected value
 
   useEffect(() => {
     fetch(url)
-      .then(response => response.json() )
+      .then(response => response.json())
       .then(data => {
         const sourceConnectors = data.filter(connector => connector.source === "true");
         setConnectors(sourceConnectors);
@@ -42,6 +39,19 @@ export const Connectors = ({url}) => {
         setLoading(false);
       });
   }, []);
+
+  const handleConnectorChange = (event) => {
+    const selectedConnector = connectors.find(connector => connector.description === event.target.value);
+    if (selectedConnector) {
+      fetch(selectedConnector.specificationPath)
+        .then(response => response.text())
+        .then(yamlData => {
+          console.log(yamlData); // Handle the fetched YAML data as needed
+        })
+        .catch(err => console.error('Error fetching YAML:', err));
+    }
+    setSelectedValue(event.target.value); // Update selected value
+  };
 
   if (loading) {
     return <p>Loading connectors...</p>;
@@ -60,7 +70,12 @@ export const Connectors = ({url}) => {
       overflow: 'auto',
       maxHeight: '200px',
     }}>
-      <select style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '16px'}}>
+      <select 
+        value={selectedValue} // Set the value of the select
+        onChange={handleConnectorChange} // Add onChange handler
+        style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '16px'}}
+      >
+        <option value="" disabled>Select a connector</option> {/* Hidden option */}
         {connectors.map((connector) => (
           <ConnectorItem key={connector.description} connector={connector} />
         ))}
