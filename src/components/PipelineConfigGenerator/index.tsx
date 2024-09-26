@@ -8,6 +8,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 const LATEST_VERSION = '2.2';
 export class Connector {
   description: string;
+  specificationPath: string;
 }
 
 export interface ConnectorItemProps {
@@ -23,6 +24,32 @@ interface ConnectorListProps {
 }
 
 const ConnectorList: React.FC<ConnectorListProps> = ({ connectors }) => {
+  const [connectorNames, setConnectorNames] = useState<{ [key: string]: string }>({});
+
+  useEffect(() => {
+    const fetchConnectorNames = async () => {
+      const names: { [key: string]: string } = {};
+      for (const connector of connectors) {
+        try {
+          if (!connector.specificationPath) { continue; } // Simplified check
+
+          const response = await fetch(useBaseUrl(connector.specificationPath)); // Moved useBaseUrl here
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`); // Added error handling for fetch
+          }
+          const yamlData = await response.text();
+          const parsedData = yaml.load(yamlData);
+          names[connector.description] = parsedData.name; // Assuming the YAML has a 'name' property
+        } catch (error) {
+          console.error(`Error fetching ${connector.specificationPath}:`, error);
+        }
+      }
+      setConnectorNames(names);
+    };
+
+    fetchConnectorNames();
+  }, [connectors]);
+
   return (
     <div style={{
       backgroundColor: '#f0f0f0',
@@ -31,11 +58,11 @@ const ConnectorList: React.FC<ConnectorListProps> = ({ connectors }) => {
       boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
       marginBottom: '20px',
       overflow: 'auto',
-      maxHeight: '200px', // Added to limit the height of the div
+      maxHeight: '200px',
     }}>
       <select style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '16px'}}>
-        {connectors.map((connector) => (
-          <ConnectorItem key={connector.description} connector={connector} />
+        {Object.entries(connectorNames).map(([description, name]) => (
+          <option key={description} value={description}>{name}</option>
         ))}
       </select>
     </div>
