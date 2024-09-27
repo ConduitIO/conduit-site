@@ -20,7 +20,7 @@ const ConnectorItem: React.FC<ConnectorItemProps> = (props) => (
   <option value={props.connector.description}>{props.connector.nameWithOwner}</option>
 );
 
-export const Connectors = ({url, setSourceFile}) => { // Add setSourceFile as a prop
+export const Connectors = ({url, setSourceID}) => {
   const [connectors, setConnectors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -46,7 +46,7 @@ export const Connectors = ({url, setSourceFile}) => { // Add setSourceFile as a 
       fetch(selectedConnector.specificationPath)
         .then(response => response.text())
         .then(yamlData => {
-          setSourceFile(yamlData); // Update sourceFile state with the extracted path
+          setSourceID(yamlData); // Update sourceID state with the extracted path
           // You can also set other settings if needed
         })
         .catch(err => console.error('Error fetching YAML:', err));
@@ -86,27 +86,34 @@ export const Connectors = ({url, setSourceFile}) => { // Add setSourceFile as a 
 }
 
 const PipelineConfigGenerator: React.FC = () => {
-  const [sourceFile, setSourceFile] = useState('example.in');
-  const [destinationFile, setDestinationFile] = useState('example.out');
-  const [pipelineStatus, setPipelineStatus] = useState('running');
+  const [sourceID, setSourceID] = useState('source-id');
+  const [destinationID, setDestinationID] = useState('destination-id');
   const [generatedConfig, setGeneratedConfig] = useState('');
   const [pipelineId, setPipelineId] = useState('source-to-destination');
 
   useEffect(() => {
     generateConfig();
-  }, [pipelineId, sourceFile, destinationFile, pipelineStatus]);
+  }, [pipelineId, sourceID, destinationID]);
 
-  const sourceYaml = yaml.load(sourceFile); 
-          
-  const sourceSettings = {}; // Initialize an empty settings object
+  const sourceYaml = yaml.load(sourceID); 
+  const sourceSettings = {};
+
+  console.log('sourceName', sourceYaml);
+  var sourceName = '';
+
   if (sourceYaml.sourceParams) {
     sourceYaml.sourceParams.forEach(param => {
       if (param.default) {
-        sourceSettings[param.name] = param.default; // Add each parameter to settings if it has a default value
+        sourceSettings[param.name] = param.default;
       } else {
-        sourceSettings[param.name] = ''; // Otherwise, set it to an empty string
+        sourceSettings[param.name] = '';
       }
     });
+  }
+
+  debugger;
+  if (sourceYaml.name) {
+    sourceName = sourceYaml.name;
   }
 
   const generateConfig = () => {
@@ -115,23 +122,24 @@ const PipelineConfigGenerator: React.FC = () => {
       pipelines: [
         {
           id: pipelineId,
-          status: pipelineStatus,
-          description: `Example pipeline reading from file "${sourceFile}" and writing into file "${destinationFile}".`,
+          status: 'running',
+          description: `Pipeline example reading from "${sourceID}",
+and writing to "${destinationID}".`,
           connectors: [
             {
-              id: sourceFile,
+              id: sourceID,
               type: 'source',
-              plugin: 'builtin:file',
+              plugin: `builtin:${sourceName}`,
               settings: {
-                ...sourceSettings, // Spread the sourceFile object to include its keys and values
+                ...sourceSettings,
               },
             },
             {
-              id: destinationFile,
+              id: destinationID,
               type: 'destination',
               plugin: 'builtin:file',
               settings: {
-                path: `./${destinationFile}`,
+                path: `./${destinationID}`,
                 'sdk.record.format': 'template',
                 'sdk.record.format.options': '{{ printf "%s" .Payload.After }}',
               },
@@ -178,8 +186,7 @@ const PipelineConfigGenerator: React.FC = () => {
 
       <h2>2. Choose your source connector</h2>
 
-      {/* TODO: Filter out only the ones that are sources */}
-      <Connectors url={useBaseUrl('/connectors.json')} setSourceFile={setSourceFile} />
+      <Connectors url={useBaseUrl('/connectors.json')} setSourceID={setSourceID} />
       
       <h2>3. Choose your destination connector</h2>
 
@@ -187,45 +194,21 @@ const PipelineConfigGenerator: React.FC = () => {
 
       <h2>4. Copy the generated pipeline configuration file</h2>
 
-      <p>Customize your pipeline configuration by adjusting the following settings:</p>
-      <label>
-        Source File:
-        <input
-          type="text"
-          value={sourceFile}
-          onChange={(e) => setSourceFile(e.target.value)}
-        />
-      </label>
-      <br />
-      <label>
-        Destination File:
-        <input
-          type="text"
-          value={destinationFile}
-          onChange={(e) => setDestinationFile(e.target.value)}
-        />
-      </label>
-      <br />
-      <label>
-        Pipeline Status:
-        <select value={pipelineStatus} onChange={(e) => setPipelineStatus(e.target.value)}>
-          <option value="running">Running</option>
-          <option value="stopped">Stopped</option>
-        </select>
-      </label>
       <br />
       {generatedConfig && (
-        <div style={{ position: 'relative' }}>
+        <div>
           <h4>Generated Configuration</h4>
           <p>Here's your generated pipeline configuration in YAML format:</p>
+          <div style={{ position: 'relative' }}>
           <CodeBlock
             language="yaml"
-            showLineNumbers >
-            <div className="buttonGroup_node_modules-@docusaurus-theme-classic-lib-theme-CodeBlock-Content-styles-module">
+            showLineNumbers>
+            <div className="buttonGroup_node_modules-@docusaurus-theme-classic-lib-theme-CodeBlock-Content-styles-module" >
               <CopyButton code={generatedConfig} />
             </div>
             {generatedConfig} 
           </CodeBlock>
+          </div>
         </div>
       )}
       <p>Now start Conduit. You should see a log line saying that the pipeline <code>{pipelineId}</code> was created:</p>

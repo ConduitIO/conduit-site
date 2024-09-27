@@ -4,9 +4,9 @@ description: >
   The file source allows you to listen to a local file and
   detect any changes happening to it. Each change will create a new record. The
   destination allows you to write record payloads to a destination file, each new
-  record payload is appended to the file in a new line.
+  record payload is appended to the file in a new line foo.
 version: 0.1.0
-author: ConduitIO, Inc. 
+author: ConduitIO, Inc.
 sourceParams:
   - name: path
     type: string
