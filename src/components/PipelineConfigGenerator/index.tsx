@@ -20,7 +20,7 @@ const ConnectorItem: React.FC<ConnectorItemProps> = (props) => (
   <option value={props.connector.description}>{props.connector.nameWithOwner}</option>
 );
 
-export const Connectors = ({url, setSourceID}) => {
+export const Connectors = ({url, setSourceYaml}) => {
   const [connectors, setConnectors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -46,7 +46,7 @@ export const Connectors = ({url, setSourceID}) => {
       fetch(selectedConnector.specificationPath)
         .then(response => response.text())
         .then(yamlData => {
-          setSourceID(yamlData); // Update sourceID state with the extracted path
+          setSourceYaml(yamlData); // Update sourceRawYaml state with the extracted path
           // You can also set other settings if needed
         })
         .catch(err => console.error('Error fetching YAML:', err));
@@ -88,21 +88,21 @@ export const Connectors = ({url, setSourceID}) => {
 const PipelineConfigGenerator: React.FC = () => {
   const [sourceID, setSourceID] = useState('source-id');
   const [destinationID, setDestinationID] = useState('destination-id');
+  const [sourceRawYaml, setSourceYaml] = useState('foo');
   const [generatedConfig, setGeneratedConfig] = useState('');
   const [pipelineId, setPipelineId] = useState('source-to-destination');
 
   useEffect(() => {
     generateConfig();
-  }, [pipelineId, sourceID, destinationID]);
+  }, [pipelineId, sourceRawYaml, destinationID]);
 
-  const sourceYaml = yaml.load(sourceID); 
+  const sourceParsedYaml = yaml.load(sourceRawYaml); 
   const sourceSettings = {};
 
-  console.log('sourceName', sourceYaml);
   var sourceName = '';
-
-  if (sourceYaml.sourceParams) {
-    sourceYaml.sourceParams.forEach(param => {
+  
+  if (sourceParsedYaml && sourceParsedYaml.sourceParams) {
+    sourceParsedYaml.sourceParams.forEach(param => {
       if (param.default) {
         sourceSettings[param.name] = param.default;
       } else {
@@ -112,8 +112,8 @@ const PipelineConfigGenerator: React.FC = () => {
   }
 
   debugger;
-  if (sourceYaml.name) {
-    sourceName = sourceYaml.name;
+  if (sourceParsedYaml.name) {
+    sourceName = sourceParsedYaml.name;
   }
 
   const generateConfig = () => {
@@ -129,6 +129,7 @@ and writing to "${destinationID}".`,
             {
               id: sourceID,
               type: 'source',
+              // We're assuming the list of source connectors always are builtin for easier usage.
               plugin: `builtin:${sourceName}`,
               settings: {
                 ...sourceSettings,
@@ -186,7 +187,7 @@ and writing to "${destinationID}".`,
 
       <h2>2. Choose your source connector</h2>
 
-      <Connectors url={useBaseUrl('/connectors.json')} setSourceID={setSourceID} />
+      <Connectors url={useBaseUrl('/connectors.json')} setSourceYaml={setSourceYaml} />
       
       <h2>3. Choose your destination connector</h2>
 
