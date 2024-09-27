@@ -20,7 +20,7 @@ const ConnectorItem: React.FC<ConnectorItemProps> = (props) => (
   <option value={props.connector.description}>{props.connector.nameWithOwner}</option>
 );
 
-export const Connectors = ({url}) => {
+export const Connectors = ({url, setSourceFile}) => { // Add setSourceFile as a prop
   const [connectors, setConnectors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -46,7 +46,8 @@ export const Connectors = ({url}) => {
       fetch(selectedConnector.specificationPath)
         .then(response => response.text())
         .then(yamlData => {
-          console.log(yamlData); // Handle the fetched YAML data as needed
+          setSourceFile(yamlData); // Update sourceFile state with the extracted path
+          // You can also set other settings if needed
         })
         .catch(err => console.error('Error fetching YAML:', err));
     }
@@ -95,6 +96,19 @@ const PipelineConfigGenerator: React.FC = () => {
     generateConfig();
   }, [pipelineId, sourceFile, destinationFile, pipelineStatus]);
 
+  const sourceYaml = yaml.load(sourceFile); 
+          
+  const sourceSettings = {}; // Initialize an empty settings object
+  if (sourceYaml.sourceParams) {
+    sourceYaml.sourceParams.forEach(param => {
+      if (param.default) {
+        sourceSettings[param.name] = param.default; // Add each parameter to settings if it has a default value
+      } else {
+        sourceSettings[param.name] = ''; // Otherwise, set it to an empty string
+      }
+    });
+  }
+
   const generateConfig = () => {
     const config = {
       version: LATEST_VERSION,
@@ -109,7 +123,7 @@ const PipelineConfigGenerator: React.FC = () => {
               type: 'source',
               plugin: 'builtin:file',
               settings: {
-                path: `./${sourceFile}`,
+                ...sourceSettings, // Spread the sourceFile object to include its keys and values
               },
             },
             {
@@ -165,7 +179,7 @@ const PipelineConfigGenerator: React.FC = () => {
       <h2>2. Choose your source connector</h2>
 
       {/* TODO: Filter out only the ones that are sources */}
-      <Connectors url={useBaseUrl('/connectors.json')} />
+      <Connectors url={useBaseUrl('/connectors.json')} setSourceFile={setSourceFile} />
       
       <h2>3. Choose your destination connector</h2>
 
