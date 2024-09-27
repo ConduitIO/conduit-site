@@ -19,3 +19,9 @@ destinationParams:
     default: ""
     description: The path to the file to write to.
     required: true
+  - name: sdk.record.format
+    type: string
+    default: "template"
+  - name: sdk.record.format.options
+    type: string
+    default: '{{ printf "%s" .Payload.After }}'
