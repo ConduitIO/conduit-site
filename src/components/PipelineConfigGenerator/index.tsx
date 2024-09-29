@@ -20,7 +20,7 @@ const ConnectorItem: React.FC<ConnectorItemProps> = (props) => (
   <option value={props.connector.description}>{props.connector.nameWithOwner}</option>
 );
 
-export const Connectors = ({url, setSourceYaml, isSource}) => {
+export const SourceConnectors = ({url, setSourceYaml, isSource}) => {
   const [connectors, setConnectors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -84,27 +84,92 @@ export const Connectors = ({url, setSourceYaml, isSource}) => {
   );
 }
 
+export const DestinationConnectors = ({url, setDestinationYaml, isSource}) => {
+  const [connectors, setConnectors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedValue, setSelectedValue] = useState(''); // Track selected value
+
+  useEffect(() => {
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        const connectors = data.filter(connector => isSource ? connector.source === "true" : connector.destination === "true");
+        setConnectors(connectors);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err);
+        setLoading(false);
+      });
+  }, []);
+
+  const handleConnectorChange = (event) => {
+    const selectedConnector = connectors.find(connector => connector.description === event.target.value);
+    if (selectedConnector) {
+      fetch(selectedConnector.specificationPath)
+        .then(response => response.text())
+        .then(yamlData => {
+          setDestinationYaml(yamlData); 
+        })
+        .catch(err => console.error('Error fetching YAML:', err));
+    }
+    setSelectedValue(event.target.value);
+  };
+
+  if (loading) {
+    return <p>Loading connectors...</p>;
+  }
+  if (error) {
+    return <p>Error: {error.message}</p>;
+  }
+
+  return (
+    <div style={{
+      backgroundColor: '#f0f0f0',
+      borderRadius: '8px',
+      padding: '15px',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+      marginBottom: '20px',
+      overflow: 'auto',
+      maxHeight: '200px',
+    }}>
+      <select 
+        value={selectedValue} 
+        onChange={handleConnectorChange}
+        style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '16px'}}
+      >
+        <option value="" disabled>Select a connector</option> {}
+        {connectors.map((connector) => (
+          <ConnectorItem key={connector.description} connector={connector} />
+        ))}
+      </select>
+    </div>
+  );
+}
+
 const PipelineConfigGenerator: React.FC = () => {
   const [sourceID, setSourceID] = useState('source-id');
   const [destinationID, setDestinationID] = useState('destination-id');
   const [sourceRawYaml, setSourceYaml] = useState('foo');
+  const [destinationRawYaml, setDestinationYaml] = useState('foo');
   const [generatedConfig, setGeneratedConfig] = useState('');
   const [pipelineId, setPipelineId] = useState('source-to-destination');
 
   useEffect(() => {
     generateConfig();
-  }, [pipelineId, sourceRawYaml, destinationID]);
+  }, [pipelineId, sourceRawYaml, destinationRawYaml, sourceID, destinationID]);
 
-  const parsedYaml = yaml.load(sourceRawYaml); 
+  const sourceParsedYaml = yaml.load(sourceRawYaml); 
+  const destinationParsedYaml = yaml.load(destinationRawYaml); 
   const sourceSettings = {};
   const destinationSettings = {};
-  console.log(parsedYaml)
 
   var sourceName, destinationName = '';
   
   // source
-  if (parsedYaml && parsedYaml.sourceParams) {
-    parsedYaml.sourceParams.forEach(param => {
+  if (sourceParsedYaml && sourceParsedYaml.sourceParams) {
+    sourceParsedYaml.sourceParams.forEach(param => {
       if (param.default) {
         sourceSettings[param.name] = param.default;
       } else {
@@ -113,20 +178,23 @@ const PipelineConfigGenerator: React.FC = () => {
     });
   }
 
-  if (parsedYaml.name) {
-    sourceName = `source-${parsedYaml.name}`;
-    destinationName = `destination-${parsedYaml.name}`;
+  if (sourceParsedYaml.name) {
+    sourceName = `source-${sourceParsedYaml.name}`;
   }
 
   // destination
-  if (parsedYaml && parsedYaml.destinationParams) {
-    parsedYaml.sourceParams.forEach(param => {
+  if (destinationParsedYaml && destinationParsedYaml.destinationParams) {
+    destinationParsedYaml.destinationParams.forEach(param => {
       if (param.default) {
         destinationSettings[param.name] = param.default;
       } else {
         destinationSettings[param.name] = '';
       }
     });
+  }
+
+  if (destinationParsedYaml.name) {
+    destinationName = `destination-${destinationParsedYaml.name}`;
   }
 
   const generateConfig = () => {
@@ -153,7 +221,7 @@ and writing to "${destinationID}".`,
               type: 'destination',
               plugin: 'builtin:${destinationName}',
               settings: {
-                ...sourceSettings,
+                ...destinationSettings,
               },
             },
           ],
@@ -198,11 +266,11 @@ and writing to "${destinationID}".`,
 
       <h2>2. Choose your source connector</h2>
 
-      <Connectors url={useBaseUrl('/connectors.json')} setSourceYaml={setSourceYaml} isSource={true}/>
+      <SourceConnectors url={useBaseUrl('/connectors.json')} setSourceYaml={setSourceYaml} isSource={true}/>
       
       <h2>3. Choose your destination connector</h2>
 
-      <Connectors url={useBaseUrl('/connectors.json')} setSourceYaml={setSourceYaml} isSource={false}/>
+      <DestinationConnectors url={useBaseUrl('/connectors.json')} setDestinationYaml={setDestinationYaml} isSource={false}/>
 
       <h2>4. Copy the generated pipeline configuration file</h2>
 

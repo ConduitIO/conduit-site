@@ -512,6 +512,9 @@
     "description": "Conduit connector able to generate sample records",
     "createdAt": "2022-02-22 16:00:27 +0000 UTC",
     "url": "https://github.com/ConduitIO/conduit-connector-generator",
+    "specificationPath": "/connectors/generator/spec.yml",
+    "source": "true",
+    "destination": "false",
     "stargazerCount": 2,
     "forkCount": 3,
     "releases": [
@@ -8461,6 +8464,9 @@
     "url": "https://github.com/conduitio-labs/conduit-connector-snowflake",
     "stargazerCount": 1,
     "forkCount": 1,
+    "specificationPath": "/connectors/snowflake/spec.yml",
+    "source": "false",
+    "destination": "true",
     "releases": [
       {
         "tag_name": "v0.3.0",

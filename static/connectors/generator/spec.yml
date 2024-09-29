@@ -1,0 +1,28 @@
+name: generator
+version: 0.1.0
+author: ConduitIO, Inc.
+sourceParams:
+  - name: burst.generateTime
+    type: string
+    default: "1s"
+  - name: burst.sleepTime
+    type: string
+    default: ""
+  - name: collections.*.format.options.*
+    type: string
+    default: ""
+  - name: collections.*.format.type
+    type: string
+    default: ""
+  - name: collections.*.operations
+    type: string
+    default: "create"
+  - name: format.options.*
+    type: string
+    default: "structured"
+  - name: rate
+    type: float
+    default: ""
+  - name: recordCount
+    type: string
+    default: "0"
