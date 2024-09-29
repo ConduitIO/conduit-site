@@ -115,6 +115,7 @@ const PipelineConfigGenerator: React.FC = () => {
 
   if (parsedYaml.name) {
     sourceName = `source-${parsedYaml.name}`;
+    destinationName = `destination-${parsedYaml.name}`;
   }
 
   // destination
@@ -126,11 +127,6 @@ const PipelineConfigGenerator: React.FC = () => {
         destinationSettings[param.name] = '';
       }
     });
-  }
-
-  // TODO: Look into this
-  if (parsedYaml.name) {
-    destinationName = parsedYaml.name;
   }
 
   const generateConfig = () => {
