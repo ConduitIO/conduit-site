@@ -149,8 +149,6 @@ export const DestinationConnectors = ({url, setDestinationYaml, isSource}) => {
 }
 
 const PipelineConfigGenerator: React.FC = () => {
-  const [sourceID, setSourceID] = useState('source-id');
-  const [destinationID, setDestinationID] = useState('destination-id');
   const [sourceRawYaml, setSourceYaml] = useState('foo');
   const [destinationRawYaml, setDestinationYaml] = useState('foo');
   const [generatedConfig, setGeneratedConfig] = useState('');
@@ -165,7 +163,7 @@ const PipelineConfigGenerator: React.FC = () => {
   const sourceSettings = {};
   const destinationSettings = {};
 
-  var sourceName, destinationName = '';
+  var sourceID, destinationID, sourceName, destinationName = '';
   
   // source
   if (sourceParsedYaml && sourceParsedYaml.sourceParams) {
@@ -179,7 +177,8 @@ const PipelineConfigGenerator: React.FC = () => {
   }
 
   if (sourceParsedYaml.name) {
-    sourceName = `source-${sourceParsedYaml.name}`;
+    sourceID = `${sourceParsedYaml.name}-source`;
+    sourceName = `${sourceParsedYaml.name}`;
   }
 
   // destination
@@ -194,7 +193,8 @@ const PipelineConfigGenerator: React.FC = () => {
   }
 
   if (destinationParsedYaml.name) {
-    destinationName = `destination-${destinationParsedYaml.name}`;
+    destinationID = `${destinationParsedYaml.name}-destination`;
+    destinationName = `${destinationParsedYaml.name}`;
   }
 
   const generateConfig = () => {
@@ -219,7 +219,7 @@ and writing to "${destinationID}".`,
             {
               id: destinationID,
               type: 'destination',
-              plugin: 'builtin:${destinationName}',
+              plugin: `builtin:${destinationName}`,
               settings: {
                 ...destinationSettings,
               },
