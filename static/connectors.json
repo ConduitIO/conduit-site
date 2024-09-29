@@ -2918,6 +2918,9 @@
     "description": "Conduit connector for PostgreSQL",
     "createdAt": "2022-03-07 16:06:24 +0000 UTC",
     "url": "https://github.com/ConduitIO/conduit-connector-postgres",
+    "specificationPath": "/connectors/postgres/spec.yml",
+    "source": "false",
+    "destination": "true",
     "stargazerCount": 13,
     "forkCount": 8,
     "releases": [
