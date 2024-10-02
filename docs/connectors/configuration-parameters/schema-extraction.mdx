@@ -25,6 +25,13 @@ connectors):
   key should be extracted.
 * `sdk.schema.extract.key.subject`: The subject of the key schema.
 
+
+:::caution
+`sdk.schema.extract.payload.enabled` and `sdk.schema.extract.key.enabled` should be set to false when producing raw data (not structured) like the example below. 
+
+If you're developing a connector, you can disable this automatically by updating the Connector's middleware. See more info about `NewSource()` when developing a source connector [here](/docs/connectors/building-connectors/developing-source-connectors/#newsource).
+:::
+
 ## Example
 
 The below pipeline will generate a single record and write it to a file. Notice
@@ -90,3 +97,9 @@ something below in the record's metadata:
 "opencdc.payload.schema.subject": "generator-to-file:file-src:users.payload",
 "opencdc.payload.schema.version": "1"
 ```
+
+:::tip
+
+To learn more about **Schema Support**, check out [this page](/docs/features/schema-support).
+
+:::
