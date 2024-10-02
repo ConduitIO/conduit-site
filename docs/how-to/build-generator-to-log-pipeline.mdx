@@ -72,7 +72,7 @@ Now we can start adding connectors to the pipeline. add a source connector under
           format.type: structured
           format.options.id: int
           format.options.name: string
-          recordCount: "1"
+          rate: "2s"
 ```
 
 The fields `id`, `type`, `plugin` and `settings` are found in every connector.
@@ -126,7 +126,7 @@ pipelines:
           format.type: structured
           format.options.id: int
           format.options.name: string
-          recordCount: "1"
+          rate: "2s"
       - id: destination1
         type: destination
         plugin: builtin:log
