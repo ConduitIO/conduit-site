@@ -61,7 +61,8 @@ pipelines:
 
 ## Step 4: Add the generator source
 
-Now we can start adding connectors to the pipeline. add a source connector under `connectors` in the configuration file:
+Now we can start adding connectors to the pipeline. Add a source connector under
+`connectors` in the configuration file:
 
 ```yaml
     connectors:
@@ -80,9 +81,9 @@ Every connector has its own set of configuration parameters. The generator's
 configuration can be
 found [here](https://github.com/ConduitIO/conduit-connector-generator?tab=readme-ov-file#configuration).
 
-The configuration below instructs the generator to produce 1 record with a
-structured payload. The payload will contain two fields: `id` (an integer) and
-`name` (a string).
+The configuration above instructs the generator to produce a record every 2
+seconds, each with a structured payload. The payload will contain two
+fields: `id` (an integer) and `name` (a string).
 
 ## Step 5: Add the logging destination
 
