@@ -52,30 +52,33 @@ Next, write the following to `generator-to-log.yaml`:
 ```yaml
 version: "2.2"
 pipelines:
-    - id: pipeline1
-      # Tells Conduit to run the pipeline automatically
-      status: running
-      name: pipeline1
-      description: A generator-to-log pipeline
-      # The connectors will be configured in the following steps
-      connectors:
-        
+  - id: pipeline1
+    # Tells Conduit to run the pipeline automatically
+    status: running
+    name: pipeline1
+    description: A generator-to-log pipeline
 ```
 
 ## Step 4: Add the generator source
 
-Now we can add a source connector under `connectors` in the configuration file:
+Now we can start adding connectors to the pipeline. add a source connector under `connectors` in the configuration file:
 
 ```yaml
-connectors:
-  - id: source1
-    type: source
-    plugin: builtin:generator
-    settings:
-      format.type: structured
-      format.options.id: int
-      format.options.name: string
-      recordCount: "1"
+version: "2.2"
+pipelines:
+  - id: pipeline1
+    status: running
+    name: pipeline1
+    description: A generator-to-file pipeline
+    connectors:
+      - id: source1
+        type: source
+        plugin: builtin:generator
+        settings:
+          format.type: structured
+          format.options.id: int
+          format.options.name: string
+          recordCount: "1"
 ```
 
 The fields `id`, `type`, `plugin` and `settings` are found in every connector.
