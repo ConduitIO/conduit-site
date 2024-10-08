@@ -44,9 +44,10 @@ sense to restart a pipeline and retry the data streaming.
 
 Pipeline Recovery restarts a pipeline using a linear backoff algorithm. One
 important addition is that Conduit tracks the number of retries over a period of
-time (the so-called `HealthyAfter` parameter). If a limit on the number of
+time (the so-called `MaxRetriesWindow` parameter). If a limit on the number of
 retries has been set, then Conduit will make sure that limit is not exceeded
-over any `HealthyAfter` period of time.
+over any `MaxRetriesWindow` period of time. In other words, the number of restart
+attempts is reset to 0 after `MaxRetriesWindow`.
 
 Here's a diagram of the algorithm:
 
@@ -86,10 +87,75 @@ Here's a diagram of the algorithm:
   up. A value of `-1` indicates infinite retries.
 
 
-### pipelines.error-recovery.healthy-after
+### pipelines.error-recovery.max-retries-window
 
 - **Data Type**: [Duration](https://pkg.go.dev/time#ParseDuration)
 - **Required**: No
 - **Default**: 5m
 - **Description**: No more than `max-retries` are allowed within any
-  `healthy-after` period of time.
+  `max-retries-window` period of time.
+
+## Examples
+
+### Example 1: Setting a custom `max-delay`
+
+The `conduit.yaml` below shows how to set a custom maximum delay before a
+pipeline is restarted. By default, `max-delay` is 10 minutes and here we're
+setting it to 10 seconds.
+
+```yaml
+pipelines:
+  error-recovery:
+    max-delay: "10s"
+```
+
+If a pipeline experiences an error, the delays between restarts will be as follows:
+
+* Attempt 1: 1s
+* Attempt 2: 2s
+* Attempt 3: 4s
+* Attempt 4: 8s
+* Attempt 5: 10s
+* Attempt 6: 10s
+* ...
+* Attempt N: 10s
+
+## Example 2: Setting a custom `max-retries` and `max-retries-window`
+
+The `conduit.yaml` below shows how to limit the number of pipeline restarts to
+3 (by default, the number of retries isn't limited). It also sets the
+`max-retries-window` to 10 minutes (the default value is 5 minutes).
+
+```yaml
+pipelines:
+  error-recovery:
+    max-retries: "2"
+    max-retries-window: "10m"
+```
+
+Let's consider a few scenarios and see how is the above configuration applied.
+
+**Scenario 1**
+**15:00** Pipeline starts.
+**15:10** Pipeline experiences an error (source system unavailable).
+**15:10** Pipeline is restarted (retry #1).
+
+**15:11** Pipeline experiences an error again.
+**15:11** Pipeline is restarted (retry #2).
+
+**15:15** Pipeline experiences an error again.
+**15:15** Pipeline has been restarted 2 times (`max-retries`) over the last 10
+minutes (`max-retries-window`). No more retries are allowed, hence the pipeline stops
+and its status is set to `degraded`.
+
+**Scenario 2**
+**15:00** Pipeline starts.
+**15:10** Pipeline experiences an error (source system unavailable).
+**15:10** Pipeline is restarted (retry #1).
+
+**15:11** Pipeline experiences an error again.
+**15:11** Pipeline is restarted (retry #2).
+
+**15:35** Pipeline experiences an error again.
+**15:35** Pipeline is restarted because we didn't restart 2 times (`max-retries`) over the last 10
+minutes (`max-retries-window`).
