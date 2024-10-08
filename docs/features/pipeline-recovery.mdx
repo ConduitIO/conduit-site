@@ -1,0 +1,96 @@
+---
+title: 'Pipeline Recovery'
+sidebar_position: 3
+---
+
+Pipeline Recovery is a feature in Conduit through which pipelines that
+experience certain types of errors are automatically restarted. This document
+describes how Pipeline Recovery in Conduit works and how it can be configured.
+
+## Background
+
+Most pipeline errors encountered are a result of temporary issues like network
+interruptions or services being unavailable due to maintenance. It then becomes
+a matter of how we handle the pipeline.
+
+In most cases, simply retrying is enough to get through transient errors
+efficiently. This can and should be done by connectors and processors, but that
+may not always be the case. For Conduit users, this typically means they would
+need to wait for the connector or processor to be updated. This implies that we
+need to have in Conduit an automatic mechanism for restarting pipelines that
+experienced an error.
+
+## What triggers pipeline recovery
+
+Any _non-fatal_ error can trigger pipeline recovery. In the context of
+pipelines, we differentiate between two types of errors: fatal and non-fatal.
+
+**Fatal errors** are the errors that a pipeline cannot recover from. Two types
+of errors are fatal by default:
+
+1. DLQ threshold exceeded (because the purpose of the DLQ threshold is to stop a
+   pipeline if too many records are nack-ed)
+2. processor errors (because processors are usually deterministic, so if a
+   processor failed processing a record once, it will most likely fail
+   processing a record again)
+
+In one of the next versions of Conduit and the Connector SDK, we'll make it
+possible for connectors to define what errors they consider as fatal.
+
+**Non-fatal errors** are all the other errors, i.e. errors for which it makes
+sense to restart a pipeline and retry the data streaming.
+
+## Algorithm
+
+Pipeline Recovery restarts a pipeline using a linear backoff algorithm. One
+important addition is that Conduit tracks the number of retries over a period of
+time (the so-called `HealthyAfter` parameter). If a limit on the number of
+retries has been set, then Conduit will make sure that limit is not exceeded
+over any `HealthyAfter` period of time.
+
+Here's a diagram of the algorithm:
+
+![Pipeline Recovery](/img/pipeline-recovery.png)
+
+## Configuration
+
+### pipelines.error-recovery.min-delay
+
+- **Data Type**: [Duration](https://pkg.go.dev/time#ParseDuration)
+- **Required**: No
+- **Default**: 1s
+- **Description**: Minimum delay before restarting the pipeline after an error.
+
+### pipelines.error-recovery.max-delay
+
+- **Data Type**: [Duration](https://pkg.go.dev/time#ParseDuration)
+- **Required**: No
+- **Default**: 10m
+- **Description**: Maximum delay allowed before restarting the pipeline after an
+  error.
+
+### pipelines.error-recovery.backoff-factor
+
+- **Data Type**: Integer
+- **Required**: No
+- **Default**: 2
+- **Description**: Backoff factor applied to the last delay when recovering from
+  errors.
+
+### pipelines.error-recovery.max-retries
+
+- **Data Type**: Integer
+- **Required**: No
+- **Default**: -1
+- **Description**: Maximum number of retry attempts before the pipeline gives
+  up. A value of `-1` indicates infinite retries.
+
+
+### pipelines.error-recovery.healthy-after
+
+- **Data Type**: [Duration](https://pkg.go.dev/time#ParseDuration)
+- **Required**: No
+- **Default**: 5m
+- **Description**: The amount of time the pipeline must run without errors to be
+  considered healthy.
+
