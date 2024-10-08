@@ -91,6 +91,5 @@ Here's a diagram of the algorithm:
 - **Data Type**: [Duration](https://pkg.go.dev/time#ParseDuration)
 - **Required**: No
 - **Default**: 5m
-- **Description**: The amount of time the pipeline must run without errors to be
-  considered healthy.
-
+- **Description**: No more than `max-retries` are allowed within any
+  `healthy-after` period of time.
