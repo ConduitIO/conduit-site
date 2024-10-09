@@ -9,14 +9,12 @@ describes how Pipeline Recovery in Conduit works and how it can be configured.
 
 :::note
 
-Pipeline Recovery is enabled by default since Conduit v0.12. To have the
-pre-v0.12 behavior, where a pipeline stops and goes into the `degraded` state
-the first time it experiences an error, you should set the configuration
-parameter `pipelines.error-recovery.max-retries` to 0.
+Pipeline Recovery is enabled by default since Conduit v0.12. The feature can
+be [disabled](#disabling-pipeline-recovery) if needed.
 
 :::
 
-## Background
+## Introduction
 
 Most pipeline errors encountered are a result of temporary issues like network
 interruptions or services being unavailable due to maintenance. It then becomes
@@ -74,6 +72,13 @@ to 0 even in the following cases:
 Here's a diagram of the algorithm:
 
 ![Pipeline Recovery](/img/pipeline-recovery.png)
+
+## Disabling Pipeline Recovery
+
+To disable Pipeline Recoveery, you should set the configuration parameter
+`pipelines.error-recovery.max-retries` to 0. With this, you'll have the
+pre-v0.12 behavior, where a pipeline stops and goes into the `degraded` state
+the first time it experiences an error.
 
 ## Configuration
 
