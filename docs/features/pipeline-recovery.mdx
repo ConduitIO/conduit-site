@@ -44,10 +44,23 @@ sense to restart a pipeline and retry the data streaming.
 
 Pipeline Recovery restarts a pipeline using a linear backoff algorithm. One
 important addition is that Conduit tracks the number of retries over a period of
-time (the so-called `MaxRetriesWindow` parameter). If a limit on the number of
-retries has been set, then Conduit will make sure that limit is not exceeded
-over any `MaxRetriesWindow` period of time. In other words, the number of restart
-attempts is reset to 0 after `MaxRetriesWindow`.
+time, `max-retries-window`. If `max-retries` has been set, then Conduit will
+make sure that there are at most `max-retries` over **any** `max-retries-window`
+period of time. In other words, the number of restart attempts is reset to 0
+after `max-retries-window`.
+
+This way, `max-retries-window` makes sure that we can safely reset the attempts
+to 0 even in the following cases:
+
+1. When a pipeline has been running long enough. For example, if a pipeline
+   failed `max-retries - 1` times months ago, then it's unexpected that it fails
+   now because of one failure.
+2. When a pipeline is unstable and frequently failing. For example, a pipeline
+   might experience an error and recover just before `max-retries` has been
+   reached. It might run for some time more and then fail again. If we're not
+   careful about resetting `max-retries`, then the pipeline might enter another
+   recovery cycle very soon, which would be against what a user intended (
+   limiting the number of retries).
 
 Here's a diagram of the algorithm:
 
@@ -133,9 +146,11 @@ pipelines:
     max-retries-window: "10m"
 ```
 
-Let's consider a few scenarios and see how is the above configuration applied.
+Below, we'll explain different scenarios with failing pipelines using the same
+Conduit configuration.
 
-**Scenario 1**
+**Scenario 1: Maximum number of retries reached**
+
 **15:00** Pipeline starts.
 **15:10** Pipeline experiences an error (source system unavailable).
 **15:10** Pipeline is restarted (retry #1).
@@ -148,13 +163,18 @@ Let's consider a few scenarios and see how is the above configuration applied.
 minutes (`max-retries-window`). No more retries are allowed, hence the pipeline stops
 and its status is set to `degraded`.
 
-**Scenario 2**
+**Scenario 2: Number of retries reset after some time**
+
 **15:00** Pipeline starts.
+
 **15:10** Pipeline experiences an error (source system unavailable).
 **15:10** Pipeline is restarted (retry #1).
 
 **15:11** Pipeline experiences an error again.
 **15:11** Pipeline is restarted (retry #2).
+
+**15:20** Internally, Conduit increments the number of available retries by 1,
+because 10 minutes (`max-retries-window`) since the first retry have passed.
 
 **15:35** Pipeline experiences an error again.
 **15:35** Pipeline is restarted because we didn't restart 2 times (`max-retries`) over the last 10
