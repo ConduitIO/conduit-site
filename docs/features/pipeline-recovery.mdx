@@ -1,11 +1,20 @@
 ---
 title: 'Pipeline Recovery'
-sidebar_position: 3
+sidebar_position: 5
 ---
 
 Pipeline Recovery is a feature in Conduit through which pipelines that
 experience certain types of errors are automatically restarted. This document
 describes how Pipeline Recovery in Conduit works and how it can be configured.
+
+:::note
+
+Pipeline Recovery is enabled by default since Conduit v0.12. To have the
+pre-v0.12 behavior, where a pipeline stops and goes into the `degraded` state
+the first time it experiences an error, you should set the configuration
+parameter `pipelines.error-recovery.max-retries` to 0.
+
+:::
 
 ## Background
 
