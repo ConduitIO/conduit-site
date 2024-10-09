@@ -9,7 +9,7 @@ describes how Pipeline Recovery in Conduit works and how it can be configured.
 
 :::note
 
-Pipeline Recovery is enabled by default since Conduit v0.12. The feature can
+Pipeline Recovery is enabled by default since [Conduit v0.12](https://github.com/ConduitIO/conduit/releases/tag/v0.12.0). The feature can
 be [disabled](#disabling-pipeline-recovery) if needed.
 
 :::
@@ -35,14 +35,16 @@ pipelines, we differentiate between two types of errors: fatal and non-fatal.
 **Fatal errors** are the errors that a pipeline cannot recover from. Two types
 of errors are fatal by default:
 
-1. DLQ threshold exceeded (because the purpose of the DLQ threshold is to stop a
+1. [DLQ threshold](/docs/features/dead-letter-queue) exceeded (because the purpose of the DLQ threshold is to stop a
    pipeline if too many records are nack-ed)
-2. processor errors (because processors are usually deterministic, so if a
+2. Processor errors (because processors are usually deterministic, so if a
    processor failed processing a record once, it will most likely fail
    processing a record again)
 
+:::info
 In one of the next versions of Conduit and the Connector SDK, we'll make it
 possible for connectors to define what errors they consider as fatal.
+:::
 
 **Non-fatal errors** are all the other errors, i.e. errors for which it makes
 sense to restart a pipeline and retry the data streaming.
@@ -51,7 +53,9 @@ sense to restart a pipeline and retry the data streaming.
 
 Pipeline Recovery restarts a pipeline using a linear backoff algorithm. One
 important addition is that Conduit tracks the number of retries over a period of
-time, `max-retries-window`. If `max-retries` has been set, then Conduit will
+time configured by the option `max-retries-window`. 
+
+If `max-retries` has been set, then Conduit will
 make sure that there are at most `max-retries` over **any** `max-retries-window`
 period of time. In other words, the number of restart attempts is reset to 0
 after `max-retries-window`.
@@ -66,16 +70,16 @@ to 0 even in the following cases:
    might experience an error and recover just before `max-retries` has been
    reached. It might run for some time more and then fail again. If we're not
    careful about resetting `max-retries`, then the pipeline might enter another
-   recovery cycle very soon, which would be against what a user intended (
-   limiting the number of retries).
+   recovery cycle very soon, which would be against what a user intended 
+   (limiting the number of retries).
 
 Here's a diagram of the algorithm:
 
 ![Pipeline Recovery](/img/pipeline-recovery.png)
 
-## Disabling Pipeline Recovery
+## How disable Pipeline Recovery
 
-To disable Pipeline Recoveery, you should set the configuration parameter
+To disable Pipeline Recovery, you should set the configuration parameter
 `pipelines.error-recovery.max-retries` to 0. With this, you'll have the
 pre-v0.12 behavior, where a pipeline stops and goes into the `degraded` state
 the first time it experiences an error.
@@ -99,7 +103,7 @@ the first time it experiences an error.
 
 ### pipelines.error-recovery.backoff-factor
 
-- **Data Type**: Integer
+- **Data Type**: [Integer](https://pkg.go.dev/k8s.io/utils/integer)
 - **Required**: No
 - **Default**: 2
 - **Description**: Backoff factor applied to the last delay when recovering from
@@ -107,7 +111,7 @@ the first time it experiences an error.
 
 ### pipelines.error-recovery.max-retries
 
-- **Data Type**: Integer
+- **Data Type**: [Integer](https://pkg.go.dev/k8s.io/utils/integer)
 - **Required**: No
 - **Default**: -1
 - **Description**: Maximum number of retry attempts before the pipeline gives
@@ -151,7 +155,7 @@ If a pipeline experiences an error, the delays between restarts will be as follo
 
 The `conduit.yaml` below shows how to limit the number of pipeline restarts to
 3 (by default, the number of retries isn't limited). It also sets the
-`max-retries-window` to 10 minutes (the default value is 5 minutes).
+`max-retries-window` to 10 minutes (default value is 5 minutes).
 
 ```yaml
 pipelines:
