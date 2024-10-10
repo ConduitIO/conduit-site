@@ -1,6 +1,9 @@
 [
   {
     "nameWithOwner": "ConduitIO/conduit-connector-file",
+    "specificationPath": "/connectors/file/spec.yml",
+    "source": "true",
+    "destination": "true",
     "description": "Conduit connector for local files",
     "createdAt": "2022-02-22 12:18:32 +0000 UTC",
     "url": "https://github.com/ConduitIO/conduit-connector-file",
@@ -509,6 +512,9 @@
     "description": "Conduit connector able to generate sample records",
     "createdAt": "2022-02-22 16:00:27 +0000 UTC",
     "url": "https://github.com/ConduitIO/conduit-connector-generator",
+    "specificationPath": "/connectors/generator/spec.yml",
+    "source": "true",
+    "destination": "false",
     "stargazerCount": 2,
     "forkCount": 3,
     "releases": [
@@ -2915,6 +2921,9 @@
     "description": "Conduit connector for PostgreSQL",
     "createdAt": "2022-03-07 16:06:24 +0000 UTC",
     "url": "https://github.com/ConduitIO/conduit-connector-postgres",
+    "specificationPath": "/connectors/postgres/spec.yml",
+    "source": "false",
+    "destination": "true",
     "stargazerCount": 13,
     "forkCount": 10,
     "releases": [
@@ -8853,6 +8862,9 @@
     "url": "https://github.com/conduitio-labs/conduit-connector-snowflake",
     "stargazerCount": 1,
     "forkCount": 1,
+    "specificationPath": "/connectors/snowflake/spec.yml",
+    "source": "false",
+    "destination": "true",
     "releases": [
       {
         "tag_name": "v0.3.0",

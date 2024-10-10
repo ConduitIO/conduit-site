@@ -1,0 +1,37 @@
+name: snowflake
+version: 0.1.0
+author: ConduitIO, Inc.
+# sourceParams:
+#   - name: path
+#     type: string
+#     default: ""
+#     description: The path to the file to listen to.
+#     required: true
+destinationParams:
+  - name: username
+    type: string
+    default: ""
+    description: The path to the file to write to.
+    required: true
+  - name: password
+    type: string
+    required: true
+  - name: database
+    type: string
+    default: 'userdb'
+  - name: schema
+    type: string
+    required: true
+    default: 'STREAM_DATA'
+  - name: warehouse
+    type: string
+    required: true
+    default: 'COMPUTE_WH'
+  - name: primaryKey
+    type: string
+    required: true
+    default: 'id'
+  - name: format
+    type: string
+    required: true
+    default: 'csv'
