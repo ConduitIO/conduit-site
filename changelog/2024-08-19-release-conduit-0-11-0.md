@@ -16,7 +16,7 @@ We’re thrilled to announce the release of [**Conduit v0.11**](https://github.c
 - **Enhanced Transformation Capabilities:** Easily transform data as it flows through your pipelines, making integration smoother and more efficient.
 
 :::tip
-For an in-depth look at how these new features can elevate your data integration processes, check out our [latest blog post](https://meroxa.com/blog/conduit-v0.11-unveils-powerful-schema-support-for-enhanced-data-integration/), our [Schema Support documentation page](/docs/features/schema-support.mdx).
+For an in-depth look at how these new features can elevate your data integration processes, check out our [latest blog post](https://meroxa.com/blog/conduit-v0.11-unveils-powerful-schema-support-for-enhanced-data-integration/), our [Schema Support documentation page](/docs/features/schema-support).
 :::
 
 :::info

@@ -16,7 +16,7 @@ We’re excited to announce the release of [**Conduit v0.12.0**](https://github.
 -  **Smart Retry Management:** Limits on retries prevent indefinite restarts, keeping your pipelines efficient and reliable.
 
 :::tip
-For a detailed overview of how Pipeline Recovery works and its benefits, check out our [latest blog post](#), or our documentation for [Pipeline Recovery](/docs/features/pipeline-recovery.mdx) and learn how to make your data streaming experience smoother than ever!
+For a detailed overview of how Pipeline Recovery works and its benefits, check out our [latest blog post](#), or our documentation for [Pipeline Recovery](/docs/features/pipeline-recovery) and learn how to make your data streaming experience smoother than ever!
 :::
 
 :::info
