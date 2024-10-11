@@ -18,5 +18,5 @@ This version introduces new connectors, improved processing capabilities, and a 
 - **Enhanced User Experience:** Enjoy a more intuitive interface and streamlined workflows for easier management.
 
 :::tip
-For an in-depth look at the new features and improvements in Conduit v0.8, check out our [latest blog post](https://meroxa.com/blog/conduit-0.8-is-here/).
+For an in-depth look at the new features and improvements in Conduit v0.8, check out our [blog post](https://meroxa.com/blog/conduit-0.8-is-here/).
 :::
