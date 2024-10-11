@@ -34,7 +34,7 @@ function HeaderSection() {
               </p>
 
               <div className='mt-6'>
-                <a href="https://github.com/ConduitIO/conduit"
+                <a href="/docs/getting-started/installing-and-running"
                    className="inline-flex items-center mb-5 px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-700 mr-4 hover:text-white hover:bg-orange-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   <span>Download</span>
