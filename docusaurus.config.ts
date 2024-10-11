@@ -78,7 +78,7 @@ const config: Config = {
         { href: 'https://meroxa.com/blog', position: 'left', label: 'Blog' },
         { to: '/api', label: 'HTTP API', position: 'left' },
         { href: 'https://github.com/ConduitIO/conduit/discussions', label: 'GitHub Discussions', position: 'right' },
-        { to: 'https://discord.meroxa.com', label: 'Discord Community', position: 'right' },
+        { href: 'https://discord.meroxa.com', label: 'Discord Community', position: 'right' },
       ],
     },
     algolia: { // https://docusaurus.io/docs/search#using-algolia-docsearch
@@ -123,7 +123,7 @@ const config: Config = {
             {
               html: `
                 <div class='flex mt-6'>
-                  <a href='https://twitter.com/ConduitIO'>
+                  <a href='https://x.com/ConduitIO'>
                   <svg width="35px" height="35px" viewBox="0 0 35 35" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <title>Shape</title>
     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -152,7 +152,7 @@ const config: Config = {
             { label: 'Issues', href: 'https://github.com/ConduitIO/conduit/issues' },
             { label: 'Changelog', to: '/changelog' },
             { label: 'GitHub Discussions', href: 'https://github.com/ConduitIO/conduit/discussions' },
-            { label: 'Conduit Twitter', href: 'https://twitter.com/conduitio' },
+            { label: 'Conduit X', href: 'https://x.com/conduitio' },
           ],
         },
         {
@@ -162,7 +162,7 @@ const config: Config = {
             { label: 'Blog', href: 'https://meroxa.com/blog' },
             { label: 'Careers', href: 'https://jobs.lever.co/meroxa' },
             { label: 'Join our Discord', href: 'https://discord.meroxa.com' },
-            { label: 'Meroxa Twitter', href: 'https://twitter.com/meroxadata' },
+            { label: 'Meroxa X', href: 'https://x.com/meroxadata' },
           ],
         },
       ],
