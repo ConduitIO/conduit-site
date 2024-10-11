@@ -10,9 +10,10 @@ We’re pleased to announce **Meroxa's new Conduit connector for Apache Flink**!
 <!--truncate-->
 
 #### Key Highlights
+
 - **Real-Time Data Processing:** Leverage Flink’s capabilities for real-time data processing and analytics.
 - **Easy Integration:** Quickly connect to multiple data sources and destinations with minimal configuration.
--  **Scalability:** Scale your data pipelines effortlessly to handle increasing data volumes.
+- **Scalability:** Scale your data pipelines effortlessly to handle increasing data volumes.
 
 :::tip
 For an in-depth look at how to get started with the new Conduit connector for Apache Flink, check out our [blog post](https://meroxa.com/blog/introduction-to-meroxa's-new-conduit-connector-for-apache-flink/), and visit our [Conduit Flink Connector GitHub page](https://github.com/conduitio-labs/conduit-flink-connector).
