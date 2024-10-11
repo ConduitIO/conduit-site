@@ -9,7 +9,7 @@ We’re thrilled to announce the release of [**Conduit v0.11**](https://github.c
 
 <!--truncate-->
 
-#### Key Highlights
+### Key Highlights
 
 - **Dynamic Schema Handling:** Automatically adapt to changes in data structure, ensuring seamless integration.
 - **Schema Validation:** Validate incoming data against defined schemas to maintain data integrity.

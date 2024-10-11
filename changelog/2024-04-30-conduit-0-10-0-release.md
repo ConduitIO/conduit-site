@@ -9,7 +9,7 @@ tags: [conduit, release]
 
 <!--truncate-->
 
-#### Key Highlights
+### Key Highlights
 
 - **Multiple Collections Support**: Connect and integrate multiple data collections simultaneously, improving scalability and simplifying pipeline management. Collections can refer to tables in databases, topics in Kafka, or indices in Elasticsearch.
 - **Kafka Connector Enhancements**: The Kafka connector now supports reading from and writing to multiple topics. You can configure it to route records based on the `opencdc.collection` metadata field.

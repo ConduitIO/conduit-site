@@ -9,7 +9,7 @@ Revolutionize your data processing with [**Conduit v0.9**](https://github.com/Co
 
 <!--truncate-->
 
-#### Key Highlights
+### Key Highlights
 
 - **Improved Processor Functionality:** Leverage advanced processing features to handle complex data transformations.
 - **Greater Flexibility:** Customize processors to fit your specific data processing needs.

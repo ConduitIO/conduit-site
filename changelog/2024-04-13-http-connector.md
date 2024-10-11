@@ -9,7 +9,7 @@ Enhance your data integration capabilities with the **new HTTP connector for Con
 
 <!--truncate-->
 
-#### Key Highlights
+### Key Highlights
 
 - **Generic HTTP Connector**: Connect to any HTTP-based service or API, allowing seamless data transfer between Conduit source connectors and HTTP endpoints.
 - **Easy Setup**: Build and test the HTTP Connector effortlessly by downloading the release binary or compiling from source. 

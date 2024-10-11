@@ -9,7 +9,7 @@ We’re excited to announce the release of [**Conduit v0.12.0**](https://github.
 
 <!--truncate-->
 
-#### Key Highlights
+### Key Highlights
 
 -  **Automatic Pipeline Restart:** Pipelines that encounter errors will now automatically restart, using a smart backoff algorithm to manage retries.
 -  **Configurable Backoff Settings:** Customize the backoff parameters through CLI flags, environment variables, or a global configuration file.
