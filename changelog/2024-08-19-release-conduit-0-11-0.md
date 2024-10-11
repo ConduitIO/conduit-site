@@ -18,7 +18,3 @@ We’re thrilled to announce the release of [**Conduit v0.11**](https://github.c
 :::tip
 For an in-depth look at how these new features can elevate your data integration processes, check out our [latest blog post](https://meroxa.com/blog/conduit-v0.11-unveils-powerful-schema-support-for-enhanced-data-integration/), our [Schema Support documentation page](/docs/features/schema-support).
 :::
-
-:::info
-For any questions or comments, please to [joing our Discord](https://discord.meroxa.com/) or [posting a comment on GitHub Discussions](https://github.com/ConduitIO/conduit/discussions).
-:::

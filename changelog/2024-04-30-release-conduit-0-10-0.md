@@ -18,7 +18,3 @@ We are thrilled to announce that [**Conduit v0.10**](https://github.com/ConduitI
 :::tip
 For an in-depth look at how multiple collections support can enhance your data integration, check out our [latest blog post](https://meroxa.com/blog/conduit-0.10-comes-with-multiple-collections-support/).
 :::
-
-:::info
-For any questions or comments, please join our [Discord](https://discord.meroxa.com/) or [post a comment on GitHub Discussions](https://github.com/ConduitIO/conduit/discussions).
-:::

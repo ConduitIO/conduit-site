@@ -18,7 +18,3 @@ We’re excited to announce the release of [**Conduit v0.12.0**](https://github.
 :::tip
 For a detailed overview of how Pipeline Recovery works and its benefits, check out our [latest blog post](#), or our documentation for [Pipeline Recovery](/docs/features/pipeline-recovery) and learn how to make your data streaming experience smoother than ever!
 :::
-
-:::info
-For any questions or comments, please to [joing our Discord](https://discord.meroxa.com/) or [posting a comment on GitHub Discussions](https://github.com/ConduitIO/conduit/discussions).
-:::
