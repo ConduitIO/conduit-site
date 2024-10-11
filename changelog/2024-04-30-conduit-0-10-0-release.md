@@ -1,5 +1,5 @@
 ---
-slug: '2024-04-30-release-conduit-0-10-0'
+slug: '2024-04-30-conduit-0-10-0-release'
 title: Conduit 0.10.0 release
 draft: false
 tags: [conduit, release]
