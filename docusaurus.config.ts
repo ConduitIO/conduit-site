@@ -216,7 +216,8 @@ const config: Config = {
         path: './changelog',
         onUntruncatedBlogPosts: 'ignore',
         onInlineAuthors: 'ignore',
-        onInlineTags: 'ignore'
+        onInlineTags: 'ignore',
+        blogSidebarCount: 'ALL'
       },
     ],
     [
