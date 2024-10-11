@@ -16,5 +16,5 @@ Enhance your data integration capabilities with the **new HTTP connector for Con
 - **Enhanced Performance:** Optimize your data pipelines with improved performance and reliability.
 
 :::tip
-For an in-depth look at how the new HTTP connector can enhance your data integration, check out our [latest blog post](https://meroxa.com/blog/introducing-the-new-http-connector-for-conduit-streamline-your-data-flow/), and visit our [Conduit HTTP Connector GitHub page](https://github.com/conduitio-labs/conduit-connector-http)
+For an in-depth look at how the new HTTP connector can enhance your data integration, check out our [blog post](https://meroxa.com/blog/introducing-the-new-http-connector-for-conduit-streamline-your-data-flow/), and visit our [Conduit HTTP Connector GitHub page](https://github.com/conduitio-labs/conduit-connector-http)
 :::

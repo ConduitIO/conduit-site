@@ -16,5 +16,5 @@ We are thrilled to announce that [**Conduit v0.10**](https://github.com/ConduitI
 - **Streamlined Integration:** Simplify the integration process with support for various collection types.
 
 :::tip
-For an in-depth look at how multiple collections support can enhance your data integration, check out our [latest blog post](https://meroxa.com/blog/conduit-0.10-comes-with-multiple-collections-support/).
+For an in-depth look at how multiple collections support can enhance your data integration, check out our [blog post](https://meroxa.com/blog/conduit-0.10-comes-with-multiple-collections-support/).
 :::
