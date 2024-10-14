@@ -11,7 +11,7 @@ tags: [conduit, release]
 
 ### Key Highlights
 
-- **Native Schema Registry Support**: This release introduces native schema registry support, allowing you to store metadata about the data flowing through your pipelines. This ensures data types and required fields are enforced, enhancing confidence in the data being processed. You can interact with the schema registry using four built-in processors: Decode with Schema Key, Decode with Schema Payload, Encode with Schema Key, and Encode with Schema Payload. Currently, only Avro is supported, with plans to add Protobuf and JSON schema in future releases.
+- **Native Schema Registry Support**: This release enhances Conduit with native support for the Confluent Schema Registry, enabling you to encode and decode records using Avro schemas. This functionality allows you to store metadata about the data flowing through your pipelines, ensuring that data types and required fields are enforced, which boosts confidence in the integrity of the processed data. You can interact with the schema registry through four built-in processors: Decode with Schema Key, Decode with Schema Payload, Encode with Schema Key, and Encode with Schema Payload. Future updates will include support for additional formats like Protobuf and JSON schema.
 - **gRPC Connector**: We are excited to introduce gRPC Server and Client connectors, enabling Conduit to operate in distributed environments. This allows data to be aggregated in one location and forwarded to another, facilitating data movement across regions.
 
 :::tip

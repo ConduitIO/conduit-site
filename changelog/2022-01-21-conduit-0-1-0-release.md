@@ -19,7 +19,7 @@ $ ./conduit
 ```
 
 - **User Interface**: Conduit includes a built-in UI for local development, allowing you to easily navigate to [http://localhost:8080/ui/](http://localhost:8080/ui/) and start building pipelines.
-- **Developer-Centric Design**: Conduit aims to provide an excellent experience for connector developers, ensuring consistency and familiarity with modern programming languages.
+- **Developer-Centric Design**: Conduit aims to provide an excellent experience for connector developers, ensuring consistency and familiarity with modern programming practices.
 - **Open Source**: Conduit is open-sourced with a permissive license, promoting accessibility for all developers.
 
 ### Use Cases
