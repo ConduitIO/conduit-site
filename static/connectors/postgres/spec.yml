@@ -1,0 +1,29 @@
+# This file is not real. It was only generated to demonstrate the automatic pipeline configuration.
+name: postgres
+summary: A PostgreSQL source and destination plugin for Conduit
+author: ConduitIO, Inc.
+sourceParams:
+  - name: cdcMode
+    type: string
+    default: "auto"
+    description: CDCMode determines how the connector should listen to changes.
+    required: false
+  - name: conduitslot
+    type: string
+    default: ""
+    description: The name of the logical replication slot to use.
+    required: false
+  # - ...
+destinationParams:
+  - name: key
+    type: string
+    default: ""
+    description: Key represents the column name for the key used to identify and update existing rows.
+  - name: table
+    type: string
+    default: "{{ index .Metadata \"opencdc.collection\" }}"
+    description: Table is used as the target table into which records are inserted.
+  - name: url
+    type: string
+    description: URL is the connection string for the Postgres database.
+    default: ""
