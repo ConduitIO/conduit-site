@@ -9,7 +9,7 @@ In this [latest release (Conduit 0.12)](/changelog/2024-10-10-conduit-0-12-0-rel
 
 <!--truncate-->
 
-After Conduit 0.12, if you ran `conduit --help` on your terminal, you should see the new field:
+After Conduit 0.12, if you ran `conduit --help` in your terminal, you should see the new field:
 
 ```bash
 $ conduit --help
