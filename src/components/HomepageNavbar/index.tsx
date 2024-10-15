@@ -12,6 +12,10 @@ const navLinks = [
     href: '/docs',
   },
   {
+    label: 'Changelog',
+    href: '/changelog',
+  },
+  {
     label: 'GitHub',
     href: 'http://github.com/ConduitIO/',
   },
@@ -46,7 +50,7 @@ export default function NavBar() {
             {navLinks.map(({ label, href }) => (
               <a
                 href={href}
-                className="text-white hover:text-white inline-flex items-center px-1 pt-1 text-sm md:text-lg font-extrabold"
+                className="text-white hover:text-white inline-flex items-center px-2 pt-1 text-sm md:text-lg font-extrabold"
               >
                 {label}
               </a>

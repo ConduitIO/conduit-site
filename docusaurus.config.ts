@@ -74,9 +74,11 @@ const config: Config = {
       items: [
         { to: '/', label: 'Home', position: 'left', activeBaseRegex: `///` },
         { to: '/docs',  position: 'left', label: 'Documentation' },
+        { to: '/changelog',  position: 'left', label: 'Changelog' },
+        { href: 'https://meroxa.com/blog', position: 'left', label: 'Blog' },
         { to: '/api', label: 'HTTP API', position: 'left' },
-        { to: 'https://github.com/ConduitIO/conduit/discussions', label: 'GitHub Discussions', position: 'right' },
-        { to: 'https://discord.meroxa.com', label: 'Discord Community', position: 'right' },
+        { href: 'https://github.com/ConduitIO/conduit/discussions', label: 'GitHub Discussions', position: 'right' },
+        { href: 'https://discord.meroxa.com', label: 'Discord Community', position: 'right' },
       ],
     },
     algolia: { // https://docusaurus.io/docs/search#using-algolia-docsearch
@@ -121,7 +123,7 @@ const config: Config = {
             {
               html: `
                 <div class='flex mt-6'>
-                  <a href='https://twitter.com/ConduitIO'>
+                  <a href='https://x.com/ConduitIO'>
                   <svg width="35px" height="35px" viewBox="0 0 35 35" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <title>Shape</title>
     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -147,17 +149,20 @@ const config: Config = {
           items: [
             { label: 'Connectors', to: '/docs/connectors/connector-list' },
             { label: 'Documentation', to: '/docs' },
-            { label: 'Join our Discord', to: 'https://discord.meroxa.com' },
-            { label: 'Issues', to: 'https://github.com/ConduitIO/conduit/issues' },
-            { label: 'GitHub Discussions', to: 'https://github.com/ConduitIO/conduit/discussions' },
+            { label: 'Issues', href: 'https://github.com/ConduitIO/conduit/issues' },
+            { label: 'Changelog', to: '/changelog' },
+            { label: 'GitHub Discussions', href: 'https://github.com/ConduitIO/conduit/discussions' },
+            { label: 'Conduit X', href: 'https://x.com/conduitio' },
           ],
         },
         {
           title: 'Company',
           items: [
-            { label: 'About Meroxa', to: 'https://meroxa.com/about' },
+            { label: 'About Meroxa', href: 'https://meroxa.com/about' },
+            { label: 'Blog', href: 'https://meroxa.com/blog' },
             { label: 'Careers', href: 'https://jobs.lever.co/meroxa' },
-            { label: 'Meroxa Twitter', href: 'https://twitter.com/meroxadata' }
+            { label: 'Join our Discord', href: 'https://discord.meroxa.com' },
+            { label: 'Meroxa X', href: 'https://x.com/meroxadata' },
           ],
         },
       ],
@@ -203,6 +208,18 @@ const config: Config = {
         },
       };
     },
+    [
+      '@docusaurus/plugin-content-blog',
+      {
+        id: 'changelog',
+        routeBasePath: 'changelog',
+        path: './changelog',
+        onUntruncatedBlogPosts: 'ignore',
+        onInlineAuthors: 'ignore',
+        onInlineTags: 'ignore',
+        blogSidebarCount: 'ALL'
+      },
+    ],
     [
       '@docusaurus/plugin-client-redirects',
       {
