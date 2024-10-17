@@ -199,7 +199,7 @@ checkPkgMgrAndInstall() {
 bye() {
   result=$?
   if [ "$result" != "0" ]; then
-    echo -e "${red}Failed to install $PROJECT_NAME${reset}"
+    echo -e "${red}Failed to install Conduit${reset}"
   fi
   exit $result
 }
