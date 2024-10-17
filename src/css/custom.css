@@ -19,8 +19,34 @@ body {
   font-weight: 500;
   border-radius: 0.3rem;
   padding: 5px 10px;
-  background-color: var(--ifm-color-primary-lightest);
+  background-color: var(--ifm-color-primary-light);
   font-size: 0.9rem;
+}
+
+a.conduit-platform {
+  color: white;
+  background-color: var(--ifm-color-primary-light);
+  border-radius: 0.625rem; 
+  display: flex;
+  align-items: center;
+  padding: 6px 15px;
+}
+
+a.conduit-platform::before {
+  content: "";
+  background-image: url('/img/meroxa-logo-simple.svg');
+  background-size: cover;
+  background-position: center left;
+  width: 35px;
+  height: 35px;
+  float: left;
+  margin-right: 10px;
+}
+
+@media (max-width: 996px) {
+  a.conduit-platform {
+    display: none;
+  }
 }
 
 :root {

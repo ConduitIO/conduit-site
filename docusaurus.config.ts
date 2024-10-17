@@ -78,6 +78,7 @@ const config: Config = {
         { to: '/changelog',  position: 'left', label: 'Changelog' },
         { href: 'https://meroxa.com/blog', position: 'left', label: 'Blog' },
         { to: '/api', label: 'HTTP API', position: 'left' },
+        { href: 'https://meroxa.io', label: 'Conduit Platform', position: 'right', class: 'conduit-platform' },
         { href: 'https://github.com/ConduitIO/conduit/discussions', label: 'GitHub Discussions', position: 'right' },
         { href: 'https://discord.meroxa.com', label: 'Discord Community', position: 'right' },
       ],
