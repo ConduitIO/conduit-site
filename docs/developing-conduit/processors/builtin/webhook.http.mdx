@@ -1,0 +1,462 @@
+---
+IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
+
+title: 'webhook.http'
+sidebar_position: 16
+---
+
+import ReactDiffViewer from 'react-diff-viewer';
+import Chip from '@mui/material/Chip';
+import Box from "@mui/system/Box";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# `webhook.http`
+
+Trigger an HTTP request for every record.
+
+## Description
+
+A processor that sends an HTTP request to the specified URL, retries on error and 
+saves the response body and, optionally, the response status.
+
+A status code over 500 is regarded as an error and will cause the processor to retry the request.
+The processor will retry the request according to the backoff configuration.
+
+## Configuration parameters
+
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "webhook.http"
+        settings:
+          # Maximum number of retries for an individual record when backing off
+          # following an error.
+          # Type: float
+          backoffRetry.count: "0"
+          # The multiplying factor for each increment step.
+          # Type: float
+          backoffRetry.factor: "2"
+          # The maximum waiting time before retrying.
+          # Type: duration
+          backoffRetry.max: "5s"
+          # The minimum waiting time before retrying.
+          # Type: duration
+          backoffRetry.min: "100ms"
+          # Headers to add to the request, use `headers.*` to specify the header
+          # and its value (e.g. `headers.Authorization: "Bearer key"`).
+          # Type: string
+          headers.*: ""
+          # Specifies the body that will be sent in the HTTP request. The field
+          # accepts a Go [templates](https://pkg.go.dev/text/template) that's
+          # evaluated using the
+          # [opencdc.Record](https://pkg.go.dev/github.com/conduitio/conduit-commons/opencdc#Record)
+          # as input. By default, the body is empty.
+          # To send the whole record as JSON you can use `{{ toJson . }}`.
+          # Type: string
+          request.body: ""
+          # Deprecated: use `headers.Content-Type` instead.
+          # Type: string
+          request.contentType: ""
+          # Method is the HTTP request method to be used.
+          # Type: string
+          request.method: "GET"
+          # URL is a Go template expression for the URL used in the HTTP
+          # request, using Go [templates](https://pkg.go.dev/text/template). The
+          # value provided to the template is
+          # [opencdc.Record](https://pkg.go.dev/github.com/conduitio/conduit-commons/opencdc#Record),
+          # so the template has access to all its fields (e.g. `.Position`,
+          # `.Key`, `.Metadata`, and so on). We also inject all template
+          # functions provided by [sprig](https://masterminds.github.io/sprig/)
+          # to make it easier to write templates.
+          # Type: string
+          request.url: ""
+          # Specifies in which field should the response body be saved.
+          # For more information about the format, see [Referencing
+          # fields](https://conduit.io/docs/processors/referencing-fields).
+          # Type: string
+          response.body: ".Payload.After"
+          # Specifies in which field should the response status be saved. If no
+          # value is set, then the response status will NOT be saved.
+          # For more information about the format, see [Referencing
+          # fields](https://conduit.io/docs/processors/referencing-fields).
+          # Type: string
+          response.status: ""
+          # Whether to decode the record key using its corresponding schema from
+          # the schema registry.
+          # Type: bool
+          sdk.schema.decode.key.enabled: "true"
+          # Whether to decode the record payload using its corresponding schema
+          # from the schema registry.
+          # Type: bool
+          sdk.schema.decode.payload.enabled: "true"
+          # Whether to encode the record key using its corresponding schema from
+          # the schema registry.
+          # Type: bool
+          sdk.schema.encode.key.enabled: "true"
+          # Whether to encode the record payload using its corresponding schema
+          # from the schema registry.
+          # Type: bool
+          sdk.schema.encode.payload.enabled: "true"
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td>`backoffRetry.count`</td>
+        <td>float</td>
+        <td>`0`</td>
+        <td>
+  Maximum number of retries for an individual record when backing off following an error.
+        </td>
+      </tr>
+      <tr>
+        <td>`backoffRetry.factor`</td>
+        <td>float</td>
+        <td>`2`</td>
+        <td>
+  The multiplying factor for each increment step.
+        </td>
+      </tr>
+      <tr>
+        <td>`backoffRetry.max`</td>
+        <td>duration</td>
+        <td>`5s`</td>
+        <td>
+  The maximum waiting time before retrying.
+        </td>
+      </tr>
+      <tr>
+        <td>`backoffRetry.min`</td>
+        <td>duration</td>
+        <td>`100ms`</td>
+        <td>
+  The minimum waiting time before retrying.
+        </td>
+      </tr>
+      <tr>
+        <td>`headers.*`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  Headers to add to the request, use `headers.*` to specify the header and its value (e.g. `headers.Authorization: "Bearer key"`).
+        </td>
+      </tr>
+      <tr>
+        <td>`request.body`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  Specifies the body that will be sent in the HTTP request. The field accepts
+a Go [templates](https://pkg.go.dev/text/template) that's evaluated using the
+[opencdc.Record](https://pkg.go.dev/github.com/conduitio/conduit-commons/opencdc#Record)
+as input. By default, the body is empty.
+
+To send the whole record as JSON you can use `{{ toJson . }}`.
+        </td>
+      </tr>
+      <tr>
+        <td>`request.contentType`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  Deprecated: use `headers.Content-Type` instead.
+        </td>
+      </tr>
+      <tr>
+        <td>`request.method`</td>
+        <td>string</td>
+        <td>`GET`</td>
+        <td>
+  Method is the HTTP request method to be used.
+        </td>
+      </tr>
+      <tr>
+        <td>`request.url`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  URL is a Go template expression for the URL used in the HTTP request, using Go [templates](https://pkg.go.dev/text/template).
+The value provided to the template is [opencdc.Record](https://pkg.go.dev/github.com/conduitio/conduit-commons/opencdc#Record),
+so the template has access to all its fields (e.g. `.Position`, `.Key`, `.Metadata`, and so on). We also inject all template functions provided by [sprig](https://masterminds.github.io/sprig/)
+to make it easier to write templates.
+        </td>
+      </tr>
+      <tr>
+        <td>`response.body`</td>
+        <td>string</td>
+        <td>`.Payload.After`</td>
+        <td>
+  Specifies in which field should the response body be saved.
+
+For more information about the format, see [Referencing fields](https://conduit.io/docs/processors/referencing-fields).
+        </td>
+      </tr>
+      <tr>
+        <td>`response.status`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  Specifies in which field should the response status be saved. If no value
+is set, then the response status will NOT be saved.
+
+For more information about the format, see [Referencing fields](https://conduit.io/docs/processors/referencing-fields).
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.decode.key.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to decode the record key using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.decode.payload.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to decode the record payload using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.encode.key.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to encode the record key using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.encode.payload.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to encode the record payload using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
+
+## Examples
+
+### Send a request to an HTTP server
+
+
+This example shows how to use the HTTP processor to send a record's `.Payload.After` field as a string to a dummy
+HTTP server that replies back with a greeting.
+
+The record's `.Payload.After` is overwritten with the response. Additionally, the example shows how to set a request
+header and how to store the value of the HTTP response's code in the metadata field `http_status`.
+
+#### Configuration parameters
+
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "webhook.http"
+        settings:
+          backoffRetry.count: "0"
+          backoffRetry.factor: "2"
+          backoffRetry.max: "5s"
+          backoffRetry.min: "100ms"
+          headers.content-type: "application/json"
+          request.body: "{{ printf "%s" .Payload.After }}"
+          request.method: "GET"
+          request.url: "http://127.0.0.1:54321"
+          response.body: ".Payload.After"
+          response.status: ".Metadata["http_status"]"
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`backoffRetry.count`</td>
+        <td>`0`</td>
+      </tr>
+      <tr>
+        <td>`backoffRetry.factor`</td>
+        <td>`2`</td>
+      </tr>
+      <tr>
+        <td>`backoffRetry.max`</td>
+        <td>`5s`</td>
+      </tr>
+      <tr>
+        <td>`backoffRetry.min`</td>
+        <td>`100ms`</td>
+      </tr>
+      <tr>
+        <td>`headers.content-type`</td>
+        <td>`application/json`</td>
+      </tr>
+      <tr>
+        <td>`request.body`</td>
+        <td>`{{ printf "%s" .Payload.After }}`</td>
+      </tr>
+      <tr>
+        <td>`request.method`</td>
+        <td>`GET`</td>
+      </tr>
+      <tr>
+        <td>`request.url`</td>
+        <td>`http://127.0.0.1:54321`</td>
+      </tr>
+      <tr>
+        <td>`response.body`</td>
+        <td>`.Payload.After`</td>
+      </tr>
+      <tr>
+        <td>`response.status`</td>
+        <td>`.Metadata["http_status"]`</td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
+
+#### Record difference
+
+```mdx-code-block
+<Box className='diff-viewer'>
+  <ReactDiffViewer
+    styles={{
+      diffContainer: {
+        overflowX: 'auto',
+        overflowY: 'hidden',
+      },
+    }}
+    leftTitle={'Before'}
+    rightTitle={'After'}
+    oldValue={"{\n  \"position\": \"cG9zLTE=\",\n  \"operation\": \"update\",\n  \"metadata\": null,\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": \"world\"\n  }\n}"}
+    newValue={"{\n  \"position\": \"cG9zLTE=\",\n  \"operation\": \"update\",\n  \"metadata\": {\n    \"http_status\": \"200\"\n  },\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": \"hello, world\"\n  }\n}"}
+    hideLineNumbers={false}
+    showDiffOnly={false}
+    splitView={true}
+  />
+</Box>
+```
+
+---
+
+### Send a request to an HTTP server with a dynamic URL
+
+
+This example shows how to use the HTTP processor to use a record's `.Payload.After.name` field in the URL path,
+send it to a dummy HTTP server, and get a greeting with the name back.
+
+The response will be written under the record's `.Payload.After.response`.
+
+#### Configuration parameters
+
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "webhook.http"
+        settings:
+          backoffRetry.count: "0"
+          backoffRetry.factor: "2"
+          backoffRetry.max: "5s"
+          backoffRetry.min: "100ms"
+          request.method: "GET"
+          request.url: "http://127.0.0.1:54321/{{.Payload.After.name}}"
+          response.body: ".Payload.After.response"
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`backoffRetry.count`</td>
+        <td>`0`</td>
+      </tr>
+      <tr>
+        <td>`backoffRetry.factor`</td>
+        <td>`2`</td>
+      </tr>
+      <tr>
+        <td>`backoffRetry.max`</td>
+        <td>`5s`</td>
+      </tr>
+      <tr>
+        <td>`backoffRetry.min`</td>
+        <td>`100ms`</td>
+      </tr>
+      <tr>
+        <td>`request.method`</td>
+        <td>`GET`</td>
+      </tr>
+      <tr>
+        <td>`request.url`</td>
+        <td>`http://127.0.0.1:54321/{{.Payload.After.name}}`</td>
+      </tr>
+      <tr>
+        <td>`response.body`</td>
+        <td>`.Payload.After.response`</td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
+
+#### Record difference
+
+```mdx-code-block
+<Box className='diff-viewer'>
+  <ReactDiffViewer
+    styles={{
+      diffContainer: {
+        overflowX: 'auto',
+        overflowY: 'hidden',
+      },
+    }}
+    leftTitle={'Before'}
+    rightTitle={'After'}
+    oldValue={"{\n  \"position\": \"cG9zLTE=\",\n  \"operation\": \"create\",\n  \"metadata\": null,\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"name\": \"foo\"\n    }\n  }\n}"}
+    newValue={"{\n  \"position\": \"cG9zLTE=\",\n  \"operation\": \"create\",\n  \"metadata\": null,\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"name\": \"foo\",\n      \"response\": \"aGVsbG8sIGZvbyE=\"\n    }\n  }\n}"}
+    hideLineNumbers={false}
+    showDiffOnly={false}
+    splitView={true}
+  />
+</Box>
+```
+
+
+
+![scarf pixel conduit-site-docs-processors](https://static.scarf.sh/a.png?x-pxid=33ce4d9e-1948-4cab-846a-7e6cd33b8cae)
