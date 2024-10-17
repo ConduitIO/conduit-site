@@ -8,11 +8,11 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 <Tabs groupId="instalation-options" queryString="option">
-  <TabItem value="homebrew" label="Homebrew" default>
-    The recommended way of running Conduit on a local machine is using the latest version of Conduit available on [Homebrew](https://brew.sh/) which you can install by running the following command:
+  <TabItem value="macos-linux" label="macOS and Linux" default>
+    The recommended way of running Conduit on a local machine is using the latest version which you can install by running the following command:
     
 ```
-brew install conduit
+curl https://conduit.io/install.sh | bash
 ```
 
 ### Run
@@ -24,20 +24,21 @@ conduit
 ```
 
   </TabItem>
-  <TabItem value="binary" label="Using a pre-built binary">
-    Below we'll walk through getting Conduit installed and running on your system.
+  <TabItem value="windows" label="Windows">
+    Below we'll walk through getting Conduit installed and running on your Windows OS.
 
 ### Download
 
-First, download the [latest Conduit release](https://github.com/ConduitIO/conduit/releases/latest) for your platform.
+First, download
+the [latest Conduit release](https://github.com/ConduitIO/conduit/releases/latest)
+for your platform.
 
-For an ARM based back Mac for example we'd grab the
-`conduit_0.12.0_Darwin_arm64.tar.gz` archive.
+Let's say you downloaded `conduit_0.12.1_Windows_x86_64.zip`.
 
-### unzip the archive
+### Unzip the archive
 
 ```shell
-tar xzvf conduit_0.12.0_Darwin_arm64.tar.gz
+tar -xf conduit_0.12.1_Windows_x86_64.zip
 ```
 
 ### Run
@@ -55,7 +56,8 @@ Conduit's Docker images are hosted on [GitHub](https://github.com/ConduitIO/cond
 
 ### Run
 
-After you install Docker, you can pull the Conduit image by running the following command:
+After you install Docker, you can pull the Conduit image by running the
+following command:
 
 ```shell
 docker pull conduit.docker.scarf.sh/conduitio/conduit
@@ -66,7 +68,9 @@ Then, you can run Conduit by running:
 docker run -it -p 8080:8080 conduit.docker.scarf.sh/conduitio/conduit
 ```
 
-The command aboves runs Conduit with no pipelines. To run Conduit with a custom pipeline file you can mount it as a volume into the container:
+The command aboves runs Conduit with no pipelines. To run Conduit with a custom
+pipeline file you can mount it as a volume into the container:
+
 ```shell
 docker run -it -p 8080:8080 \
   -v /path/to/pipeline.yaml:/app/pipelines/pipeline.yaml \
@@ -74,7 +78,11 @@ docker run -it -p 8080:8080 \
 ```
 
 :::tip
-If you're using Docker, check out [Watchtower](https://containrrr.dev/watchtower/). After we push an update, Watchtower will keep your Conduit container updated by gracefully shutting down your existing container and restarting it with the same options used when initially deployed.
+If you're using Docker, check
+out [Watchtower](https://containrrr.dev/watchtower/). After we push an update,
+Watchtower will keep your Conduit container updated by gracefully shutting down
+your existing container and restarting it with the same options used when
+initially deployed.
 :::
 
   </TabItem>
