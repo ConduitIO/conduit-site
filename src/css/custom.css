@@ -21,7 +21,11 @@ body {
   padding: 5px 10px;
   background-color: var(--ifm-color-primary-light);
   font-size: 0.9rem;
-  margin-top: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+nav > li:nth-child(1) > li.sidebar-header {
+  margin-top: 0;
 }
 
 a.conduit-platform {
