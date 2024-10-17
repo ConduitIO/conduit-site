@@ -37,7 +37,7 @@ const config: Config = {
 
   presets: [
     [
-      'classic',
+      '@docusaurus/preset-classic',
       {
         gtag: {
           trackingID: 'G-QKF0TW3J6Z',
@@ -46,6 +46,7 @@ const config: Config = {
         docs: {
           sidebarPath: './src/sidebars/sidebars.ts',
           editUrl: 'https://github.com/conduitio/conduit-site/edit/main/',
+          showLastUpdateTime: true,
         },
         blog: {
           showReadingTime: true,
