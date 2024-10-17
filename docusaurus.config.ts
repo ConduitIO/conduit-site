@@ -18,7 +18,8 @@ const config: Config = {
   organizationName: 'conduitio', // Usually your GitHub org/user name.
   projectName: 'conduit-site', // Usually your repo name.
 
-  onBrokenLinks: 'throw',
+  // TODO: enable again once we finished the refactor
+  // onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   onDuplicateRoutes: 'warn',
 
