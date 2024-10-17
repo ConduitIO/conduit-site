@@ -19,9 +19,20 @@
 
 PROJECT_NAME="conduit"
 
+# Define color codes
+reset="\033[0m"
+conduit_blue="\033[38;5;45m"
+red="\033[31m"
+
 fail() {
   echo "$1"
   exit 1
+}
+
+# Function to print a string in bright blue
+coloredEcho() {
+  local text=$1
+  printf "${conduit_blue}${text}${reset}\n"
 }
 
 initArch() {
@@ -101,7 +112,7 @@ getFile() {
   local url="$1"
   local filePath="$2"
   if [ "$DOWNLOAD_TOOL" = "curl" ]; then
-    httpStatusCode=$(curl -s -w '%{http_code}' -L "$url" -o "$filePath")
+    httpStatusCode=$(curl --progress-bar -w '%{http_code}' -L "$url" -o "$filePath")
   elif [ "$DOWNLOAD_TOOL" = "wget" ]; then
     body=$(wget --server-response --content-on-error -q -O "$filePath" "$url")
     httpStatusCode=$(cat $tmpFile | awk '/^  HTTP/{print $2}')
@@ -151,25 +162,28 @@ detectPackageManager() {
 }
 
 installWithBrew() {
-  echo "Installing using Homebrew..."
   brew install conduit
 }
 
 installWithDPKG() {
-  echo "Installing using dpkg..."
   downloadFile "deb"
+
+  printf "\nRunning dpkg...\n"
   sudo dpkg -i "$CONDUIT_TMP_FILE"
   rm -f "$CONDUIT_TMP_FILE"
 }
 
 installWithRPM() {
-  echo "Installing using rpm..."
   downloadFile "rpm"
+
+  printf "\nRunning rpm...\n"
   rpm -i "$CONDUIT_TMP_FILE"
   rm -f "$CONDUIT_TMP_FILE"
 }
 
 checkPkgMgrAndInstall() {
+  coloredEcho "Installing Conduit $TAG..."
+  printf "\n"
   # Check the value of PKG_MGR and invoke the corresponding function
   if [[ "$PKG_MGR" == "brew" ]]; then
     installWithBrew
@@ -185,7 +199,7 @@ checkPkgMgrAndInstall() {
 bye() {
   result=$?
   if [ "$result" != "0" ]; then
-    echo "Fail to install $PROJECT_NAME"
+    echo -e "${red}Failed to install $PROJECT_NAME${reset}"
   fi
   exit $result
 }
@@ -198,7 +212,7 @@ testVersion() {
   fi
   set -e
   CONDUIT_VERSION=$($PROJECT_NAME -version)
-  echo "$CONDUIT_VERSION installed successfully"
+  coloredEcho "\n$CONDUIT_VERSION installed successfully"
 }
 
 # Execution
