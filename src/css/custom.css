@@ -21,11 +21,10 @@ body {
   padding: 5px 10px;
   background-color: var(--ifm-color-primary-light);
   font-size: 0.9rem;
+  margin-top: 0.8rem;
 }
 
 a.conduit-platform {
-  color: white;
-  background-color: var(--ifm-color-primary-light);
   border-radius: 0.625rem; 
   display: flex;
   align-items: center;
@@ -40,7 +39,7 @@ a.conduit-platform::before {
   width: 35px;
   height: 35px;
   float: left;
-  margin-right: 10px;
+  margin-right: 6px;
 }
 
 @media (max-width: 996px) {
