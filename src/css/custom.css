@@ -46,8 +46,8 @@ a.conduit-platform::before {
   margin-right: 6px;
 }
 
-@media (max-width: 996px) {
-  a.conduit-platform {
+@media (max-width: 1450px) {
+  .navbar__items--right > a {
     display: none;
   }
 }
