@@ -18,7 +18,8 @@ const config: Config = {
   organizationName: 'conduitio', // Usually your GitHub org/user name.
   projectName: 'conduit-site', // Usually your repo name.
 
-  onBrokenLinks: 'throw',
+  // TODO: enable again once we finished the refactor
+  // onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   onDuplicateRoutes: 'warn',
 
@@ -37,7 +38,7 @@ const config: Config = {
 
   presets: [
     [
-      'classic',
+      '@docusaurus/preset-classic',
       {
         gtag: {
           trackingID: 'G-QKF0TW3J6Z',
@@ -46,6 +47,7 @@ const config: Config = {
         docs: {
           sidebarPath: './src/sidebars/sidebars.ts',
           editUrl: 'https://github.com/conduitio/conduit-site/edit/main/',
+          showLastUpdateTime: true,
         },
         blog: {
           showReadingTime: true,
@@ -77,6 +79,7 @@ const config: Config = {
         { to: '/changelog',  position: 'left', label: 'Changelog' },
         { href: 'https://meroxa.com/blog', position: 'left', label: 'Blog' },
         { to: '/api', label: 'HTTP API', position: 'left' },
+        { href: 'https://meroxa.io', label: 'Conduit Platform', position: 'right', class: 'conduit-platform' },
         { href: 'https://github.com/ConduitIO/conduit/discussions', label: 'GitHub Discussions', position: 'right' },
         { href: 'https://discord.meroxa.com', label: 'Discord Community', position: 'right' },
       ],

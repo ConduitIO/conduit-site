@@ -1,0 +1,36 @@
+---
+title: "Installing Connectors"
+sidebar_position: 1
+---
+
+Beside the built-in connectors shipped with Conduit there is a
+[list](/docs/connectors/connector-list) of
+connectors that can be added to Conduit as plugins. These are called standalone
+connectors.
+
+To install a standalone connector you first need the compiled connector binary.
+A binary can normally be downloaded from the latest release in the connector's
+GitHub repository (this may vary in 3rd party connectors not developed by the
+Conduit team). Make sure to download the binary that matches your operating
+system and architecture.
+
+Alternatively you can build the binary yourself (for instructions on building a
+connector please refer to the readme of that specific connector).
+
+## Installing a Connector in Conduit
+
+Conduit loads standalone connectors at startup. The connector binaries need to
+be placed in the `connectors` directory relative to the Conduit binary so
+Conduit can find them. Alternatively, the path to the standalone connectors can
+be adjusted using the CLI flag `-connectors.path`, for example:
+
+```shell
+./conduit -connectors.path=/path/to/connectors/
+```
+
+Names of the connector binaries are not important, since Conduit is getting the
+information about connectors from connectors themselves (using their gRPC API).
+
+Find out how to [reference your connector](/docs/connectors/referencing).
+
+![scarf pixel conduit-site-docs-connectors](https://static.scarf.sh/a.png?x-pxid=2fa824d7-fd94-4cf9-a5c8-ea63c9860213)

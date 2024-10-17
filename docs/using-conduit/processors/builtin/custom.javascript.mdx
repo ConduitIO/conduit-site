@@ -1,0 +1,221 @@
+---
+IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
+
+title: 'custom.javascript'
+sidebar_position: 4
+---
+
+import ReactDiffViewer from 'react-diff-viewer';
+import Chip from '@mui/material/Chip';
+import Box from "@mui/system/Box";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# `custom.javascript`
+
+Run custom JavaScript code.
+
+## Description
+
+A processor that makes it possible to process Conduit records using JavaScript.
+
+The following helper functions and variables are available:
+* `logger`: a logger that outputs to Conduit's logs. Check out [Zerolog's API](https://github.com/rs/zerolog) on how to use it.
+* `Record()`: constructs a new record which represents a successful processing result.
+It's analogous to `sdk.SingleRecord` from Conduit's Go processor SDK.
+* `RawData()`: creates a raw data object. It's analogous to `opencdc.RawData`. Optionally, it
+accepts a string argument, which will be cast into a byte array, for example: `record.Key = RawData("new key")`.
+* `StructuredData()`: creates a structured data (map-like) object.
+
+To find out what's possible with the JS processor, also refer to the documentation for 
+[goja](https://github.com/dop251/goja), which is the JavaScript engine we use.
+
+## Configuration parameters
+
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "custom.javascript"
+        settings:
+          # JavaScript code for this processor. It needs to have a function
+          # `process()` that accept a record and returns a record. The
+          # `process()` function can either modify the input record and return
+          # it, or create a new record. If a record needs to be filtered
+          # (dropped from the pipeline), then the `process()` function should
+          # return `null`.
+          # Type: string
+          script: ""
+          # The path to a .js file containing the processor code.
+          # Type: string
+          script.path: ""
+          # Whether to decode the record key using its corresponding schema from
+          # the schema registry.
+          # Type: bool
+          sdk.schema.decode.key.enabled: "true"
+          # Whether to decode the record payload using its corresponding schema
+          # from the schema registry.
+          # Type: bool
+          sdk.schema.decode.payload.enabled: "true"
+          # Whether to encode the record key using its corresponding schema from
+          # the schema registry.
+          # Type: bool
+          sdk.schema.encode.key.enabled: "true"
+          # Whether to encode the record payload using its corresponding schema
+          # from the schema registry.
+          # Type: bool
+          sdk.schema.encode.payload.enabled: "true"
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td>`script`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  JavaScript code for this processor.
+It needs to have a function `process()` that accept
+a record and returns a record.
+The `process()` function can either modify the input record and return it,
+or create a new record.
+If a record needs to be filtered (dropped from the pipeline),
+then the `process()` function should return `null`.
+        </td>
+      </tr>
+      <tr>
+        <td>`script.path`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  The path to a .js file containing the processor code.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.decode.key.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to decode the record key using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.decode.payload.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to decode the record payload using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.encode.key.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to encode the record key using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.encode.payload.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to encode the record payload using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
+
+## Examples
+
+### Modify a record's metadata and payload using JavaScript
+
+In this example we use the `custom.javascript` processor to add a metadata key to the input record. It also prepends "hello, " to `.Payload.After`.
+
+#### Configuration parameters
+
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "custom.javascript"
+        settings:
+          script: |
+            function process(rec) {
+              rec.Metadata["processed"] = "true";
+              let existing = String.fromCharCode.apply(String, rec.Payload.After);
+              rec.Payload.After = RawData("hello, " + existing);
+              return rec;
+            }
+
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`script`</td>
+        <td>
+```js
+function process(rec) {
+  rec.Metadata["processed"] = "true";
+  let existing = String.fromCharCode.apply(String, rec.Payload.After);
+  rec.Payload.After = RawData("hello, " + existing);
+  return rec;
+}
+```
+</td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
+
+#### Record difference
+
+```mdx-code-block
+<Box className='diff-viewer'>
+  <ReactDiffViewer
+    styles={{
+      diffContainer: {
+        overflowX: 'auto',
+        overflowY: 'hidden',
+      },
+    }}
+    leftTitle={'Before'}
+    rightTitle={'After'}
+    oldValue={"{\n  \"position\": null,\n  \"operation\": \"Operation(0)\",\n  \"metadata\": {\n    \"existing-key\": \"existing-value\"\n  },\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": \"world\"\n  }\n}"}
+    newValue={"{\n  \"position\": null,\n  \"operation\": \"Operation(0)\",\n  \"metadata\": {\n    \"existing-key\": \"existing-value\",\n    \"processed\": \"true\"\n  },\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": \"hello, world\"\n  }\n}"}
+    hideLineNumbers={false}
+    showDiffOnly={false}
+    splitView={true}
+  />
+</Box>
+```
+
+
+
+![scarf pixel conduit-site-docs-processors](https://static.scarf.sh/a.png?x-pxid=33ce4d9e-1948-4cab-846a-7e6cd33b8cae)
