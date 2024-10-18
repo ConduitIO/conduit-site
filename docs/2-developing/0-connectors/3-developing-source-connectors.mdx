@@ -112,7 +112,7 @@ successful position. If needed, the connector should open connections in this
 function.
 
 Every record read by a source connector has
-a [position](https://conduit.io/docs/features/opencdc-record#fields) attached.
+a [position](https://conduit.io/docs/core-concepts/opencdc-record#fields) attached.
 The position given to `Open()` is the position of the record that was the last
 to be successfully processed end-to-end, before the connector stopped, or `nil`
 if no records were read. Hence, a position needs to contain enough information

@@ -18,8 +18,7 @@ const config: Config = {
   organizationName: 'conduitio', // Usually your GitHub org/user name.
   projectName: 'conduit-site', // Usually your repo name.
   
-  // TODO: enable again once we finished the refactor
-  // onBrokenLinks: 'throw',
+  onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   onDuplicateRoutes: 'warn',
   
@@ -139,7 +138,7 @@ const config: Config = {
         {
           title: 'Resources',
           items: [
-            { label: 'Connectors', to: '/docs/connectors/connector-list' },
+            { label: 'Connectors', to: '/docs/using/connectors/list' },
             { label: 'Documentation', to: '/docs' },
             { label: 'Issues', href: 'https://github.com/ConduitIO/conduit/issues' },
             { label: 'Changelog', to: '/changelog' },
@@ -210,6 +209,25 @@ const config: Config = {
         onInlineAuthors: 'ignore',
         onInlineTags: 'ignore',
         blogSidebarCount: 'ALL'
+      },
+    ],
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        redirects: [
+          {
+            from: '/docs/connectors/connector-list',
+            to: '/docs/using/connectors/list',
+          },
+          {
+            from: '/docs/pipeline-configuration-files/getting-started',
+            to: '/docs/using/pipelines/configuration-file',
+          },
+          {
+            from: '/docs/features/opencdc-record',
+            to: '/docs/core-concepts/opencdc-record',
+          },
+        ]
       },
     ],
   ],

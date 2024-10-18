@@ -20,7 +20,7 @@ Additionally, this solves the problem of transferring type information in
 standalone connectors. Namely, Conduit and standalone connectors communicate via
 Protobuf messages that have a limited set of types.
 
-Every [record](/docs/features/opencdc-record) that contains structured
+Every [record](/docs/core-concepts/opencdc-record) that contains structured
 data can be associated with a schema.
 The [Apache Avro™](https://avro.apache.org/) format is supported and support for
 more schema types is planned.
@@ -28,9 +28,9 @@ more schema types is planned.
 Since both, a record's key and payload, can be structured, schemas can be
 associated with either. Schemas are not part of a record for performance
 reasons. Instead, a record's metadata contains information about
-the [key schema](/docs/features/opencdc-record#opencdckeyschema)'s subject and
+the [key schema](/docs/core-concepts/opencdc-record#opencdckeyschema)'s subject and
 version as well
-the [payload schema](/docs/features/opencdc-record#opencdcpayloadschema)'s
+the [payload schema](/docs/core-concepts/opencdc-record#opencdcpayloadschema)'s
 subject and version. The schemas themselves are managed
 by [the schema registry](#schema-registry).
 

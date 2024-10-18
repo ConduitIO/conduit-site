@@ -5,7 +5,7 @@ import Wrapper from '@site/src/components/Wrapper';
 const navLinks = [
   {
     label: 'Connectors',
-    href: '/docs/connectors/connector-list',
+    href: '/docs/using/connectors/list',
   },
   {
     label: 'Documentation',

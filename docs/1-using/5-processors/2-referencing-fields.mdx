@@ -3,7 +3,7 @@ title: 'Referencing Record Fields'
 ---
 
 Many builtin processors can be configured to work on a specific field in an
-[OpenCDC record](/docs/features/opencdc-record). That is done through
+[OpenCDC record](/docs/core-concepts/opencdc-record). That is done through
 _field references_, strings that describe the path to a field in a record. That
 can be a field within an OpenCDC record (such as the metadata or the payload),
 but it can also be a [nested field](#accessing-nested-fields).
@@ -96,7 +96,7 @@ A few things to note:
   is represented as a base64-encoded string. We can not reference nested fields
   in raw data. However, if the raw data is first parsed into structured data (e.g.
   if it's a JSON string we can use the
-  [`json.decode`](/docs/processors/builtin/json.decode) processor), then we can
+  [`json.decode`](/docs/using/processors/builtin/json.decode) processor), then we can
   reference the fields in the structured data.
 * `.Metadata["opencdc.readAt"]` references the metadata field `opencdc.readAt`
   using the bracket notation. The dot notation (i.e. `.Metadata.opencdc.readAt`)
