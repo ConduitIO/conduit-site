@@ -9,7 +9,7 @@ const navLinks = [
   },
   {
     label: 'Documentation',
-    href: '/docs/what-is-conduit/introduction',
+    href: '/docs',
   },
   {
     label: 'Conduit Platform',

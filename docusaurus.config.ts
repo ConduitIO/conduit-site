@@ -66,7 +66,7 @@ const config: Config = {
       },
       items: [
         { to: '/', label: 'Home', position: 'left', activeBaseRegex: `///` },
-        { to: '/docs/what-is-conduit/introduction', position: 'left', label: 'Documentation' },
+        { to: '/docs', position: 'left', label: 'Documentation' },
         { to: '/changelog', position: 'left', label: 'Changelog' },
         { to: '/api', label: 'HTTP API', position: 'left' },
         { href: 'https://meroxa.io', label: 'Conduit Platform', position: 'right', class: 'navbar__link navbar__item conduit-platform' },
@@ -140,7 +140,7 @@ const config: Config = {
           title: 'Resources',
           items: [
             { label: 'Connectors', to: '/docs/connectors/connector-list' },
-            { label: 'Documentation', to: '/docs/what-is-conduit/introduction' },
+            { label: 'Documentation', to: '/docs' },
             { label: 'Issues', href: 'https://github.com/ConduitIO/conduit/issues' },
             { label: 'Changelog', to: '/changelog' },
             { label: 'GitHub Discussions', href: 'https://github.com/ConduitIO/conduit/discussions' },
@@ -210,53 +210,6 @@ const config: Config = {
         onInlineAuthors: 'ignore',
         onInlineTags: 'ignore',
         blogSidebarCount: 'ALL'
-      },
-    ],
-    [
-      '@docusaurus/plugin-client-redirects',
-      {
-        redirects: [
-          {
-            from: '/guides/build-a-conduit-connector',
-            to: '/docs/connectors/building-connectors/',
-          },
-          {
-            from: '/docs/connectors/building',
-            to: '/docs/connectors/building-connectors/',
-          },
-          {
-            from: '/docs/running/docker',
-            to: '/docs/getting-started/installing-and-running?option=docker',
-          },
-          {
-            from: '/docs/running/binary',
-            to: '/docs/getting-started/installing-and-running?option=binary',
-          },
-          {
-            from: '/docs/running/homebrew',
-            to: '/docs/getting-started/installing-and-running?option=homebrew',
-          },
-          {
-            from: '/docs/running/source',
-            to: '/docs/getting-started/installing-and-running?option=source',
-          },
-          {
-            from: '/docs/configuration/pipeline-configuration-files',
-            to: '/docs/pipeline-configuration-files/',
-          },
-          {
-            from: '/docs/introduction/getting-started',
-            to: '/docs',
-          },
-          {
-            from: '/docs/introduction/architecture',
-            to: '/docs/getting-started/architecture'
-          },
-          {
-            from: '/docs/connectors/output-formats',
-            to: '/docs/connectors/configuration-parameters/output-format'
-          }
-        ]
       },
     ],
   ],
