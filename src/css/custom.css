@@ -32,7 +32,6 @@ a.conduit-platform {
   border-radius: 0.625rem; 
   display: flex;
   align-items: center;
-  padding: 6px 15px;
 }
 
 a.conduit-platform::before {
