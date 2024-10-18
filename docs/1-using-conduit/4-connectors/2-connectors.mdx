@@ -1,0 +1,38 @@
+---
+title: 'Getting Started with Connectors'
+sidebar_label: "Getting Started"
+---
+
+A Conduit Connector knows how to read/write records from/to a data source/destination
+(e.g. a database).
+
+When thinking about connectors for Conduit, our goals were to:
+- provide a good development experience to connector developers,
+- ship Conduit with real built-in connectors (compiled into the Conduit binary),
+- to make it as easy as possible to write plugins in _any_ programming language,
+- the [Connector SDK](https://github.com/conduitio/conduit-connector-sdk) to be
+  decoupled from Conduit and be able to change without changing Conduit itself.
+
+Conduit ships with a number of built-in connectors:
+
+- [File connector](https://github.com/ConduitIO/conduit-connector-file) provides
+  a source/destination to read/write a local file (useful for quickly trying out
+  Conduit without additional setup).
+- [Kafka connector](https://github.com/ConduitIO/conduit-connector-kafka)
+  provides a source/destination for Apache Kafka.
+- [Postgres connector](https://github.com/ConduitIO/conduit-connector-postgres)
+  provides a source/destination for PostgreSQL.
+- [S3 connector](https://github.com/ConduitIO/conduit-connector-s3) provides a
+  source/destination for AWS S3.
+- [Generator connector](https://github.com/ConduitIO/conduit-connector-generator)
+  provides a source which generates random data (useful for testing).
+- [Log connector](https://github.com/ConduitIO/conduit-connector-log)
+  provides a destination which outputs records in the Conduit logs.
+
+Besides these connectors there is a number of standalone connectors that can be
+added to Conduit as plugins (find the complete
+list [here](/docs/connectors/connector-list)).
+
+Have a look at how to [install a connector](/docs/connectors/installing) next!
+
+![scarf pixel conduit-site-docs-connectors](https://static.scarf.sh/a.png?x-pxid=2fa824d7-fd94-4cf9-a5c8-ea63c9860213)

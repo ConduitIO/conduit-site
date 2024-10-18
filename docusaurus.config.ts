@@ -1,33 +1,33 @@
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
+import { themes as prismThemes } from 'prism-react-renderer';
+import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'Conduit | Data Integration for Production Data Stores',
   tagline: 'Sync data between your production systems using an extensible, event-first experience with minimal dependencies that fit within your existing workflow for free.',
   favicon: 'img/favicon.ico',
-
+  
   // Set the production url of your site here
   url: 'https://conduit.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
-
+  
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'conduitio', // Usually your GitHub org/user name.
   projectName: 'conduit-site', // Usually your repo name.
-
+  
   // TODO: enable again once we finished the refactor
   // onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   onDuplicateRoutes: 'warn',
-
+  
   markdown: {
     mermaid: true,
   },
   themes: ['@docusaurus/theme-mermaid'],
-
+  
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
   // may want to replace "en" with "zh-Hans".
@@ -35,7 +35,7 @@ const config: Config = {
     defaultLocale: 'en',
     locales: ['en'],
   },
-
+  
   presets: [
     [
       '@docusaurus/preset-classic',
@@ -64,7 +64,7 @@ const config: Config = {
       } satisfies Preset.Options,
     ],
   ],
-
+  
   themeConfig: {
     metadata: [{ name: 'facebook-domain-verification', content: '0aq4u2ydyv4axal6x65gslmidlhc7j' }],
     image: 'img/generic-social-image.png',
@@ -75,8 +75,8 @@ const config: Config = {
       },
       items: [
         { to: '/', label: 'Home', position: 'left', activeBaseRegex: `///` },
-        { to: '/docs',  position: 'left', label: 'Documentation' },
-        { to: '/changelog',  position: 'left', label: 'Changelog' },
+        { to: '/docs/what-is-conduit/introduction', position: 'left', label: 'Documentation' },
+        { to: '/changelog', position: 'left', label: 'Changelog' },
         { href: 'https://meroxa.com/blog', position: 'left', label: 'Blog' },
         { to: '/api', label: 'HTTP API', position: 'left' },
         { href: 'https://meroxa.io', label: 'Conduit Platform', position: 'right', class: 'navbar__link navbar__item conduit-platform' },
@@ -87,27 +87,27 @@ const config: Config = {
     algolia: { // https://docusaurus.io/docs/search#using-algolia-docsearch
       // The application ID provided by Algolia
       appId: '37HOKUPXLR', // 
-
+      
       // Search API key: it is safe to commit it
       apiKey: '6a3c0c5d80ffbcba9eb001201f9128b8',
-
+      
       indexName: 'conduit',
-
+      
       // Facets could be configured via https://dashboard.algolia.com/apps/37HOKUPXLR/explorer/configuration/conduit/facets. It's important to note that the facets need to be enabled in the Algolia dashboard.
       contextualSearch: false,
       // searchParameters: {
       //   facetFilters: ['language:en', ''],
       // },
-
+      
       // Optional: Specify domains where the navigation should occur through window.location instead on history.push. Useful when our Algolia config crawls multiple documentation sites and we want to navigate with window.location.href to them.
       // externalUrlRegex: '',
-
+      
       // Optional: Algolia search parameters
       // searchParameters: {},
-
+      
       // This creates a custom page where the search is displayed. This can be useful when sharing a specific list of urls.
       searchPagePath: 'docs/search', // 
-
+      
       // Optional: whether the insights feature is enabled or not on Docsearch (`false` by default)
       insights: true,
     },
@@ -151,7 +151,7 @@ const config: Config = {
           title: 'Resources',
           items: [
             { label: 'Connectors', to: '/docs/connectors/connector-list' },
-            { label: 'Documentation', to: '/docs' },
+            { label: 'Documentation', to: '/docs/what-is-conduit/introduction' },
             { label: 'Issues', href: 'https://github.com/ConduitIO/conduit/issues' },
             { label: 'Changelog', to: '/changelog' },
             { label: 'GitHub Discussions', href: 'https://github.com/ConduitIO/conduit/discussions' },

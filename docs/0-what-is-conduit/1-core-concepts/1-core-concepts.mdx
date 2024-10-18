@@ -1,0 +1,40 @@
+---
+title: "Core concepts"
+---
+
+## Pipeline 
+
+A pipeline receives records from one or multiple source
+  connectors, pushes them through zero or multiple processors until they reach
+  one or multiple destination connectors.
+
+## Connector 
+
+A connector is the internal entity that communicates with a
+  connector plugin and either pushes records from the plugin into the pipeline
+  (source connector) or the other way around (destination connector).
+## Connector plugin 
+
+Sometimes also referred to as "plugin", is an external
+  process which communicates with Conduit and knows how to read/write records
+  from/to a data source/destination (e.g. a database).
+
+## Processor 
+
+A component that executes an operation on a single record that
+  flows through the pipeline. It can either change the record or filter it out
+  based on some criteria.
+
+## OpenCDC Record 
+
+A record represents a single piece of data that flows through a
+  pipeline (e.g. one database row).
+
+## Collection 
+
+A generic term used in Conduit to describe an entity in a
+  3rd party system from which records are read from or to which records they are
+  written to. Examples are: topics (in Kafka), tables (in a database), indexes (
+  in a search engine), collections (in NoSQL databases), etc.
+
+![scarf pixel conduit-site-docs-introduction](https://static.scarf.sh/a.png?x-pxid=01346572-0d57-4df3-8399-1425db913a0a)
