@@ -14,6 +14,43 @@ body {
   'Noto Color Emoji';
 }
 
+.sidebar-header {
+  color: white;
+  font-weight: 500;
+  border-radius: 0.3rem;
+  padding: 5px 10px;
+  background-color: var(--ifm-color-primary-light);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+nav > li:nth-child(1) > li.sidebar-header {
+  margin-top: 0;
+}
+
+a.conduit-platform {
+  border-radius: 0.625rem; 
+  display: flex;
+  align-items: center;
+}
+
+a.conduit-platform::before {
+  content: "";
+  background-image: url('/img/meroxa-logo-simple.svg');
+  background-size: cover;
+  background-position: center left;
+  width: 35px;
+  height: 35px;
+  float: left;
+  margin-right: 6px;
+}
+
+@media (max-width: 1200px) {
+  .navbar__items--right > a {
+    display: none;
+  }
+}
+
 :root {
   --ifm-color-primary: #10616f;
   --ifm-color-primary-dark: #0e5764;

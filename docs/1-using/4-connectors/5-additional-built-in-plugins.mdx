@@ -1,0 +1,69 @@
+---
+title: "Adding built-in Connectors"
+---
+
+Built-in connectors offer better performance when compared to standalone ones,
+which is why in some cases it's desirable to have a custom build of Conduit that
+includes additional built-in connectors.
+
+The simplest way to achieve so is to write a small application that embeds
+Conduit (i.e. uses Conduit as a library) and adds one or more connectors to its
+default configuration.
+
+In the example below we will add
+the [HTTP connector](https://github.com/conduitio-labs/conduit-connector-http)
+to Conduit as a built-in connector.
+
+First, we initialize a Go module with `go mod init github.com/conduitio-labs/custom-conduit`.
+
+Then , we need to add Conduit and the HTTP connector as dependencies:
+```shell
+go get github.com/conduitio/conduit
+go get github.com/conduitio-labs/conduit-connector-http
+go mod tidy
+```
+
+Once that is done, we need to write a `main` function that:
+1. Adds the HTTP connector the default Conduit configuration
+2. Runs Conduit with the custom configuration.
+
+That's done in the code below:
+
+```go
+package main
+
+import (
+	http "github.com/conduitio-labs/conduit-connector-http"
+	"github.com/conduitio/conduit/pkg/conduit"
+)
+
+func main() {
+	// Get the default configuration, including all built-in connectors
+	cfg := conduit.DefaultConfig()
+
+	// Add the HTTP connector to list of built-in connectors
+	cfg.ConnectorPlugins["http"] = http.Connector
+
+	conduit.Serve(cfg)
+}
+```
+
+This custom version of Conduit can be built with `go build -o custom-conduit main.go`. If
+you run the built binary, you can check that the HTTP connector has been
+included in the build by listing all the connector plugins: 
+```shell
+curl 'http://localhost:8080/v1/connectors/plugins'
+
+[
+  {
+    "name": "builtin:http@(devel)",
+    "summary": "HTTP source and destination connectors for Conduit.",
+    "description": "Conduit HTTP source and destination connectors, they connect to an HTTP URL and send HTTP requests.",
+    "version": "(devel)",
+    "author": "",
+    "destinationParams": {},
+    "sourceParams": {}
+  }
+  // other plugins
+]
+```
