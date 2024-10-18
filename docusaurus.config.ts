@@ -80,8 +80,6 @@ const config: Config = {
         { href: 'https://meroxa.com/blog', position: 'left', label: 'Blog' },
         { to: '/api', label: 'HTTP API', position: 'left' },
         { href: 'https://meroxa.io', label: 'Conduit Platform', position: 'right', class: 'navbar__link navbar__item conduit-platform' },
-        { href: 'https://github.com/ConduitIO/conduit/discussions', label: 'GitHub Discussions', position: 'right' },
-        { href: 'https://discord.meroxa.com', label: 'Discord Community', position: 'right' },
       ],
     },
     algolia: { // https://docusaurus.io/docs/search#using-algolia-docsearch
