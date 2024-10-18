@@ -1,0 +1,111 @@
+---
+title: 'Referencing Record Fields'
+---
+
+Many builtin processors can be configured to work on a specific field in an
+[OpenCDC record](/docs/features/opencdc-record). That is done through
+_field references_, strings that describe the path to a field in a record. That
+can be a field within an OpenCDC record (such as the metadata or the payload),
+but it can also be a [nested field](#accessing-nested-fields).
+
+To reference one of the OpenCDC record fields, you can use a similar notation to
+accessing fields in a [Go template](https://pkg.go.dev/text/template)
+executed on an [`opencdc.Record`](https://github.com/ConduitIO/conduit-commons/blob/v0.1.1/opencdc/record.go#L30)
+value. For example, `.Metadata` will reference the field named
+`Metadata`.
+
+:::tip[Why do record fields start with an uppercase letter?]
+
+The main record fields start with an uppercase letter, because they are public
+fields in the Go type [`opencdc.Record`](https://github.com/ConduitIO/conduit-commons/blob/v0.1.1/opencdc/record.go#L30)
+which is used to resolve field references (e.g. `Metadata`, `Position`,
+`Operation`, `Key`, `Payload`).
+
+:::
+
+## Accessing Nested Fields
+
+Nested fields can be accessed using two different notations: the **dot notation**
+and the **bracket notation**:
+
+* The **dot notation** is used to access fields containing only alphanumeric
+  characters. For example, the reference `.Metadata.foo` will access the
+  field named `foo` in the `Metadata` field.
+* The **bracket notation** is used to access fields containing non-alphanumeric
+  characters. For example, the reference `.Metadata["opencdc.readAt"]` will
+  access the field named `opencdc.readAt` in the `Metadata` field.
+
+## Examples
+
+Below is an example OpenCDC record (left) and the field references that can be
+used to access the fields in the record (right):
+
+<table style={{backgroundColor: "#282A36"}}>
+    <tr>
+        <td>
+```json title="Example OpenCDC record"
+{
+    "position": "c3RhbmRpbmc=",
+    "operation": "update",
+    "metadata": {
+        "foo": "bar",
+        "opencdc.readAt": "1663858188836816000"
+    },
+    "key": "cGFkbG9jay1rZXk=",
+    "payload": {
+        "before": "eWVsbG93",
+        "after": {
+            "boolField": true,
+            "nested": {
+                "non-alphanumeric key!": "baz"
+            }
+        }
+    }
+}
+```
+        </td>
+        <td>
+```json title="Field references per line"
+.
+.Position
+.Operation
+.Metadata
+.Metadata.foo / .Metadata["foo"]
+.Metadata["opencdc.readAt"]
+
+.Key
+.Payload
+.Payload.Before
+.Payload.After
+.Payload.After.boolField / .Payload.After["boolField"]
+.Payload.After.nested / .Payload.After["nested"]
+.Payload.After.nested["non-alphanumeric key!"] / .Payload.After["nested"]["non-alphanumeric key!"]
+
+
+
+
+```
+        </td>
+    </tr>
+</table>
+
+A few things to note:
+
+* `.` references the entire record (i.e. the JSON object above).
+* Fields `.Key` and `.Payload.Before` contain raw data (i.e. byte arrays), which
+  is represented as a base64-encoded string. We can not reference nested fields
+  in raw data. However, if the raw data is first parsed into structured data (e.g.
+  if it's a JSON string we can use the
+  [`json.decode`](/docs/processors/builtin/json.decode) processor), then we can
+  reference the fields in the structured data.
+* `.Metadata["opencdc.readAt"]` references the metadata field `opencdc.readAt`
+  using the bracket notation. The dot notation (i.e. `.Metadata.opencdc.readAt`)
+  cannot be used here because the referenced key `opencdc.readAt` contains a
+  non-alphanumeric character (the dot).
+* Note that references to fields nested inside `.Key`, `.Payload.Before` and
+  `.Payload.After` **do not** start with an uppercase letter, because these
+  fields are not part of the
+  [`opencdc.Record`](https://github.com/ConduitIO/conduit-commons/blob/v0.1.1/opencdc/record.go#L30)
+  type. They are referenced by their actual names, as they appear in JSON.
+
+![scarf pixel conduit-site-docs-processors](https://static.scarf.sh/a.png?x-pxid=33ce4d9e-1948-4cab-846a-7e6cd33b8cae)

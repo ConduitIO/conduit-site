@@ -1,0 +1,21 @@
+---
+title: "Developing Custom Connectors"
+---
+
+Conduit connectors can be built in any programming language that supports gRPC.
+To make it easier to write connectors we provide
+a [Connector SDK](https://github.com/ConduitIO/conduit-connector-sdk) written in
+Go. Using the SDK is the recommended way of writing a Conduit connector. If you
+are implementing a connector in a different language you should refer to
+the [Connector Protocol](https://github.com/ConduitIO/conduit-connector-protocol).
+
+## Conduit connector template
+
+The easiest way to start implementing your own Conduit connector is by using the
+[Conduit connector template](/docs/connectors/building-connectors/conduit-connector-template).
+It contains the basic project structure as well as some additional utilities
+like GitHub actions and a Makefile.
+
+Find out more about the template and how to use it in the readme.
+
+![scarf pixel conduit-site-docs-connectors](https://static.scarf.sh/a.png?x-pxid=2fa824d7-fd94-4cf9-a5c8-ea63c9860213)
