@@ -49,15 +49,6 @@ const config: Config = {
           editUrl: 'https://github.com/conduitio/conduit-site/edit/main/',
           showLastUpdateTime: true,
         },
-        blog: {
-          showReadingTime: true,
-          feedOptions: {
-            type: 'all',
-            copyright: `Copyright © ${new Date().getFullYear()} Meroxa, Inc.`,
-          },
-          routeBasePath: 'guides',
-          path: './guides',
-        },
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -77,9 +68,9 @@ const config: Config = {
         { to: '/', label: 'Home', position: 'left', activeBaseRegex: `///` },
         { to: '/docs/what-is-conduit/introduction', position: 'left', label: 'Documentation' },
         { to: '/changelog', position: 'left', label: 'Changelog' },
-        { href: 'https://meroxa.com/blog', position: 'left', label: 'Blog' },
         { to: '/api', label: 'HTTP API', position: 'left' },
         { href: 'https://meroxa.io', label: 'Conduit Platform', position: 'right', class: 'navbar__link navbar__item conduit-platform' },
+        { href: 'https://meroxa.com/blog', position: 'right', label: 'Blog' },
       ],
     },
     algolia: { // https://docusaurus.io/docs/search#using-algolia-docsearch
