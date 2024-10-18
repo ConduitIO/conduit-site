@@ -12,7 +12,61 @@ each configuration option based on the following priorities:
 
  **CLI flags** (highest priority) - if a CLI flag is provided it will always be
   respected, regardless of the environment variable or configuration file. To
-  see a full list of available flags run `conduit --help`.
+  see a full list of available flags run `conduit --help`:
+
+
+```bash
+$ conduit --help
+Usage of conduit:
+  -api.enabled
+    	enable HTTP and gRPC API (default true)
+  -config string
+    	global config file (default "conduit.yaml")
+  -connectors.path string
+    	path to standalone connectors' directory (default "./connectors")
+  -db.badger.path string
+    	path to badger DB (default "conduit.db")
+  -db.postgres.connection-string string
+    	postgres connection string, may be a database URL or in PostgreSQL keyword/value format
+  -db.postgres.table string
+    	postgres table in which to store data (will be created if it does not exist) (default "conduit_kv_store")
+  -db.sqlite.path string
+    	path to sqlite3 DB (default "conduit.db")
+  -db.sqlite.table string
+    	sqlite3 table in which to store data (will be created if it does not exist) (default "conduit_kv_store")
+  -db.type string
+    	database type; accepts badger,postgres,inmemory,sqlite (default "badger")
+  -grpc.address string
+    	address for serving the gRPC API (default ":8084")
+  -http.address string
+    	address for serving the HTTP API (default ":8080")
+  -log.format string
+    	sets the format of the logging; accepts json, cli (default "cli")
+  -log.level string
+    	sets logging level; accepts debug, info, warn, error, trace (default "info")
+  -pipelines.error-recovery.backoff-factor int
+    	backoff factor applied to the last delay (default 2)
+  -pipelines.error-recovery.max-delay duration
+    	maximum delay before restart (default 10m0s)
+  -pipelines.error-recovery.max-retries int
+    	maximum number of retries (default -1)
+  -pipelines.error-recovery.max-retries-window duration
+    	amount of time running without any errors after which a pipeline is considered healthy (default 5m0s)
+  -pipelines.error-recovery.min-delay duration
+    	minimum delay before restart (default 1s)
+  -pipelines.exit-on-degraded
+    	exit Conduit if a pipeline enters a degraded state
+  -pipelines.path string
+    	path to the directory that has the yaml pipeline configuration files, or a single pipeline configuration file (default "./pipelines")
+  -processors.path string
+    	path to standalone processors' directory (default "./processors")
+  -schema-registry.confluent.connection-string string
+    	confluent schema registry connection string
+  -schema-registry.type string
+    	schema registry type; accepts builtin,confluent (default "builtin")
+  -version
+    	prints current Conduit version
+```
 
 ## Environment variables
 
