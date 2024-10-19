@@ -52,7 +52,7 @@ describe what the processor does and the configuration parameters it expects. He
 `sdk.Specification` struct and their descriptions:
 
   * `Name`: the name of the processor. Note that the name should be unique across all processors, as it's used to
-    reference the processor in a pipeline (see [referencing processors](/docs/using/processors//referencing)).
+    reference the processor in a pipeline (see [referencing processors](/docs/using/processors/referencing)).
   * `Version`: the version of the processor. This should be a valid [semver](https://semver.org) version and needs to be
     updated whenever the processor's behavior changes.
   * `Summary`: a short description of what the processor does (ideally a one-liner).
@@ -70,7 +70,7 @@ Check out the [ParamGen readme](https://github.com/ConduitIO/conduit-commons/tre
 :::info
 
 Note that a processor's name and version need to be unique across all processors, as they are used to
-[reference](/docs/using/processors//referencing) the processor in a pipeline. If two processors have the same name and version,
+[reference](/docs/using/processors/referencing) the processor in a pipeline. If two processors have the same name and version,
 Conduit will refuse to load them.
 
 :::

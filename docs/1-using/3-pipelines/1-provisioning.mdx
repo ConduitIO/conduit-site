@@ -4,7 +4,7 @@ title: 'Provisioning'
 
 This document describes how provisioning of pipeline configuration files works
 in Conduit. To see how a pipeline configuration file is structured check the
-[specifications](/docs/pipeline-configuration-files/specifications).
+[specifications](/docs/using/pipelines/configuration-file).
 
 ## Conduit provisions pipelines at startup
 
@@ -90,14 +90,14 @@ beginning, as if it's running for the first time.
 Here is a full list of fields that will cause the connector to start from the
 beginning if they are updated:
 
-- [`pipeline.id`](/docs/pipeline-configuration-files/specifications#id) - The
+- [`pipeline.id`](/docs/using/pipelines/configuration-file#id) - The
   entire pipeline will be recreated and all source connectors will start from
   the beginning.
-- [`connector.id`](/docs/pipeline-configuration-files/specifications#id-1) - The
+- [`connector.id`](/docs/using/pipelines/configuration-file#id-1) - The
   updated connector will start from the beginning (only source connectors).
-- [`connector.type`](/docs/pipeline-configuration-files/specifications#type) -
+- [`connector.type`](/docs/using/pipelines/configuration-file#type) -
   The updated connector will start from the beginning (only source connectors).
-- [`connector.plugin`](/docs/pipeline-configuration-files/specifications#plugin-1) -
+- [`connector.plugin`](/docs/using/pipelines/configuration-file#plugin-1) -
   The updated connector will start from the beginning (only source connectors).
 
 ## Deleting a provisioned pipeline

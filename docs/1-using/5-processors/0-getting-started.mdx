@@ -4,7 +4,7 @@ sidebar_label: 'Getting Started'
 ---
 
 A processor is a component that operates on a single record that flows through a pipeline. It can either **transform** the record, or **filter** it out based on some criteria. Since they are part of pipelines, making
-yourself familiar with [pipeline semantics](/docs/features/pipeline-semantics) is highly recommended.
+yourself familiar with [pipeline semantics](/docs/core-concepts/pipeline-semantics) is highly recommended.
 
 ![Pipeline](/img/pipeline_example.svg)
 
@@ -30,11 +30,11 @@ When it comes to using a processor, Conduit supports different types:
 
 ## How to use a processor
 
-In these following examples, we're using the [`json.decode`](/docs/using/processors/builtin/json.decode), but you could use any other you'd like from our [Built-in](/docs/using/processors/builtin/) ones, or even [reference](/docs/using/processors//referencing) your own [Standalone processor](/docs/developing/processors).  
+In these following examples, we're using the [`json.decode`](/docs/using/processors/builtin/json.decode), but you could use any other you'd like from our [Built-in](/docs/using/processors/builtin/) ones, or even [reference](/docs/using/processors/referencing) your own [Standalone processor](/docs/developing/processors).  
 
 :::info
 
-When referencing the name of a processor plugin there are different ways you can make sure you're using the one you'd like. Please, check out the [Referencing Processors](/docs/using/processors//referencing) documentation for more information.
+When referencing the name of a processor plugin there are different ways you can make sure you're using the one you'd like. Please, check out the [Referencing Processors](/docs/using/processors/referencing) documentation for more information.
 
 :::
 
@@ -78,7 +78,7 @@ pipelines:
       # other connectors
 ```
 
-The documentation about how to configure processors in pipeline configuration files can be found [here](/docs/pipeline-configuration-files/specifications#processor).
+The documentation about how to configure processors in pipeline configuration files can be found [here](/docs/using/pipelines/configuration-file#processor).
 
 ### Using the [HTTP API](/api#get-/v1/processors)
 
