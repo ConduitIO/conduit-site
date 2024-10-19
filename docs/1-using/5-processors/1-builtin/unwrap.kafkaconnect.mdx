@@ -1,8 +1,8 @@
 ---
 IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
 
-title: 'unwrap.opencdc'
-sidebar_position: 15
+title: 'unwrap.kafkaconnect'
+sidebar_position: 14
 ---
 
 import ReactDiffViewer from 'react-diff-viewer';
@@ -11,17 +11,18 @@ import Box from "@mui/system/Box";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# `unwrap.opencdc`
+# `unwrap.kafkaconnect`
 
-Unwraps an [OpenCDC record](https://conduit.io/docs/core-concepts/opencdc-record) saved in one of the record's fields.
+Unwraps a Kafka Connect record from an [OpenCDC record](https://conduit.io/docs/core-concepts/opencdc-record).
 
 ## Description
 
-The `unwrap.opencdc` processor is useful in situations where a record goes through intermediate
-systems before being written to a final destination. In these cases, the original [OpenCDC record](https://conduit.io/docs/core-concepts/opencdc-record) is part of the payload
-read from the intermediate system and needs to be unwrapped before being written.
+This processor unwraps a Kafka Connect record from the input [OpenCDC record](https://conduit.io/docs/core-concepts/opencdc-record).
 
-Note: if the wrapped [OpenCDC record](https://conduit.io/docs/core-concepts/opencdc-record) is not in a structured data field, then it's assumed that it's stored in JSON format.
+The input record's payload is replaced with the Kafka Connect record.
+
+This is useful in cases where Conduit acts as an intermediary between a Debezium source and a Debezium destination. 
+In such cases, the Debezium record is set as the [OpenCDC record](https://conduit.io/docs/core-concepts/opencdc-record)'s payload, and needs to be unwrapped for further usage.
 
 ## Configuration parameters
 
@@ -36,11 +37,12 @@ pipelines:
       # define source and destination ...
     processors:
       - id: example
-        plugin: "unwrap.opencdc"
+        plugin: "unwrap.kafkaconnect"
         settings:
-          # Field is a reference to the field that contains the OpenCDC record.
+          # Field is a reference to the field that contains the Kafka Connect
+          # record.
           # For more information about the format, see [Referencing
-          # fields](https://conduit.io/docs/using/processors//referencing-fields).
+          # fields](https://conduit.io/docs/using/processors/referencing-fields.
           # Type: string
           field: ".Payload.After"
           # Whether to decode the record key using its corresponding schema from
@@ -74,9 +76,9 @@ pipelines:
         <td>string</td>
         <td>`.Payload.After`</td>
         <td>
-  Field is a reference to the field that contains the OpenCDC record.
+  Field is a reference to the field that contains the Kafka Connect record.
 
-For more information about the format, see [Referencing fields](https://conduit.io/docs/using/processors//referencing-fields).
+For more information about the format, see [Referencing fields](https://conduit.io/docs/using/processors/referencing-fields.
         </td>
       </tr>
       <tr>
@@ -117,9 +119,14 @@ For more information about the format, see [Referencing fields](https://conduit.
 
 ## Examples
 
-### Unwrap an [OpenCDC record](https://conduit.io/docs/core-concepts/opencdc-record)
+### Unwrap a Kafka Connect record
 
-In this example we use the `unwrap.opencdc` processor to unwrap the [OpenCDC record](https://conduit.io/docs/core-concepts/opencdc-record) found in the record's `.Payload.After` field.
+This example shows how to unwrap a Kafka Connect record.
+
+The Kafka Connect record is serialized as a JSON string in the `.Payload.After` field (raw data).
+The Kafka Connect record's payload will replace the [OpenCDC record](https://conduit.io/docs/core-concepts/opencdc-record)'s payload.
+
+We also see how the key is unwrapped too. In this case, the key comes in as structured data.
 
 #### Configuration parameters
 
@@ -134,7 +141,7 @@ pipelines:
       # define source and destination ...
     processors:
       - id: example
-        plugin: "unwrap.opencdc"
+        plugin: "unwrap.kafkaconnect"
         settings:
           field: ".Payload.After"
 ```
@@ -166,8 +173,8 @@ pipelines:
     }}
     leftTitle={'Before'}
     rightTitle={'After'}
-    oldValue={"{\n  \"position\": \"d3JhcHBpbmcgcG9zaXRpb24=\",\n  \"operation\": \"create\",\n  \"metadata\": {},\n  \"key\": \"wrapping key\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"key\": {\n        \"id\": \"test-key\"\n      },\n      \"metadata\": {},\n      \"operation\": \"update\",\n      \"payload\": {\n        \"after\": {\n          \"msg\": \"string 0e8955b3-7fb5-4dda-8064-e10dc007f00d\",\n          \"sensor_id\": 1250383582,\n          \"triggered\": false\n        },\n        \"before\": null\n      },\n      \"position\": \"dGVzdC1wb3NpdGlvbg==\"\n    }\n  }\n}"}
-    newValue={"{\n  \"position\": \"d3JhcHBpbmcgcG9zaXRpb24=\",\n  \"operation\": \"update\",\n  \"metadata\": {},\n  \"key\": {\n    \"id\": \"test-key\"\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"msg\": \"string 0e8955b3-7fb5-4dda-8064-e10dc007f00d\",\n      \"sensor_id\": 1250383582,\n      \"triggered\": false\n    }\n  }\n}"}
+    oldValue={"{\n  \"position\": \"dGVzdCBwb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"metadata-key\": \"metadata-value\"\n  },\n  \"key\": {\n    \"payload\": {\n      \"id\": 27\n    },\n    \"schema\": {}\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": \"{\\n\\\"payload\\\": {\\n  \\\"description\\\": \\\"test2\\\"\\n},\\n\\\"schema\\\": {}\\n}\"\n  }\n}"}
+    newValue={"{\n  \"position\": \"dGVzdCBwb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"metadata-key\": \"metadata-value\"\n  },\n  \"key\": {\n    \"id\": 27\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"description\": \"test2\"\n    }\n  }\n}"}
     hideLineNumbers={false}
     showDiffOnly={false}
     splitView={true}

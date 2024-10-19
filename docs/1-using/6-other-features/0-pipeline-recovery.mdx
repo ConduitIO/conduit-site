@@ -34,7 +34,7 @@ pipelines, we differentiate between two types of errors: fatal and non-fatal.
 **Fatal errors** are the errors that a pipeline cannot recover from. Two types
 of errors are fatal by default:
 
-1. [DLQ threshold](/docs/features/dead-letter-queue) exceeded (because the purpose of the DLQ threshold is to stop a
+1. [DLQ threshold](/docs/using/other-features/dead-letter-queue) exceeded (because the purpose of the DLQ threshold is to stop a
    pipeline if too many records are nack-ed)
 2. Processor errors (because processors are usually deterministic, so if a
    processor failed processing a record once, it will most likely fail

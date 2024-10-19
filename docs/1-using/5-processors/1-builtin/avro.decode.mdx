@@ -1,8 +1,8 @@
 ---
 IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
 
-title: 'unwrap.debezium'
-sidebar_position: 13
+title: 'avro.decode'
+sidebar_position: 0
 ---
 
 import ReactDiffViewer from 'react-diff-viewer';
@@ -11,19 +11,20 @@ import Box from "@mui/system/Box";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# `unwrap.debezium`
+# `avro.decode`
 
-Unwraps a Debezium record from the input [OpenCDC record](https://conduit.io/docs/core-concepts/opencdc-record).
+Decodes a field's raw data in the Avro format.
 
 ## Description
 
-In this processor, the wrapped (Debezium) record replaces the wrapping record (being processed) 
-completely, except for the position.
+The processor takes raw data (bytes or a string) in the specified field and decodes
+it from the [Avro format](https://avro.apache.org/) into structured data. It extracts the schema ID from the data,
+downloads the associated schema from the [schema registry](https://docs.confluent.io/platform/current/schema-registry/index.html)
+and decodes the payload. The schema is cached locally after it's first downloaded.
 
-The Debezium record's metadata and the wrapping record's metadata is merged, with the Debezium metadata having precedence.
+If the processor encounters structured data or the data can't be decoded it returns an error.
 
-This is useful in cases where Conduit acts as an intermediary between a Debezium source and a Debezium destination. 
-In such cases, the Debezium record is set as the [OpenCDC record](https://conduit.io/docs/core-concepts/opencdc-record)'s payload,and needs to be unwrapped for further usage.
+This processor is the counterpart to [`avro.encode`](/docs/using/processors/builtin/avro.encode).
 
 ## Configuration parameters
 
@@ -38,11 +39,11 @@ pipelines:
       # define source and destination ...
     processors:
       - id: example
-        plugin: "unwrap.debezium"
+        plugin: "avro.decode"
         settings:
-          # Field is a reference to the field that contains the Debezium record.
+          # The field that will be decoded.
           # For more information about the format, see [Referencing
-          # fields](https://conduit.io/docs/using/processors//referencing-fields).
+          # fields](https://conduit.io/docs/using/processors/referencing-fields.
           # Type: string
           field: ".Payload.After"
           # Whether to decode the record key using its corresponding schema from
@@ -76,9 +77,9 @@ pipelines:
         <td>string</td>
         <td>`.Payload.After`</td>
         <td>
-  Field is a reference to the field that contains the Debezium record.
+  The field that will be decoded.
 
-For more information about the format, see [Referencing fields](https://conduit.io/docs/using/processors//referencing-fields).
+For more information about the format, see [Referencing fields](https://conduit.io/docs/using/processors/referencing-fields.
         </td>
       </tr>
       <tr>
@@ -119,10 +120,23 @@ For more information about the format, see [Referencing fields](https://conduit.
 
 ## Examples
 
-### Unwrap a Debezium record
+### Decode a record field in Avro format
 
-This example how to unwrap a Debezium record from a field nested in a record's
-`.Payload.After` field. It additionally shows how the key is unwrapped, and the metadata merged.
+This example shows the usage of the `avro.decode` processor.
+The processor decodes the record's`.Key` field using the schema that is
+downloaded from the schema registry and needs to exist under the subject`example-decode`.
+In this example we use the following schema:
+
+```json
+{
+  "type":"record",
+  "name":"record",
+  "fields":[
+    {"name":"myString","type":"string"},
+    {"name":"myInt","type":"int"}
+  ]
+}
+```
 
 #### Configuration parameters
 
@@ -137,9 +151,9 @@ pipelines:
       # define source and destination ...
     processors:
       - id: example
-        plugin: "unwrap.debezium"
+        plugin: "avro.decode"
         settings:
-          field: ".Payload.After.nested"
+          field: ".Key"
 ```
   </TabItem>
   <TabItem value="table" label="Table">
@@ -150,7 +164,7 @@ pipelines:
       </tr>
       <tr>
         <td>`field`</td>
-        <td>`.Payload.After.nested`</td>
+        <td>`.Key`</td>
       </tr>
     </table>
   </TabItem>
@@ -169,8 +183,8 @@ pipelines:
     }}
     leftTitle={'Before'}
     rightTitle={'After'}
-    oldValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"metadata-key\": \"metadata-value\"\n  },\n  \"key\": \"{\\\"payload\\\":\\\"27\\\"}\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"nested\": \"{\\n  \\\"payload\\\": {\\n    \\\"after\\\": {\\n      \\\"description\\\": \\\"test1\\\",\\n      \\\"id\\\": 27\\n    },\\n    \\\"before\\\": null,\\n    \\\"op\\\": \\\"c\\\",\\n    \\\"source\\\": {\\n      \\\"opencdc.readAt\\\": \\\"1674061777225877000\\\",\\n      \\\"opencdc.version\\\": \\\"v1\\\"\\n    },\\n    \\\"transaction\\\": null,\\n    \\\"ts_ms\\\": 1674061777225\\n  },\\n  \\\"schema\\\": {}\\n}\"\n    }\n  }\n}"}
-    newValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"metadata-key\": \"metadata-value\",\n    \"opencdc.readAt\": \"1674061777225877000\",\n    \"opencdc.version\": \"v1\"\n  },\n  \"key\": \"27\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"description\": \"test1\",\n      \"id\": 27\n    }\n  }\n}"}
+    oldValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": \"\\u0000\\u0000\\u0000\\u0000\\u0001\\u0006bar\\u0002\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": null\n  }\n}"}
+    newValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": {\n    \"myInt\": 1,\n    \"myString\": \"bar\"\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": null\n  }\n}"}
     hideLineNumbers={false}
     showDiffOnly={false}
     splitView={true}

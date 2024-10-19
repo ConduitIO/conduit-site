@@ -8,7 +8,7 @@
     "parameters": {
       "field": {
         "default": ".Payload.After",
-        "description": "Field is a reference to the field that contains the OpenCDC record.\n\nFor more information about the format, see [Referencing fields](https://conduit.io/docs/using/processors//referencing-fields).",
+        "description": "Field is a reference to the field that contains the OpenCDC record.\n\nFor more information about the format, see [Referencing fields](https://conduit.io/docs/using/processors/referencing-fields.",
         "type": "string",
         "validations": []
       },

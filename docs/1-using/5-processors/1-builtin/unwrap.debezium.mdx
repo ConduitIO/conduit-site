@@ -1,8 +1,8 @@
 ---
 IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
 
-title: 'base64.encode'
-sidebar_position: 3
+title: 'unwrap.debezium'
+sidebar_position: 13
 ---
 
 import ReactDiffViewer from 'react-diff-viewer';
@@ -11,16 +11,19 @@ import Box from "@mui/system/Box";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# `base64.encode`
+# `unwrap.debezium`
 
-Encode a field to base64.
+Unwraps a Debezium record from the input [OpenCDC record](https://conduit.io/docs/core-concepts/opencdc-record).
 
 ## Description
 
-The processor will encode the value of the target field to base64 and store the
-result in the target field. It is not allowed to encode the `.Position` field.
-If the provided field doesn't exist, the processor will create that field and
-assign its value.
+In this processor, the wrapped (Debezium) record replaces the wrapping record (being processed) 
+completely, except for the position.
+
+The Debezium record's metadata and the wrapping record's metadata is merged, with the Debezium metadata having precedence.
+
+This is useful in cases where Conduit acts as an intermediary between a Debezium source and a Debezium destination. 
+In such cases, the Debezium record is set as the [OpenCDC record](https://conduit.io/docs/core-concepts/opencdc-record)'s payload,and needs to be unwrapped for further usage.
 
 ## Configuration parameters
 
@@ -35,14 +38,13 @@ pipelines:
       # define source and destination ...
     processors:
       - id: example
-        plugin: "base64.encode"
+        plugin: "unwrap.debezium"
         settings:
-          # Field is a reference to the target field. Note that it is not
-          # allowed to base64 encode the `.Position` field.
+          # Field is a reference to the field that contains the Debezium record.
           # For more information about the format, see [Referencing
-          # fields](https://conduit.io/docs/using/processors//referencing-fields).
+          # fields](https://conduit.io/docs/using/processors/referencing-fields.
           # Type: string
-          field: ""
+          field: ".Payload.After"
           # Whether to decode the record key using its corresponding schema from
           # the schema registry.
           # Type: bool
@@ -72,12 +74,11 @@ pipelines:
       <tr>
         <td>`field`</td>
         <td>string</td>
-        <td><Chip label="null" /></td>
+        <td>`.Payload.After`</td>
         <td>
-  Field is a reference to the target field. Note that it is not allowed to
-base64 encode the `.Position` field.
+  Field is a reference to the field that contains the Debezium record.
 
-For more information about the format, see [Referencing fields](https://conduit.io/docs/using/processors//referencing-fields).
+For more information about the format, see [Referencing fields](https://conduit.io/docs/using/processors/referencing-fields.
         </td>
       </tr>
       <tr>
@@ -118,10 +119,10 @@ For more information about the format, see [Referencing fields](https://conduit.
 
 ## Examples
 
-### Encode record key to base64
+### Unwrap a Debezium record
 
-TThis example takes a record containing raw data in
-`.Key` and converts it into a base64 encoded string.
+This example how to unwrap a Debezium record from a field nested in a record's
+`.Payload.After` field. It additionally shows how the key is unwrapped, and the metadata merged.
 
 #### Configuration parameters
 
@@ -136,9 +137,9 @@ pipelines:
       # define source and destination ...
     processors:
       - id: example
-        plugin: "base64.encode"
+        plugin: "unwrap.debezium"
         settings:
-          field: ".Key"
+          field: ".Payload.After.nested"
 ```
   </TabItem>
   <TabItem value="table" label="Table">
@@ -149,7 +150,7 @@ pipelines:
       </tr>
       <tr>
         <td>`field`</td>
-        <td>`.Key`</td>
+        <td>`.Payload.After.nested`</td>
       </tr>
     </table>
   </TabItem>
@@ -168,69 +169,8 @@ pipelines:
     }}
     leftTitle={'Before'}
     rightTitle={'After'}
-    oldValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": \"test-key\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"foo\": \"bar\"\n    }\n  }\n}"}
-    newValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": \"dGVzdC1rZXk=\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"foo\": \"bar\"\n    }\n  }\n}"}
-    hideLineNumbers={false}
-    showDiffOnly={false}
-    splitView={true}
-  />
-</Box>
-```
-
----
-
-### Encode nested value to base64
-
-This example takes a record containing a string in
-`.Payload.Before.foo` and converts it into a base64 encoded string.
-
-#### Configuration parameters
-
-<Tabs groupId="config-params">
-  <TabItem value="yaml" label="YAML">
-```yaml
-version: 2.2
-pipelines:
-  - id: example
-    status: running
-    connectors:
-      # define source and destination ...
-    processors:
-      - id: example
-        plugin: "base64.encode"
-        settings:
-          field: ".Payload.After.foo"
-```
-  </TabItem>
-  <TabItem value="table" label="Table">
-  <table class="no-margin-table">
-      <tr>
-        <th>Name</th>
-        <th>Value</th>
-      </tr>
-      <tr>
-        <td>`field`</td>
-        <td>`.Payload.After.foo`</td>
-      </tr>
-    </table>
-  </TabItem>
-</Tabs>
-
-#### Record difference
-
-```mdx-code-block
-<Box className='diff-viewer'>
-  <ReactDiffViewer
-    styles={{
-      diffContainer: {
-        overflowX: 'auto',
-        overflowY: 'hidden',
-      },
-    }}
-    leftTitle={'Before'}
-    rightTitle={'After'}
-    oldValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": \"test-key\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"foo\": \"bar\"\n    }\n  }\n}"}
-    newValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": \"test-key\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"foo\": \"YmFy\"\n    }\n  }\n}"}
+    oldValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"metadata-key\": \"metadata-value\"\n  },\n  \"key\": \"{\\\"payload\\\":\\\"27\\\"}\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"nested\": \"{\\n  \\\"payload\\\": {\\n    \\\"after\\\": {\\n      \\\"description\\\": \\\"test1\\\",\\n      \\\"id\\\": 27\\n    },\\n    \\\"before\\\": null,\\n    \\\"op\\\": \\\"c\\\",\\n    \\\"source\\\": {\\n      \\\"opencdc.readAt\\\": \\\"1674061777225877000\\\",\\n      \\\"opencdc.version\\\": \\\"v1\\\"\\n    },\\n    \\\"transaction\\\": null,\\n    \\\"ts_ms\\\": 1674061777225\\n  },\\n  \\\"schema\\\": {}\\n}\"\n    }\n  }\n}"}
+    newValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"metadata-key\": \"metadata-value\",\n    \"opencdc.readAt\": \"1674061777225877000\",\n    \"opencdc.version\": \"v1\"\n  },\n  \"key\": \"27\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"description\": \"test1\",\n      \"id\": 27\n    }\n  }\n}"}
     hideLineNumbers={false}
     showDiffOnly={false}
     splitView={true}

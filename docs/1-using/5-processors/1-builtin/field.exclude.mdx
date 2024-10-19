@@ -1,8 +1,8 @@
 ---
 IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
 
-title: 'unwrap.kafkaconnect'
-sidebar_position: 14
+title: 'field.exclude'
+sidebar_position: 7
 ---
 
 import ReactDiffViewer from 'react-diff-viewer';
@@ -11,18 +11,19 @@ import Box from "@mui/system/Box";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# `unwrap.kafkaconnect`
+# `field.exclude`
 
-Unwraps a Kafka Connect record from an [OpenCDC record](https://conduit.io/docs/core-concepts/opencdc-record).
+Remove a subset of fields from the record.
 
 ## Description
 
-This processor unwraps a Kafka Connect record from the input [OpenCDC record](https://conduit.io/docs/core-concepts/opencdc-record).
+Remove a subset of fields from the record, all the other fields are left untouched.
+If a field is excluded that contains nested data, the whole tree will be removed.
+It is not allowed to exclude `.Position` or `.Operation` fields.
 
-The input record's payload is replaced with the Kafka Connect record.
-
-This is useful in cases where Conduit acts as an intermediary between a Debezium source and a Debezium destination. 
-In such cases, the Debezium record is set as the [OpenCDC record](https://conduit.io/docs/core-concepts/opencdc-record)'s payload, and needs to be unwrapped for further usage.
+Note that this processor only runs on structured data, if the record contains
+raw JSON data, then use the processor [`json.decode`](/docs/using/processors/builtin/json.decode)
+to parse it into structured data first.
 
 ## Configuration parameters
 
@@ -37,14 +38,14 @@ pipelines:
       # define source and destination ...
     processors:
       - id: example
-        plugin: "unwrap.kafkaconnect"
+        plugin: "field.exclude"
         settings:
-          # Field is a reference to the field that contains the Kafka Connect
-          # record.
+          # Fields is a comma separated list of target fields which should be
+          # excluded.
           # For more information about the format, see [Referencing
-          # fields](https://conduit.io/docs/using/processors//referencing-fields).
+          # fields](https://conduit.io/docs/using/processors/referencing-fields.
           # Type: string
-          field: ".Payload.After"
+          fields: ""
           # Whether to decode the record key using its corresponding schema from
           # the schema registry.
           # Type: bool
@@ -72,13 +73,13 @@ pipelines:
         <th>Description</th>
       </tr>
       <tr>
-        <td>`field`</td>
+        <td>`fields`</td>
         <td>string</td>
-        <td>`.Payload.After`</td>
+        <td><Chip label="null" /></td>
         <td>
-  Field is a reference to the field that contains the Kafka Connect record.
+  Fields is a comma separated list of target fields which should be excluded.
 
-For more information about the format, see [Referencing fields](https://conduit.io/docs/using/processors//referencing-fields).
+For more information about the format, see [Referencing fields](https://conduit.io/docs/using/processors/referencing-fields.
         </td>
       </tr>
       <tr>
@@ -119,14 +120,9 @@ For more information about the format, see [Referencing fields](https://conduit.
 
 ## Examples
 
-### Unwrap a Kafka Connect record
+### Exclude all fields in payload
 
-This example shows how to unwrap a Kafka Connect record.
-
-The Kafka Connect record is serialized as a JSON string in the `.Payload.After` field (raw data).
-The Kafka Connect record's payload will replace the [OpenCDC record](https://conduit.io/docs/core-concepts/opencdc-record)'s payload.
-
-We also see how the key is unwrapped too. In this case, the key comes in as structured data.
+Excluding all fields in `.Payload` results in an empty payload.
 
 #### Configuration parameters
 
@@ -141,9 +137,9 @@ pipelines:
       # define source and destination ...
     processors:
       - id: example
-        plugin: "unwrap.kafkaconnect"
+        plugin: "field.exclude"
         settings:
-          field: ".Payload.After"
+          fields: ".Payload"
 ```
   </TabItem>
   <TabItem value="table" label="Table">
@@ -153,8 +149,8 @@ pipelines:
         <th>Value</th>
       </tr>
       <tr>
-        <td>`field`</td>
-        <td>`.Payload.After`</td>
+        <td>`fields`</td>
+        <td>`.Payload`</td>
       </tr>
     </table>
   </TabItem>
@@ -173,8 +169,70 @@ pipelines:
     }}
     leftTitle={'Before'}
     rightTitle={'After'}
-    oldValue={"{\n  \"position\": \"dGVzdCBwb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"metadata-key\": \"metadata-value\"\n  },\n  \"key\": {\n    \"payload\": {\n      \"id\": 27\n    },\n    \"schema\": {}\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": \"{\\n\\\"payload\\\": {\\n  \\\"description\\\": \\\"test2\\\"\\n},\\n\\\"schema\\\": {}\\n}\"\n  }\n}"}
-    newValue={"{\n  \"position\": \"dGVzdCBwb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"metadata-key\": \"metadata-value\"\n  },\n  \"key\": {\n    \"id\": 27\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"description\": \"test2\"\n    }\n  }\n}"}
+    oldValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": null,\n  \"payload\": {\n    \"before\": {\n      \"bar\": \"baz\"\n    },\n    \"after\": {\n      \"foo\": \"bar\"\n    }\n  }\n}"}
+    newValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": null\n  }\n}"}
+    hideLineNumbers={false}
+    showDiffOnly={false}
+    splitView={true}
+  />
+</Box>
+```
+
+---
+
+### Exclude multiple fields
+
+It's possible to exclude multiple fields by providing a
+comma-separated list of fields. In this example, we exclude `.Metadata`,
+`.Payload.After.foo` and `.Key.key1`.
+
+#### Configuration parameters
+
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "field.exclude"
+        settings:
+          fields: ".Metadata,.Payload.After.foo,.Key.key1"
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`fields`</td>
+        <td>`.Metadata,.Payload.After.foo,.Key.key1`</td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
+
+#### Record difference
+
+```mdx-code-block
+<Box className='diff-viewer'>
+  <ReactDiffViewer
+    styles={{
+      diffContainer: {
+        overflowX: 'auto',
+        overflowY: 'hidden',
+      },
+    }}
+    leftTitle={'Before'}
+    rightTitle={'After'}
+    oldValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"source\": \"s3\"\n  },\n  \"key\": {\n    \"key1\": \"val1\",\n    \"key2\": \"val2\"\n  },\n  \"payload\": {\n    \"before\": {\n      \"bar\": \"baz\"\n    },\n    \"after\": {\n      \"foo\": \"bar\",\n      \"foobar\": \"baz\"\n    }\n  }\n}"}
+    newValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": {},\n  \"key\": {\n    \"key2\": \"val2\"\n  },\n  \"payload\": {\n    \"before\": {\n      \"bar\": \"baz\"\n    },\n    \"after\": {\n      \"foobar\": \"baz\"\n    }\n  }\n}"}
     hideLineNumbers={false}
     showDiffOnly={false}
     splitView={true}

@@ -1,8 +1,8 @@
 ---
 IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
 
-title: 'base64.decode'
-sidebar_position: 2
+title: 'field.rename'
+sidebar_position: 8
 ---
 
 import ReactDiffViewer from 'react-diff-viewer';
@@ -11,14 +11,19 @@ import Box from "@mui/system/Box";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# `base64.decode`
+# `field.rename`
 
-Decode a field to base64.
+Rename a group of fields.
 
 ## Description
 
-The processor will decode the value of the target field from base64 and store the
-result in the target field. It is not allowed to decode the `.Position` field.
+Rename a group of field names to new names. It is not
+allowed to rename top-level fields (`.Operation`, `.Position`, 
+`.Key`, `.Metadata`, `.Payload.Before`, `.Payload.After`).
+
+Note that this processor only runs on structured data, if the record contains raw
+JSON data, then use the processor [`json.decode`](/docs/using/processors/builtin/json.decode)
+to parse it into structured data first.
 
 ## Configuration parameters
 
@@ -33,14 +38,15 @@ pipelines:
       # define source and destination ...
     processors:
       - id: example
-        plugin: "base64.decode"
+        plugin: "field.rename"
         settings:
-          # Field is the reference to the target field. Note that it is not
-          # allowed to base64 decode the `.Position` field.
+          # Mapping is a comma separated list of keys and values for fields and
+          # their new names (keys and values are separated by colons ":").
+          # For example: `.Metadata.key:id,.Payload.After.foo:bar`.
           # For more information about the format, see [Referencing
-          # fields](https://conduit.io/docs/using/processors//referencing-fields).
+          # fields](https://conduit.io/docs/using/processors/referencing-fields.
           # Type: string
-          field: ""
+          mapping: ""
           # Whether to decode the record key using its corresponding schema from
           # the schema registry.
           # Type: bool
@@ -68,14 +74,16 @@ pipelines:
         <th>Description</th>
       </tr>
       <tr>
-        <td>`field`</td>
+        <td>`mapping`</td>
         <td>string</td>
         <td><Chip label="null" /></td>
         <td>
-  Field is the reference to the target field. Note that it is not allowed to
-base64 decode the `.Position` field.
+  Mapping is a comma separated list of keys and values for fields and their
+new names (keys and values are separated by colons ":").
 
-For more information about the format, see [Referencing fields](https://conduit.io/docs/using/processors//referencing-fields).
+For example: `.Metadata.key:id,.Payload.After.foo:bar`.
+
+For more information about the format, see [Referencing fields](https://conduit.io/docs/using/processors/referencing-fields.
         </td>
       </tr>
       <tr>
@@ -116,12 +124,10 @@ For more information about the format, see [Referencing fields](https://conduit.
 
 ## Examples
 
-### Decode a base64 encoded string
+### Rename multiple fields
 
-This example decodes the base64 encoded string stored in
-`.Payload.After`. Note that the result is a string, so if you want to
-further process the result (e.g. parse the string as JSON), you need to chain
-other processors (e.g. [`json.decode`](/docs/using/processors/builtin/json.decode)).
+This example renames the fields in `.Metadata` and
+`.Payload.After` as specified in the `mapping` configuration parameter.
 
 #### Configuration parameters
 
@@ -136,9 +142,9 @@ pipelines:
       # define source and destination ...
     processors:
       - id: example
-        plugin: "base64.decode"
+        plugin: "field.rename"
         settings:
-          field: ".Payload.After.foo"
+          mapping: ".Metadata.key1:newKey,.Payload.After.foo:newFoo"
 ```
   </TabItem>
   <TabItem value="table" label="Table">
@@ -148,8 +154,8 @@ pipelines:
         <th>Value</th>
       </tr>
       <tr>
-        <td>`field`</td>
-        <td>`.Payload.After.foo`</td>
+        <td>`mapping`</td>
+        <td>`.Metadata.key1:newKey,.Payload.After.foo:newFoo`</td>
       </tr>
     </table>
   </TabItem>
@@ -168,8 +174,8 @@ pipelines:
     }}
     leftTitle={'Before'}
     rightTitle={'After'}
-    oldValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": \"test-key\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"foo\": \"YmFy\"\n    }\n  }\n}"}
-    newValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": \"test-key\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"foo\": \"bar\"\n    }\n  }\n}"}
+    oldValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": null,\n  \"payload\": {\n    \"before\": {\n      \"bar\": \"baz\"\n    },\n    \"after\": {\n      \"foo\": \"bar\"\n    }\n  }\n}"}
+    newValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"newKey\": \"val1\"\n  },\n  \"key\": null,\n  \"payload\": {\n    \"before\": {\n      \"bar\": \"baz\"\n    },\n    \"after\": {\n      \"newFoo\": \"bar\"\n    }\n  }\n}"}
     hideLineNumbers={false}
     showDiffOnly={false}
     splitView={true}

@@ -1,8 +1,8 @@
 ---
 IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
 
-title: 'json.decode'
-sidebar_position: 11
+title: 'base64.encode'
+sidebar_position: 3
 ---
 
 import ReactDiffViewer from 'react-diff-viewer';
@@ -11,18 +11,16 @@ import Box from "@mui/system/Box";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# `json.decode`
+# `base64.encode`
 
-Decodes a specific field from JSON raw data (string) to structured data.
+Encode a field to base64.
 
 ## Description
 
-The processor takes JSON raw data (`string` or `[]byte`)
-from the target field, parses it as JSON structured data and stores the decoded
-structured data in the target field.
-
-This processor is only applicable to fields under `.Key`, `.Payload`.Before and
-`.Payload.After`, as they can contain structured data.
+The processor will encode the value of the target field to base64 and store the
+result in the target field. It is not allowed to encode the `.Position` field.
+If the provided field doesn't exist, the processor will create that field and
+assign its value.
 
 ## Configuration parameters
 
@@ -37,12 +35,12 @@ pipelines:
       # define source and destination ...
     processors:
       - id: example
-        plugin: "json.decode"
+        plugin: "base64.encode"
         settings:
-          # Field is a reference to the target field. Only fields that are under
-          # `.Key` and `.Payload` can be decoded.
+          # Field is a reference to the target field. Note that it is not
+          # allowed to base64 encode the `.Position` field.
           # For more information about the format, see [Referencing
-          # fields](https://conduit.io/docs/using/processors//referencing-fields).
+          # fields](https://conduit.io/docs/using/processors/referencing-fields.
           # Type: string
           field: ""
           # Whether to decode the record key using its corresponding schema from
@@ -76,10 +74,10 @@ pipelines:
         <td>string</td>
         <td><Chip label="null" /></td>
         <td>
-  Field is a reference to the target field. Only fields that are under
-`.Key` and `.Payload` can be decoded.
+  Field is a reference to the target field. Note that it is not allowed to
+base64 encode the `.Position` field.
 
-For more information about the format, see [Referencing fields](https://conduit.io/docs/using/processors//referencing-fields).
+For more information about the format, see [Referencing fields](https://conduit.io/docs/using/processors/referencing-fields.
         </td>
       </tr>
       <tr>
@@ -120,10 +118,10 @@ For more information about the format, see [Referencing fields](https://conduit.
 
 ## Examples
 
-### Decode record key as JSON
+### Encode record key to base64
 
-This example takes a record containing a raw JSON string in
-`.Key` and converts it into structured data.
+TThis example takes a record containing raw data in
+`.Key` and converts it into a base64 encoded string.
 
 #### Configuration parameters
 
@@ -138,7 +136,7 @@ pipelines:
       # define source and destination ...
     processors:
       - id: example
-        plugin: "json.decode"
+        plugin: "base64.encode"
         settings:
           field: ".Key"
 ```
@@ -170,8 +168,8 @@ pipelines:
     }}
     leftTitle={'Before'}
     rightTitle={'After'}
-    oldValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": null,\n  \"key\": \"{\\\"after\\\":{\\\"data\\\":4,\\\"id\\\":3}}\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": null\n  }\n}"}
-    newValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": null,\n  \"key\": {\n    \"after\": {\n      \"data\": 4,\n      \"id\": 3\n    }\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": null\n  }\n}"}
+    oldValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": \"test-key\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"foo\": \"bar\"\n    }\n  }\n}"}
+    newValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": \"dGVzdC1rZXk=\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"foo\": \"bar\"\n    }\n  }\n}"}
     hideLineNumbers={false}
     showDiffOnly={false}
     splitView={true}
@@ -181,10 +179,10 @@ pipelines:
 
 ---
 
-### Decode nested field as JSON
+### Encode nested value to base64
 
-This example takes a record containing a raw JSON string in
-`.Payload.Before.foo` and converts it into a map.
+This example takes a record containing a string in
+`.Payload.Before.foo` and converts it into a base64 encoded string.
 
 #### Configuration parameters
 
@@ -199,9 +197,9 @@ pipelines:
       # define source and destination ...
     processors:
       - id: example
-        plugin: "json.decode"
+        plugin: "base64.encode"
         settings:
-          field: ".Payload.Before.foo"
+          field: ".Payload.After.foo"
 ```
   </TabItem>
   <TabItem value="table" label="Table">
@@ -212,7 +210,7 @@ pipelines:
       </tr>
       <tr>
         <td>`field`</td>
-        <td>`.Payload.Before.foo`</td>
+        <td>`.Payload.After.foo`</td>
       </tr>
     </table>
   </TabItem>
@@ -231,8 +229,8 @@ pipelines:
     }}
     leftTitle={'Before'}
     rightTitle={'After'}
-    oldValue={"{\n  \"position\": null,\n  \"operation\": \"snapshot\",\n  \"metadata\": null,\n  \"key\": null,\n  \"payload\": {\n    \"before\": {\n      \"foo\": \"{\\\"before\\\":{\\\"data\\\":4,\\\"id\\\":3},\\\"baz\\\":\\\"bar\\\"}\"\n    },\n    \"after\": null\n  }\n}"}
-    newValue={"{\n  \"position\": null,\n  \"operation\": \"snapshot\",\n  \"metadata\": null,\n  \"key\": null,\n  \"payload\": {\n    \"before\": {\n      \"foo\": {\n        \"baz\": \"bar\",\n        \"before\": {\n          \"data\": 4,\n          \"id\": 3\n        }\n      }\n    },\n    \"after\": null\n  }\n}"}
+    oldValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": \"test-key\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"foo\": \"bar\"\n    }\n  }\n}"}
+    newValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": \"test-key\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"foo\": \"YmFy\"\n    }\n  }\n}"}
     hideLineNumbers={false}
     showDiffOnly={false}
     splitView={true}
