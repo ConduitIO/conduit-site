@@ -229,7 +229,7 @@ const config: Config = {
           },
           {
             from: '/docs/processors',
-            to: '/docs/using/processors',
+            to: '/docs/using/processors/getting-started',
           },
           {
             from: '/docs/features/schema-support',
@@ -242,6 +242,10 @@ const config: Config = {
           {
             from: '/docs/features/configuration',
             to: '/docs/configuration#configuration-file',
+          },
+          {
+            from: '/docs/connectors/building-connectors',
+            to: '/docs/developing/connectors',
           },
         ]
       },
