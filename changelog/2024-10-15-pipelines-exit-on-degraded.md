@@ -19,7 +19,7 @@ $ conduit --help
 ...
 ```
 
-If you were using a [Conduit Configuration file](/docs/features/configuration) this should look like:
+If you were using a [Conduit Configuration file](/docs/configuration#configuration-file) this should look like:
 
 ```yaml title="conduit.yaml"
 # ...
@@ -28,7 +28,7 @@ pipelines:
 # ...
 ```
 
-Previously, this functionality was handled by `pipelines.exit-on-error`. However, with the introduction of [Pipeline Recovery](/docs/features/pipeline-recovery), the old description no longer accurately reflected the behavior, as a pipeline may not necessarily exit even in the presence of an error.
+Previously, this functionality was handled by `pipelines.exit-on-error`. However, with the introduction of [Pipeline Recovery](/docs/using/other-features/pipeline-recovery), the old description no longer accurately reflected the behavior, as a pipeline may not necessarily exit even in the presence of an error.
 
 :::warning
 The previous flag `pipelines.exit-on-error` will still be valid but is now hidden. We encourage all users to transition to `pipelines.exit-on-degraded` for improved clarity and functionality. 

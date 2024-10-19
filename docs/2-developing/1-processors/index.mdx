@@ -2,11 +2,11 @@
 title: 'Developing custom processors'
 ---
 
-These are processors you'd write yourself in cases the [Built-in](/docs/processors/builtin/) ones don't meet your needs.
+These are processors you'd write yourself in cases the [Built-in](/docs/using/processors//builtin/) ones don't meet your needs.
 
 ## How to write one
 
-Thanks to our [Web Assembly (Wasm) processor](/docs/processors/standalone/how-it-works) you can start writing processors in any language that can be compiled to Web Assembly. As a start, Conduit already provides a [conduit-processor-sdk](https://github.com/ConduitIO/conduit-processor-sdk) that will let you [write a processor](/docs/processors/standalone/building) in Go.
+Thanks to our [Web Assembly (Wasm) processor](/docs/using/processors//standalone/how-it-works) you can start writing processors in any language that can be compiled to Web Assembly. As a start, Conduit already provides a [conduit-processor-sdk](https://github.com/ConduitIO/conduit-processor-sdk) that will let you [write a processor](/docs/using/processors//standalone/building) in Go.
 
 ### Where to put them
 
@@ -65,7 +65,7 @@ GOARCH=wasm GOOS=wasip1 go build -o simple-processor.wasm main.go
 ## Using it in your pipeline
 
 
-As mentioned in our [Getting Started page](/docs/processors/getting-started), in order to use a processor in your pipeline, you need to update its [configuration file](/docs/processors/getting-started#how-to-use-a-processor) and [reference it](/docs/processors/referencing) accordingly:
+As mentioned in our [Getting Started page](/docs/using/processors//getting-started), in order to use a processor in your pipeline, you need to update its [configuration file](/docs/using/processors//getting-started#how-to-use-a-processor) and [reference it](/docs/using/processors//referencing) accordingly:
 
 
 ```yaml

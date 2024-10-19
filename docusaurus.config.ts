@@ -227,6 +227,22 @@ const config: Config = {
             from: '/docs/features/opencdc-record',
             to: '/docs/core-concepts/opencdc-record',
           },
+          {
+            from: '/docs/processors',
+            to: '/docs/using/processors',
+          },
+          {
+            from: '/docs/features/schema-support',
+            to: '/docs/using/other-features/schema-support',
+          },
+          {
+            from: '/docs/features/pipeline-recovery',
+            to: '/docs/using/other-features/pipeline-recovery',
+          },
+          {
+            from: '/docs/features/configuration',
+            to: '/docs/configuration#configuration-file',
+          },
         ]
       },
     ],

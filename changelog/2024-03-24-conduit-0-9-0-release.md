@@ -19,5 +19,5 @@ Revolutionize your data processing with [**Conduit v0.9**](https://github.com/Co
 - **Getting Started Guide**: A user-friendly guide is available to help new users set up Conduit and explore the latest features quickly.
 
 :::tip
-For an in-depth look at how the enhanced processors can transform your data processing workflows, check out our [blog post](https://meroxa.com/blog/introducing-conduit-0.9-revolutionizing-data-processing-with-enhanced-processors/), and visit our [Processors documentation page](/docs/processors).
+For an in-depth look at how the enhanced processors can transform your data processing workflows, check out our [blog post](https://meroxa.com/blog/introducing-conduit-0.9-revolutionizing-data-processing-with-enhanced-processors/), and visit our [Processors documentation page](/docs/using/processors/).
 :::

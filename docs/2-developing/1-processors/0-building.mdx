@@ -6,7 +6,7 @@ You can build your own Conduit standalone processors in Go using the [Processor 
 
 We currently only provide a Go SDK for processors. However, if you'd like to use another language for writing a processor,
 feel free to [open an issue](https://github.com/ConduitIO/conduit/issues/new?assignees=&labels=feature%2Ctriage&projects=&template=1-feature-request.yml&title=Processor+SDK+%3A+%3Clanguage%3E)
-and request a specific language SDK. You can also read [how standalone processors work](/docs/processors/standalone/how-it-works)
+and request a specific language SDK. You can also read [how standalone processors work](/docs/using/processors//standalone/how-it-works)
 under the hood and build an SDK yourself.
 
 The [Processor SDK](https://github.com/ConduitIO/conduit-processor-sdk) exposes two ways of building processors, one for
@@ -52,7 +52,7 @@ describe what the processor does and the configuration parameters it expects. He
 `sdk.Specification` struct and their descriptions:
 
   * `Name`: the name of the processor. Note that the name should be unique across all processors, as it's used to
-    reference the processor in a pipeline (see [referencing processors](/docs/processors/referencing)).
+    reference the processor in a pipeline (see [referencing processors](/docs/using/processors//referencing)).
   * `Version`: the version of the processor. This should be a valid [semver](https://semver.org) version and needs to be
     updated whenever the processor's behavior changes.
   * `Summary`: a short description of what the processor does (ideally a one-liner).
@@ -70,7 +70,7 @@ Check out the [ParamGen readme](https://github.com/ConduitIO/conduit-commons/tre
 :::info
 
 Note that a processor's name and version need to be unique across all processors, as they are used to
-[reference](/docs/processors/referencing) the processor in a pipeline. If two processors have the same name and version,
+[reference](/docs/using/processors//referencing) the processor in a pipeline. If two processors have the same name and version,
 Conduit will refuse to load them.
 
 :::
@@ -181,7 +181,7 @@ The [Processor SDK](https://github.com/ConduitIO/conduit-processor-sdk) provides
 * `sdk.ParseConfig`: used to sanitize the configuration, apply defaults, validate it using builtin validations, and copy
 the values into the target object. 
 * `sdk.NewReferenceResolver`: creates a new reference resolver from the input string. The input string is a reference
-to a field in a record, check [Referencing record fields](/docs/processors/referencing-fields) for more details.
+to a field in a record, check [Referencing record fields](/docs/using/processors//referencing-fields) for more details.
 The method will return a `resolver` that can be used to resolve a reference to the specified field in a record and
 manipulate that field (`get`, `set` and `delete` the value, or `rename` the referenced field).
 
@@ -440,7 +440,7 @@ GOARCH=wasm GOOS=wasip1 go build -o processor.wasm cmd/processor/main.go
 ```
 
 **_Congratulations!_** Now you have a new standalone processor.
-Check [Standalone processors](/docs/processors/standalone/#where-to-put-them) for details on how to use your standalone
+Check [Standalone processors](/docs/using/processors//standalone/#where-to-put-them) for details on how to use your standalone
 processor in a Conduit pipeline.
 
 :::note

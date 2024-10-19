@@ -12,7 +12,7 @@ It's also possible to store all the data in memory, which is sometimes useful
 for development purposes.
 
 The database type used can be configured with the `db.type` parameter (through
-any of the [configuration](/docs/features/configuration) options in Conduit).
+any of the [configuration](/docs/configuration#configuration-file) options in Conduit).
 
 For example, to configure a PostgresSQL database with Conduit, the CLI flag to use a is as
 follows: `-db.type=postgres`.
@@ -28,7 +28,7 @@ $ ./conduit
   -db.postgres.connection-string="postgresql://localhost:5432/conduitdb"
 ```
 
-This can also be done using configuration options in your [Conduit configuration file](/docs/features/configuration):
+This can also be done using configuration options in your [Conduit configuration file](/docs/configuration#configuration-file):
 
 ```yaml
 db:
