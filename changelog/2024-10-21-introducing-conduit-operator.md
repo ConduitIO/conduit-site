@@ -9,7 +9,7 @@ We're happy to announce that we recently released [Conduit Operator v0.0.1](http
 
 <!--truncate-->
 
-Using this operator, we will be able to significantly reduce the time needed to deploy new connectors, along with many other features in our own [Conduit Platform](https://meroxa.io).
+Using this operator, we will be able to significantly reduce the time needed to deploy new connectors, along with many other features.
 
 For **more information**, check out [its documentation page](/docs/scaling/conduit-operator).
 
