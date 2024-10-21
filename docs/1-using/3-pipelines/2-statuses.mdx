@@ -1,0 +1,32 @@
+---
+title: 'Statuses'
+---
+
+Understanding the different statuses of your pipeline is crucial for effective monitoring and management. Below are the various statuses that a pipeline can have in Conduit.
+
+## Statuses Overview
+
+| Status                  | Description                                                                 |
+|------------------------|-----------------------------------------------------------------------------|
+| **Running**            | The pipeline is actively processing data and functioning as expected.      |
+| **Stopped**            | The pipeline has been stopped by the system or manually by a user shutting down gracefully. |
+| **Degraded**           | The pipeline has been stopped due to an error or force-stopped by a user. |
+| **Recovering**         | The pipeline is in the process of recovering from a degraded state or error. |
+
+## Status Descriptions
+
+### Running
+-  **Definition**: The pipeline is currently active and processing data without any issues.
+-  **Implication**: All systems are functioning normally, and data is flowing as expected.
+
+### Stopped
+-  **Definition**: The pipeline has been halted by the system, or manually stopped by a user.
+-  **Implication**: The pipeline gracefully stopped, any in-flight records were flushed, acks were delivered back to the source, no error was encountered while stopping the pipeline. The pipeline could be restarted.
+
+### Degraded
+-  **Definition**: The pipeline stopped due to an error that couldn't be recovered, or force-stopped by the user.
+-  **Implication**: Any in-flight records were dropped, not all acks might have been delivered back to the source. Starting a degraded pipeline again could potentially result in duplicated data (depending on how the destination connector handles records), since some data might get re-delivered.
+
+### Recovering
+-  **Definition**: The pipeline is in the process of recovering from a degraded state or error.
+-  **Implication**: The system is attempting to restore normal operations. Monitor the status to ensure recovery is successful.

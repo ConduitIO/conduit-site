@@ -1,0 +1,187 @@
+---
+IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
+
+title: 'unwrap.kafkaconnect'
+sidebar_position: 14
+---
+
+import ReactDiffViewer from 'react-diff-viewer';
+import Chip from '@mui/material/Chip';
+import Box from "@mui/system/Box";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# `unwrap.kafkaconnect`
+
+Unwraps a Kafka Connect record from an [OpenCDC record](https://conduit.io/docs/using/opencdc-record).
+
+## Description
+
+This processor unwraps a Kafka Connect record from the input [OpenCDC record](https://conduit.io/docs/using/opencdc-record).
+
+The input record's payload is replaced with the Kafka Connect record.
+
+This is useful in cases where Conduit acts as an intermediary between a Debezium source and a Debezium destination. 
+In such cases, the Debezium record is set as the [OpenCDC record](https://conduit.io/docs/using/opencdc-record)'s payload, and needs to be unwrapped for further usage.
+
+## Configuration parameters
+
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "unwrap.kafkaconnect"
+        settings:
+          # Field is a reference to the field that contains the Kafka Connect
+          # record.
+          # For more information about the format, see [Referencing
+          # fields](https://conduit.io/docs/using/processors/referencing-fields.
+          # Type: string
+          field: ".Payload.After"
+          # Whether to decode the record key using its corresponding schema from
+          # the schema registry.
+          # Type: bool
+          sdk.schema.decode.key.enabled: "true"
+          # Whether to decode the record payload using its corresponding schema
+          # from the schema registry.
+          # Type: bool
+          sdk.schema.decode.payload.enabled: "true"
+          # Whether to encode the record key using its corresponding schema from
+          # the schema registry.
+          # Type: bool
+          sdk.schema.encode.key.enabled: "true"
+          # Whether to encode the record payload using its corresponding schema
+          # from the schema registry.
+          # Type: bool
+          sdk.schema.encode.payload.enabled: "true"
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>string</td>
+        <td>`.Payload.After`</td>
+        <td>
+  Field is a reference to the field that contains the Kafka Connect record.
+
+For more information about the format, see [Referencing fields](https://conduit.io/docs/using/processors/referencing-fields.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.decode.key.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to decode the record key using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.decode.payload.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to decode the record payload using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.encode.key.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to encode the record key using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.encode.payload.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to encode the record payload using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
+
+## Examples
+
+### Unwrap a Kafka Connect record
+
+This example shows how to unwrap a Kafka Connect record.
+
+The Kafka Connect record is serialized as a JSON string in the `.Payload.After` field (raw data).
+The Kafka Connect record's payload will replace the [OpenCDC record](https://conduit.io/docs/using/opencdc-record)'s payload.
+
+We also see how the key is unwrapped too. In this case, the key comes in as structured data.
+
+#### Configuration parameters
+
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "unwrap.kafkaconnect"
+        settings:
+          field: ".Payload.After"
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>`.Payload.After`</td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
+
+#### Record difference
+
+```mdx-code-block
+<Box className='diff-viewer'>
+  <ReactDiffViewer
+    styles={{
+      diffContainer: {
+        overflowX: 'auto',
+        overflowY: 'hidden',
+      },
+    }}
+    leftTitle={'Before'}
+    rightTitle={'After'}
+    oldValue={"{\n  \"position\": \"dGVzdCBwb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"metadata-key\": \"metadata-value\"\n  },\n  \"key\": {\n    \"payload\": {\n      \"id\": 27\n    },\n    \"schema\": {}\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": \"{\\n\\\"payload\\\": {\\n  \\\"description\\\": \\\"test2\\\"\\n},\\n\\\"schema\\\": {}\\n}\"\n  }\n}"}
+    newValue={"{\n  \"position\": \"dGVzdCBwb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"metadata-key\": \"metadata-value\"\n  },\n  \"key\": {\n    \"id\": 27\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"description\": \"test2\"\n    }\n  }\n}"}
+    hideLineNumbers={false}
+    showDiffOnly={false}
+    splitView={true}
+  />
+</Box>
+```
+
+
+
+![scarf pixel conduit-site-docs-processors](https://static.scarf.sh/a.png?x-pxid=33ce4d9e-1948-4cab-846a-7e6cd33b8cae)
