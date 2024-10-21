@@ -275,6 +275,10 @@ const config: Config = {
             from: '/docs/pipeline-configuration-files',
             to: '/docs/using/pipelines/configuration-file',
           },
+          {
+            from: '/docs/features/stream-inspector',
+            to: '/docs/using/other-features/stream-inspector'
+          }
         ]
       },
     ],
