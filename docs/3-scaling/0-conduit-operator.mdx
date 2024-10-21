@@ -1,0 +1,46 @@
+---
+title: "Conduit Operator"
+toc_max_heading_level: 6
+---
+
+The **Conduit Operator** is a [Kubernetes operator](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/) designed to simplify the management and orchestration of Conduit instances. The operator extends the [Kubernetes API](https://kubernetes.io/docs/concepts/overview/kubernetes-api/) with a [custom Conduit resource](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/). 
+
+This custom resource allows users to define and manage Conduit instances declaratively, enabling seamless integration with Kubernetes' native features such as scaling, monitoring, and logging.
+
+### Features
+
+#### Installing standalone connectors 
+
+A standalone connector can be installed by providing the connector name and version. The operator will then install the connector and create the necessary resources to run it.
+
+#### Schema Support
+
+With schema support added to Conduit on [v0.11.0](/changelog/2024-08-19-conduit-0-11-0-release), it is also possible to use multiple conduit instances sharing their schema via another schema registry.
+
+### Deploying
+
+The operator provides a [helm chart](https://github.com/ConduitIO/conduit-operator/blob/main/charts/conduit-operator) which can be used for deployment on any cluster.
+
+Additional metadata can be injected in each provisioned conduit instance via `controller.conduitMetadata` configuration.
+
+For example, to instruct a prometheus instance to scrape each Conduit instance metrics:
+
+```yaml
+controller:
+  conduitMetadata:
+    podAnnotations:
+      prometheus.io/scrape: true
+      prometheus.io/path: /metrics
+      prometheus.io/port: 8080
+```
+
+For more configuration options see [charts/conduit-operator/values.yaml](https://github.com/ConduitIO/conduit-operator/blob/main/charts/conduit-operator/values.yaml).
+
+:::tip
+For a low-code experience, and many other Enterprise features, we recommend you use the [Conduit Platform](https://meroxa.io)
+:::
+
+
+:::info
+Source code of the Conduit Operator is available on [GitHub](https://github.com/ConduitIO/conduit-operator).
+:::
