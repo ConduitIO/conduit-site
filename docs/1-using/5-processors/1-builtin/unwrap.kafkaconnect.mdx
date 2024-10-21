@@ -13,16 +13,16 @@ import TabItem from '@theme/TabItem';
 
 # `unwrap.kafkaconnect`
 
-Unwraps a Kafka Connect record from an [OpenCDC record](https://conduit.io/docs/core-concepts/opencdc-record).
+Unwraps a Kafka Connect record from an [OpenCDC record](https://conduit.io/docs/using/opencdc-record).
 
 ## Description
 
-This processor unwraps a Kafka Connect record from the input [OpenCDC record](https://conduit.io/docs/core-concepts/opencdc-record).
+This processor unwraps a Kafka Connect record from the input [OpenCDC record](https://conduit.io/docs/using/opencdc-record).
 
 The input record's payload is replaced with the Kafka Connect record.
 
 This is useful in cases where Conduit acts as an intermediary between a Debezium source and a Debezium destination. 
-In such cases, the Debezium record is set as the [OpenCDC record](https://conduit.io/docs/core-concepts/opencdc-record)'s payload, and needs to be unwrapped for further usage.
+In such cases, the Debezium record is set as the [OpenCDC record](https://conduit.io/docs/using/opencdc-record)'s payload, and needs to be unwrapped for further usage.
 
 ## Configuration parameters
 
@@ -124,7 +124,7 @@ For more information about the format, see [Referencing fields](https://conduit.
 This example shows how to unwrap a Kafka Connect record.
 
 The Kafka Connect record is serialized as a JSON string in the `.Payload.After` field (raw data).
-The Kafka Connect record's payload will replace the [OpenCDC record](https://conduit.io/docs/core-concepts/opencdc-record)'s payload.
+The Kafka Connect record's payload will replace the [OpenCDC record](https://conduit.io/docs/using/opencdc-record)'s payload.
 
 We also see how the key is unwrapped too. In this case, the key comes in as structured data.
 
