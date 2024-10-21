@@ -236,6 +236,10 @@ const config: Config = {
             to: '/docs/using/connectors/referencing',
           },
           {
+            from: '/docs/connectors/additional-built-in-plugins/',
+            to: '/docs/using/connectors/additional-built-in-plugins'
+          },
+          {
             from: '/docs/pipeline-configuration-files/getting-started',
             to: '/docs/using/pipelines/configuration-file',
           },
@@ -278,7 +282,7 @@ const config: Config = {
           {
             from: '/docs/features/stream-inspector',
             to: '/docs/using/other-features/stream-inspector'
-          }
+          },
         ]
       },
     ],
