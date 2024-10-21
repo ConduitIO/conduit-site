@@ -1,0 +1,245 @@
+---
+IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
+
+title: 'json.decode'
+sidebar_position: 11
+---
+
+import ReactDiffViewer from 'react-diff-viewer';
+import Chip from '@mui/material/Chip';
+import Box from "@mui/system/Box";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# `json.decode`
+
+Decodes a specific field from JSON raw data (string) to structured data.
+
+## Description
+
+The processor takes JSON raw data (`string` or `[]byte`)
+from the target field, parses it as JSON structured data and stores the decoded
+structured data in the target field.
+
+This processor is only applicable to fields under `.Key`, `.Payload`.Before and
+`.Payload.After`, as they can contain structured data.
+
+## Configuration parameters
+
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "json.decode"
+        settings:
+          # Field is a reference to the target field. Only fields that are under
+          # `.Key` and `.Payload` can be decoded.
+          # For more information about the format, see [Referencing
+          # fields](https://conduit.io/docs/using/processors/referencing-fields.
+          # Type: string
+          field: ""
+          # Whether to decode the record key using its corresponding schema from
+          # the schema registry.
+          # Type: bool
+          sdk.schema.decode.key.enabled: "true"
+          # Whether to decode the record payload using its corresponding schema
+          # from the schema registry.
+          # Type: bool
+          sdk.schema.decode.payload.enabled: "true"
+          # Whether to encode the record key using its corresponding schema from
+          # the schema registry.
+          # Type: bool
+          sdk.schema.encode.key.enabled: "true"
+          # Whether to encode the record payload using its corresponding schema
+          # from the schema registry.
+          # Type: bool
+          sdk.schema.encode.payload.enabled: "true"
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  Field is a reference to the target field. Only fields that are under
+`.Key` and `.Payload` can be decoded.
+
+For more information about the format, see [Referencing fields](https://conduit.io/docs/using/processors/referencing-fields.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.decode.key.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to decode the record key using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.decode.payload.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to decode the record payload using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.encode.key.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to encode the record key using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.encode.payload.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to encode the record payload using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
+
+## Examples
+
+### Decode record key as JSON
+
+This example takes a record containing a raw JSON string in
+`.Key` and converts it into structured data.
+
+#### Configuration parameters
+
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "json.decode"
+        settings:
+          field: ".Key"
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>`.Key`</td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
+
+#### Record difference
+
+```mdx-code-block
+<Box className='diff-viewer'>
+  <ReactDiffViewer
+    styles={{
+      diffContainer: {
+        overflowX: 'auto',
+        overflowY: 'hidden',
+      },
+    }}
+    leftTitle={'Before'}
+    rightTitle={'After'}
+    oldValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": null,\n  \"key\": \"{\\\"after\\\":{\\\"data\\\":4,\\\"id\\\":3}}\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": null\n  }\n}"}
+    newValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": null,\n  \"key\": {\n    \"after\": {\n      \"data\": 4,\n      \"id\": 3\n    }\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": null\n  }\n}"}
+    hideLineNumbers={false}
+    showDiffOnly={false}
+    splitView={true}
+  />
+</Box>
+```
+
+---
+
+### Decode nested field as JSON
+
+This example takes a record containing a raw JSON string in
+`.Payload.Before.foo` and converts it into a map.
+
+#### Configuration parameters
+
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "json.decode"
+        settings:
+          field: ".Payload.Before.foo"
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>`.Payload.Before.foo`</td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
+
+#### Record difference
+
+```mdx-code-block
+<Box className='diff-viewer'>
+  <ReactDiffViewer
+    styles={{
+      diffContainer: {
+        overflowX: 'auto',
+        overflowY: 'hidden',
+      },
+    }}
+    leftTitle={'Before'}
+    rightTitle={'After'}
+    oldValue={"{\n  \"position\": null,\n  \"operation\": \"snapshot\",\n  \"metadata\": null,\n  \"key\": null,\n  \"payload\": {\n    \"before\": {\n      \"foo\": \"{\\\"before\\\":{\\\"data\\\":4,\\\"id\\\":3},\\\"baz\\\":\\\"bar\\\"}\"\n    },\n    \"after\": null\n  }\n}"}
+    newValue={"{\n  \"position\": null,\n  \"operation\": \"snapshot\",\n  \"metadata\": null,\n  \"key\": null,\n  \"payload\": {\n    \"before\": {\n      \"foo\": {\n        \"baz\": \"bar\",\n        \"before\": {\n          \"data\": 4,\n          \"id\": 3\n        }\n      }\n    },\n    \"after\": null\n  }\n}"}
+    hideLineNumbers={false}
+    showDiffOnly={false}
+    splitView={true}
+  />
+</Box>
+```
+
+
+
+![scarf pixel conduit-site-docs-processors](https://static.scarf.sh/a.png?x-pxid=33ce4d9e-1948-4cab-846a-7e6cd33b8cae)
