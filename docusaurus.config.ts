@@ -275,10 +275,6 @@ const config: Config = {
             from: '/docs/pipeline-configuration-files',
             to: '/docs/using/pipelines/configuration-file',
           },
-          {
-            from: ' /docs/getting-started/architecture',
-            to: '/docs/core-concepts/architecture',
-          }
         ]
       },
     ],
