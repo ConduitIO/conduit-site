@@ -225,10 +225,14 @@ const config: Config = {
           },
           {
             from: '/docs/features/opencdc-record',
-            to: '/docs/core-concepts/opencdc-record',
+            to: '/docs/using/opencdc-record',
           },
           {
             from: '/docs/processors',
+            to: '/docs/using/processors/getting-started',
+          },
+          {
+            from: '/docs/processors/getting-started',
             to: '/docs/using/processors/getting-started',
           },
           {
@@ -236,16 +240,44 @@ const config: Config = {
             to: '/docs/using/other-features/schema-support',
           },
           {
-            from: '/docs/features/pipeline-recovery',
-            to: '/docs/using/other-features/pipeline-recovery',
-          },
-          {
-            from: '/docs/features/configuration',
-            to: '/docs/configuration#configuration-file',
-          },
-          {
             from: '/docs/connectors/building-connectors',
             to: '/docs/developing/connectors',
+          },
+          {
+            from: '/docs/processors/builtin/',
+            to: '/docs/using/processors/builtin',
+          },
+          {
+            from: '/docs/processors/standalone/building',
+            to: '/docs/developing/processors/building',
+          },
+          {
+            from: '/docs/features/pipeline-semantics',
+            to: '/docs/core-concepts/pipeline-semantics',
+          },
+          {
+            from: '/docs/pipeline-configuration-files',
+            to: '/docs/using/pipelines/configuration-file',
+          },
+          {
+            from: ' /docs/getting-started/architecture',
+            to: '/docs/core-concepts/architecture',
+          },
+          {
+            from: '/docs/connectors/building/',
+            to: '/docs/developing/connectors',
+          },
+          {
+            from: '/docs/connectors/installing',
+            to: '/docs/using/connectors/installing',
+          },
+          {
+            from: '/docs/processors/referencing-fields',
+            to: '/docs/using/processors/referencing-fields',
+          },
+          {
+            from: '/docs/connectors/referencing/',
+            to: '/docs/using/connectors/referencing',
           },
         ]
       },
