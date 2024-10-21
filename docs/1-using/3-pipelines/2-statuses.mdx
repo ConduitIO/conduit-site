@@ -21,11 +21,11 @@ Understanding the different statuses of your pipeline is crucial for effective m
 
 ### Stopped
 -  **Definition**: The pipeline has been halted by the system, or manually stopped by a user.
--  **Implication**: No data is being processed after this point; however, all records have finished processing (gracefully shutting down the pipeline). Check system logs for more information on the cause. The pipeline could be restarted.
+-  **Implication**: The pipeline gracefully stopped, any in-flight records were flushed, acks were delivered back to the source, no error was encountered while stopping the pipeline. The pipeline could be restarted.
 
 ### Degraded
 -  **Definition**: The pipeline stopped due to an error that couldn't be recovered, or force-stopped by the user.
--  **Implication**: The pipeline couldn't be recovered, or it's in a state that needs to be restarted.
+-  **Implication**: An error caused the pipeline to stop. Any in-flight records were dropped, not all acks might have been delivered back to the source. Starting a degraded pipeline again could potentially result in duplicated data (depending on how the destination connector handles records), since some data might get re-delivered.
 
 ### Recovering
 -  **Definition**: The pipeline is in the process of recovering from a degraded state or error.
