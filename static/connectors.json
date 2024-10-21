@@ -5208,26 +5208,6 @@
     ]
   },
   {
-    "nameWithOwner": "ConduitIO/conduit-operator",
-    "description": "Automatically provision and manage Conduit instances in Kubernetes",
-    "createdAt": "2022-12-20 01:34:52 +0000 UTC",
-    "url": "https://github.com/ConduitIO/conduit-operator",
-    "stargazerCount": 1,
-    "forkCount": 0,
-    "releases": [
-      {
-        "tag_name": "v0.0.1",
-        "name": "v0.0.1",
-        "body": "## What's Changed\r\n* fix: typos by @raulb in https://github.com/ConduitIO/conduit-operator/pull/1\r\n* go.mod: bump github.com/conduitio/conduit from 0.8.0 to 0.9.0 by @dependabot in https://github.com/ConduitIO/conduit-operator/pull/2\r\n* Pin conduit to 0.8.1 by @lyuboxa in https://github.com/ConduitIO/conduit-operator/pull/4\r\n* Add support for v0.9.0 by @lyuboxa in https://github.com/ConduitIO/conduit-operator/pull/9\r\n* go.mod: bump k8s.io/client-go from 0.29.2 to 0.29.3 by @dependabot in https://github.com/ConduitIO/conduit-operator/pull/6\r\n* .github: Bump dependabot/fetch-metadata from 1.6.0 to 2.0.0 by @dependabot in https://github.com/ConduitIO/conduit-operator/pull/14\r\n* chore: add codeowners by @raulb in https://github.com/ConduitIO/conduit-operator/pull/15\r\n* chore: add project automation by @raulb in https://github.com/ConduitIO/conduit-operator/pull/16\r\n* Upgrade conduit to v0.11.1 by @lyuboxa in https://github.com/ConduitIO/conduit-operator/pull/18\r\n* Rename repository from conduitio-labs to conduitio by @lyuboxa in https://github.com/ConduitIO/conduit-operator/pull/19\r\n* v1 -\u003e v1alpha by @lyuboxa in https://github.com/ConduitIO/conduit-operator/pull/20\r\n* Upgrade pipelines file generation to v2.2 by @lyuboxa in https://github.com/ConduitIO/conduit-operator/pull/22\r\n* Add resource IDs for pipeline, connector and procs. by @lyuboxa in https://github.com/ConduitIO/conduit-operator/pull/24\r\n* Add functionality for stopping/starting deployment by @hariso in https://github.com/ConduitIO/conduit-operator/pull/25\r\n* Add conduit docker image and release by @lyuboxa in https://github.com/ConduitIO/conduit-operator/pull/32\r\n* fix workflow bug by @lyuboxa in https://github.com/ConduitIO/conduit-operator/pull/33\r\n* Fix paths in workflow for helm by @lyuboxa in https://github.com/ConduitIO/conduit-operator/pull/34\r\n* Switch to SQLite3 backend by @lyuboxa in https://github.com/ConduitIO/conduit-operator/pull/31\r\n* Add support for minimum conduit version required by @lyuboxa in https://github.com/ConduitIO/conduit-operator/pull/29\r\n* Update repo and image tag to use gcr by @lyuboxa in https://github.com/ConduitIO/conduit-operator/pull/35\r\n* Fix chart version by @lyuboxa in https://github.com/ConduitIO/conduit-operator/pull/38\r\n\r\n## New Contributors\r\n* @raulb made their first contribution in https://github.com/ConduitIO/conduit-operator/pull/1\r\n* @dependabot made their first contribution in https://github.com/ConduitIO/conduit-operator/pull/2\r\n* @hariso made their first contribution in https://github.com/ConduitIO/conduit-operator/pull/25\r\n\r\n**Full Changelog**: https://github.com/ConduitIO/conduit-operator/commits/v0.0.1",
-        "draft": false,
-        "prerelease": true,
-        "published_at": "2024-10-17T19:52:10Z",
-        "html_url": "https://github.com/ConduitIO/conduit-operator/releases/tag/v0.0.1",
-        "assets": null
-      }
-    ]
-  },
-  {
     "nameWithOwner": "ViniciusMiana/conduit-connector-pulsar",
     "description": "Provides a source and a destination Pulsar connector, for Conduit.",
     "createdAt": "2023-12-07 00:47:43 +0000 UTC",
@@ -8157,7 +8137,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-nats-pubsub/releases/download/v0.4.0/conduit-connector-nats-pubsub_0.4.0_Windows_x86_64.tar.gz",
             "created_at": "2024-09-12T13:32:21Z",
             "updated_at": "2024-09-12T13:32:21Z",
-            "download_count": 2,
+            "download_count": 3,
             "size": 6571171
           }
         ]
@@ -8845,7 +8825,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-pinecone/releases/download/v0.2.0/conduit-connector-pinecone_0.2.0_Linux_i386.tar.gz",
             "created_at": "2024-09-18T10:22:50Z",
             "updated_at": "2024-09-18T10:22:51Z",
-            "download_count": 3,
+            "download_count": 4,
             "size": 6007619
           },
           {
