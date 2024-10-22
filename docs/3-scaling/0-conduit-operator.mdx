@@ -3,19 +3,135 @@ title: "Conduit Operator"
 toc_max_heading_level: 6
 ---
 
-The **Conduit Operator** is a [Kubernetes operator](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/) designed to simplify the management and orchestration of Conduit instances. The operator extends the [Kubernetes API](https://kubernetes.io/docs/concepts/overview/kubernetes-api/) with a [custom Conduit resource](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/). 
+The **Conduit Operator** is a [Kubernetes operator](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/) designed to simplify the management and orchestration of Conduit instances. The operator extends the [Kubernetes API](https://kubernetes.io/docs/concepts/overview/kubernetes-api/) with a [custom resource](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) for Conduit. 
 
 This custom resource allows users to define and manage Conduit instances declaratively, enabling seamless integration with Kubernetes' native features such as scaling, monitoring, and logging.
 
-### Features
+### Overview
 
-#### Installing standalone connectors 
+Conduit pipelines are represented as Conduit custom resources, where each pipeline will be provisioned 
+as a distinct Conduit instance with its own lifecycle. 
 
-A standalone connector can be installed by providing the connector name and version. The operator will then install the connector and create the necessary resources to run it.
+The Conduit custom resource definition format is very similar to that of [pipeline configurations](/docs/using/pipelines/configuration-file):
 
-#### Schema Support
+```yaml
+apiVersion: operator.conduit.io/v1
+kind: Conduit
+metadata:
+  name: conduit-generator
+spec:
+  running: true
+  name: generator.log
+  description: generator pipeline
+  connectors:
+    - name: source-connector
+      type: source
+      plugin: builtin:generator
+      settings:
+        - name: format.type
+          value: structured
+        - name: format.options
+          value: "id:int,name:string,company:string,trial:bool"
+        - name: recordCount
+          value: "3"
+    - name: destination-connector
+      type: destination
+      plugin: builtin:log
+```
+
+### Quickstart
+
+:::info
+To get started with the Conduit Operator, follow the steps described on the [Conduit Operator GitHub repository](https://github.com/ConduitIO/conduit-operator).
+:::
+
+### Installing standalone connectors
+
+#### `plugin`
+
+A standalone connector can be installed by providing the connector name and version via `plugin`. The operator will then install the connector and create the necessary resources to run it. These connectors need to be referred by their GitHub `organization/repository` names.
+
+#### `pluginVersion`
+
+Version can optionally be specified or the latest will be used. 
+
+#### Example
+
+Here's a full example using `conduitio/conduit-connector-generator` as `plugin` and `v0.5.0` as `pluginVersion`:
+
+```yaml
+apiVersion: operator.conduit.io/v1
+kind: Conduit
+metadata:
+  name: conduit-generator
+spec:
+  running: true
+  name: generator.log
+  description: generator pipeline
+  connectors:
+    - name: source-connector
+      type: source
+      plugin: conduitio/conduit-connector-generator
+      pluginVersion: v0.5.0
+      settings:
+        - name: format.type
+          value: structured
+        - name: format.options
+          value: "id:int,name:string,company:string,trial:bool"
+        - name: recordCount
+          value: "3"
+    - name: destination-connector
+      type: destination
+      plugin: conduitio/conduit-connector-log
+      pluginVersion: v0.3.0
+```
+
+### Schema Support
 
 With schema support added to Conduit on [v0.11.0](/changelog/2024-08-19-conduit-0-11-0-release), it is also possible to use multiple conduit instances sharing their schema via another schema registry.
+
+Details are provided directly via the Conduit resource. `basicAuthUser`, `basicAuthPassword` and `bearerToken` can be provided as secrets but will be copied over into controller owned secrets for management, and ease of use.
+
+#### Example
+
+```yaml
+apiVersion: operator.conduit.io/v1alpha
+kind: Conduit
+metadata:
+  name: conduit-generator-schema-registry
+spec:
+  running: true
+  name: generator.standalone.log
+  description: generator pipeline
+  schemaRegistry:
+    url: http://schema-registry-apicurio-registry.tenant:8080/apis/ccompat/v7
+    # These can be provided as secrets:
+
+    # basicAuthUser: ${BASIC_AUTH_USER}
+    # basicAuthPassword: ${BASIC_AUTH_PASSWORD}
+    # bearerToken: ${BEARER_TOKEN}
+  connectors:
+    - name: source-connector
+      type: source
+      plugin: conduitio/conduit-connector-generator
+      settings:
+        - name: format.type
+          value: structured
+        - name: format.options.id
+          value: "int"
+        - name: format.options.name
+          value: "string"
+        - name: format.options.company
+          value: "string"
+        - name: format.options.trial
+          value: "bool"
+        - name: recordCount
+          value: "3"
+    - name: destination-connector
+      type: destination
+      plugin: conduitio/conduit-connector-log
+      pluginVersion: v0.4.0
+```
 
 ### Deploying
 
@@ -38,9 +154,4 @@ For more configuration options see [charts/conduit-operator/values.yaml](https:/
 
 :::tip
 For a low-code experience, and many other Enterprise features, we recommend you use the [Conduit Platform](https://meroxa.io)
-:::
-
-
-:::info
-Source code of the Conduit Operator is available on [GitHub](https://github.com/ConduitIO/conduit-operator).
 :::

@@ -1,5 +1,5 @@
 ---
-slug: '2024-10-21-conduit-operator'
+slug: '2024-10-17-conduit-operator'
 title: Introducing Conduit Operator
 draft: false
 tags: [conduit, scale, kubernetes]
