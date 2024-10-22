@@ -47,13 +47,15 @@ To get started with the Conduit Operator, follow the steps described on the [Con
 
 ### Installing standalone connectors
 
-#### `plugin`
+#### `plugin` and `pluginVersion`
 
-A standalone connector can be installed by providing the connector name and version via `plugin`. The operator will then install the connector and create the necessary resources to run it. These connectors need to be referred by their GitHub `organization/repository` names.
+A standalone connector can be installed by providing the connector name via `plugin`, and version via `pluginVersion`. 
 
-#### `pluginVersion`
+The operator will then install the connector and create the necessary resources to run it. These connectors need to be referred by their GitHub `organization/repository` names.
 
-Version can optionally be specified or the latest will be used. 
+:::info
+Plugin version can optionally be specified or the latest will be used. 
+:::
 
 #### Example
 
@@ -72,7 +74,7 @@ spec:
     - name: source-connector
       type: source
       plugin: conduitio/conduit-connector-generator
-      pluginVersion: v0.5.0
+      pluginVersion: v0.5.0 # optional (default: latest)
       settings:
         - name: format.type
           value: structured
