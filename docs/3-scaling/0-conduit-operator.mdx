@@ -135,9 +135,7 @@ spec:
 
 ### Deploying
 
-The operator provides a [helm chart](https://github.com/ConduitIO/conduit-operator/blob/main/charts/conduit-operator) which can be used for deployment on any cluster.
-
-Additional metadata can be injected in each provisioned conduit instance via `controller.conduitMetadata` configuration.
+The operator provides a [helm chart](https://github.com/ConduitIO/conduit-operator/blob/main/charts/conduit-operator) that can be used for deployment on any cluster. Additional metadata can be injected into each provisioned conduit instance via the `controller.conduitMetadata` configuration.
 
 For example, to instruct a prometheus instance to scrape each Conduit instance metrics:
 
@@ -153,5 +151,5 @@ controller:
 For more configuration options see [charts/conduit-operator/values.yaml](https://github.com/ConduitIO/conduit-operator/blob/main/charts/conduit-operator/values.yaml).
 
 :::tip
-For a low-code experience, and many other Enterprise features, we recommend you use the [Conduit Platform](https://meroxa.io)
+For a low-code experience, and many other Enterprise features, we recommend you use the [Conduit Platform](https://meroxa.io).
 :::
