@@ -2,7 +2,7 @@
 slug: '2024-10-17-conduit-operator'
 title: Introducing Conduit Operator
 draft: false
-tags: [conduit, scale, kubernetes]
+tags: [conduit, operator, scale, kubernetes]
 ---
 
 We're happy to announce that we recently released [Conduit Operator v0.0.1](https://github.com/ConduitIO/conduit-operator/releases/tag/v0.0.1), a Kubernetes operator that extends the Kubernetes API to enhance the management of Conduit instances on our own [Conduit Platform](https://meroxa.io).
