@@ -12,6 +12,10 @@ const navLinks = [
     href: '/docs',
   },
   {
+    label: 'Changelog',
+    href: '/changelog',
+  },
+  {
     label: 'Conduit Platform',
     href: 'https://meroxa.io',
   },
