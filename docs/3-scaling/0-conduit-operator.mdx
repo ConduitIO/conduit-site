@@ -3,7 +3,7 @@ title: "Conduit Operator"
 toc_max_heading_level: 6
 ---
 
-The **Conduit Operator** is a [Kubernetes operator](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/) designed to simplify the management and orchestration of Conduit instances. The operator extends the [Kubernetes API](https://kubernetes.io/docs/concepts/overview/kubernetes-api/) with a [custom resource](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) for Conduit. 
+The Conduit Operator is a [Kubernetes operator](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/) designed to simplify the management and orchestration of Conduit instances. The operator extends the [Kubernetes API](https://kubernetes.io/docs/concepts/overview/kubernetes-api/) with a [custom resource](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) for Conduit. 
 
 This custom resource allows users to define and manage Conduit instances declaratively, enabling seamless integration with Kubernetes' native features such as scaling, monitoring, and logging.
 
@@ -15,7 +15,7 @@ as a distinct Conduit instance with its own lifecycle.
 The Conduit custom resource definition format is very similar to that of [pipeline configurations](/docs/using/pipelines/configuration-file):
 
 ```yaml
-apiVersion: operator.conduit.io/v1
+apiVersion: operator.conduit.io/v1alpha
 kind: Conduit
 metadata:
   name: conduit-generator
@@ -30,19 +30,26 @@ spec:
       settings:
         - name: format.type
           value: structured
-        - name: format.options
-          value: "id:int,name:string,company:string,trial:bool"
+        - name: format.options.id
+          value: "int"
+        - name: format.options.name
+          value: "string"
+        - name: format.options.company
+          value: "string"
+        - name: format.options.trial
+          value: "bool"
         - name: recordCount
           value: "3"
     - name: destination-connector
       type: destination
       plugin: builtin:log
+      
 ```
 
 ### Quickstart
 
 :::info
-To get started with the Conduit Operator, follow the steps described on the [Conduit Operator GitHub repository](https://github.com/ConduitIO/conduit-operator).
+To get started with the Conduit Operator, follow the steps described on the [Conduit Operator GitHub repository](https://github.com/ConduitIO/conduit-operator?tab=readme-ov-file#quickstart).
 :::
 
 ### Installing standalone connectors
@@ -58,16 +65,16 @@ The operator will then install the connector and create the necessary resources 
 - [meroxa](https://github.com/meroxa)
 
 
-:::info
+:::tip
 Plugin version can optionally be specified or the latest will be used. 
 :::
 
 #### Example
 
-Here's a full example using `conduitio/conduit-connector-generator` as `plugin` and `v0.5.0` as `pluginVersion`:
+Here's a full example using [`conduitio/conduit-connector-generator`](https://github.com/conduitio/conduit-connector-generator) as `plugin` and `v0.8.0` as `pluginVersion`:
 
 ```yaml
-apiVersion: operator.conduit.io/v1
+apiVersion: operator.conduit.io/v1alpha
 kind: Conduit
 metadata:
   name: conduit-generator
@@ -79,25 +86,34 @@ spec:
     - name: source-connector
       type: source
       plugin: conduitio/conduit-connector-generator
-      pluginVersion: v0.5.0 # optional (default: latest)
+      pluginVersion: v0.8.0
       settings:
         - name: format.type
           value: structured
-        - name: format.options
-          value: "id:int,name:string,company:string,trial:bool"
+        - name: format.options.id
+          value: "int"
+        - name: format.options.name
+          value: "string"
+        - name: format.options.company
+          value: "string"
+        - name: format.options.trial
+          value: "bool"
         - name: recordCount
           value: "3"
     - name: destination-connector
       type: destination
       plugin: conduitio/conduit-connector-log
-      pluginVersion: v0.3.0
 ```
 
 ### Schema Support
 
-With schema support added to Conduit on [v0.11.0](/changelog/2024-08-19-conduit-0-11-0-release), it is also possible to use multiple conduit instances sharing their schema via another schema registry.
+As of [v0.11.0](/changelog/2024-08-19-conduit-0-11-0-release) Conduit supports the use of a schema registry. 
 
-Details are provided directly via the Conduit resource. `basicAuthUser`, `basicAuthPassword` and `bearerToken` can be provided as secrets but will be copied over into controller owned secrets for management, and ease of use.
+This allows connectors to automatically extract or use the schema referred to by the [OpenCDC record](/docs/using/opencdc-record) to encode/decode data. 
+
+By default Conduit uses a builtin schema registry, however in certain use cases a schema registry needs to be shared between multiple instances. The Conduit resource allows for schema registry to be defined as of [v0.2.0](https://github.com/ConduitIO/conduit-operator/releases/tag/v0.0.2).
+
+Details are provided directly via the Conduit resource. `basicAuthUser` and `basicAuthPassword` can be provided as secrets but will be copied over into controller-owned secrets for management and ease of use.
 
 #### Example
 
@@ -111,12 +127,13 @@ spec:
   name: generator.standalone.log
   description: generator pipeline
   schemaRegistry:
-    url: http://schema-registry-apicurio-registry.tenant:8080/apis/ccompat/v7
-    # These can be provided as secrets:
-
-    # basicAuthUser: ${BASIC_AUTH_USER}
-    # basicAuthPassword: ${BASIC_AUTH_PASSWORD}
-    # bearerToken: ${BEARER_TOKEN}
+    url: http://apicurio:8080/apis/ccompat/v7
+    # basicAuthUser:
+    #   - value: <schemaUser>
+    # basicAuthPassword:
+    #   - secretRef:
+    #     key: schema-registry-password
+    #     name: schema-registry-secret
   connectors:
     - name: source-connector
       type: source
@@ -156,6 +173,36 @@ controller:
 ```
 
 For more configuration options see [charts/conduit-operator/values.yaml](https://github.com/ConduitIO/conduit-operator/blob/main/charts/conduit-operator/values.yaml).
+
+Additional metadata can be injected in each provisioned conduit instance via `controller.conduitMetadata` configuration. 
+
+For example, to instruct a prometheus instance to scrape each Conduit instance metrics:
+
+```yaml
+controller:
+  conduitMetadata:
+    podAnnotations:
+      prometheus.io/scrape: true
+      prometheus.io/path: /metrics
+      prometheus.io/port: 8080
+```
+
+For more configuration options see [charts/conduit-operator/values.yaml](https://github.com/ConduitIO/conduit-operator/blob/main/charts/conduit-operator/values.yaml).
+
+### Using the helm chart repository
+
+Alternatively the operator can be deployed via the [Helm repository](https://helm.sh/docs/topics/chart_repository/). To add the repository to your helm repos:
+
+```shell
+helm repo add conduit https://conduitio.github.io/conduit-operator
+```
+
+Install the operator in the `conduit-operator` namespace of your cluster:
+
+```shell
+helm install conduit-operator \
+    conduit/conduit-operator --create-namespace -n conduit-operator
+```
 
 :::tip
 For a low-code experience, and many other Enterprise features, we recommend you use the [Conduit Platform](https://meroxa.io).
