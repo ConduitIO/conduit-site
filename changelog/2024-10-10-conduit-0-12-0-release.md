@@ -16,5 +16,5 @@ We’re excited to announce the release of [**Conduit v0.12.0**](https://github.
 -  **Smart Retry Management:** Limits on retries prevent indefinite restarts, keeping your pipelines efficient and reliable.
 
 :::tip
-For a detailed overview of how Pipeline Recovery works and its benefits, check out our [blog post](https://meroxa.com/blog/unlocking-resilience:-conduit-v0.12.0-introduces-pipeline-recovery/), or our documentation for [Pipeline Recovery](/docs/features/pipeline-recovery) and learn how to make your data streaming experience smoother than ever!
+For a detailed overview of how Pipeline Recovery works and its benefits, check out our [blog post](https://meroxa.com/blog/unlocking-resilience:-conduit-v0.12.0-introduces-pipeline-recovery/), or our documentation for [Pipeline Recovery](/docs/using/other-features/pipeline-recovery) and learn how to make your data streaming experience smoother than ever!
 :::

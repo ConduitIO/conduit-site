@@ -34,7 +34,7 @@ function HeaderSection() {
               </p>
 
               <div className='mt-6'>
-                <a href="/docs/getting-started/installing-and-running"
+                <a href="/docs/installing-and-running"
                    className="inline-flex items-center mb-5 px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-700 mr-4 hover:text-white hover:bg-orange-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   <span>Download</span>
@@ -78,7 +78,7 @@ function ConnectorsSection() {
             <h2 className="text-4xl font-bold leading-7 text-canary-100 sm:text-4xl sm:truncate">Well Connected</h2>
           </div>
           <div className="mt-4 flex md:mt-0 md:ml-4">
-            <a href="/docs/connectors/connector-list">
+            <a href="/docs/using/connectors/list">
               <button
                 type="button"
                 className="inline-flex items-center  px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-bold text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-indigo-500"

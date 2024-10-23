@@ -1,0 +1,43 @@
+---
+title: "Rate Limiting"
+---
+
+Destination connectors can be configured to limit the rate at which records can be written. This is especially useful when the destination resource has a rate limit to ensure that the connector does not exceed it. By default, Conduit does not limit the rate at which records are written.
+
+## Configuration parameters
+
+* `sdk.rate.perSecond`: Maximum number of records written per second (0 means no rate limit).
+* `sdk.rate.burst`: Allow bursts of at most X records (0 or less means that bursts are not limited). Only takes effect if a rate limit per second is set. Note that if `sdk.batch.size` is bigger than `sdk.rate.burst`, the effective batch size will be equal to `sdk.rate.burst`.
+
+## Example
+
+The pipeline will generate structured records as fast as possible, and write them to the log. When you run it, you'll notice that by using both `sdk.rate.perSecond` and `sdk.rate.burst`, the log destination connector will limit the rate of processed records 8 records per second in batches of 2 (i.e. 2 records every 250ms).
+
+```yaml
+version: 2.2
+pipelines:
+  - id: generator-to-log
+    status: running
+    description: >
+      Example pipeline using the generator source connector and the log destination connector.
+      Showing how to limit the rate of processing records.
+    connectors:
+      - id: example
+        type: source
+        plugin: generator
+        settings:
+          rate: 0 # generating source records as fast as possible
+          format.type: structured
+          format.options.id: int
+          format.options.name: string
+          operations: create
+      - id: log
+        type: destination
+        plugin: log
+        settings:
+          level: info
+
+          # limit the rate of proccessing records
+          sdk.rate.perSecond: 8
+          sdk.rate.burst: 2
+```

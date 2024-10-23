@@ -5,15 +5,15 @@ import Wrapper from '@site/src/components/Wrapper';
 const navLinks = [
   {
     label: 'Connectors',
-    href: '/docs/connectors/connector-list',
+    href: '/docs/using/connectors/list',
   },
   {
     label: 'Documentation',
     href: '/docs',
   },
   {
-    label: 'Changelog',
-    href: '/changelog',
+    label: 'Conduit Platform',
+    href: 'https://meroxa.io',
   },
   {
     label: 'GitHub',

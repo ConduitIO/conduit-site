@@ -1,0 +1,245 @@
+---
+IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
+
+title: 'field.exclude'
+sidebar_position: 7
+---
+
+import ReactDiffViewer from 'react-diff-viewer';
+import Chip from '@mui/material/Chip';
+import Box from "@mui/system/Box";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# `field.exclude`
+
+Remove a subset of fields from the record.
+
+## Description
+
+Remove a subset of fields from the record, all the other fields are left untouched.
+If a field is excluded that contains nested data, the whole tree will be removed.
+It is not allowed to exclude `.Position` or `.Operation` fields.
+
+Note that this processor only runs on structured data, if the record contains
+raw JSON data, then use the processor [`json.decode`](/docs/using/processors/builtin/json.decode)
+to parse it into structured data first.
+
+## Configuration parameters
+
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "field.exclude"
+        settings:
+          # Fields is a comma separated list of target fields which should be
+          # excluded.
+          # For more information about the format, see [Referencing
+          # fields](https://conduit.io/docs/using/processors/referencing-fields.
+          # Type: string
+          fields: ""
+          # Whether to decode the record key using its corresponding schema from
+          # the schema registry.
+          # Type: bool
+          sdk.schema.decode.key.enabled: "true"
+          # Whether to decode the record payload using its corresponding schema
+          # from the schema registry.
+          # Type: bool
+          sdk.schema.decode.payload.enabled: "true"
+          # Whether to encode the record key using its corresponding schema from
+          # the schema registry.
+          # Type: bool
+          sdk.schema.encode.key.enabled: "true"
+          # Whether to encode the record payload using its corresponding schema
+          # from the schema registry.
+          # Type: bool
+          sdk.schema.encode.payload.enabled: "true"
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td>`fields`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  Fields is a comma separated list of target fields which should be excluded.
+
+For more information about the format, see [Referencing fields](https://conduit.io/docs/using/processors/referencing-fields.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.decode.key.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to decode the record key using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.decode.payload.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to decode the record payload using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.encode.key.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to encode the record key using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.encode.payload.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to encode the record payload using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
+
+## Examples
+
+### Exclude all fields in payload
+
+Excluding all fields in `.Payload` results in an empty payload.
+
+#### Configuration parameters
+
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "field.exclude"
+        settings:
+          fields: ".Payload"
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`fields`</td>
+        <td>`.Payload`</td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
+
+#### Record difference
+
+```mdx-code-block
+<Box className='diff-viewer'>
+  <ReactDiffViewer
+    styles={{
+      diffContainer: {
+        overflowX: 'auto',
+        overflowY: 'hidden',
+      },
+    }}
+    leftTitle={'Before'}
+    rightTitle={'After'}
+    oldValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": null,\n  \"payload\": {\n    \"before\": {\n      \"bar\": \"baz\"\n    },\n    \"after\": {\n      \"foo\": \"bar\"\n    }\n  }\n}"}
+    newValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": null\n  }\n}"}
+    hideLineNumbers={false}
+    showDiffOnly={false}
+    splitView={true}
+  />
+</Box>
+```
+
+---
+
+### Exclude multiple fields
+
+It's possible to exclude multiple fields by providing a
+comma-separated list of fields. In this example, we exclude `.Metadata`,
+`.Payload.After.foo` and `.Key.key1`.
+
+#### Configuration parameters
+
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "field.exclude"
+        settings:
+          fields: ".Metadata,.Payload.After.foo,.Key.key1"
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`fields`</td>
+        <td>`.Metadata,.Payload.After.foo,.Key.key1`</td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
+
+#### Record difference
+
+```mdx-code-block
+<Box className='diff-viewer'>
+  <ReactDiffViewer
+    styles={{
+      diffContainer: {
+        overflowX: 'auto',
+        overflowY: 'hidden',
+      },
+    }}
+    leftTitle={'Before'}
+    rightTitle={'After'}
+    oldValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"source\": \"s3\"\n  },\n  \"key\": {\n    \"key1\": \"val1\",\n    \"key2\": \"val2\"\n  },\n  \"payload\": {\n    \"before\": {\n      \"bar\": \"baz\"\n    },\n    \"after\": {\n      \"foo\": \"bar\",\n      \"foobar\": \"baz\"\n    }\n  }\n}"}
+    newValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": {},\n  \"key\": {\n    \"key2\": \"val2\"\n  },\n  \"payload\": {\n    \"before\": {\n      \"bar\": \"baz\"\n    },\n    \"after\": {\n      \"foobar\": \"baz\"\n    }\n  }\n}"}
+    hideLineNumbers={false}
+    showDiffOnly={false}
+    splitView={true}
+  />
+</Box>
+```
+
+
+
+![scarf pixel conduit-site-docs-processors](https://static.scarf.sh/a.png?x-pxid=33ce4d9e-1948-4cab-846a-7e6cd33b8cae)
