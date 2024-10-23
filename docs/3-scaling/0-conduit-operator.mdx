@@ -51,7 +51,12 @@ To get started with the Conduit Operator, follow the steps described on the [Con
 
 A standalone connector can be installed by providing the connector name via `plugin`, and version via `pluginVersion`. 
 
-The operator will then install the connector and create the necessary resources to run it. These connectors need to be referred by their GitHub `organization/repository` names.
+The operator will then install the connector and create the necessary resources to run it. These connectors need to be referred to by their GitHub `organization/repository` names and are currently limited to the [following organizations](https://github.com/ConduitIO/conduit-operator/blob/7321042d1fa1205f3c1e5faf70775184ebafedba/pkg/conduit/plugin.go#L9-L11):
+
+- [conduitio](https://github.com/conduitio)
+- [conduitio-labs](https://github.com/conduitio-labs)
+- [meroxa](https://github.com/meroxa)
+
 
 :::info
 Plugin version can optionally be specified or the latest will be used. 
