@@ -18,3 +18,5 @@ We’re excited to announce the release of [**Conduit v0.12.0**](https://github.
 :::tip
 For a detailed overview of how Pipeline Recovery works and its benefits, check out our [blog post](https://meroxa.com/blog/unlocking-resilience:-conduit-v0.12.0-introduces-pipeline-recovery/), or our documentation for [Pipeline Recovery](/docs/using/other-features/pipeline-recovery) and learn how to make your data streaming experience smoother than ever!
 :::
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)

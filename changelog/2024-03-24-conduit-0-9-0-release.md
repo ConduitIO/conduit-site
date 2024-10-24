@@ -21,3 +21,5 @@ Revolutionize your data processing with [**Conduit v0.9**](https://github.com/Co
 :::tip
 For an in-depth look at how the enhanced processors can transform your data processing workflows, check out our [blog post](https://meroxa.com/blog/introducing-conduit-0.9-revolutionizing-data-processing-with-enhanced-processors/), and visit our [Processors documentation page](/docs/using/processors/getting-started.
 :::
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)

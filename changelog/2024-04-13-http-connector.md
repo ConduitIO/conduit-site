@@ -19,3 +19,5 @@ Enhance your data integration capabilities with the **new HTTP connector for Con
 :::tip
 For an in-depth look at how the new HTTP connector can enhance your data integration, check out our [blog post](https://meroxa.com/blog/introducing-the-new-http-connector-for-conduit-streamline-your-data-flow/), and visit our [Conduit HTTP Connector GitHub page](https://github.com/conduitio-labs/conduit-connector-http)
 :::
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)

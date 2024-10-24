@@ -16,3 +16,5 @@ For **more information**, check out [its documentation page](/docs/scaling/condu
 :::info
 Conduit Operator is open source and available on [GitHub](https://github.com/ConduitIO/conduit-operator).
 :::
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)
