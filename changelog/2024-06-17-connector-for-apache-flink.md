@@ -17,3 +17,5 @@ We’re pleased to announce **Meroxa's new Conduit connector for Apache Flink**!
 :::tip
 For an in-depth look at how to get started with the new Conduit connector for Apache Flink, check out our [blog post](https://meroxa.com/blog/introduction-to-meroxa's-new-conduit-connector-for-apache-flink/), and visit our [Conduit Flink Connector GitHub page](https://github.com/conduitio-labs/conduit-flink-connector).
 :::
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)

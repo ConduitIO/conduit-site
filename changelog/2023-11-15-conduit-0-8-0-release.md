@@ -24,3 +24,4 @@ For those interested, the experimental micro-batching work is available in a bra
 For an in-depth look at the new features and improvements in Conduit v0.8, check out our [blog post](https://meroxa.com/blog/conduit-0.8-is-here/).
 :::
 
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)
