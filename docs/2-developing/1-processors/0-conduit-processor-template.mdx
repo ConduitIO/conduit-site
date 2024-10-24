@@ -1,6 +1,5 @@
 ---
 title: "Conduit Processor Template"
-sidebar_position: 1
 ---
 
 ## Initializing a Conduit Processor Project
@@ -27,13 +26,15 @@ Included in the Conduit Processor Template are:
 
 :::note
 
-By convention the name of the repository should be conduit-processor-[processor name]. So if you would like to reference the processor using foo, the repository should be named conduit-processor-foo.
+By convention the name of the repository should be conduit-processor-`processor name`. So if you would like to reference the processor using foo, the repository should be named conduit-processor-foo.
 
 :::
 
+
 ## Developing Processors
 
-Implement a processor by defining a struct that satisfies the [sdk.Processor](<https://pkg.go.dev/github.com/conduitio/conduit-processor-sdk#Processor) interface.
+Implement a processor by defining a struct that satisfies the [sdk.Processor](https://pkg.go.dev/github.com/conduitio/conduit-processor-sdk#Processor) interface.
+
 
 Processors follow a lifecycle of: Configure, Open, Process, and Teardown, However a simple processor can be created with only Specification and Process being overridden. There are other optional functions that help with the configuration of more complex processors such as: Configure, Open, Teardown and MiddlewareOptions.
 
