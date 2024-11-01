@@ -7,18 +7,17 @@ slug: '/getting-started'
 
 ## Our goal
 
-In this guide, we'll learn how to install Conduit and use it Conduit to build
-and run a pipeline. The pipeline will be continuously generating sample user
-data (using the
+In this guide, we'll learn how to install Conduit and use it to build and run a
+pipeline. The pipeline will be continuously generating sample user data (using
+the
 built-in [generator connector](https://github.com/ConduitIO/conduit-connector-generator))
 and printing the data to logs. The user data will contain an ID (which is an
 integer) and a name (which is a string).
 
 ## Install Conduit
 
-The easiest way to get started with Conduit on your macOS or Linux system is to
-install it using our installation script. Simply run the following command
-in your terminal:
+If you're using a macOS or Linux system, you can install Conduit with the
+following command:
 
 ```shell
 $ curl https://conduit.io/install.sh | bash
@@ -125,7 +124,7 @@ settings (data will be logged with the `INFO` level).
 With the pipeline configuration being ready, we can run Conduit:
 
 ```shell
-$ conduit --pipelines.path pipeline-generator-to-log.yaml
+$ conduit --pipelines.path pipelines/
 ```
 
 Conduit is now running the pipeline. Every second, you should see a line like
@@ -173,6 +172,9 @@ holds the data being streamed as well as other data and metadata. In the
 }
 ```
 
+The pipeline will keep streaming the data from the generator source connector to
+the logging destination connector as long as Conduit is running.
+
 ## What's next?
 
 Now that you've got the basics of running Conduit and creating a pipeline
@@ -181,7 +183,7 @@ covered, here are a few places to dive in deeper:
 - [Pipelines](/docs/using/pipelines/configuration-file)
 - [Processors](/docs/using/processors/getting-started)
 
-Looking for more examples? Check out the examples in
+Or, if you want to experiment a bit more, check out the examples in
 our [GitHub repository](https://github.com/ConduitIO/conduit/tree/main/examples).
 
 <!-- TODO add scarf pixel -->
