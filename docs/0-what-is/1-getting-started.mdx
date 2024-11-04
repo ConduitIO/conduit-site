@@ -11,7 +11,7 @@ In this guide, we'll learn how to install Conduit and use it to build and run a
 pipeline. The pipeline will be continuously generating sample user data (using
 the
 built-in [generator connector](https://github.com/ConduitIO/conduit-connector-generator))
-and printing the data to logs. The user data will contain an ID (which is an
+and writing it to a file. The user data will contain an ID (which is an
 integer) and a name (which is a string).
 
 ## Install Conduit
@@ -72,14 +72,14 @@ $ conduit pipelines init
 ```
 
 If the `pipelines` directory, you'll notice a new file,
-`pipeline-generator-to-log.yaml` that contains our pipeline's configuration:
+`pipeline-generator-to-file.yaml` that contains our pipeline's configuration:
 
 ```yaml
 version: "2.2"
 pipelines:
   - id: example-pipeline
     status: running
-    name: "generator-to-log"
+    name: "generator-to-file"
     connectors:
       - id: example-source
         type: source
@@ -104,7 +104,12 @@ pipelines:
           rate: '1'
       - id: example-destination
         type: destination
-        plugin: "log"
+        plugin: "file"
+        settings:
+          # Path is the file path used by the connector to read/write records.
+          # Type: string
+          # Optional
+          path: './destination.txt'
 ```
 
 The configuration above tells us some basic information about the pipeline (ID
@@ -115,9 +120,9 @@ record per second. Each generated record should contain an `id` field (type:
 integer) and a `name` field (type: string).
 
 Then we see that we have a destination connector where the data will be written
-to. It uses the `log` plugin, which is a built-in plugin that logs all the
-incoming data. No settings are used here because we're fine with the default
-settings (data will be logged with the `INFO` level).
+to. It uses the `file` plugin, which is a built-in plugin that writes all the
+incoming data to a file. It has only one configuration parameter, which is the
+path to the file where the records will be written.
  
 ## Run Conduit
 
@@ -127,36 +132,32 @@ With the pipeline configuration being ready, we can run Conduit:
 $ conduit --pipelines.path pipelines/
 ```
 
-Conduit is now running the pipeline. Every second, you should see a line like
-this in the logs:
+Conduit is now running the pipeline. Let's check the contents of the `destination.txt` using:
 
 ```shell
-2024-10-30T13:31:08+00:00 INF component=plugin connector_id=example-pipeline:example-destination plugin_name=log plugin_type=destination record={"key":"c3RhbGxib2FyZA==","metadata":{"conduit.source.connector.id":"example-pipeline:example-source","opencdc.createdAt":"1730291468447408842","opencdc.payload.schema.subject":"example-pipeline:example-source:payload","opencdc.payload.schema.version":"1"},"operation":"create","payload":{"after":{"id":3312758023475813349,"name":"representativity"},"before":null},"position":"MQ=="}
+tail -f destination.txt | jq
 ```
 
-Here's just the generated record:
+Every second, you should a JSON object like this:
 
-```json
+```shell
 {
-    "key": "c3RhbGxib2FyZA==",
-    "metadata":
-    {
-        "conduit.source.connector.id": "example-pipeline:example-source",
-        "opencdc.createdAt": "1730291468447408842",
-        "opencdc.payload.schema.subject": "example-pipeline:example-source:payload",
-        "opencdc.payload.schema.version": "1"
-    },
-    "operation": "create",
-    "payload":
-    {
-        "after":
-        {
-            "id": 3312758023475813349,
-            "name": "representativity"
-        },
-        "before": null
-    },
-    "position": "MQ=="
+  "position": "NTU=",
+  "operation": "create",
+  "metadata": {
+    "conduit.source.connector.id": "example-pipeline:example-source",
+    "opencdc.createdAt": "1730730511235148759",
+    "opencdc.payload.schema.subject": "example-pipeline:example-source:payload",
+    "opencdc.payload.schema.version": "1"
+  },
+  "key": "dGFveWlu",
+  "payload": {
+    "before": null,
+    "after": {
+      "id": 6457746863394562000,
+      "name": "equidiurnal"
+    }
+  }
 }
 ```
 
@@ -167,8 +168,8 @@ holds the data being streamed as well as other data and metadata. In the
 
 ```json
 {
-    "id": 3312758023475813349,
-    "name": "representativity"
+    "id": 6457746863394562000,
+    "name": "equidiurnal"
 }
 ```
 
