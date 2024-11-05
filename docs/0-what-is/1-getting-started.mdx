@@ -7,12 +7,9 @@ slug: '/getting-started'
 
 ## Our goal
 
-In this guide, we'll learn how to install Conduit and use it to build and run a
-pipeline. The pipeline will be continuously generating sample user data (using
-the
-built-in [generator connector](https://github.com/ConduitIO/conduit-connector-generator))
-and writing it to a file. The user data will contain an ID (which is an
-integer) and a name (which is a string).
+In this guide, our goal will be to stream information about flights from an
+imaginary airport to a file. The flight records contain just the airline name
+and the scheduled departure time.
 
 ## Install Conduit
 
@@ -71,6 +68,10 @@ Next, we can use the Conduit CLI to build the example pipeline:
 $ conduit pipelines init
 ```
 
+`conduit pipelines init` builds an example that generates flight information
+from an imaginary airport every second. Use `conduit pipelines init --help` to
+learn how to customize the pipeline.
+
 If the `pipelines` directory, you'll notice a new file,
 `pipeline-generator-to-file.yaml` that contains our pipeline's configuration:
 
@@ -85,14 +86,14 @@ pipelines:
         type: source
         plugin: "generator"
         settings:
-          # Generate field 'id' that's of the int type
+          # Generate field 'airline' of type string
           # Type: string
           # Optional
-          format.options.id: 'int'
-          # Generate field 'name' that's of the string type
+          format.options.airline: 'string'
+          # Generate field 'scheduledDeparture' of type 'time'
           # Type: string
           # Optional
-          format.options.name: 'string'
+          format.options.scheduledDeparture: 'time'
           # The format of the generated payload data (raw, structured, file).
           # Type: string
           # Optional
@@ -113,16 +114,20 @@ pipelines:
 ```
 
 The configuration above tells us some basic information about the pipeline (ID
-and name) and that we want Conduit to start the pipeline automatically. We also
-see a source connector, that uses the `generator` plugin, which is a built-in
-plugin. The connector settings translate into: generate structured data, 1
-record per second. Each generated record should contain an `id` field (type:
-integer) and a `name` field (type: string).
+and name) and that we want Conduit to start the pipeline automatically (
+`status: running`).
 
-Then we see that we have a destination connector where the data will be written
-to. It uses the `file` plugin, which is a built-in plugin that writes all the
-incoming data to a file. It has only one configuration parameter, which is the
-path to the file where the records will be written.
+Then we see a source connector, that uses the [
+`generator` plugin](https://github.com/ConduitIO/conduit-connector-generator),
+which is a built-in plugin that can generate random data. The source connector's
+settings translate into: generate structured data, 1 record per second. Each
+generated record should contain an `airline` field (type: string) and a
+`scheduledDeparture` field (type: duration).
+
+What follows is a destination connector where the data will be written to. It
+uses the `file` plugin, which is a built-in plugin that writes all the incoming
+data to a file. It has only one configuration parameter, which is the path to
+the file where the records will be written.
  
 ## Run Conduit
 
@@ -142,20 +147,20 @@ Every second, you should a JSON object like this:
 
 ```shell
 {
-  "position": "NTU=",
+  "position": "MjU=",
   "operation": "create",
   "metadata": {
     "conduit.source.connector.id": "example-pipeline:example-source",
-    "opencdc.createdAt": "1730730511235148759",
+    "opencdc.createdAt": "1730801194148460912",
     "opencdc.payload.schema.subject": "example-pipeline:example-source:payload",
     "opencdc.payload.schema.version": "1"
   },
-  "key": "dGFveWlu",
+  "key": "cHJlY2VwdG9yYWw=",
   "payload": {
     "before": null,
     "after": {
-      "id": 6457746863394562000,
-      "name": "equidiurnal"
+      "airline": "wheelmaker",
+      "scheduledDeparture": "2024-11-05T10:06:34.148469Z"
     }
   }
 }
@@ -168,13 +173,13 @@ holds the data being streamed as well as other data and metadata. In the
 
 ```json
 {
-    "id": 6457746863394562000,
-    "name": "equidiurnal"
+    "airline": "wheelmaker",
+    "scheduledDeparture": "2024-11-05T10:06:34.148469Z"
 }
 ```
 
 The pipeline will keep streaming the data from the generator source connector to
-the logging destination connector as long as Conduit is running.
+the file destination connector as long as Conduit is running.
 
 ## What's next?
 
