@@ -31,13 +31,7 @@ which you can interact with Conduit.
 
 ## Initialize Conduit 
 
-First, let's create a directory where we will build our first pipeline:
-
-```shell
-$ mkdir ~/conduit-playground/ && cd ~/conduit-playground/
-```
-
-Now, let's initialize the "working environment" in this directory:
+Let's initialize the "working environment":
 
 ```shell
 $ conduit init
@@ -55,7 +49,8 @@ To see how you can customize your first pipeline, run 'conduit pipelines init --
 
 `conduit init` creates the directories where you can put your pipeline
 configuration files, connector binaries, and processor binaries. There's also a
-`conduit.yaml` that contains all the configuration parameters Conduit supports.
+`conduit.yaml` that contains all the configuration parameters that Conduit
+supports.
 
 In this guide, we'll only use the `pipelines` directory, since we won't need to
 install any additional connector nor to change Conduit's default configuration.
@@ -179,7 +174,11 @@ holds the data being streamed as well as other data and metadata. In the
 ```
 
 The pipeline will keep streaming the data from the generator source connector to
-the file destination connector as long as Conduit is running.
+the file destination connector as long as Conduit is running. To stop Conduit,
+press `Ctrl + C` (on a Linux OS, or the equivalent on other OSes). This will
+trigger a graceful shutdown that stops reads from source connectors and waits
+for records that are still in the pipeline to be acknowledged. The next time
+Conduit starts, it will start reading data from where it stopped.
 
 ## What's next?
 
