@@ -175,7 +175,7 @@ holds the data being streamed as well as other data and metadata. In the
 
 The pipeline will keep streaming the data from the generator source connector to
 the file destination connector as long as Conduit is running. To stop Conduit,
-press `Ctrl + C` (on a Linux OS, or the equivalent on other OSes). This will
+press `Ctrl + C` (on a Linux OS, or the equivalent on other operating systems). This will
 trigger a graceful shutdown that stops reads from source connectors and waits
 for records that are still in the pipeline to be acknowledged. The next time
 Conduit starts, it will start reading data from where it stopped.
