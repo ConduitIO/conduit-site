@@ -5,81 +5,190 @@ sidebar_position: 0
 slug: '/getting-started'
 ---
 
-Pipeline configuration files give you the ability to define pipelines that are
-provisioned by Conduit at startup. It's as simple as creating a YAML file that
-defines pipelines, connectors, processors, and their corresponding
-configurations.
+## Our goal
 
-## Example pipeline
+In this guide, our goal will be to stream information about flights from an
+imaginary airport to a file. The flight records contain just the airline name
+and the scheduled departure time.
 
-:::tip
+## Install Conduit
 
-In our [Conduit repository](https://github.com/ConduitIO/conduit), you can find [more examples](https://github.com/ConduitIO/conduit/tree/main/examples/pipelines), but to ilustrate a simple use case we'll show a pipeline using a file as a source, and another file as a destination. Check out the different [specifications](/docs/using/pipelines/configuration-file) to see the different configuration options.
+If you're using a macOS or Linux system, you can install Conduit with the
+following command:
 
+```shell
+$ curl https://conduit.io/install.sh | bash
+```
+
+If you're not using macOS or Linux system, you can still install Conduit
+following one of the different options provided
+in [our installation page](/docs/installing-and-running).
+
+:::note
+The Conduit binary contains both, the Conduit service and the Conduit CLI, with
+which you can interact with Conduit.
 :::
 
-Create a folder called `pipelines` at the same level as your Conduit binary.
-Inside of that folder create a file named `file-to-file.yml`.
+## Initialize Conduit 
+
+Firs, let's initialize the working environment:
 
 ```shell
-│ # Conduit binary
-├── conduit
-│ # Folder with pipeline configurations
-└── pipelines
-    │ # Pipeline configuration file
-    └── file-to-file.yml
+$ conduit init
+
+Created directory: processors
+Created directory: connectors
+Created directory: pipelines
+Configuration file written to conduit.yaml
+
+Conduit has been initialized!
+
+To quickly create an example pipeline, run 'conduit pipelines init'.
+To see how you can customize your first pipeline, run 'conduit pipelines init --help'.
 ```
 
-Copy following content into `file-to-file.yml`:
+`conduit init` creates the directories where you can put your pipeline
+configuration files, connector binaries, and processor binaries. There's also a
+`conduit.yaml` that contains all the configuration parameters that Conduit
+supports.
 
-``` yaml title="pipelines/file-to-file.yml"
-version: 2.2
+In this guide, we'll only use the `pipelines` directory, since we won't need to
+install any additional connector nor to change Conduit's default configuration.
+
+## Build a pipeline
+
+Next, we can use the Conduit CLI to build the example pipeline:
+
+```shell
+$ conduit pipelines init
+```
+
+`conduit pipelines init` builds an example that generates flight information
+from an imaginary airport every second. Use `conduit pipelines init --help` to
+learn how to customize the pipeline.
+
+If the `pipelines` directory, you'll notice a new file,
+`pipeline-generator-to-file.yaml` that contains our pipeline's configuration:
+
+```yaml
+version: "2.2"
 pipelines:
-  - id: file-to-file
-    # run pipeline on startup
+  - id: example-pipeline
     status: running
-    description: >
-      Example pipeline reading from file "example.in" and writing into file "example.out".
-
+    name: "generator-to-file"
     connectors:
-      - id: example.in
+      - id: example-source
         type: source
-        # use the built-in file plugin as the source
-        plugin: builtin:file
+        plugin: "generator"
         settings:
-          # read data from example.in
-          path: ./example.in
-
-      - id: example.out
+          # Generate field 'airline' of type string
+          # Type: string
+          # Optional
+          format.options.airline: 'string'
+          # Generate field 'scheduledDeparture' of type 'time'
+          # Type: string
+          # Optional
+          format.options.scheduledDeparture: 'time'
+          # The format of the generated payload data (raw, structured, file).
+          # Type: string
+          # Optional
+          format.type: 'structured'
+          # The maximum rate in records per second, at which records are
+          # generated (0 means no rate limit).
+          # Type: float
+          # Optional
+          rate: '1'
+      - id: example-destination
         type: destination
-        # use the built-in file plugin as the destination
-        plugin: builtin:file
+        plugin: "file"
         settings:
-          # write data to example.out
-          path: ./example.out
-          # output the raw payload as a string
-          sdk.record.format: template
-          sdk.record.format.options: '{{ printf "%s" .Payload.After }}'
+          # Path is the file path used by the connector to read/write records.
+          # Type: string
+          # Optional
+          path: './destination.txt'
 ```
 
-Now start Conduit. You should see a log line saying that the pipeline
-`file-to-file` was created:
+The configuration above tells us some basic information about the pipeline (ID
+and name) and that we want Conduit to start the pipeline automatically (
+`status: running`).
+
+Then we see a source connector, that uses the [
+`generator` plugin](https://github.com/ConduitIO/conduit-connector-generator),
+which is a built-in plugin that can generate random data. The source connector's
+settings translate into: generate structured data, 1 record per second. Each
+generated record should contain an `airline` field (type: string) and a
+`scheduledDeparture` field (type: duration).
+
+What follows is a destination connector where the data will be written to. It
+uses the `file` plugin, which is a built-in plugin that writes all the incoming
+data to a file. It has only one configuration parameter, which is the path to
+the file where the records will be written.
+ 
+## Run Conduit
+
+With the pipeline configuration being ready, we can run Conduit:
 
 ```shell
-$ ./conduit
-/.../
-2023-04-01T12:34:56+00:00 INF pipeline configs provisioned component=provisioning.Service created=["file-to-file"] deleted=[] pipelines_path=./pipelines
-/.../
+$ conduit --pipelines.path pipelines/
 ```
 
-Conduit is now running the pipeline `file-to-file` which continuously reads
-lines added to file `./example.in` and copies them to file `./example.out`. Try
-writing a line to `./example.in` and checking the content of `./example.out`.
+Conduit is now running the pipeline. Let's check the contents of the `destination.txt` using:
 
 ```shell
-$ echo "hello conduit" >> example.in
-$ cat example.out
-hello conduit
+tail -f destination.txt | jq
 ```
 
-![scarf pixel conduit-site-docs-pipeline-config-files](https://static.scarf.sh/a.png?x-pxid=884d8c49-6ae7-41de-8868-17a3e99f28a0)
+Every second, you should a JSON object like this:
+
+```shell
+{
+  "position": "MjU=",
+  "operation": "create",
+  "metadata": {
+    "conduit.source.connector.id": "example-pipeline:example-source",
+    "opencdc.createdAt": "1730801194148460912",
+    "opencdc.payload.schema.subject": "example-pipeline:example-source:payload",
+    "opencdc.payload.schema.version": "1"
+  },
+  "key": "cHJlY2VwdG9yYWw=",
+  "payload": {
+    "before": null,
+    "after": {
+      "airline": "wheelmaker",
+      "scheduledDeparture": "2024-11-05T10:06:34.148469Z"
+    }
+  }
+}
+```
+
+The JSON object you see is the [OpenCDC record](/docs/using/opencdc-record) that
+holds the data being streamed as well as other data and metadata. In the
+`.payload.after` field you will see the user data that was generated by the
+`generator` connector:
+
+```json
+{
+    "airline": "wheelmaker",
+    "scheduledDeparture": "2024-11-05T10:06:34.148469Z"
+}
+```
+
+The pipeline will keep streaming the data from the generator source connector to
+the file destination connector as long as Conduit is running. To stop Conduit,
+press `Ctrl + C` (on a Linux OS, or the equivalent on other operating systems). This will
+trigger a graceful shutdown that stops reads from source connectors and waits
+for records that are still in the pipeline to be acknowledged. The next time
+Conduit starts, it will start reading data from where it stopped.
+
+## What's next?
+
+Now that you've got the basics of running Conduit and creating a pipeline
+covered, here are a few places to dive in deeper:
+- [Connectors](/docs/using/connectors/getting-started)
+- [Pipelines](/docs/using/pipelines/configuration-file)
+- [Processors](/docs/using/processors/getting-started)
+
+Or, if you want to experiment a bit more, check out the examples in
+our [GitHub repository](https://github.com/ConduitIO/conduit/tree/main/examples).
+
+![scarf pixel conduit-site-docs-getting-started](https://static.scarf.sh/a.png?x-pxid=adb4c80b-9e87-4103-98dc-8d9801ccc865)

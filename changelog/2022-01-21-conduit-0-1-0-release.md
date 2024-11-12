@@ -36,3 +36,5 @@ As we continue to expand our connector offerings, we encourage you to explore th
 :::tip
 For more information on getting started with Conduit, visit our [GitHub releases page](https://github.com/meroxa/conduit/releases). To read more, check out [our blog post](https://meroxa.com/blog/conduit-streaming-data-integration-for-developers/).
 :::
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)

@@ -23,3 +23,5 @@ tags: [conduit, release]
 :::tip
 For a deeper dive into the new features and enhancements in Conduit v0.5, check out our [blog post](https://meroxa.com/blog/conduit-0.5/).
 :::
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)

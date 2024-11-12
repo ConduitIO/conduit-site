@@ -18,3 +18,5 @@ We’re thrilled to announce the release of [**Conduit v0.11**](https://github.c
 :::tip
 For an in-depth look at how these new features can elevate your data integration processes, check out our [blog post](https://meroxa.com/blog/conduit-v0.11-unveils-powerful-schema-support-for-enhanced-data-integration/), our [Schema Support documentation page](/docs/using/other-features/schema-support).
 :::
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)

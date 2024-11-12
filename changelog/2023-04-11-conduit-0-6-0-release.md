@@ -23,3 +23,5 @@ We aim to ensure Conduit operates reliably without major breaking changes as we 
 :::tip
 For an in-depth look at the new features and improvements in Conduit v0.6, check out our [blog post](https://meroxa.com/blog/conduit-0.6/).
 :::
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)

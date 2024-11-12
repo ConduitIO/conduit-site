@@ -37,3 +37,5 @@ Please note that `pipelines.exit-on-error` will eventually be removed in a futur
 :::
 
 To ensure optimal performance and clarity in your configurations, please start using `pipelines.exit-on-degraded` in your configuration moving forward. If you have any questions, feel free to join our [Discord Community](https://discord.meroxa.com/).
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)
