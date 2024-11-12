@@ -15,7 +15,6 @@ We're happy to announce a new **Salesforce Destination Connector 0.5** for Condu
 -  **PubSub API Integration**: Utilizes Salesforce's PubSub API for subscribing to event data, ensuring reliable and scalable event-driven architecture.
 -  **Custom Platform Events**: Listen to and publish custom Platform Events tailored to your specific use cases, as well as subscribe to existing events within Salesforce.
 -  **OAuth Authentication**: Securely authenticate with Salesforce using OAuth credentials, ensuring safe and authorized access to your Salesforce data.
--  **Connected App Configuration**: Detailed steps for configuring a Connected App in Salesforce, including OAuth settings and permissions, to streamline the integration process.
 
 :::tip
 For detailed instructions on setting up and using the new Destination feature, refer to our [documentation](https://github.com/conduitio-labs/conduit-connector-salesforce#destination).
