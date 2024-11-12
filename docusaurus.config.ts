@@ -160,8 +160,8 @@ const config: Config = {
       copyright: `Copyright © ${new Date().getFullYear()} Meroxa, Inc.`,
     },
     announcementBar: {
-      id: 'announcement-bar-5', // increment on change
-      content: `Conduit v0.12 is here! <a class='cta' href='https://conduit.io/changelog/2024-10-10-conduit-0-12-0-release' target='_blank' rel='noreferrer noopener'>See what's new</a>.`,
+      id: 'announcement-bar-6', // increment on change
+      content: `Conduit v0.12.2 is here! <a class='cta' href='https://conduit.io/changelog/2024-11-08-conduit-0-12-2-release' target='_blank' rel='noreferrer noopener'>See what's new</a>.`,
       isCloseable: true,
     },
     colorMode: {
