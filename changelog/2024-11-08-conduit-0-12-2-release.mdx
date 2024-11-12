@@ -1,0 +1,34 @@
+---
+slug: '2024-11-08-conduit-0-12-2-release'
+title: Conduit v0.12.2 release
+draft: false
+tags: [conduit, performance]
+---
+
+Conduit [v0.12.2](https://github.com/ConduitIO/conduit/releases/tag/v0.12.2) comes with up to 5x more throughput, new CLI command for initializing
+Conduit and pipelines, as well as bug fixes.
+
+<!--truncate-->
+
+### Key Highlights
+
+- **Up to 5x higher throughput**: We started revamping the internal engine
+  that's running pipelines which resulted in a 5x higher throughput. If you're
+  interested in how we did it, you can find more information
+  in [this pull request](https://github.com/ConduitIO/conduit/pull/1913). We'll
+  also publish a blog post where we will go into the details. The feature is
+  still experimental, and can be enabled if Conduit is run with
+  `conduit -preview.pipeline-arch-v2`.
+- **New CLI commands**: We added two new CLI commands, `init` and
+  `pipelines init`. `init` lets you initialize Conduit (with a pre-filled
+  configuration file and the needed directories). `pipelines init` can
+  initialize a pipeline with connectors of your choice and pre-populated
+  configuration parameters. You can run `conduit --help` to learn more about the
+  new commands.
+- **Bug fixes**
+
+You can install v0.12.2 with `curl https://conduit.io/install.sh | bash` or you
+can download a binary
+from [here](https://github.com/ConduitIO/conduit/releases/tag/v0.12.2).
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)
