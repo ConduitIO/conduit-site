@@ -1,0 +1,44 @@
+---
+title: "Conduit Processor Template"
+---
+
+## Initializing a Conduit Processor Project
+
+To begin the development of a custom Conduit processor, it is recommended developers should initialize their project using the [Conduit processor template](https://github.com/ConduitIO/conduit-processor-template). This template streamlines the setup process by providing a fundamental project structure, along with utility configurations for GitHub actions and a Makefile.
+
+Included in the Conduit Processor Template are:
+
+- Base code for processor's configuration and lifecycle.
+- Sample unit tests to validate processor functionality.
+- A preconfigured Makefile to assist with common build tasks.
+- GitHub Actions Workflows for continuous integration including building, testing, linting, and automated release creation upon tag push.
+- Dependabot configurations to automate dependency updates and minor version auto-merging.
+- Issue and Pull Request templates for consistent contribution practices.
+- A README template to guide project documentation.
+
+### Steps to Use the Processor Template
+
+1. On the repository's main page, select "Use this template".
+2. Provide the new repository details as prompted.
+3. Upon repository creation, clone it to your local development environment.
+4. Execute the `./setup.sh` script with the desired module name, e.g., `./setup.sh github.com/awesome-org/conduit-processor-file`.
+5. (Optional) Define code owners in the `CODEOWNERS` file.
+
+:::note
+
+By convention the name of the repository should be conduit-processor-`processor name`. So if you would like to reference the processor using foo, the repository should be named conduit-processor-foo.
+
+:::
+
+
+## Developing Processors
+
+Implement a processor by defining a struct that satisfies the [sdk.Processor](https://pkg.go.dev/github.com/conduitio/conduit-processor-sdk#Processor) interface.
+
+
+Processors follow a lifecycle of: Configure, Open, Process, and Teardown, However a simple processor can be created with only Specification and Process being overridden. There are other optional functions that help with the configuration of more complex processors such as: Configure, Open, Teardown and MiddlewareOptions.
+
+Further information on developing a processor can be found at the following link(s):
+
+- [Build your own](/docs/developing/processors/building)
+- [How it works](/docs/developing/processors/how-it-works)
