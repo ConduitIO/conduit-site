@@ -506,11 +506,6 @@ func fetchDependents(repo string) ([]string, error) {
 
 	var reposList []string
 	for _, dependent := range c.Dependents {
-		// todo remove once tested
-		if strings.ToLower(dependent.User) != "hariso" {
-			continue
-		}
-
 		name := dependent.User + "/" + dependent.Repo
 		if !slices.Contains(excludedRepositories, name) {
 			reposList = append(reposList, name)
