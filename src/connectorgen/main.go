@@ -16,13 +16,19 @@ package main
 
 import (
 	"context"
+	_ "embed"
+	"errors"
 	"fmt"
+	"log"
 	"os"
+	"path/filepath"
 	"slices"
 	"strings"
+	"text/template"
 	"time"
 
-	json "github.com/goccy/go-json"
+	"github.com/conduitio/yaml/v3"
+	"github.com/goccy/go-json"
 	"github.com/gofri/go-github-ratelimit/github_ratelimit"
 	"github.com/google/go-github/v61/github"
 	"github.com/otiai10/gh-dependents/ghdeps"
@@ -103,6 +109,9 @@ var knownArch = map[string]bool{
 	"wasm":        true,
 }
 
+//go:embed connector-docs-mdx.tmpl
+var docsTmpl string
+
 // Repository represents GitHub repository information.
 type Repository struct {
 	Name        string    `json:"nameWithOwner"`
@@ -112,6 +121,16 @@ type Repository struct {
 	Stargazers  int       `json:"stargazerCount"`
 	Forks       int       `json:"forkCount"`
 	Releases    []Release `json:"releases"`
+}
+
+func (r Repository) LatestReleaseTag() string {
+	for _, rel := range r.Releases {
+		if rel.IsLatest {
+			return rel.TagName
+		}
+	}
+
+	return ""
 }
 
 // Release represents a GitHub release.
@@ -124,6 +143,7 @@ type Release struct {
 	PublishedAt time.Time `json:"published_at"`
 	HTMLURL     string    `json:"html_url"`
 	Assets      []Asset   `json:"assets"`
+	IsLatest    bool      `json:"is_latest"`
 }
 
 // Asset represents a release asset.
@@ -146,9 +166,19 @@ func main() {
 		os.Exit(1)
 	}
 
+	args := os.Args[1:]
+	if len(args) > 2 {
+		fmt.Printf("Too many arguments (%v), expected 2", len(args))
+	}
+
 	outputFile := "connectors.json"
-	if len(os.Args) == 2 {
-		outputFile = os.Args[1]
+	if len(args) > 0 {
+		outputFile = args[0]
+	}
+
+	connectorDocsPath := "docs"
+	if len(args) > 1 {
+		connectorDocsPath = args[1]
 	}
 
 	ctx := context.Background()
@@ -161,7 +191,7 @@ func main() {
 	client := github.NewClient(rateLimiter).WithAuthToken(token)
 
 	repoSDK := "conduitio/conduit-connector-sdk"
-	reposList, err := fetchDependents(ctx, client, repoSDK)
+	reposList, err := fetchDependents(repoSDK)
 	if err != nil {
 		fmt.Printf("Error fetching dependent repositories: %v\n", err)
 		os.Exit(1)
@@ -203,10 +233,170 @@ func main() {
 		os.Exit(1)
 	}
 
+	err = generateDocs(ctx, client, repositories, connectorDocsPath)
+	if err != nil {
+		fmt.Printf("Error generating docs: %v\n", err)
+		os.Exit(1)
+	}
+
 	fmt.Println("Done")
 }
 
-func fetchDependents(ctx context.Context, client *github.Client, repo string) ([]string, error) {
+// ConnectorSpecification represents the structure of the connector.yaml
+type ConnectorSpecification struct {
+	Version       string `yaml:"version"`
+	Specification struct {
+		Name        string `yaml:"name"`
+		Summary     string `yaml:"summary"`
+		Description string `yaml:"description"`
+		Version     string `yaml:"version"`
+		Author      string `yaml:"author"`
+		Source      struct {
+			Parameters []Parameter `yaml:"parameters"`
+		} `yaml:"source"`
+		Destination struct {
+			Parameters []Parameter `yaml:"parameters"`
+		} `yaml:"destination"`
+	} `yaml:"specification"`
+}
+
+// Parameter represents a configuration parameter
+type Parameter struct {
+	Name        string       `yaml:"name"`
+	Description string       `yaml:"description"`
+	Type        string       `yaml:"type"`
+	Default     string       `yaml:"default"`
+	Validations []Validation `yaml:"validations"`
+}
+
+// Validation represents parameter validation rules
+type Validation struct {
+	Type  string `yaml:"type"`
+	Value string `yaml:"value"`
+}
+
+func generateDocs(ctx context.Context, client *github.Client, repositories []Repository, docsPath string) error {
+	log.Printf("Parsing MDX template and generating documentation")
+
+	// Parse the template
+	tmpl, err := template.New("connector-docs").Option("missingkey=zero").Parse(docsTmpl)
+	if err != nil {
+		return fmt.Errorf("failed to parse mdx template: %v", err)
+	}
+
+	// Ensure docs directory exists
+	if err := os.MkdirAll(docsPath, 0755); err != nil {
+		return fmt.Errorf("failed to create docs directory: %v", err)
+	}
+
+	// Process each repository
+	for i, repo := range repositories {
+		// Split the repo into owner/name
+		parts := strings.Split(repo.Name, "/")
+		if len(parts) != 2 {
+			log.Printf("Skipping invalid repository name: %s", repo.Name)
+			continue
+		}
+
+		// Try to fetch the connector.yaml file
+		yamlContent, err := fetchConnectorsYAML(ctx, client, repo.Name, repo.LatestReleaseTag())
+		if err != nil {
+			log.Printf("Failed to fetch connector.yaml for %s: %v", repo.Name, err)
+			continue
+		}
+		if yamlContent == "" {
+			log.Printf("Skipping empty connector.yaml for %s", repo.Name)
+			continue
+		}
+
+		// Parse the YAML content
+		var spec ConnectorSpecification
+		if err := yaml.Unmarshal([]byte(yamlContent), &spec); err != nil {
+			log.Printf("Failed to parse connector.yaml for %s: %v", repo.Name, err)
+			continue
+		}
+
+		// Generate filename
+		filename := filepath.Join(docsPath, fmt.Sprintf("%v-%v.mdx", i, spec.Specification.Name))
+
+		// Create the MDX file
+		file, err := os.Create(filename)
+		if err != nil {
+			log.Printf("Failed to create MDX file for %s: %v", spec.Specification.Name, err)
+			continue
+		}
+		defer file.Close()
+
+		// Execute the template
+		err = tmpl.Execute(file, spec.Specification)
+		if err != nil {
+			log.Printf("Failed to write MDX template for %s: %v", spec.Specification.Name, err)
+			continue
+		}
+
+		log.Printf("Generated documentation for %s at %s", spec.Specification.Name, filename)
+	}
+
+	return nil
+}
+
+func fetchConnectorsYAML(ctx context.Context, client *github.Client, repo string, tagName string) (string, error) {
+	fmt.Printf("- 📥 Fetching connector.yaml for tag %s...\n", tagName)
+
+	// Split the repo into owner and name
+	parts := strings.Split(repo, "/")
+	if len(parts) != 2 {
+		return "", fmt.Errorf("invalid repository format. Expected 'owner/repo'")
+	}
+	owner, repoName := parts[0], parts[1]
+
+	// Get the specific reference (tag)
+	refName := "refs/heads/main"
+	if tagName != "" {
+		refName = fmt.Sprintf("refs/tags/%s", tagName)
+	}
+	ref, _, err := client.Git.GetRef(ctx, owner, repoName, refName)
+	if err != nil {
+		return "", fmt.Errorf("failed to get tag reference: %v", err)
+	}
+
+	// Get the commit associated with the tag
+	commit, _, err := client.Git.GetCommit(ctx, owner, repoName, ref.GetObject().GetSHA())
+	if err != nil {
+		return "", fmt.Errorf("failed to get commit: %v", err)
+	}
+
+	// Get the tree for the commit
+	tree, _, err := client.Git.GetTree(ctx, owner, repoName, commit.GetSHA(), true)
+	if err != nil {
+		return "", fmt.Errorf("failed to get tree: %v", err)
+	}
+
+	// Find the connector.yaml file
+	var connectorsYAMLBlob *github.TreeEntry
+	for _, entry := range tree.Entries {
+		if entry.GetPath() == "connector.yaml" {
+			connectorsYAMLBlob = entry
+			break
+		}
+	}
+
+	if connectorsYAMLBlob == nil {
+		// connector.yaml
+		return "", nil
+	}
+
+	// Get the blob content
+	blob, _, err := client.Git.GetBlob(ctx, owner, repoName, connectorsYAMLBlob.GetSHA())
+	if err != nil {
+		return "", fmt.Errorf("failed to get blob: %v", err)
+	}
+
+	// Decode the content (GitHub API returns base64 encoded content for blobs)
+	return blob.GetContent(), nil
+}
+
+func fetchDependents(repo string) ([]string, error) {
 	fmt.Println("- 📥 Fetching dependents...")
 
 	c := ghdeps.NewCrawler(repo)
@@ -216,6 +406,11 @@ func fetchDependents(ctx context.Context, client *github.Client, repo string) ([
 
 	var reposList []string
 	for _, dependent := range c.Dependents {
+		// todo remove once tested
+		if strings.ToLower(dependent.User) != "hariso" {
+			continue
+		}
+
 		name := dependent.User + "/" + dependent.Repo
 		if !slices.Contains(excludedRepositories, name) {
 			reposList = append(reposList, name)
@@ -243,36 +438,49 @@ func fetchRepoInfo(ctx context.Context, client *github.Client, repo string) (Rep
 	}, nil
 }
 
-func fetchReleases(ctx context.Context, client *github.Client, repo string) ([]Release, error) {
+func fetchReleases(ctx context.Context, client *github.Client, ownerRepo string) ([]Release, error) {
 	fmt.Println("- 📥 Fetching releases...")
 
-	releases, _, err := client.Repositories.ListReleases(
+	owner, repoName := strings.Split(ownerRepo, "/")[0], strings.Split(ownerRepo, "/")[1]
+	ghReleases, _, err := client.Repositories.ListReleases(
 		ctx,
-		strings.Split(repo, "/")[0],
-		strings.Split(repo, "/")[1],
+		owner,
+		repoName,
 		nil,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	releasesList := make([]Release, 0, len(releases))
-	for _, release := range releases {
-		releaseAssets, err := fetchReleaseAssets(ctx, client, repo, release)
-		if err != nil {
-			return nil, fmt.Errorf("failed fetching assets for release %v: %w", release.GetTagName(), err)
+	// Fetch the latest release
+	latestRel, _, err := client.Repositories.GetLatestRelease(ctx, owner, repoName)
+	if err != nil && !is404Error(err) {
+		return nil, fmt.Errorf("failed to fetch latest release: %w", err)
+	}
+
+	releasesList := make([]Release, 0, len(ghReleases))
+	for _, ghRel := range ghReleases {
+		isLatest := latestRel != nil && (*ghRel.ID == *latestRel.ID)
+		rel := Release{
+			TagName:     ghRel.GetTagName(),
+			Name:        ghRel.GetName(),
+			Body:        ghRel.GetBody(),
+			Draft:       ghRel.GetDraft(),
+			Prerelease:  ghRel.GetPrerelease(),
+			PublishedAt: ghRel.GetPublishedAt().Time,
+			HTMLURL:     ghRel.GetHTMLURL(),
+			IsLatest:    isLatest,
 		}
 
-		releasesList = append(releasesList, Release{
-			TagName:     release.GetTagName(),
-			Name:        release.GetName(),
-			Body:        release.GetBody(),
-			Draft:       release.GetDraft(),
-			Prerelease:  release.GetPrerelease(),
-			PublishedAt: release.GetPublishedAt().Time,
-			HTMLURL:     release.GetHTMLURL(),
-			Assets:      releaseAssets,
-		})
+		if rel.IsLatest {
+			releaseAssets, err := fetchReleaseAssets(ctx, client, ownerRepo, ghRel)
+			if err != nil {
+				return nil, fmt.Errorf("failed fetching assets for release %v: %w", ghRel.GetTagName(), err)
+			}
+			rel.Assets = releaseAssets
+		}
+
+		releasesList = append(releasesList, rel)
 	}
 
 	return releasesList, nil
@@ -337,4 +545,9 @@ func extractOSArch(asset *github.ReleaseAsset, tagName string) (string, string, 
 	}
 
 	return assetOS, assetArch, knownOS[assetOS] && knownArch[assetArch]
+}
+
+func is404Error(err error) bool {
+	var githubErr *github.ErrorResponse
+	return errors.As(err, &githubErr) && githubErr.Response.StatusCode == 404
 }

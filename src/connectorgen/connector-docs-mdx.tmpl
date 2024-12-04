@@ -1,0 +1,100 @@
+---
+title: {props.specification.name}
+description: {props.specification.summary}
+---
+
+# {props.specification.name}
+
+## Overview
+
+{/* Connector Metadata */}
+- **Name**: {props.specification.name}
+- **Version**: {props.specification.version}
+- **Author**: {props.specification.author}
+
+{props.specification.description}
+
+## Source Configuration
+
+The source configuration allows you to define how the Kafka connector reads data from Kafka topics.
+
+### Source Parameters
+
+{props.specification.source.parameters.map((param) => (
+  <ConfigParameter
+    key={param.name}
+    name={param.name}
+    description={param.description}
+    type={param.type}
+    defaultValue={param.default}
+    validations={param.validations}
+  />
+))}
+
+## Destination Configuration
+
+The destination configuration defines how the Kafka connector writes data to Kafka topics.
+
+### Destination Parameters
+
+{props.specification.destination.parameters.map((param) => (
+  <ConfigParameter
+    key={param.name}
+    name={param.name}
+    description={param.description}
+    type={param.type}
+    defaultValue={param.default}
+    validations={param.validations}
+  />
+))}
+
+{/* Reusable Configuration Parameter Component */}
+function ConfigParameter({
+  name,
+  description,
+  type,
+  defaultValue,
+  validations
+}) {
+  return (
+    <div className="config-parameter">
+      <h3>`{name}`</h3>
+      <p>{description}</p>
+
+      <table>
+        <tbody>
+          <tr>
+            <td>**Type**</td>
+            <td>{type}</td>
+          </tr>
+          <tr>
+            <td>**Default**</td>
+            <td>{defaultValue || 'N/A'}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      {validations && validations.length > 0 && (
+        <div className="validations">
+          <strong>Validations:</strong>
+          <ul>
+            {validations.map((validation, index) => (
+              <li key={index}>
+                {validation.type}: {validation.value}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function KafkaConnectorConfig({ specification }) {
+  return (
+    <>
+      <h1>{specification.name} Connector Configuration</h1>
+      {/* Render the full configuration guide */}
+    </>
+  );
+}
