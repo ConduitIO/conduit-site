@@ -22,11 +22,7 @@ import TabItem from '@theme/TabItem';
 
 {{ .Specification.Description }}
 
-## Source Configuration
-
-The source configuration allows you to define how the Kafka connector reads data from Kafka topics.
-
-### Source Parameters
+## Source Parameters
 
 ```yaml
 version: 2.2
@@ -42,6 +38,29 @@ pipelines:
         {{ if gt (len .Specification.Source.Parameters) 0 -}}
         settings:
           {{- range $name, $param := .Specification.Source.Parameters }}
+          {{ formatParameterDescriptionYAML $param.Description }}
+          # Type: {{ $param.Type }}
+          {{ $param.Name }}: {{ formatParameterValueYAML $param.Default }}
+          {{- end }}
+        {{- end }}
+```
+
+## Destination Parameters
+
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      - id: example-destination
+        type: destination
+        plugin: "{{ .Specification.Name }}"
+        name: example-destination
+        settings:
+        {{ if gt (len .Specification.Destination.Parameters) 0 -}}
+        settings:
+          {{- range $name, $param := .Specification.Destination.Parameters }}
           {{ formatParameterDescriptionYAML $param.Description }}
           # Type: {{ $param.Type }}
           {{ $param.Name }}: {{ formatParameterValueYAML $param.Default }}
