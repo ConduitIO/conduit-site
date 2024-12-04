@@ -1,18 +1,18 @@
 ---
-title: {props.specification.name}
-description: {props.specification.summary}
+title: "{{ .Specification.Name }}"
+description: "{{ .Specification.Summary }}"
 ---
 
-# {props.specification.name}
+# "{{ .Specification.Name }}"
 
 ## Overview
 
 {/* Connector Metadata */}
-- **Name**: {props.specification.name}
-- **Version**: {props.specification.version}
-- **Author**: {props.specification.author}
+- **Name**: "{{ .Specification.Name }}"
+- **Version**: "{{ .Specification.Version }}"
+- **Author**: "{{ .Specification.Author }}"
 
-{props.specification.description}
+"{{ .Specification.Description }}"
 
 ## Source Configuration
 
@@ -20,16 +20,16 @@ The source configuration allows you to define how the Kafka connector reads data
 
 ### Source Parameters
 
-{props.specification.source.parameters.map((param) => (
+{{ .Specification.Source.Parameters }}.map((param) => (
   <ConfigParameter
-    key={param.name}
-    name={param.name}
+    key={param.Name}
+    name={param.Name}
     description={param.description}
     type={param.type}
     defaultValue={param.default}
     validations={param.validations}
   />
-))}
+))
 
 ## Destination Configuration
 
@@ -37,16 +37,16 @@ The destination configuration defines how the Kafka connector writes data to Kaf
 
 ### Destination Parameters
 
-{props.specification.destination.parameters.map((param) => (
+{{ .Specification.Destination.Parameters }}.map((param) => (
   <ConfigParameter
-    key={param.name}
-    name={param.name}
+    key={param.Name}
+    name={param.Name}
     description={param.description}
     type={param.type}
     defaultValue={param.default}
     validations={param.validations}
   />
-))}
+)) 
 
 {/* Reusable Configuration Parameter Component */}
 function ConfigParameter({
@@ -93,7 +93,7 @@ function ConfigParameter({
 export default function KafkaConnectorConfig({ specification }) {
   return (
     <>
-      <h1>{specification.name} Connector Configuration</h1>
+      <h1>{specification.Name} Connector Configuration</h1>
       {/* Render the full configuration guide */}
     </>
   );

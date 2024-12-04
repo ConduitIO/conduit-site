@@ -299,7 +299,7 @@ func generateDocs(ctx context.Context, client *github.Client, repositories []Rep
 		}
 
 		// Try to fetch the connector.yaml file
-		yamlContent, err := fetchConnectorsYAML(ctx, client, repo.Name, repo.LatestReleaseTag())
+		yamlContent, err := fetchConnectorYAML(ctx, client, repo.Name, repo.LatestReleaseTag())
 		if err != nil {
 			log.Printf("Failed to fetch connector.yaml for %s: %v", repo.Name, err)
 			continue
@@ -328,7 +328,7 @@ func generateDocs(ctx context.Context, client *github.Client, repositories []Rep
 		defer file.Close()
 
 		// Execute the template
-		err = tmpl.Execute(file, spec.Specification)
+		err = tmpl.Execute(file, spec)
 		if err != nil {
 			log.Printf("Failed to write MDX template for %s: %v", spec.Specification.Name, err)
 			continue
@@ -340,7 +340,7 @@ func generateDocs(ctx context.Context, client *github.Client, repositories []Rep
 	return nil
 }
 
-func fetchConnectorsYAML(ctx context.Context, client *github.Client, repo string, tagName string) (string, error) {
+func fetchConnectorYAML(ctx context.Context, client *github.Client, repo string, tagName string) (string, error) {
 	fmt.Printf("- 📥 Fetching connector.yaml for tag %s...\n", tagName)
 
 	// Split the repo into owner and name
@@ -387,13 +387,13 @@ func fetchConnectorsYAML(ctx context.Context, client *github.Client, repo string
 	}
 
 	// Get the blob content
-	blob, _, err := client.Git.GetBlob(ctx, owner, repoName, connectorsYAMLBlob.GetSHA())
+	blob, _, err := client.Git.GetBlobRaw(ctx, owner, repoName, connectorsYAMLBlob.GetSHA())
 	if err != nil {
 		return "", fmt.Errorf("failed to get blob: %v", err)
 	}
 
 	// Decode the content (GitHub API returns base64 encoded content for blobs)
-	return blob.GetContent(), nil
+	return string(blob), nil
 }
 
 func fetchDependents(repo string) ([]string, error) {
