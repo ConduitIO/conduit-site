@@ -30,7 +30,7 @@ import (
 	"github.com/conduitio/yaml/v3"
 	"github.com/goccy/go-json"
 	"github.com/gofri/go-github-ratelimit/github_ratelimit"
-	"github.com/google/go-github/v61/github"
+	"github.com/google/go-github/v67/github"
 	"github.com/otiai10/gh-dependents/ghdeps"
 )
 
@@ -111,6 +111,97 @@ var knownArch = map[string]bool{
 
 //go:embed connector-docs-mdx.tmpl
 var docsTmpl string
+
+var funcMap = template.FuncMap{
+	"formatParameterValueTable":      formatParameterValueTable,
+	"formatParameterValueYAML":       formatParameterValueYAML,
+	"formatParameterDescriptionYAML": formatParameterDescriptionYAML,
+}
+
+// formatParameterValue formats the value of a configuration parameter.
+func formatParameterValueTable(value string) string {
+	switch {
+	case value == "":
+		return `<Chip label="null" />`
+	case strings.Contains(value, "\n"):
+		// specifically used in the javascript processor
+		return fmt.Sprintf("\n```js\n%s\n```\n", value)
+	default:
+		return fmt.Sprintf("`%s`", value)
+	}
+}
+
+func formatParameterDescriptionYAML(description string) string {
+	const (
+		indentLen  = 10
+		prefix     = "# "
+		lineLen    = 80
+		tmpNewLine = "〠"
+	)
+
+	// remove markdown new lines
+	description = strings.ReplaceAll(description, "\n\n", tmpNewLine)
+	description = strings.ReplaceAll(description, "\n", " ")
+	description = strings.ReplaceAll(description, tmpNewLine, "\n")
+
+	formattedDescription := formatMultiline(description, strings.Repeat(" ", indentLen)+prefix, lineLen)
+	// remove first indent and last new line
+	formattedDescription = formattedDescription[indentLen : len(formattedDescription)-1]
+	return formattedDescription
+}
+
+func formatMultiline(
+	input string,
+	prefix string,
+	maxLineLen int,
+) string {
+	textLen := maxLineLen - len(prefix)
+
+	// split the input into lines of length textLen
+	lines := strings.Split(input, "\n")
+	var formattedLines []string
+	for _, line := range lines {
+		if len(line) <= textLen {
+			formattedLines = append(formattedLines, line)
+			continue
+		}
+
+		// split the line into multiple lines, don't break words
+		words := strings.Fields(line)
+		var formattedLine string
+		for _, word := range words {
+			if len(formattedLine)+len(word) > textLen {
+				formattedLines = append(formattedLines, formattedLine[1:])
+				formattedLine = ""
+			}
+			formattedLine += " " + word
+		}
+		if formattedLine != "" {
+			formattedLines = append(formattedLines, formattedLine[1:])
+		}
+	}
+
+	// combine lines including indent and prefix
+	var formatted string
+	for _, line := range formattedLines {
+		formatted += prefix + line + "\n"
+	}
+
+	return formatted
+}
+
+func formatParameterValueYAML(value string) string {
+	switch {
+	case value == "":
+		return `""`
+	case strings.Contains(value, "\n"):
+		// specifically used in the javascript processor
+		formattedValue := formatMultiline(value, "            ", 10000)
+		return fmt.Sprintf("|\n%s", formattedValue)
+	default:
+		return fmt.Sprintf(`"%s"`, value)
+	}
+}
 
 // Repository represents GitHub repository information.
 type Repository struct {
@@ -279,7 +370,10 @@ func generateDocs(ctx context.Context, client *github.Client, repositories []Rep
 	log.Printf("Parsing MDX template and generating documentation")
 
 	// Parse the template
-	tmpl, err := template.New("connector-docs").Option("missingkey=zero").Parse(docsTmpl)
+	tmpl, err := template.New("connector-docs").
+		Funcs(funcMap).
+		Option("missingkey=zero").
+		Parse(docsTmpl)
 	if err != nil {
 		return fmt.Errorf("failed to parse mdx template: %v", err)
 	}
@@ -340,34 +434,40 @@ func generateDocs(ctx context.Context, client *github.Client, repositories []Rep
 	return nil
 }
 
-func fetchConnectorYAML(ctx context.Context, client *github.Client, repo string, tagName string) (string, error) {
-	fmt.Printf("- 📥 Fetching connector.yaml for tag %s...\n", tagName)
+func fetchConnectorYAML(ctx context.Context, client *github.Client, ownerRepo string, tag string) (string, error) {
+	fmt.Printf("- 📥 Fetching connector.yaml for tag %s...\n", tag)
 
 	// Split the repo into owner and name
-	parts := strings.Split(repo, "/")
+	parts := strings.Split(ownerRepo, "/")
 	if len(parts) != 2 {
 		return "", fmt.Errorf("invalid repository format. Expected 'owner/repo'")
 	}
-	owner, repoName := parts[0], parts[1]
+	owner, repo := parts[0], parts[1]
 
-	// Get the specific reference (tag)
-	refName := "refs/heads/main"
-	if tagName != "" {
-		refName = fmt.Sprintf("refs/tags/%s", tagName)
-	}
-	ref, _, err := client.Git.GetRef(ctx, owner, repoName, refName)
+	// Get the reference to the specific tag
+	ref, _, err := client.Git.GetRef(ctx, owner, repo, "refs/tags/"+tag)
 	if err != nil {
-		return "", fmt.Errorf("failed to get tag reference: %v", err)
+		log.Fatalf("Failed to fetch reference for tag %s: %v", tag, err)
 	}
 
-	// Get the commit associated with the tag
-	commit, _, err := client.Git.GetCommit(ctx, owner, repoName, ref.GetObject().GetSHA())
+	// Resolve the object the tag refers to
+	object, _, err := client.Git.GetTag(ctx, owner, repo, *ref.Object.SHA)
 	if err != nil {
-		return "", fmt.Errorf("failed to get commit: %v", err)
+		log.Fatalf("Failed to fetch annotated tag object for %s: %v", tag, err)
+	}
+
+	// Determine the commit SHA
+	var commitSHA string
+	if ref.Object.GetType() == "tag" { // Annotated tag
+		commitSHA = *object.Object.SHA
+	} else if ref.Object.GetType() == "commit" { // Lightweight tag
+		commitSHA = *ref.Object.SHA
+	} else {
+		log.Fatalf("Unexpected object type %s for tag %s", ref.Object.GetType(), tag)
 	}
 
 	// Get the tree for the commit
-	tree, _, err := client.Git.GetTree(ctx, owner, repoName, commit.GetSHA(), true)
+	tree, _, err := client.Git.GetTree(ctx, owner, repo, commitSHA, true)
 	if err != nil {
 		return "", fmt.Errorf("failed to get tree: %v", err)
 	}
@@ -387,7 +487,7 @@ func fetchConnectorYAML(ctx context.Context, client *github.Client, repo string,
 	}
 
 	// Get the blob content
-	blob, _, err := client.Git.GetBlobRaw(ctx, owner, repoName, connectorsYAMLBlob.GetSHA())
+	blob, _, err := client.Git.GetBlobRaw(ctx, owner, repo, connectorsYAMLBlob.GetSHA())
 	if err != nil {
 		return "", fmt.Errorf("failed to get blob: %v", err)
 	}
