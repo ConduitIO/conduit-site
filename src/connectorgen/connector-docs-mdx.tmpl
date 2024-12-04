@@ -34,7 +34,6 @@ pipelines:
         type: source
         plugin: "{{ .Specification.Name }}"
         name: example-source
-        settings:
         {{ if gt (len .Specification.Source.Parameters) 0 -}}
         settings:
           {{- range $name, $param := .Specification.Source.Parameters }}
@@ -57,7 +56,6 @@ pipelines:
         type: destination
         plugin: "{{ .Specification.Name }}"
         name: example-destination
-        settings:
         {{ if gt (len .Specification.Destination.Parameters) 0 -}}
         settings:
           {{- range $name, $param := .Specification.Destination.Parameters }}
