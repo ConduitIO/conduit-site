@@ -444,56 +444,79 @@ func fetchConnectorYAML(ctx context.Context, client *github.Client, ownerRepo st
 	}
 	owner, repo := parts[0], parts[1]
 
-	// Get the reference to the specific tag
-	ref, _, err := client.Git.GetRef(ctx, owner, repo, "refs/tags/"+tag)
+	commitSHA, err := getCommitForTag(ctx, client, owner, repo, tag)
 	if err != nil {
-		log.Fatalf("Failed to fetch reference for tag %s: %v", tag, err)
+		return "", fmt.Errorf("failed to get commit for tag %s: %v", tag, err)
 	}
 
-	// Resolve the object the tag refers to
-	object, _, err := client.Git.GetTag(ctx, owner, repo, *ref.Object.SHA)
-	if err != nil {
-		log.Fatalf("Failed to fetch annotated tag object for %s: %v", tag, err)
-	}
-
-	// Determine the commit SHA
-	var commitSHA string
-	if ref.Object.GetType() == "tag" { // Annotated tag
-		commitSHA = *object.Object.SHA
-	} else if ref.Object.GetType() == "commit" { // Lightweight tag
-		commitSHA = *ref.Object.SHA
-	} else {
-		log.Fatalf("Unexpected object type %s for tag %s", ref.Object.GetType(), tag)
-	}
-
-	// Get the tree for the commit
-	tree, _, err := client.Git.GetTree(ctx, owner, repo, commitSHA, true)
-	if err != nil {
-		return "", fmt.Errorf("failed to get tree: %v", err)
-	}
-
-	// Find the connector.yaml file
-	var connectorsYAMLBlob *github.TreeEntry
-	for _, entry := range tree.Entries {
-		if entry.GetPath() == "connector.yaml" {
-			connectorsYAMLBlob = entry
-			break
-		}
-	}
-
-	if connectorsYAMLBlob == nil {
-		// connector.yaml
-		return "", nil
-	}
-
-	// Get the blob content
-	blob, _, err := client.Git.GetBlobRaw(ctx, owner, repo, connectorsYAMLBlob.GetSHA())
+	blob, err := fetchBlob(ctx, client, owner, repo, commitSHA, "connector.yaml")
 	if err != nil {
 		return "", fmt.Errorf("failed to get blob: %v", err)
 	}
 
 	// Decode the content (GitHub API returns base64 encoded content for blobs)
 	return string(blob), nil
+}
+
+func fetchBlob(ctx context.Context, client *github.Client, owner string, repo string, commitSHA string, path string) ([]byte, error) {
+	// Get the tree for the commit
+	tree, _, err := client.Git.GetTree(ctx, owner, repo, commitSHA, true)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get tree: %v", err)
+	}
+
+	// Find the connector.yaml file
+	var blobTreeEntry *github.TreeEntry
+	for _, entry := range tree.Entries {
+		if entry.GetPath() == path {
+			blobTreeEntry = entry
+			break
+		}
+	}
+
+	if blobTreeEntry == nil {
+		// connector.yaml
+		return nil, nil
+	}
+
+	// Get the blob content
+	blob, _, err := client.Git.GetBlobRaw(ctx, owner, repo, blobTreeEntry.GetSHA())
+	if err != nil {
+		return nil, fmt.Errorf("failed to get blob: %v", err)
+	}
+
+	return blob, nil
+}
+
+func getCommitForTag(ctx context.Context, client *github.Client, owner, repo, tag string) (string, error) {
+	refName := "refs/heads/main"
+	if tag != "" {
+		refName = "refs/tags/" + tag
+	}
+
+	// Get the reference to the specific tag
+	ref, _, err := client.Git.GetRef(ctx, owner, repo, refName)
+	if err != nil {
+		log.Fatalf("failed to fetch reference for tag %s: %v", tag, err)
+	}
+
+	// Determine the commit SHA
+	var commitSHA string
+	if ref.Object.GetType() == "tag" { // Annotated tag
+		// Resolve the object the tag refers to
+		object, _, err := client.Git.GetTag(ctx, owner, repo, *ref.Object.SHA)
+		if err != nil {
+			log.Fatalf("failed to fetch annotated tag object for %s: %v", tag, err)
+		}
+
+		commitSHA = *object.Object.SHA
+	} else if ref.Object.GetType() == "commit" { // Lightweight tag
+		commitSHA = *ref.Object.SHA
+	} else {
+		log.Fatalf("unexpected object type %s for tag %s", ref.Object.GetType(), tag)
+	}
+
+	return commitSHA, nil
 }
 
 func fetchDependents(repo string) ([]string, error) {
