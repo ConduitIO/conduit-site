@@ -27,6 +27,7 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/Masterminds/sprig/v3"
 	"github.com/conduitio/yaml/v3"
 	"github.com/goccy/go-json"
 	"github.com/gofri/go-github-ratelimit/github_ratelimit"
@@ -370,6 +371,11 @@ type ConnectorSpecification struct {
 	} `yaml:"specification"`
 }
 
+type DocsPage struct {
+	ConnectorSpecification
+	Repository
+}
+
 // Parameter represents a configuration parameter
 type Parameter struct {
 	Name        string       `yaml:"name"`
@@ -391,6 +397,7 @@ func generateDocs(ctx context.Context, client *github.Client, repositories []*Re
 	// Parse the template
 	tmpl, err := template.New("connector-docs").
 		Funcs(funcMap).
+		Funcs(sprig.TxtFuncMap()).
 		Option("missingkey=zero").
 		Parse(docsTmpl)
 	if err != nil {
@@ -438,16 +445,19 @@ func generateDocs(ctx context.Context, client *github.Client, repositories []*Re
 		}
 		defer file.Close()
 
+		// The page's name is the connector name,
+		// and it's a sub-page of the connectors' list page.
+		repo.ConduitIODocsPage = spec.Specification.Name
+
 		// Execute the template
-		err = tmpl.Execute(file, spec)
+		err = tmpl.Execute(file, DocsPage{
+			ConnectorSpecification: spec,
+			Repository:             *repo,
+		})
 		if err != nil {
 			log.Printf("Failed to write MDX template for %s: %v", spec.Specification.Name, err)
 			continue
 		}
-
-		// The page's name is the connector name,
-		// and it's a sub-page of the connectors' list page.
-		repo.ConduitIODocsPage = spec.Specification.Name
 
 		log.Printf("Generated documentation for %s at %s", spec.Specification.Name, filename)
 	}
