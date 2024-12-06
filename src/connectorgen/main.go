@@ -38,6 +38,7 @@ var excludedRepositories = []string{
 	"ConduitIO/conduit",
 	"ConduitIO/streaming-benchmarks",
 	"ConduitIO/conduit-connector-template",
+	"ConduitIO/conduit-operator",
 
 	"ahamidi/conduit-connector-template",
 	"gopherslab/conduit-connector-google-sheets",
@@ -50,7 +51,6 @@ var excludedRepositories = []string{
 	"WeirdMagician/conduit-connector-google-cloudstorage",
 	"GevorgGal/conduit-connector-influxdb",
 	"EnigmaForLife/shared",
-	"ConduitIO/conduit-operator",
 }
 
 // maps architectures found in asset names to GOARCH
@@ -205,13 +205,13 @@ func formatParameterValueYAML(value string) string {
 
 // Repository represents GitHub repository information.
 type Repository struct {
-	Name        string    `json:"nameWithOwner"`
-	Description string    `json:"description"`
-	CreatedAt   string    `json:"createdAt"`
-	URL         string    `json:"url"`
-	Stargazers  int       `json:"stargazerCount"`
-	Forks       int       `json:"forkCount"`
-	Releases    []Release `json:"releases"`
+	NameWithOwner string    `json:"nameWithOwner"`
+	Description   string    `json:"description"`
+	CreatedAt     string    `json:"createdAt"`
+	URL           string    `json:"url"`
+	Stargazers    int       `json:"stargazerCount"`
+	Forks         int       `json:"forkCount"`
+	Releases      []Release `json:"releases"`
 }
 
 func (r Repository) LatestReleaseTag() string {
@@ -222,6 +222,24 @@ func (r Repository) LatestReleaseTag() string {
 	}
 
 	return ""
+}
+
+func (r Repository) Name() string {
+	parts := strings.Split(r.NameWithOwner, "/")
+	if len(parts) != 2 {
+		panic(fmt.Errorf("invalid repository name: %s", r.NameWithOwner))
+	}
+
+	return parts[1]
+}
+
+func (r Repository) Owner() string {
+	parts := strings.Split(r.NameWithOwner, "/")
+	if len(parts) != 2 {
+		panic(fmt.Errorf("invalid repository name: %s", r.NameWithOwner))
+	}
+
+	return parts[0]
 }
 
 // Release represents a GitHub release.
@@ -385,28 +403,26 @@ func generateDocs(ctx context.Context, client *github.Client, repositories []Rep
 
 	// Process each repository
 	for i, repo := range repositories {
-		// Split the repo into owner/name
-		parts := strings.Split(repo.Name, "/")
-		if len(parts) != 2 {
-			log.Printf("Skipping invalid repository name: %s", repo.Name)
+		if shouldSkipDocsForRepo(repo) {
+			log.Printf("Skipping invalid repository name: %s", repo.NameWithOwner)
 			continue
 		}
 
 		// Try to fetch the connector.yaml file
-		yamlContent, err := fetchConnectorYAML(ctx, client, repo.Name, repo.LatestReleaseTag())
+		yamlContent, err := fetchConnectorYAML(ctx, client, repo.NameWithOwner, repo.LatestReleaseTag())
 		if err != nil {
-			log.Printf("Failed to fetch connector.yaml for %s: %v", repo.Name, err)
+			log.Printf("Failed to fetch connector.yaml for %s: %v", repo.NameWithOwner, err)
 			continue
 		}
 		if yamlContent == "" {
-			log.Printf("Skipping empty connector.yaml for %s", repo.Name)
+			log.Printf("Skipping empty connector.yaml for %s", repo.NameWithOwner)
 			continue
 		}
 
 		// Parse the YAML content
 		var spec ConnectorSpecification
 		if err := yaml.Unmarshal([]byte(yamlContent), &spec); err != nil {
-			log.Printf("Failed to parse connector.yaml for %s: %v", repo.Name, err)
+			log.Printf("Failed to parse connector.yaml for %s: %v", repo.NameWithOwner, err)
 			continue
 		}
 
@@ -432,6 +448,11 @@ func generateDocs(ctx context.Context, client *github.Client, repositories []Rep
 	}
 
 	return nil
+}
+
+func shouldSkipDocsForRepo(r Repository) bool {
+	return strings.ToLower(r.Owner()) != "conduitio" &&
+		strings.ToLower(r.Owner()) != "conduitio-labs"
 }
 
 func fetchConnectorYAML(ctx context.Context, client *github.Client, ownerRepo string, tag string) (string, error) {
@@ -547,12 +568,12 @@ func fetchRepoInfo(ctx context.Context, client *github.Client, repo string) (Rep
 	}
 
 	return Repository{
-		Name:        repoInfo.GetFullName(),
-		Description: repoInfo.GetDescription(),
-		CreatedAt:   repoInfo.GetCreatedAt().String(),
-		URL:         repoInfo.GetHTMLURL(),
-		Stargazers:  repoInfo.GetStargazersCount(),
-		Forks:       repoInfo.GetForksCount(),
+		NameWithOwner: repoInfo.GetFullName(),
+		Description:   repoInfo.GetDescription(),
+		CreatedAt:     repoInfo.GetCreatedAt().String(),
+		URL:           repoInfo.GetHTMLURL(),
+		Stargazers:    repoInfo.GetStargazersCount(),
+		Forks:         repoInfo.GetForksCount(),
 	}, nil
 }
 
@@ -590,13 +611,11 @@ func fetchReleases(ctx context.Context, client *github.Client, ownerRepo string)
 			IsLatest:    isLatest,
 		}
 
-		if rel.IsLatest {
-			releaseAssets, err := fetchReleaseAssets(ctx, client, ownerRepo, ghRel)
-			if err != nil {
-				return nil, fmt.Errorf("failed fetching assets for release %v: %w", ghRel.GetTagName(), err)
-			}
-			rel.Assets = releaseAssets
+		releaseAssets, err := fetchReleaseAssets(ctx, client, ownerRepo, ghRel)
+		if err != nil {
+			return nil, fmt.Errorf("failed fetching assets for release %v: %w", ghRel.GetTagName(), err)
 		}
+		rel.Assets = releaseAssets
 
 		releasesList = append(releasesList, rel)
 	}
