@@ -73,7 +73,7 @@ const ReleaseAccordion = styled((props: IAccordionProps) => (
             </TableRow>
           </TableHead>
           <TableBody>
-            {props.release.assets.map(asset => (
+            {props.release.assets?.map(asset => (
               <TableRow key={asset.name} >
                 <TableCell>
                   <a href={asset.browser_download_url}>{asset.name}</a>
