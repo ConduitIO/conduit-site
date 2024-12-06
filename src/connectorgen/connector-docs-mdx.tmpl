@@ -13,6 +13,22 @@ import TabItem from '@theme/TabItem';
 
 # {{ .Specification.Name }}
 
+<Stack className='align-items-center' direction='row' justifyContent='flex-end' spacing={2} >
+    {{ if .ConduitIODocsPage }}
+    <Link href="{{ .ConduitIODocsPage }}">View docs</Link>
+    {{ end }}
+
+    {
+      props.connector.nameWithOwner.toLowerCase().startsWith('conduitio/') || props.connector.nameWithOwner.toLowerCase().startsWith('conduitio-labs/')
+        ? <Tooltip title="Created by the Conduit team"><img src='/img/conduit/conduit-ring.png' width='18'/></Tooltip>
+        : null
+    }
+    <IconButton size='small' href={props.connector.url} target='_blank' onClick={stopPropagation}>
+      <GitHubIcon fontSize='inherit' />
+    </IconButton>
+    <Chip icon={<StarIcon />} label={props.connector.stargazerCount} size='small' />
+</Stack>
+
 ## Overview
 
 {/* Connector Metadata */}

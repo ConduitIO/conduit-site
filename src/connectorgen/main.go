@@ -205,13 +205,14 @@ func formatParameterValueYAML(value string) string {
 
 // Repository represents GitHub repository information.
 type Repository struct {
-	NameWithOwner string    `json:"nameWithOwner"`
-	Description   string    `json:"description"`
-	CreatedAt     string    `json:"createdAt"`
-	URL           string    `json:"url"`
-	Stargazers    int       `json:"stargazerCount"`
-	Forks         int       `json:"forkCount"`
-	Releases      []Release `json:"releases"`
+	NameWithOwner     string    `json:"nameWithOwner"`
+	Description       string    `json:"description"`
+	ConduitIODocsPage string    `json:"conduitIODocsPage"`
+	CreatedAt         string    `json:"createdAt"`
+	URL               string    `json:"url"`
+	Stargazers        int       `json:"stargazerCount"`
+	Forks             int       `json:"forkCount"`
+	Releases          []Release `json:"releases"`
 }
 
 func (r Repository) LatestReleaseTag() string {
@@ -306,7 +307,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	var repositories []Repository
+	var repositories []*Repository
 	for _, repo := range reposList {
 		fmt.Printf("Processing %v\n", repo)
 
@@ -323,11 +324,17 @@ func main() {
 		}
 
 		repoInfo.Releases = releases
-		repositories = append(repositories, repoInfo)
+		repositories = append(repositories, &repoInfo)
+	}
+
+	err = generateDocs(ctx, client, repositories, connectorDocsPath)
+	if err != nil {
+		fmt.Printf("Error generating docs: %v\n", err)
+		os.Exit(1)
 	}
 
 	fmt.Println("- 🪚 Building connector.json...")
-	slices.SortFunc(repositories, func(a, b Repository) int {
+	slices.SortFunc(repositories, func(a, b *Repository) int {
 		return strings.Compare(a.URL, b.URL)
 	})
 	connectorsJSON, err := json.MarshalIndent(repositories, "", "  ")
@@ -339,12 +346,6 @@ func main() {
 	err = os.WriteFile(outputFile, connectorsJSON, 0644)
 	if err != nil {
 		fmt.Printf("Error writing connectors.json: %v\n", err)
-		os.Exit(1)
-	}
-
-	err = generateDocs(ctx, client, repositories, connectorDocsPath)
-	if err != nil {
-		fmt.Printf("Error generating docs: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -384,7 +385,7 @@ type Validation struct {
 	Value string `yaml:"value"`
 }
 
-func generateDocs(ctx context.Context, client *github.Client, repositories []Repository, docsPath string) error {
+func generateDocs(ctx context.Context, client *github.Client, repositories []*Repository, docsPath string) error {
 	log.Printf("Parsing MDX template and generating documentation")
 
 	// Parse the template
@@ -404,7 +405,7 @@ func generateDocs(ctx context.Context, client *github.Client, repositories []Rep
 	// Process each repository
 	for i, repo := range repositories {
 		if shouldSkipDocsForRepo(repo) {
-			log.Printf("Skipping invalid repository name: %s", repo.NameWithOwner)
+			log.Printf("Skipping docs for: %s", repo.NameWithOwner)
 			continue
 		}
 
@@ -444,13 +445,17 @@ func generateDocs(ctx context.Context, client *github.Client, repositories []Rep
 			continue
 		}
 
+		// The page's name is the connector name,
+		// and it's a sub-page of the connectors' list page.
+		repo.ConduitIODocsPage = spec.Specification.Name
+
 		log.Printf("Generated documentation for %s at %s", spec.Specification.Name, filename)
 	}
 
 	return nil
 }
 
-func shouldSkipDocsForRepo(r Repository) bool {
+func shouldSkipDocsForRepo(r *Repository) bool {
 	return strings.ToLower(r.Owner()) != "conduitio" &&
 		strings.ToLower(r.Owner()) != "conduitio-labs"
 }
