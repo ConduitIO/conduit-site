@@ -12,11 +12,13 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import ReleaseAccordion, {Release} from "@site/src/components/ConnectorList/ReleaseAccordion";
+import Link from '@mui/material/Link';
 
 export class Connector {
   nameWithOwner: string;
   description: string;
   url: string;
+  conduitIODocsPage: string;
   created_at: string;
   stargazerCount: number;
   forkCount: number;
@@ -64,7 +66,12 @@ export const ConnectorAccordionSummary = styled((props: ConnectorAccordionSummar
         <Typography variant='body1'>{props.connector.nameWithOwner}</Typography>
         <Typography variant='body2' className='color-6b7280' >{props.connector.description}</Typography>
       </Stack>
-      <Stack className='align-items-center' direction='row' justifyContent='flex-end' spacing={1} >
+      <Stack className='align-items-center' direction='row' justifyContent='flex-end' spacing={2} >
+        {
+          (props.connector.conduitIODocsPage && props.connector.conduitIODocsPage.trim() !== "")
+            ? <Link href={props.connector.conduitIODocsPage}>View docs</Link>
+            : null
+        }
         {
           props.connector.nameWithOwner.toLowerCase().startsWith('conduitio/') || props.connector.nameWithOwner.toLowerCase().startsWith('conduitio-labs/')
             ? <Tooltip title="Created by the Conduit team"><img src='/img/conduit/conduit-ring.png' width='18'/></Tooltip>
