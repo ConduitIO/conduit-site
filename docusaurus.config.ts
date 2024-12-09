@@ -69,7 +69,7 @@ const config: Config = {
         { to: '/changelog', position: 'left', label: 'Changelog' },
         { to: '/api', label: 'HTTP API', position: 'left' },
         { href: 'https://meroxa.io', label: 'Conduit Platform', position: 'right', class: 'navbar__link navbar__item conduit-platform' },
-        { href: 'https://meroxa.com/blog', position: 'right', label: 'Blog' },
+        { href: 'https://meroxa.com/blog/?type=Conduit', position: 'right', label: 'Blog' },
       ],
     },
     algolia: { // https://docusaurus.io/docs/search#using-algolia-docsearch
@@ -150,7 +150,7 @@ const config: Config = {
           title: 'Company',
           items: [
             { label: 'About Meroxa', href: 'https://meroxa.com/about' },
-            { label: 'Blog', href: 'https://meroxa.com/blog' },
+            { label: 'Blog', href: 'https://meroxa.com/blog/?type=Conduit' },
             { label: 'Careers', href: 'https://jobs.lever.co/meroxa' },
             { label: 'Join our Discord', href: 'https://discord.meroxa.com' },
             { label: 'Meroxa X', href: 'https://x.com/meroxadata' },
