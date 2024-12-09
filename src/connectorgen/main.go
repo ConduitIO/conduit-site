@@ -507,10 +507,6 @@ func cleanDocsDirectory(docsPath string) error {
 }
 
 func shouldSkipDocsForRepo(r *Repository) bool {
-	if r.Owner() == "hariso" {
-		return false
-	}
-
 	return strings.ToLower(r.Owner()) != "conduitio" &&
 		strings.ToLower(r.Owner()) != "conduitio-labs"
 }
@@ -611,9 +607,6 @@ func fetchDependents(repo string) ([]string, error) {
 	var reposList []string
 	for _, dependent := range c.Dependents {
 		name := dependent.User + "/" + dependent.Repo
-		if dependent.User != "hariso" {
-			continue
-		}
 		if !slices.Contains(excludedRepositories, name) {
 			reposList = append(reposList, name)
 		}
