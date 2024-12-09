@@ -405,8 +405,8 @@ func generateDocs(ctx context.Context, client *github.Client, repositories []*Re
 	}
 
 	// Ensure docs directory exists
-	if err := os.MkdirAll(docsPath, 0755); err != nil {
-		return fmt.Errorf("failed to create docs directory: %v", err)
+	if err := cleanDocsDirectory(docsPath); err != nil {
+		return fmt.Errorf("failed to clean %v: %v", docsPath, err)
 	}
 
 	// Process each repository
@@ -460,6 +460,47 @@ func generateDocs(ctx context.Context, client *github.Client, repositories []*Re
 		}
 
 		log.Printf("Generated documentation for %s at %s", spec.Specification.Name, filename)
+	}
+
+	return nil
+}
+
+func cleanDocsDirectory(docsPath string) error {
+	// Check if directory exists
+	info, err := os.Stat(docsPath)
+	if os.IsNotExist(err) {
+		return fmt.Errorf("directory does not exist: %s", docsPath)
+	}
+
+	// Ensure it's actually a directory
+	if !info.IsDir() {
+		return fmt.Errorf("%s is not a directory", docsPath)
+	}
+
+	// Read directory contents
+	entries, err := os.ReadDir(docsPath)
+	if err != nil {
+		return fmt.Errorf("error reading directory: %v", err)
+	}
+
+	// Iterate through and delete files (except index.mdx)
+	for _, entry := range entries {
+		if entry.Name() == "index.mdx" {
+			continue
+		}
+
+		fullPath := filepath.Join(docsPath, entry.Name())
+
+		// Remove file or directory
+		if entry.IsDir() {
+			if err := os.RemoveAll(fullPath); err != nil {
+				return fmt.Errorf("error removing directory %s: %v", fullPath, err)
+			}
+		} else {
+			if err := os.Remove(fullPath); err != nil {
+				return fmt.Errorf("error removing file %s: %v", fullPath, err)
+			}
+		}
 	}
 
 	return nil
