@@ -17,6 +17,8 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
+	"net/http"
 	"os"
 	"slices"
 	"strings"
@@ -47,71 +49,17 @@ var excludedRepositories = []string{
 	"ConduitIO/conduit-operator",
 }
 
-// maps architectures found in asset names to GOARCH
-var assetArchToGOARCH = map[string]string{
-	"x86_64": "amd64",
-	"i386":   "386",
-}
-
-// knownOS is the list of past, present, and future known GOOS values.
-var knownOS = map[string]bool{
-	"aix":       true,
-	"android":   true,
-	"darwin":    true,
-	"dragonfly": true,
-	"freebsd":   true,
-	"hurd":      true,
-	"illumos":   true,
-	"ios":       true,
-	"js":        true,
-	"linux":     true,
-	"nacl":      true,
-	"netbsd":    true,
-	"openbsd":   true,
-	"plan9":     true,
-	"solaris":   true,
-	"wasip1":    true,
-	"windows":   true,
-	"zos":       true,
-}
-
-// knownArch is the list of past, present, and future known GOARCH values.
-var knownArch = map[string]bool{
-	"386":         true,
-	"amd64":       true,
-	"amd64p32":    true,
-	"arm":         true,
-	"armbe":       true,
-	"arm64":       true,
-	"arm64be":     true,
-	"loong64":     true,
-	"mips":        true,
-	"mipsle":      true,
-	"mips64":      true,
-	"mips64le":    true,
-	"mips64p32":   true,
-	"mips64p32le": true,
-	"ppc":         true,
-	"ppc64":       true,
-	"ppc64le":     true,
-	"riscv":       true,
-	"riscv64":     true,
-	"s390":        true,
-	"s390x":       true,
-	"sparc":       true,
-	"sparc64":     true,
-	"wasm":        true,
-}
-
 // Repository represents GitHub repository information.
 type Repository struct {
-	Name          string  `json:"nameWithOwner"`
-	Description   string  `json:"description"`
-	CreatedAt     string  `json:"createdAt"`
-	URL           string  `json:"url"`
-	Stargazers    int     `json:"stargazerCount"`
-	Forks         int     `json:"forkCount"`
-	LatestRelease Release `json:"latestRelease"`
+	Name              string  `json:"nameWithOwner"`
+	Description       string  `json:"description"`
+	CreatedAt         string  `json:"createdAt"`
+	URL               string  `json:"url"`
+	Stargazers        int     `json:"stargazerCount"`
+	Forks             int     `json:"forkCount"`
+	LatestRelease     Release `json:"latestRelease"`
+	ToolsGoIsCorrect  bool    `json:"toolsGoIsCorrect"`
+	MakefileIsCorrect bool    `json:"makefileIsCorrect"`
 }
 
 // Release represents a GitHub release.
@@ -153,8 +101,15 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Fetch required tasks from Makefile
+	requiredTasks, err := fetchRequiredTasks()
+	if err != nil {
+		fmt.Printf("Error fetching required tasks: %v\n", err)
+		os.Exit(1)
+	}
+
 	var repositories []Repository
-	for _, repo := range reposList {
+	for _, repo := range reposList[:5] {
 		fmt.Printf("Processing %v\n", repo)
 
 		repoInfo, err := fetchRepoInfo(ctx, client, repo)
@@ -170,6 +125,24 @@ func main() {
 		}
 
 		repoInfo.LatestRelease = release
+
+		// Check Makefile
+		makefileIsCorrect, err := fetchAndCheckMakefileTasks(ctx, client, repo, requiredTasks)
+		if err != nil {
+			fmt.Printf("Error checking Makefile for %s: %v\n", repo, err)
+			continue
+		}
+
+		repoInfo.MakefileIsCorrect = makefileIsCorrect
+
+		// Check tools.go
+		toolsGoIsCorrect, err := checkToolsGoFile(ctx, client, repo)
+		if err != nil {
+			fmt.Printf("Error checking tools.go for %s: %v\n", repo, err)
+			continue
+		}
+		repoInfo.ToolsGoIsCorrect = toolsGoIsCorrect
+
 		repositories = append(repositories, repoInfo)
 	}
 
@@ -251,4 +224,107 @@ func fetchLatestRelease(ctx context.Context, client *github.Client, repo string)
 		PublishedAt: release.GetPublishedAt().Time,
 		HTMLURL:     release.GetHTMLURL(),
 	}, nil
+}
+
+func fetchRequiredTasks() ([]string, error) {
+	// We assume these are the right ones
+	url := "https://raw.githubusercontent.com/ConduitIO/conduit-connector-sdk/main/Makefile"
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to fetch file from URL: %s", url)
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return extractTasksFromMakefile(string(body)), nil
+}
+
+func extractTasksFromMakefile(content string) []string {
+	var tasks []string
+	lines := strings.Split(content, "\n")
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if strings.HasSuffix(line, ":") && !strings.HasPrefix(line, "#") {
+			task := strings.TrimSuffix(line, ":")
+			tasks = append(tasks, task)
+		}
+	}
+	return tasks
+}
+
+func fetchAndCheckMakefileTasks(ctx context.Context, client *github.Client, repo string, requiredTasks []string) (bool, error) {
+	fmt.Println("- 📥 Checking Makefile for specific tasks...")
+
+	content, _, _, err := client.Repositories.GetContents(
+		ctx,
+		strings.Split(repo, "/")[0],
+		strings.Split(repo, "/")[1],
+		"Makefile",
+		&github.RepositoryContentGetOptions{},
+	)
+	if err != nil {
+		if _, ok := err.(*github.ErrorResponse); ok {
+			return false, nil
+		}
+		return false, err
+	}
+
+	makefileContent, err := content.GetContent()
+	if err != nil {
+		return false, err
+	}
+
+	for _, task := range requiredTasks {
+		if !strings.Contains(makefileContent, task+":") {
+			return false, nil
+		}
+	}
+
+	return true, nil
+}
+
+func checkToolsGoFile(ctx context.Context, client *github.Client, repo string) (bool, error) {
+	fmt.Println("- 📥 Checking tools.go file...")
+
+	content, _, _, err := client.Repositories.GetContents(
+		ctx,
+		strings.Split(repo, "/")[0],
+		strings.Split(repo, "/")[1],
+		"tools.go",
+		&github.RepositoryContentGetOptions{},
+	)
+	if err != nil {
+		if _, ok := err.(*github.ErrorResponse); ok {
+			return false, nil // tools.go file does not exist
+		}
+		return false, err
+	}
+
+	toolsGoContent, err := content.GetContent()
+	if err != nil {
+		return false, err
+	}
+
+	// Check for required dependencies
+	requiredDeps := []string{
+		"github.com/golangci/golangci-lint/cmd/golangci-lint",
+		"github.com/conduitio/conduit-commons/paramgen",
+	}
+
+	for _, dep := range requiredDeps {
+		if !strings.Contains(toolsGoContent, dep) {
+			return false, nil // Missing required dependency
+		}
+	}
+
+	return true, nil
 }
