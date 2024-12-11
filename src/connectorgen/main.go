@@ -105,13 +105,13 @@ var knownArch = map[string]bool{
 
 // Repository represents GitHub repository information.
 type Repository struct {
-	Name        string    `json:"nameWithOwner"`
-	Description string    `json:"description"`
-	CreatedAt   string    `json:"createdAt"`
-	URL         string    `json:"url"`
-	Stargazers  int       `json:"stargazerCount"`
-	Forks       int       `json:"forkCount"`
-	Releases    []Release `json:"releases"`
+	Name          string  `json:"nameWithOwner"`
+	Description   string  `json:"description"`
+	CreatedAt     string  `json:"createdAt"`
+	URL           string  `json:"url"`
+	Stargazers    int     `json:"stargazerCount"`
+	Forks         int     `json:"forkCount"`
+	LatestRelease Release `json:"latestRelease"`
 }
 
 // Release represents a GitHub release.
@@ -123,20 +123,6 @@ type Release struct {
 	Prerelease  bool      `json:"prerelease"`
 	PublishedAt time.Time `json:"published_at"`
 	HTMLURL     string    `json:"html_url"`
-	Assets      []Asset   `json:"assets"`
-}
-
-// Asset represents a release asset.
-type Asset struct {
-	Name            string    `json:"name"`
-	OS              string    `json:"os"`
-	Arch            string    `json:"arch"`
-	ContentType     string    `json:"content_type"`
-	BrowserDownload string    `json:"browser_download_url"`
-	CreatedAt       time.Time `json:"created_at"`
-	UpdatedAt       time.Time `json:"updated_at"`
-	DownloadCount   int       `json:"download_count"`
-	Size            int       `json:"size"`
 }
 
 func main() {
@@ -177,13 +163,13 @@ func main() {
 			os.Exit(1)
 		}
 
-		releases, err := fetchReleases(ctx, client, repo)
+		release, err := fetchLatestRelease(ctx, client, repo)
 		if err != nil {
-			fmt.Printf("Error fetching releases for %s: %v\n", repo, err)
+			fmt.Printf("Error fetching latest release for %s: %v\n", repo, err)
 			os.Exit(1)
 		}
 
-		repoInfo.Releases = releases
+		repoInfo.LatestRelease = release
 		repositories = append(repositories, repoInfo)
 	}
 
@@ -243,98 +229,26 @@ func fetchRepoInfo(ctx context.Context, client *github.Client, repo string) (Rep
 	}, nil
 }
 
-func fetchReleases(ctx context.Context, client *github.Client, repo string) ([]Release, error) {
+func fetchLatestRelease(ctx context.Context, client *github.Client, repo string) (Release, error) {
 	fmt.Println("- 📥 Fetching releases...")
 
-	releases, _, err := client.Repositories.ListReleases(
+	release, _, err := client.Repositories.GetLatestRelease(
 		ctx,
 		strings.Split(repo, "/")[0],
 		strings.Split(repo, "/")[1],
-		nil,
 	)
 	if err != nil {
-		return nil, err
+		// If there is no release, return an empty release and no error (normally, it'd be a 404 Not Found error)
+		return Release{}, nil
 	}
 
-	releasesList := make([]Release, 0, len(releases))
-	for _, release := range releases {
-		releaseAssets, err := fetchReleaseAssets(ctx, client, repo, release)
-		if err != nil {
-			return nil, fmt.Errorf("failed fetching assets for release %v: %w", release.GetTagName(), err)
-		}
-
-		releasesList = append(releasesList, Release{
-			TagName:     release.GetTagName(),
-			Name:        release.GetName(),
-			Body:        release.GetBody(),
-			Draft:       release.GetDraft(),
-			Prerelease:  release.GetPrerelease(),
-			PublishedAt: release.GetPublishedAt().Time,
-			HTMLURL:     release.GetHTMLURL(),
-			Assets:      releaseAssets,
-		})
-	}
-
-	return releasesList, nil
-}
-
-func fetchReleaseAssets(ctx context.Context, client *github.Client, repo string, release *github.RepositoryRelease) ([]Asset, error) {
-	fmt.Printf("- 📥 Fetching release assets for %v...\n", release.GetTagName())
-
-	assets, _, err := client.Repositories.ListReleaseAssets(
-		ctx,
-		strings.Split(repo, "/")[0],
-		strings.Split(repo, "/")[1],
-		release.GetID(),
-		nil,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	var assetsList []Asset
-	for _, asset := range assets {
-		if asset.GetName() == "checksums.txt" {
-			continue
-		}
-
-		assetOS, assetArch, ok := extractOSArch(asset, release.GetTagName())
-		if !ok {
-			fmt.Printf("skipping asset %v\n", asset.GetName())
-			continue
-		}
-
-		assetsList = append(assetsList, Asset{
-			Name:        asset.GetName(),
-			OS:          assetOS,
-			Arch:        assetArch,
-			ContentType: asset.GetContentType(),
-			// use our conduit-connectors-releases scarf package link
-			BrowserDownload: strings.Replace(asset.GetBrowserDownloadURL(), "github.com", "conduit.gateway.scarf.sh/connector/download", 1),
-			CreatedAt:       asset.GetCreatedAt().Time,
-			UpdatedAt:       asset.GetUpdatedAt().Time,
-			DownloadCount:   asset.GetDownloadCount(),
-			Size:            asset.GetSize(),
-		})
-	}
-
-	return assetsList, nil
-}
-
-func extractOSArch(asset *github.ReleaseAsset, tagName string) (string, string, bool) {
-	// example asset name:  conduit-connector-grpc-server_0.1.0_Windows_x86_64.tar.gz
-	// example tag name: v0.1.0
-	version := strings.TrimPrefix(tagName, "v")
-
-	// get part after version: Windows_x86_64.tar.gz
-	_, osArch, _ := strings.Cut(asset.GetName(), version+"_")
-	osArch, _, _ = strings.Cut(osArch, ".")
-
-	assetOS, assetArch, _ := strings.Cut(osArch, "_")
-	assetOS = strings.ToLower(assetOS)
-	if arch, ok := assetArchToGOARCH[assetArch]; ok {
-		assetArch = arch
-	}
-
-	return assetOS, assetArch, knownOS[assetOS] && knownArch[assetArch]
+	return Release{
+		TagName:     release.GetTagName(),
+		Name:        release.GetName(),
+		Body:        release.GetBody(),
+		Draft:       release.GetDraft(),
+		Prerelease:  release.GetPrerelease(),
+		PublishedAt: release.GetPublishedAt().Time,
+		HTMLURL:     release.GetHTMLURL(),
+	}, nil
 }

@@ -25,7 +25,7 @@ class Filter {
 
   matches(connector: Connector): boolean {
     if (!this.showWithoutRelease &&
-      (!connector.releases || connector.releases.length == 0)) {
+      !connector.latestRelease) {
       return false;
     }
     if (!this.showCommunity &&
