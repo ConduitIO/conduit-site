@@ -28,6 +28,7 @@ import (
 	"github.com/gofri/go-github-ratelimit/github_ratelimit"
 	"github.com/google/go-github/v61/github"
 	"github.com/otiai10/gh-dependents/ghdeps"
+	"golang.org/x/mod/modfile"
 )
 
 var excludedRepositories = []string{
@@ -49,17 +50,23 @@ var excludedRepositories = []string{
 	"ConduitIO/conduit-operator",
 }
 
+type GoVersion struct {
+	Version     string `json:"version"`
+	UsingLatest bool   `json:"usingLatest"`
+}
+
 // Repository represents GitHub repository information.
 type Repository struct {
-	Name              string  `json:"nameWithOwner"`
-	Description       string  `json:"description"`
-	CreatedAt         string  `json:"createdAt"`
-	URL               string  `json:"url"`
-	Stargazers        int     `json:"stargazerCount"`
-	Forks             int     `json:"forkCount"`
-	LatestRelease     Release `json:"latestRelease"`
-	ToolsGoIsCorrect  bool    `json:"toolsGoIsCorrect"`
-	MakefileIsCorrect bool    `json:"makefileIsCorrect"`
+	Name              string    `json:"nameWithOwner"`
+	Description       string    `json:"description"`
+	CreatedAt         string    `json:"createdAt"`
+	URL               string    `json:"url"`
+	Stargazers        int       `json:"stargazerCount"`
+	Forks             int       `json:"forkCount"`
+	LatestRelease     Release   `json:"latestRelease"`
+	ToolsGoIsCorrect  bool      `json:"toolsGoIsCorrect"`
+	MakefileIsCorrect bool      `json:"makefileIsCorrect"`
+	GoVersion         GoVersion `json:"goVersion"`
 }
 
 // Release represents a GitHub release.
@@ -108,6 +115,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Fetch latest Go version
+	latestGoVersion, err := getLatestGoVersion()
+	if err != nil {
+		fmt.Printf("Error fetching latest Go version: %v\n", err)
+		os.Exit(1)
+	}
+
 	var repositories []Repository
 	for _, repo := range reposList[:5] {
 		fmt.Printf("Processing %v\n", repo)
@@ -130,7 +144,7 @@ func main() {
 		makefileIsCorrect, err := fetchAndCheckMakefileTasks(ctx, client, repo, requiredTasks)
 		if err != nil {
 			fmt.Printf("Error checking Makefile for %s: %v\n", repo, err)
-			continue
+			os.Exit(1)
 		}
 
 		repoInfo.MakefileIsCorrect = makefileIsCorrect
@@ -139,9 +153,23 @@ func main() {
 		toolsGoIsCorrect, err := checkToolsGoFile(ctx, client, repo)
 		if err != nil {
 			fmt.Printf("Error checking tools.go for %s: %v\n", repo, err)
-			continue
+			os.Exit(1)
 		}
 		repoInfo.ToolsGoIsCorrect = toolsGoIsCorrect
+
+		repoGoVersion, err := fetchGoModVersion(ctx, client, repo)
+		if err != nil {
+			fmt.Printf("Error fetching go.mod version for %s: %v\n", repo, err)
+			os.Exit(1)
+		}
+
+		repoInfo.GoVersion.Version = repoGoVersion
+
+		if repoGoVersion == "" {
+			repoInfo.GoVersion.UsingLatest = false
+		} else {
+			repoInfo.GoVersion.UsingLatest = compareGoVersions(repoGoVersion, latestGoVersion)
+		}
 
 		repositories = append(repositories, repoInfo)
 	}
@@ -165,7 +193,7 @@ func main() {
 	fmt.Println("Done")
 }
 
-func fetchDependents(ctx context.Context, client *github.Client, repo string) ([]string, error) {
+func fetchDependents(_ context.Context, _ *github.Client, repo string) ([]string, error) {
 	fmt.Println("- 📥 Fetching dependents...")
 
 	c := ghdeps.NewCrawler(repo)
@@ -327,4 +355,67 @@ func checkToolsGoFile(ctx context.Context, client *github.Client, repo string) (
 	}
 
 	return true, nil
+}
+
+func fetchGoModVersion(ctx context.Context, client *github.Client, repo string) (string, error) {
+	fmt.Println("- 📥 Fetching go.mod file...")
+
+	content, _, _, err := client.Repositories.GetContents(
+		ctx,
+		strings.Split(repo, "/")[0],
+		strings.Split(repo, "/")[1],
+		"go.mod",
+		&github.RepositoryContentGetOptions{},
+	)
+	if err != nil {
+		if _, ok := err.(*github.ErrorResponse); ok {
+			return "", nil
+		}
+		return "", err
+	}
+
+	goModContent, err := content.GetContent()
+	if err != nil {
+		return "", err
+	}
+
+	modFile, err := modfile.Parse("go.mod", []byte(goModContent), nil)
+	if err != nil {
+		return "", err
+	}
+
+	return modFile.Go.Version, nil
+}
+
+func getLatestGoVersion() (string, error) {
+	resp, err := http.Get("https://go.dev/dl/?mode=json")
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("failed to fetch Go versions")
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	var versions []struct {
+		Version string `json:"version"`
+		Stable  bool   `json:"stable"`
+	}
+
+	if err := json.Unmarshal(body, &versions); err != nil {
+		return "", err
+	}
+
+	// TODO: Check if it's possible that latest is not stable
+	return versions[0].Version, nil
+}
+
+func compareGoVersions(repoGoVersion, latestGoVersion string) bool {
+	return repoGoVersion == latestGoVersion
 }

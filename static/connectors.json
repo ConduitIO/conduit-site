@@ -16,7 +16,11 @@
       "html_url": ""
     },
     "toolsGoIsCorrect": true,
-    "makefileIsCorrect": true
+    "makefileIsCorrect": true,
+    "goVersion": {
+      "version": "1.23.2",
+      "usingLatest": false
+    }
   },
   {
     "nameWithOwner": "devarismeroxa/conduit-connector-influxdb",
@@ -35,7 +39,11 @@
       "html_url": ""
     },
     "toolsGoIsCorrect": true,
-    "makefileIsCorrect": true
+    "makefileIsCorrect": true,
+    "goVersion": {
+      "version": "1.23.2",
+      "usingLatest": false
+    }
   },
   {
     "nameWithOwner": "hariso/conduit-connector-kafka",
@@ -54,7 +62,11 @@
       "html_url": "https://github.com/hariso/conduit-connector-kafka/releases/tag/v0.22.0"
     },
     "toolsGoIsCorrect": false,
-    "makefileIsCorrect": true
+    "makefileIsCorrect": true,
+    "goVersion": {
+      "version": "1.23.2",
+      "usingLatest": false
+    }
   },
   {
     "nameWithOwner": "meroxa/conduit-connector-udl-public",
@@ -73,7 +85,11 @@
       "html_url": ""
     },
     "toolsGoIsCorrect": false,
-    "makefileIsCorrect": false
+    "makefileIsCorrect": false,
+    "goVersion": {
+      "version": "1.18",
+      "usingLatest": false
+    }
   },
   {
     "nameWithOwner": "nstehr/conduit-connector-mqtt",
@@ -92,6 +108,10 @@
       "html_url": ""
     },
     "toolsGoIsCorrect": true,
-    "makefileIsCorrect": true
+    "makefileIsCorrect": true,
+    "goVersion": {
+      "version": "1.23.2",
+      "usingLatest": false
+    }
   }
 ]
