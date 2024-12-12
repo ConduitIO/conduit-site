@@ -265,22 +265,11 @@ func fetchDependents(_ context.Context, _ *github.Client, repo string) ([]string
 func checkReadmeForScarfPixel(ctx context.Context, client *github.Client, repo string) (bool, error) {
 	fmt.Println("- 📥 Checking README.md for Scarf pixel...")
 
-	content, _, _, err := client.Repositories.GetContents(
-		ctx,
-		strings.Split(repo, "/")[0],
-		strings.Split(repo, "/")[1],
-		"README.md",
-		&github.RepositoryContentGetOptions{},
-	)
+	readmeContent, err := fetchFileContent(ctx, client, repo, "README.md")
 	if err != nil {
 		if _, ok := err.(*github.ErrorResponse); ok {
 			return false, nil
 		}
-		return false, err
-	}
-
-	readmeContent, err := content.GetContent()
-	if err != nil {
 		return false, err
 	}
 
@@ -370,22 +359,11 @@ func extractTasksFromMakefile(content string) []string {
 func fetchAndCheckMakefileTasks(ctx context.Context, client *github.Client, repo string, requiredTasks []string) (bool, error) {
 	fmt.Println("- 📥 Checking Makefile for specific tasks...")
 
-	content, _, _, err := client.Repositories.GetContents(
-		ctx,
-		strings.Split(repo, "/")[0],
-		strings.Split(repo, "/")[1],
-		"Makefile",
-		&github.RepositoryContentGetOptions{},
-	)
+	makefileContent, err := fetchFileContent(ctx, client, repo, "Makefile")
 	if err != nil {
 		if _, ok := err.(*github.ErrorResponse); ok {
 			return false, nil
 		}
-		return false, err
-	}
-
-	makefileContent, err := content.GetContent()
-	if err != nil {
 		return false, err
 	}
 
@@ -401,22 +379,11 @@ func fetchAndCheckMakefileTasks(ctx context.Context, client *github.Client, repo
 func checkToolsGoFile(ctx context.Context, client *github.Client, repo string) (bool, error) {
 	fmt.Println("- 📥 Checking tools.go file...")
 
-	content, _, _, err := client.Repositories.GetContents(
-		ctx,
-		strings.Split(repo, "/")[0],
-		strings.Split(repo, "/")[1],
-		"tools.go",
-		&github.RepositoryContentGetOptions{},
-	)
+	toolsGoContent, err := fetchFileContent(ctx, client, repo, "tools.go")
 	if err != nil {
 		if _, ok := err.(*github.ErrorResponse); ok {
 			return false, nil // tools.go file does not exist
 		}
-		return false, err
-	}
-
-	toolsGoContent, err := content.GetContent()
-	if err != nil {
 		return false, err
 	}
 
@@ -438,22 +405,11 @@ func checkToolsGoFile(ctx context.Context, client *github.Client, repo string) (
 func fetchGoModDetails(ctx context.Context, client *github.Client, repo string) (string, map[string]string, error) {
 	fmt.Println("- 📥 Fetching go.mod file...")
 
-	content, _, _, err := client.Repositories.GetContents(
-		ctx,
-		strings.Split(repo, "/")[0],
-		strings.Split(repo, "/")[1],
-		"go.mod",
-		&github.RepositoryContentGetOptions{},
-	)
+	goModContent, err := fetchFileContent(ctx, client, repo, "go.mod")
 	if err != nil {
 		if _, ok := err.(*github.ErrorResponse); ok {
 			return "", nil, nil
 		}
-		return "", nil, err
-	}
-
-	goModContent, err := content.GetContent()
-	if err != nil {
 		return "", nil, err
 	}
 
@@ -505,4 +461,19 @@ func getLatestGoVersion() (string, error) {
 
 func compareVersions(repoVersion, latestVersion string) bool {
 	return repoVersion == latestVersion
+}
+
+func fetchFileContent(ctx context.Context, client *github.Client, repo, path string) (string, error) {
+	content, _, _, err := client.Repositories.GetContents(
+		ctx,
+		strings.Split(repo, "/")[0],
+		strings.Split(repo, "/")[1],
+		path,
+		&github.RepositoryContentGetOptions{},
+	)
+	if err != nil {
+		return "", err
+	}
+
+	return content.GetContent()
 }
