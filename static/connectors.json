@@ -20,7 +20,15 @@
       "currentVersion": "v0.5.0",
       "usingLatest": true
     },
-    "hasScarfPixel": false
+    "hasScarfPixel": false,
+    "workflowChecks": {
+      "dependabot-auto-merge-go.yml": true,
+      "lint.yml": true,
+      "project-automation.yml": false,
+      "release.yml": true,
+      "test.yml": true,
+      "validate-generated-files.yml": true
+    }
   },
   {
     "nameWithOwner": "devarismeroxa/conduit-connector-influxdb",
@@ -43,7 +51,15 @@
       "currentVersion": "v0.5.0",
       "usingLatest": true
     },
-    "hasScarfPixel": false
+    "hasScarfPixel": false,
+    "workflowChecks": {
+      "dependabot-auto-merge-go.yml": true,
+      "lint.yml": true,
+      "project-automation.yml": false,
+      "release.yml": true,
+      "test.yml": true,
+      "validate-generated-files.yml": true
+    }
   },
   {
     "nameWithOwner": "hariso/conduit-connector-kafka",
@@ -75,30 +91,15 @@
       "currentVersion": "v0.5.1-0.20241205191302-08d2424ff6d6",
       "usingLatest": false
     },
-    "hasScarfPixel": true
-  },
-  {
-    "nameWithOwner": "meroxa/conduit-connector-udl-public",
-    "description": "",
-    "createdAt": "2024-12-04 00:01:05 +0000 UTC",
-    "url": "https://github.com/meroxa/conduit-connector-udl-public",
-    "stargazerCount": 0,
-    "forkCount": 0,
-    "toolsGoIsCorrect": false,
-    "makefileIsCorrect": false,
-    "goVersion": {
-      "currentVersion": "1.18",
-      "usingLatest": false
-    },
-    "connectorSDKVersion": {
-      "currentVersion": "v0.7.2",
-      "usingLatest": false
-    },
-    "conduitCommonsVersion": {
-      "currentVersion": "",
-      "usingLatest": false
-    },
-    "hasScarfPixel": false
+    "hasScarfPixel": true,
+    "workflowChecks": {
+      "dependabot-auto-merge-go.yml": true,
+      "lint.yml": true,
+      "project-automation.yml": false,
+      "release.yml": true,
+      "test.yml": true,
+      "validate-generated-files.yml": true
+    }
   },
   {
     "nameWithOwner": "nstehr/conduit-connector-mqtt",
@@ -121,6 +122,14 @@
       "currentVersion": "v0.5.0",
       "usingLatest": true
     },
-    "hasScarfPixel": false
+    "hasScarfPixel": false,
+    "workflowChecks": {
+      "dependabot-auto-merge-go.yml": true,
+      "lint.yml": true,
+      "project-automation.yml": false,
+      "release.yml": true,
+      "test.yml": true,
+      "validate-generated-files.yml": true
+    }
   }
 ]
