@@ -6,20 +6,19 @@
     "url": "https://github.com/conduitio-labs/conduit-connector-sftp",
     "stargazerCount": 0,
     "forkCount": 0,
-    "latestRelease": {
-      "tag_name": "",
-      "name": "",
-      "body": "",
-      "draft": false,
-      "prerelease": false,
-      "published_at": "0001-01-01T00:00:00Z",
-      "html_url": ""
-    },
     "toolsGoIsCorrect": true,
     "makefileIsCorrect": true,
     "goVersion": {
-      "version": "1.23.2",
+      "currentVersion": "1.23.2",
       "usingLatest": false
+    },
+    "connectorSDKVersion": {
+      "currentVersion": "v0.12.0",
+      "usingLatest": true
+    },
+    "conduitCommonsVersion": {
+      "currentVersion": "v0.5.0",
+      "usingLatest": true
     },
     "hasScarfPixel": false
   },
@@ -30,20 +29,19 @@
     "url": "https://github.com/devarismeroxa/conduit-connector-influxdb",
     "stargazerCount": 0,
     "forkCount": 0,
-    "latestRelease": {
-      "tag_name": "",
-      "name": "",
-      "body": "",
-      "draft": false,
-      "prerelease": false,
-      "published_at": "0001-01-01T00:00:00Z",
-      "html_url": ""
-    },
     "toolsGoIsCorrect": true,
     "makefileIsCorrect": true,
     "goVersion": {
-      "version": "1.23.2",
+      "currentVersion": "1.23.2",
       "usingLatest": false
+    },
+    "connectorSDKVersion": {
+      "currentVersion": "v0.12.0",
+      "usingLatest": true
+    },
+    "conduitCommonsVersion": {
+      "currentVersion": "v0.5.0",
+      "usingLatest": true
     },
     "hasScarfPixel": false
   },
@@ -66,7 +64,15 @@
     "toolsGoIsCorrect": false,
     "makefileIsCorrect": true,
     "goVersion": {
-      "version": "1.23.2",
+      "currentVersion": "1.23.2",
+      "usingLatest": false
+    },
+    "connectorSDKVersion": {
+      "currentVersion": "v0.12.1-0.20241209093924-eb970413379b",
+      "usingLatest": false
+    },
+    "conduitCommonsVersion": {
+      "currentVersion": "v0.5.1-0.20241205191302-08d2424ff6d6",
       "usingLatest": false
     },
     "hasScarfPixel": true
@@ -78,19 +84,18 @@
     "url": "https://github.com/meroxa/conduit-connector-udl-public",
     "stargazerCount": 0,
     "forkCount": 0,
-    "latestRelease": {
-      "tag_name": "",
-      "name": "",
-      "body": "",
-      "draft": false,
-      "prerelease": false,
-      "published_at": "0001-01-01T00:00:00Z",
-      "html_url": ""
-    },
     "toolsGoIsCorrect": false,
     "makefileIsCorrect": false,
     "goVersion": {
-      "version": "1.18",
+      "currentVersion": "1.18",
+      "usingLatest": false
+    },
+    "connectorSDKVersion": {
+      "currentVersion": "v0.7.2",
+      "usingLatest": false
+    },
+    "conduitCommonsVersion": {
+      "currentVersion": "",
       "usingLatest": false
     },
     "hasScarfPixel": false
@@ -102,20 +107,19 @@
     "url": "https://github.com/nstehr/conduit-connector-mqtt",
     "stargazerCount": 0,
     "forkCount": 0,
-    "latestRelease": {
-      "tag_name": "",
-      "name": "",
-      "body": "",
-      "draft": false,
-      "prerelease": false,
-      "published_at": "0001-01-01T00:00:00Z",
-      "html_url": ""
-    },
     "toolsGoIsCorrect": true,
     "makefileIsCorrect": true,
     "goVersion": {
-      "version": "1.23.2",
+      "currentVersion": "1.23.2",
       "usingLatest": false
+    },
+    "connectorSDKVersion": {
+      "currentVersion": "v0.12.0",
+      "usingLatest": true
+    },
+    "conduitCommonsVersion": {
+      "currentVersion": "v0.5.0",
+      "usingLatest": true
     },
     "hasScarfPixel": false
   }

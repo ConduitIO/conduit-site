@@ -51,24 +51,26 @@ var excludedRepositories = []string{
 	"ConduitIO/conduit-operator",
 }
 
-type GoVersion struct {
-	Version     string `json:"version"`
-	UsingLatest bool   `json:"usingLatest"`
+type Version struct {
+	CurrentVersion string `json:"currentVersion"`
+	UsingLatest    bool   `json:"usingLatest"`
 }
 
 // Repository represents GitHub repository information.
 type Repository struct {
-	Name              string    `json:"nameWithOwner"`
-	Description       string    `json:"description"`
-	CreatedAt         string    `json:"createdAt"`
-	URL               string    `json:"url"`
-	Stargazers        int       `json:"stargazerCount"`
-	Forks             int       `json:"forkCount"`
-	LatestRelease     Release   `json:"latestRelease"`
-	ToolsGoIsCorrect  bool      `json:"toolsGoIsCorrect"`
-	MakefileIsCorrect bool      `json:"makefileIsCorrect"`
-	GoVersion         GoVersion `json:"goVersion"`
-	HasScarfPixel     bool      `json:"hasScarfPixel"`
+	Name                  string   `json:"nameWithOwner"`
+	Description           string   `json:"description"`
+	CreatedAt             string   `json:"createdAt"`
+	URL                   string   `json:"url"`
+	Stargazers            int      `json:"stargazerCount"`
+	Forks                 int      `json:"forkCount"`
+	LatestRelease         *Release `json:"latestRelease,omitempty"`
+	ToolsGoIsCorrect      bool     `json:"toolsGoIsCorrect"`
+	MakefileIsCorrect     bool     `json:"makefileIsCorrect"`
+	GoVersion             Version  `json:"goVersion"`
+	ConnectorSDKVersion   Version  `json:"connectorSDKVersion"`
+	ConduitCommonsVersion Version  `json:"conduitCommonsVersion"`
+	HasScarfPixel         bool     `json:"hasScarfPixel"`
 }
 
 // Release represents a GitHub release.
@@ -124,6 +126,20 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Fetch latest Conduit SDK version
+	latestSDKVersion, err := fetchLatestTag(ctx, client, "conduitio", "conduit-connector-sdk")
+	if err != nil {
+		fmt.Printf("Error fetching latest Conduit SDK version: %v\n", err)
+		os.Exit(1)
+	}
+
+	// Fetch latest Conduit Commons version
+	latestCommonsVersion, err := fetchLatestTag(ctx, client, "conduitio", "conduit-commons")
+	if err != nil {
+		fmt.Printf("Error fetching latest Conduit Commons version: %v\n", err)
+		os.Exit(1)
+	}
+
 	var repositories []Repository
 	for _, repo := range reposList[:5] {
 		fmt.Printf("Processing %v\n", repo)
@@ -159,18 +175,27 @@ func main() {
 		}
 		repoInfo.ToolsGoIsCorrect = toolsGoIsCorrect
 
-		repoGoVersion, err := fetchGoModVersion(ctx, client, repo)
+		repoGoVersion, dependencies, err := fetchGoModDetails(ctx, client, repo)
 		if err != nil {
-			fmt.Printf("Error fetching go.mod version for %s: %v\n", repo, err)
+			fmt.Printf("Error fetching go.mod details for %s: %v\n", repo, err)
 			os.Exit(1)
 		}
-
-		repoInfo.GoVersion.Version = repoGoVersion
+		repoInfo.GoVersion.CurrentVersion = repoGoVersion
 
 		if repoGoVersion == "" {
 			repoInfo.GoVersion.UsingLatest = false
 		} else {
-			repoInfo.GoVersion.UsingLatest = compareGoVersions(repoGoVersion, latestGoVersion)
+			repoInfo.GoVersion.UsingLatest = compareVersions(repoGoVersion, latestGoVersion)
+		}
+
+		if version, ok := dependencies["github.com/conduitio/conduit-connector-sdk"]; ok {
+			repoInfo.ConnectorSDKVersion.CurrentVersion = version
+			repoInfo.ConnectorSDKVersion.UsingLatest = compareVersions(version, latestSDKVersion)
+		}
+
+		if version, ok := dependencies["github.com/conduitio/conduit-commons"]; ok {
+			repoInfo.ConduitCommonsVersion.CurrentVersion = version
+			repoInfo.ConduitCommonsVersion.UsingLatest = compareVersions(version, latestCommonsVersion)
 		}
 
 		// Check for Scarf pixel
@@ -202,6 +227,20 @@ func main() {
 	}
 
 	fmt.Println("Done")
+}
+
+func fetchLatestTag(ctx context.Context, client *github.Client, owner, repo string) (string, error) {
+	fmt.Printf("- 📥 Fetching latest tag for %s/%s...\n", owner, repo)
+
+	tags, _, err := client.Repositories.ListTags(ctx, owner, repo, nil)
+	if err != nil {
+		return "", err
+	}
+
+	if len(tags) == 0 {
+		return "", fmt.Errorf("no tags found for %s/%s", owner, repo)
+	}
+	return tags[0].GetName(), nil
 }
 
 func fetchDependents(_ context.Context, _ *github.Client, repo string) ([]string, error) {
@@ -269,7 +308,7 @@ func fetchRepoInfo(ctx context.Context, client *github.Client, repo string) (Rep
 	}, nil
 }
 
-func fetchLatestRelease(ctx context.Context, client *github.Client, repo string) (Release, error) {
+func fetchLatestRelease(ctx context.Context, client *github.Client, repo string) (*Release, error) {
 	fmt.Println("- 📥 Fetching releases...")
 
 	release, _, err := client.Repositories.GetLatestRelease(
@@ -279,10 +318,10 @@ func fetchLatestRelease(ctx context.Context, client *github.Client, repo string)
 	)
 	if err != nil {
 		// If there is no release, return an empty release and no error (normally, it'd be a 404 Not Found error)
-		return Release{}, nil
+		return nil, nil
 	}
 
-	return Release{
+	return &Release{
 		TagName:     release.GetTagName(),
 		Name:        release.GetName(),
 		Body:        release.GetBody(),
@@ -396,7 +435,7 @@ func checkToolsGoFile(ctx context.Context, client *github.Client, repo string) (
 	return true, nil
 }
 
-func fetchGoModVersion(ctx context.Context, client *github.Client, repo string) (string, error) {
+func fetchGoModDetails(ctx context.Context, client *github.Client, repo string) (string, map[string]string, error) {
 	fmt.Println("- 📥 Fetching go.mod file...")
 
 	content, _, _, err := client.Repositories.GetContents(
@@ -408,22 +447,31 @@ func fetchGoModVersion(ctx context.Context, client *github.Client, repo string) 
 	)
 	if err != nil {
 		if _, ok := err.(*github.ErrorResponse); ok {
-			return "", nil
+			return "", nil, nil
 		}
-		return "", err
+		return "", nil, err
 	}
 
 	goModContent, err := content.GetContent()
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
 
 	modFile, err := modfile.Parse("go.mod", []byte(goModContent), nil)
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
 
-	return modFile.Go.Version, nil
+	// Extract Go version
+	goVersion := modFile.Go.Version
+
+	// Extract dependencies
+	dependencies := make(map[string]string)
+	for _, req := range modFile.Require {
+		dependencies[req.Mod.Path] = req.Mod.Version
+	}
+
+	return goVersion, dependencies, nil
 }
 
 func getLatestGoVersion() (string, error) {
@@ -455,6 +503,6 @@ func getLatestGoVersion() (string, error) {
 	return versions[0].Version, nil
 }
 
-func compareGoVersions(repoGoVersion, latestGoVersion string) bool {
-	return repoGoVersion == latestGoVersion
+func compareVersions(repoVersion, latestVersion string) bool {
+	return repoVersion == latestVersion
 }
