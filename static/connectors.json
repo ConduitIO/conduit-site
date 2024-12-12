@@ -20,7 +20,8 @@
     "goVersion": {
       "version": "1.23.2",
       "usingLatest": false
-    }
+    },
+    "hasScarfPixel": false
   },
   {
     "nameWithOwner": "devarismeroxa/conduit-connector-influxdb",
@@ -43,7 +44,8 @@
     "goVersion": {
       "version": "1.23.2",
       "usingLatest": false
-    }
+    },
+    "hasScarfPixel": false
   },
   {
     "nameWithOwner": "hariso/conduit-connector-kafka",
@@ -66,7 +68,8 @@
     "goVersion": {
       "version": "1.23.2",
       "usingLatest": false
-    }
+    },
+    "hasScarfPixel": true
   },
   {
     "nameWithOwner": "meroxa/conduit-connector-udl-public",
@@ -89,7 +92,8 @@
     "goVersion": {
       "version": "1.18",
       "usingLatest": false
-    }
+    },
+    "hasScarfPixel": false
   },
   {
     "nameWithOwner": "nstehr/conduit-connector-mqtt",
@@ -112,6 +116,7 @@
     "goVersion": {
       "version": "1.23.2",
       "usingLatest": false
-    }
+    },
+    "hasScarfPixel": false
   }
 ]

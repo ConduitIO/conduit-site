@@ -20,6 +20,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"regexp"
 	"slices"
 	"strings"
 	"time"
@@ -67,6 +68,7 @@ type Repository struct {
 	ToolsGoIsCorrect  bool      `json:"toolsGoIsCorrect"`
 	MakefileIsCorrect bool      `json:"makefileIsCorrect"`
 	GoVersion         GoVersion `json:"goVersion"`
+	HasScarfPixel     bool      `json:"hasScarfPixel"`
 }
 
 // Release represents a GitHub release.
@@ -171,6 +173,15 @@ func main() {
 			repoInfo.GoVersion.UsingLatest = compareGoVersions(repoGoVersion, latestGoVersion)
 		}
 
+		// Check for Scarf pixel
+		hasScarfPixel, err := checkReadmeForScarfPixel(ctx, client, repo)
+		if err != nil {
+			fmt.Printf("Error checking README.md for %s: %v\n", repo, err)
+			os.Exit(1)
+		}
+
+		repoInfo.HasScarfPixel = hasScarfPixel
+
 		repositories = append(repositories, repoInfo)
 	}
 
@@ -210,6 +221,34 @@ func fetchDependents(_ context.Context, _ *github.Client, repo string) ([]string
 	}
 
 	return reposList, nil
+}
+
+func checkReadmeForScarfPixel(ctx context.Context, client *github.Client, repo string) (bool, error) {
+	fmt.Println("- 📥 Checking README.md for Scarf pixel...")
+
+	content, _, _, err := client.Repositories.GetContents(
+		ctx,
+		strings.Split(repo, "/")[0],
+		strings.Split(repo, "/")[1],
+		"README.md",
+		&github.RepositoryContentGetOptions{},
+	)
+	if err != nil {
+		if _, ok := err.(*github.ErrorResponse); ok {
+			return false, nil
+		}
+		return false, err
+	}
+
+	readmeContent, err := content.GetContent()
+	if err != nil {
+		return false, err
+	}
+
+	pattern := `!\[scarf pixel\]\(https://static\.scarf\.sh/a\.png\?x-pxid=[a-f0-9-]+\)`
+	re := regexp.MustCompile(pattern)
+
+	return re.MatchString(readmeContent), nil
 }
 
 func fetchRepoInfo(ctx context.Context, client *github.Client, repo string) (Repository, error) {
