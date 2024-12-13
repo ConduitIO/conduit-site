@@ -27,6 +27,183 @@ interface Repository {
   latestRelease?: LatestRelease;
 }
 
+interface FilterControlsProps {
+  ownerFilter: string;
+  setOwnerFilter: React.Dispatch<React.SetStateAction<string>>;
+  toolsGoFilter: string;
+  setToolsGoFilter: React.Dispatch<React.SetStateAction<string>>;
+  makefileFilter: string;
+  setMakefileFilter: React.Dispatch<React.SetStateAction<string>>;
+  latestGoVersionFilter: string;
+  setLatestGoVersionFilter: React.Dispatch<React.SetStateAction<string>>;
+  latestSDKVersionFilter: string;
+  setLatestSDKVersionFilter: React.Dispatch<React.SetStateAction<string>>;
+  latestCommonsVersionFilter: string;
+  setLatestCommonsVersionFilter: React.Dispatch<React.SetStateAction<string>>;
+  releasedFilter: string;
+  setReleasedFilter: React.Dispatch<React.SetStateAction<string>>;
+  hasScarfPixelFilter: string;
+  setHasScarfPixelFilter: React.Dispatch<React.SetStateAction<string>>;
+  dependabotAutoMergeFilter: string;
+  setDependabotAutoMergeFilter: React.Dispatch<React.SetStateAction<string>>;
+  lintFilter: string;
+  setLintFilter: React.Dispatch<React.SetStateAction<string>>;
+  projectAutomationFilter: string;
+  setProjectAutomationFilter: React.Dispatch<React.SetStateAction<string>>;
+  releaseFilter: string;
+  setReleaseFilter: React.Dispatch<React.SetStateAction<string>>;
+  testFilter: string;
+  setTestFilter: React.Dispatch<React.SetStateAction<string>>;
+  validateGeneratedFilesFilter: string;
+  setValidateGeneratedFilesFilter: React.Dispatch<React.SetStateAction<string>>;
+}
+
+const FilterControls: React.FC<FilterControlsProps> = ({
+  ownerFilter,
+  setOwnerFilter,
+  toolsGoFilter,
+  setToolsGoFilter,
+  makefileFilter,
+  setMakefileFilter,
+  latestGoVersionFilter,
+  setLatestGoVersionFilter,
+  latestSDKVersionFilter,
+  setLatestSDKVersionFilter,
+  latestCommonsVersionFilter,
+  setLatestCommonsVersionFilter,
+  releasedFilter,
+  setReleasedFilter,
+  hasScarfPixelFilter,
+  setHasScarfPixelFilter,
+  dependabotAutoMergeFilter,
+  setDependabotAutoMergeFilter,
+  lintFilter,
+  setLintFilter,
+  projectAutomationFilter,
+  setProjectAutomationFilter,
+  releaseFilter,
+  setReleaseFilter,
+  testFilter,
+  setTestFilter,
+  validateGeneratedFilesFilter,
+  setValidateGeneratedFilesFilter,
+}) => (
+  <div className={styles.filterContainer}>
+    <label>
+      Owner:
+      <select value={ownerFilter} onChange={e => setOwnerFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
+        <option value="all">All</option>
+        <option value="conduit">Conduit</option>
+        <option value="community">Community Connectors</option>
+      </select>
+    </label>
+    <label>
+      Tools Go:
+      <select value={toolsGoFilter} onChange={e => setToolsGoFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
+        <option value="all">All</option>
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+    </label>
+    <label>
+      Makefile:
+      <select value={makefileFilter} onChange={e => setMakefileFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
+        <option value="all">All</option>
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+    </label>
+    <label>
+      Using latest Go version:
+      <select value={latestGoVersionFilter} onChange={e => setLatestGoVersionFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
+        <option value="all">All</option>
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+    </label>
+    <label>
+      Using latest SDK version:
+      <select value={latestSDKVersionFilter} onChange={e => setLatestSDKVersionFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
+        <option value="all">All</option>
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+    </label>
+    <label>
+      Using latest Commons:
+      <select value={latestCommonsVersionFilter} onChange={e => setLatestCommonsVersionFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
+        <option value="all">All</option>
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+    </label>
+    <label>
+      Released:
+      <select value={releasedFilter} onChange={e => setReleasedFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
+        <option value="all">All</option>
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+    </label>
+    <label>
+      Has Scarf Pixel:
+      <select value={hasScarfPixelFilter} onChange={e => setHasScarfPixelFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
+        <option value="all">All</option>
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+    </label>
+    <label>
+      Workflow: Dependabot Auto-Merge:
+      <select value={dependabotAutoMergeFilter} onChange={e => setDependabotAutoMergeFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
+        <option value="all">All</option>
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+    </label>
+    <label>
+      Workflow: Lint:
+      <select value={lintFilter} onChange={e => setLintFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
+        <option value="all">All</option>
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+    </label>
+    <label>
+      Workflow: Project Automation:
+      <select value={projectAutomationFilter} onChange={e => setProjectAutomationFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
+        <option value="all">All</option>
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+    </label>
+    <label>
+      Workflow: Release:
+      <select value={releaseFilter} onChange={e => setReleaseFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
+        <option value="all">All</option>
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+    </label>
+    <label>
+      Workflow: Test:
+      <select value={testFilter} onChange={e => setTestFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
+        <option value="all">All</option>
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+    </label>
+    <label>
+      Workflow: Validate Generated Files:
+      <select value={validateGeneratedFilesFilter} onChange={e => setValidateGeneratedFilesFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
+        <option value="all">All</option>
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+    </label>
+  </div>
+);
+
 const ConnectorTable: React.FC = () => {
   const [repositories, setRepositories] = useState<Repository[]>([]);
   const [filteredRepositories, setFilteredRepositories] = useState<Repository[]>([]);
@@ -163,10 +340,31 @@ const ConnectorTable: React.FC = () => {
     const direction = sortedColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
     setSortedColumn(column);
     setSortDirection(direction);
-
+  
+    const parseSemver = (version: string) => {
+      // Match major, minor, patch, and optional pre-release/build metadata
+      const match = version.match(/^(?:v)?(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:-([\da-zA-Z-]+(?:\.[\da-zA-Z-]+)*))?(?:\+([\da-zA-Z-]+(?:\.[\da-zA-Z-]+)*))?$/);
+      if (!match) return [0, 0, 0, '', '']; // Default to zero if parsing fails
+      const [, major, minor = '0', patch = '0', prerelease = '', build = ''] = match;
+      return [parseInt(major, 10), parseInt(minor, 10), parseInt(patch, 10), prerelease, build];
+    };
+  
+    const compareSemver = (a: any[], b: any[]) => {
+      for (let i = 0; i < 3; i++) {
+        if (a[i] < b[i]) return direction === 'asc' ? -1 : 1;
+        if (a[i] > b[i]) return direction === 'asc' ? 1 : -1;
+      }
+      // Compare pre-release versions: absence of pre-release means higher precedence
+      if (a[3] === '' && b[3] !== '') return direction === 'asc' ? 1 : -1;
+      if (a[3] !== '' && b[3] === '') return direction === 'asc' ? -1 : 1;
+      if (a[3] < b[3]) return direction === 'asc' ? -1 : 1;
+      if (a[3] > b[3]) return direction === 'asc' ? 1 : -1;
+      return 0;
+    };
+  
     const sortedData = [...filteredRepositories].sort((a, b) => {
       let compareA, compareB;
-
+  
       switch (column) {
         case 'nameWithOwner':
           compareA = a.nameWithOwner.toLowerCase();
@@ -179,29 +377,29 @@ const ConnectorTable: React.FC = () => {
           compareB = b[column] ? 1 : 0;
           break;
         case 'goVersion':
-          compareA = a.goVersion.currentVersion;
-          compareB = b.goVersion.currentVersion;
-          break;
+          compareA = parseSemver(a.goVersion.currentVersion);
+          compareB = parseSemver(b.goVersion.currentVersion);
+          return compareSemver(compareA, compareB);
         case 'connectorSDKVersion':
-          compareA = a.connectorSDKVersion.currentVersion;
-          compareB = b.connectorSDKVersion.currentVersion;
-          break;
+          compareA = parseSemver(a.connectorSDKVersion.currentVersion);
+          compareB = parseSemver(b.connectorSDKVersion.currentVersion);
+          return compareSemver(compareA, compareB);
+        case 'conduitCommonsVersion':
+          compareA = parseSemver(a.conduitCommonsVersion.currentVersion);
+          compareB = parseSemver(b.conduitCommonsVersion.currentVersion);
+          return compareSemver(compareA, compareB);
         case 'connectorSDKVersionLatest':
           compareA = a.connectorSDKVersion.usingLatest ? 1 : 0;
           compareB = b.connectorSDKVersion.usingLatest ? 1 : 0;
-          break;
-        case 'conduitCommonsVersion':
-          compareA = a.conduitCommonsVersion.currentVersion;
-          compareB = b.conduitCommonsVersion.currentVersion;
           break;
         case 'conduitCommonsVersionLatest':
           compareA = a.conduitCommonsVersion.usingLatest ? 1 : 0;
           compareB = b.conduitCommonsVersion.usingLatest ? 1 : 0;
           break;
         case 'latestReleaseVersion':
-          compareA = a.latestRelease?.tag_name || '';
-          compareB = b.latestRelease?.tag_name || '';
-          break;
+          compareA = parseSemver(a.latestRelease?.tag_name || '');
+          compareB = parseSemver(b.latestRelease?.tag_name || '');
+          return compareSemver(compareA, compareB);
         case 'released':
           compareA = a.latestRelease ? 1 : 0;
           compareB = b.latestRelease ? 1 : 0;
@@ -211,14 +409,15 @@ const ConnectorTable: React.FC = () => {
           compareB = b.workflowChecks[column] ? 1 : 0;
           break;
       }
-
+  
       if (compareA < compareB) return direction === 'asc' ? -1 : 1;
       if (compareA > compareB) return direction === 'asc' ? 1 : -1;
       return 0;
     });
-
+  
     setFilteredRepositories(sortedData);
   };
+    
 
   if (loading) {
     return <p>Loading repositories...</p>;
@@ -243,120 +442,22 @@ const ConnectorTable: React.FC = () => {
 
   return (
     <div>
-      <div className={styles.filterContainer}>
-        <label>
-          Owner:
-          <select value={ownerFilter} onChange={e => setOwnerFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
-            <option value="all">All</option>
-            <option value="conduit">Conduit</option>
-            <option value="community">Community Connectors</option>
-          </select>
-        </label>
-        <label>
-          Tools Go:
-          <select value={toolsGoFilter} onChange={e => setToolsGoFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
-            <option value="all">All</option>
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
-        </label>
-        <label>
-          Makefile:
-          <select value={makefileFilter} onChange={e => setMakefileFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
-            <option value="all">All</option>
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
-        </label>
-        <label>
-          Using latest Go version:
-          <select value={latestGoVersionFilter} onChange={e => setLatestGoVersionFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
-            <option value="all">All</option>
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
-        </label>
-        <label>
-          Using latest SDK version:
-          <select value={latestSDKVersionFilter} onChange={e => setLatestSDKVersionFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
-            <option value="all">All</option>
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
-        </label>
-        <label>
-          Using latest Commons:
-          <select value={latestCommonsVersionFilter} onChange={e => setLatestCommonsVersionFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
-            <option value="all">All</option>
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
-        </label>
-        <label>
-          Released:
-          <select value={releasedFilter} onChange={e => setReleasedFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
-            <option value="all">All</option>
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
-        </label>
-        <label>
-          Has Scarf Pixel:
-          <select value={hasScarfPixelFilter} onChange={e => setHasScarfPixelFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
-            <option value="all">All</option>
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
-        </label>
-        <label>
-          Workflow: Dependabot Auto-Merge:
-          <select value={dependabotAutoMergeFilter} onChange={e => setDependabotAutoMergeFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
-            <option value="all">All</option>
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
-        </label>
-        <label>
-          Workflow: Lint:
-          <select value={lintFilter} onChange={e => setLintFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
-            <option value="all">All</option>
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
-        </label>
-        <label>
-          Workflow: Project Automation:
-          <select value={projectAutomationFilter} onChange={e => setProjectAutomationFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
-            <option value="all">All</option>
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
-        </label>
-        <label>
-          Workflow: Release:
-          <select value={releaseFilter} onChange={e => setReleaseFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
-            <option value="all">All</option>
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
-        </label>
-        <label>
-          Workflow: Test:
-          <select value={testFilter} onChange={e => setTestFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
-            <option value="all">All</option>
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
-        </label>
-        <label>
-          Workflow: Validate Generated Files:
-          <select value={validateGeneratedFilesFilter} onChange={e => setValidateGeneratedFilesFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
-            <option value="all">All</option>
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
-        </label>
-      </div>
+      <FilterControls
+        ownerFilter={ownerFilter} setOwnerFilter={setOwnerFilter}
+        toolsGoFilter={toolsGoFilter} setToolsGoFilter={setToolsGoFilter}
+        makefileFilter={makefileFilter} setMakefileFilter={setMakefileFilter}
+        latestGoVersionFilter={latestGoVersionFilter} setLatestGoVersionFilter={setLatestGoVersionFilter}
+        latestSDKVersionFilter={latestSDKVersionFilter} setLatestSDKVersionFilter={setLatestSDKVersionFilter}
+        latestCommonsVersionFilter={latestCommonsVersionFilter} setLatestCommonsVersionFilter={setLatestCommonsVersionFilter}
+        releasedFilter={releasedFilter} setReleasedFilter={setReleasedFilter}
+        hasScarfPixelFilter={hasScarfPixelFilter} setHasScarfPixelFilter={setHasScarfPixelFilter}
+        dependabotAutoMergeFilter={dependabotAutoMergeFilter} setDependabotAutoMergeFilter={setDependabotAutoMergeFilter}
+        lintFilter={lintFilter} setLintFilter={setLintFilter}
+        projectAutomationFilter={projectAutomationFilter} setProjectAutomationFilter={setProjectAutomationFilter}
+        releaseFilter={releaseFilter} setReleaseFilter={setReleaseFilter}
+        testFilter={testFilter} setTestFilter={setTestFilter}
+        validateGeneratedFilesFilter={validateGeneratedFilesFilter} setValidateGeneratedFilesFilter={setValidateGeneratedFilesFilter}
+      />
       <table className={styles.table}>
         <thead>
           <tr>
