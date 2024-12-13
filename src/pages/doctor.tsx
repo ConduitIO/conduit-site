@@ -9,6 +9,10 @@ interface WorkflowChecks {
   [key: string]: boolean;
 }
 
+interface LatestRelease {
+  tag_name: string;
+}
+
 interface Repository {
   nameWithOwner: string;
   url: string;
@@ -19,6 +23,7 @@ interface Repository {
   conduitCommonsVersion: Version;
   hasScarfPixel: boolean;
   workflowChecks: WorkflowChecks;
+  latestRelease?: LatestRelease;
 }
 
 const ConnectorTable: React.FC = () => {
@@ -80,6 +85,14 @@ const ConnectorTable: React.FC = () => {
           compareA = a.conduitCommonsVersion.usingLatest ? 1 : 0;
           compareB = b.conduitCommonsVersion.usingLatest ? 1 : 0;
           break;
+        case 'latestReleaseVersion':
+          compareA = a.latestRelease?.tag_name || '';
+          compareB = b.latestRelease?.tag_name || '';
+          break;
+        case 'released':
+          compareA = a.latestRelease ? 1 : 0;
+          compareB = b.latestRelease ? 1 : 0;
+          break;
         default:
           compareA = a.workflowChecks[column] ? 1 : 0;
           compareB = b.workflowChecks[column] ? 1 : 0;
@@ -128,6 +141,8 @@ const ConnectorTable: React.FC = () => {
           <th onClick={() => handleSort('connectorSDKVersionLatest')} style={{ cursor: 'pointer' }}>Using latest SDK Version</th>
           <th onClick={() => handleSort('conduitCommonsVersion')} style={{ cursor: 'pointer' }}>Conduit Commons Version</th>
           <th onClick={() => handleSort('conduitCommonsVersionLatest')} style={{ cursor: 'pointer' }}>Using latest Commons</th>
+          <th onClick={() => handleSort('latestReleaseVersion')} style={{ cursor: 'pointer' }}>Latest Released Version</th>
+          <th onClick={() => handleSort('released')} style={{ cursor: 'pointer' }}>Released</th>
           <th onClick={() => handleSort('hasScarfPixel')} style={{ cursor: 'pointer' }}>Has Scarf Pixel</th>
           <th onClick={() => handleSort('dependabot-auto-merge-go.yml')} style={{ cursor: 'pointer' }}>Workflow: Dependabot Auto-Merge</th>
           <th onClick={() => handleSort('lint.yml')} style={{ cursor: 'pointer' }}>Lint</th>
@@ -150,6 +165,8 @@ const ConnectorTable: React.FC = () => {
             {renderVersionCell(repo.goVersion, 'goVersionLatest')}
             {renderVersionCell(repo.connectorSDKVersion, 'connectorSDKVersionLatest')}
             {renderVersionCell(repo.conduitCommonsVersion, 'conduitCommonsVersionLatest')}
+            <td>{repo.latestRelease?.tag_name || ''}</td>
+            {renderBooleanCell(!!repo.latestRelease)}
             {renderBooleanCell(repo.hasScarfPixel)}
             {renderBooleanCell(repo.workflowChecks['dependabot-auto-merge-go.yml'])}
             {renderBooleanCell(repo.workflowChecks['lint.yml'])}
