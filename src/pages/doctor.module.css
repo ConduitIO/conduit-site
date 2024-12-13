@@ -1,0 +1,49 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 2rem;
+}
+
+.table th {
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.table td {
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+}
+
+.githubLogo {
+  width: 16px;
+  height: 16px;
+  margin-right: 0.5rem;
+}
+
+.booleanTrue {
+  background-color: #28a745;
+  color: white;
+}
+
+.booleanFalse {
+  background-color: #dc3545;
+  color: white;
+}
+
+.filterContainer {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}

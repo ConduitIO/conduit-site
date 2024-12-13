@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import styles from './doctor.module.css'; // Import the CSS module
 
 interface Version {
   currentVersion: string;
@@ -228,7 +229,7 @@ const ConnectorTable: React.FC = () => {
   }
 
   const renderBooleanCell = (value: boolean) => (
-    <td style={{ backgroundColor: value ? '#28a745' : '#dc3545', color: 'white', padding: '0.5rem', textAlign: 'center' }}>
+    <td className={value ? styles.booleanTrue : styles.booleanFalse}>
       {value.toString()}
     </td>
   );
@@ -242,7 +243,7 @@ const ConnectorTable: React.FC = () => {
 
   return (
     <div>
-      <div style={{ marginBottom: '1rem', padding: '1rem', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: '#f9f9f9', display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+      <div className={styles.filterContainer}>
         <label>
           Owner:
           <select value={ownerFilter} onChange={e => setOwnerFilter(e.target.value)} style={{ marginLeft: '0.5rem' }}>
@@ -356,34 +357,35 @@ const ConnectorTable: React.FC = () => {
           </select>
         </label>
       </div>
-      <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '2rem' }}>
+      <table className={styles.table}>
         <thead>
           <tr>
-            <th onClick={() => handleSort('nameWithOwner')} style={{ cursor: 'pointer' }}>Repository</th>
-            <th onClick={() => handleSort('toolsGoIsCorrect')} style={{ cursor: 'pointer' }}>Tools Go</th>
-            <th onClick={() => handleSort('makefileIsCorrect')} style={{ cursor: 'pointer' }}>Makefile</th>
-            <th onClick={() => handleSort('goVersion')} style={{ cursor: 'pointer' }}>Go Version</th>
-            <th onClick={() => handleSort('goVersionLatest')} style={{ cursor: 'pointer' }}>Using latest Go version</th>
-            <th onClick={() => handleSort('connectorSDKVersion')} style={{ cursor: 'pointer' }}>Connector SDK Version</th>
-            <th onClick={() => handleSort('connectorSDKVersionLatest')} style={{ cursor: 'pointer' }}>Using latest SDK Version</th>
-            <th onClick={() => handleSort('conduitCommonsVersion')} style={{ cursor: 'pointer' }}>Conduit Commons Version</th>
-            <th onClick={() => handleSort('conduitCommonsVersionLatest')} style={{ cursor: 'pointer' }}>Using latest Commons</th>
-            <th onClick={() => handleSort('latestReleaseVersion')} style={{ cursor: 'pointer' }}>Latest Released Version</th>
-            <th onClick={() => handleSort('released')} style={{ cursor: 'pointer' }}>Released</th>
-            <th onClick={() => handleSort('hasScarfPixel')} style={{ cursor: 'pointer' }}>Has Scarf Pixel</th>
-            <th onClick={() => handleSort('dependabot-auto-merge-go.yml')} style={{ cursor: 'pointer' }}>Workflow: Dependabot Auto-Merge</th>
-            <th onClick={() => handleSort('lint.yml')} style={{ cursor: 'pointer' }}>Lint</th>
-            <th onClick={() => handleSort('project-automation.yml')} style={{ cursor: 'pointer' }}>Workflow: Project Automation</th>
-            <th onClick={() => handleSort('release.yml')} style={{ cursor: 'pointer' }}>Workflow: Release</th>
-            <th onClick={() => handleSort('test.yml')} style={{ cursor: 'pointer' }}>Workflow: Test</th>
-            <th onClick={() => handleSort('validate-generated-files.yml')} style={{ cursor: 'pointer' }}>Workflow: Validate Generated Files</th>
+            <th onClick={() => handleSort('nameWithOwner')}>Repository</th>
+            <th onClick={() => handleSort('toolsGoIsCorrect')}>Tools Go</th>
+            <th onClick={() => handleSort('makefileIsCorrect')}>Makefile</th>
+            <th onClick={() => handleSort('goVersion')}>Go Version</th>
+            <th onClick={() => handleSort('goVersionLatest')}>Using latest Go version</th>
+            <th onClick={() => handleSort('connectorSDKVersion')}>Connector SDK Version</th>
+            <th onClick={() => handleSort('connectorSDKVersionLatest')}>Using latest SDK Version</th>
+            <th onClick={() => handleSort('conduitCommonsVersion')}>Conduit Commons Version</th>
+            <th onClick={() => handleSort('conduitCommonsVersionLatest')}>Using latest Commons</th>
+            <th onClick={() => handleSort('latestReleaseVersion')}>Latest Released Version</th>
+            <th onClick={() => handleSort('released')}>Released</th>
+            <th onClick={() => handleSort('hasScarfPixel')}>Has Scarf Pixel</th>
+            <th onClick={() => handleSort('dependabot-auto-merge-go.yml')}>Workflow: Dependabot Auto-Merge</th>
+            <th onClick={() => handleSort('lint.yml')}>Lint</th>
+            <th onClick={() => handleSort('project-automation.yml')}>Workflow: Project Automation</th>
+            <th onClick={() => handleSort('release.yml')}>Workflow: Release</th>
+            <th onClick={() => handleSort('test.yml')}>Workflow: Test</th>
+            <th onClick={() => handleSort('validate-generated-files.yml')}>Workflow: Validate Generated Files</th>
           </tr>
         </thead>
         <tbody>
           {filteredRepositories.map(repo => (
             <tr key={repo.nameWithOwner}>
               <td>
-                <a href={repo.url} target="_blank" rel="noopener noreferrer">
+                <a href={repo.url} target="_blank" rel="noopener noreferrer" className={styles.link}>
+                  <img src="img/github.svg" alt="GitHub" className={styles.githubLogo} />
                   {repo.nameWithOwner}
                 </a>
               </td>
