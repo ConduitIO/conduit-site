@@ -383,7 +383,7 @@ const ConnectorTable: React.FC = () => {
         <tbody>
           {filteredRepositories.map(repo => (
             <tr key={repo.nameWithOwner}>
-              <td>
+              <td className={styles.repository}>
                 <a href={repo.url} target="_blank" rel="noopener noreferrer" className={styles.link}>
                   <img src="img/github.svg" alt="GitHub" className={styles.githubLogo} />
                   {repo.nameWithOwner}
@@ -394,7 +394,7 @@ const ConnectorTable: React.FC = () => {
               {renderVersionCell(repo.goVersion, 'goVersionLatest')}
               {renderVersionCell(repo.connectorSDKVersion, 'connectorSDKVersionLatest')}
               {renderVersionCell(repo.conduitCommonsVersion, 'conduitCommonsVersionLatest')}
-              <td>{repo.latestRelease?.tag_name || 'N/A'}</td>
+              <td>{repo.latestRelease?.tag_name || ''}</td>
               {renderBooleanCell(!!repo.latestRelease)}
               {renderBooleanCell(repo.hasScarfPixel)}
               {renderBooleanCell(repo.workflowChecks['dependabot-auto-merge-go.yml'])}
