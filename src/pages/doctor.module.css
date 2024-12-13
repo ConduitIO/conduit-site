@@ -19,6 +19,18 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    a::before {
+      content: "";
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 0.5rem;
+      background-image: url('/img/github.svg');
+      background-repeat: no-repeat;
+      background-position: center left;
+      background-size: contain;
+    }
   }
 }
 
@@ -27,12 +39,6 @@
   align-items: center;
   text-decoration: none;
   color: inherit;
-}
-
-.githubLogo {
-  width: 16px;
-  height: 16px;
-  margin-right: 0.5rem;
 }
 
 .booleanTrue {

@@ -486,7 +486,6 @@ const ConnectorTable: React.FC = () => {
             <tr key={repo.nameWithOwner}>
               <td className={styles.repository}>
                 <a href={repo.url} target="_blank" rel="noopener noreferrer" className={styles.link}>
-                  <img src="img/github.svg" alt="GitHub" className={styles.githubLogo} />
                   {repo.nameWithOwner}
                 </a>
               </td>
