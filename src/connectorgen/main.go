@@ -84,7 +84,7 @@ func main() {
 	}
 
 	var repositories []utils.Repository
-	for _, repo := range reposList[:5] {
+	for _, repo := range reposList {
 		fmt.Printf("Processing %v\n", repo)
 
 		repoInfo, err := utils.FetchRepoInfo(ctx, client, repo)
