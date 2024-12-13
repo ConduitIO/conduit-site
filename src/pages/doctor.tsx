@@ -120,21 +120,21 @@ const ConnectorTable: React.FC = () => {
       <thead>
         <tr>
           <th onClick={() => handleSort('nameWithOwner')} style={{ cursor: 'pointer' }}>Repository</th>
-          <th onClick={() => handleSort('toolsGoIsCorrect')} style={{ cursor: 'pointer' }}>Tools Go Is Correct</th>
-          <th onClick={() => handleSort('makefileIsCorrect')} style={{ cursor: 'pointer' }}>Makefile Is Correct</th>
+          <th onClick={() => handleSort('toolsGoIsCorrect')} style={{ cursor: 'pointer' }}>Tools Go</th>
+          <th onClick={() => handleSort('makefileIsCorrect')} style={{ cursor: 'pointer' }}>Makefile</th>
           <th onClick={() => handleSort('goVersion')} style={{ cursor: 'pointer' }}>Go Version</th>
-          <th onClick={() => handleSort('goVersionLatest')} style={{ cursor: 'pointer' }}>Go Version Latest</th>
+          <th onClick={() => handleSort('goVersionLatest')} style={{ cursor: 'pointer' }}>Using latest Go version</th>
           <th onClick={() => handleSort('connectorSDKVersion')} style={{ cursor: 'pointer' }}>Connector SDK Version</th>
-          <th onClick={() => handleSort('connectorSDKVersionLatest')} style={{ cursor: 'pointer' }}>SDK Version Latest</th>
+          <th onClick={() => handleSort('connectorSDKVersionLatest')} style={{ cursor: 'pointer' }}>Using latest SDK Version</th>
           <th onClick={() => handleSort('conduitCommonsVersion')} style={{ cursor: 'pointer' }}>Conduit Commons Version</th>
-          <th onClick={() => handleSort('conduitCommonsVersionLatest')} style={{ cursor: 'pointer' }}>Commons Version Latest</th>
+          <th onClick={() => handleSort('conduitCommonsVersionLatest')} style={{ cursor: 'pointer' }}>Using latest Commons</th>
           <th onClick={() => handleSort('hasScarfPixel')} style={{ cursor: 'pointer' }}>Has Scarf Pixel</th>
-          <th onClick={() => handleSort('dependabot-auto-merge-go.yml')} style={{ cursor: 'pointer' }}>Dependabot Auto-Merge</th>
+          <th onClick={() => handleSort('dependabot-auto-merge-go.yml')} style={{ cursor: 'pointer' }}>Workflow: Dependabot Auto-Merge</th>
           <th onClick={() => handleSort('lint.yml')} style={{ cursor: 'pointer' }}>Lint</th>
-          <th onClick={() => handleSort('project-automation.yml')} style={{ cursor: 'pointer' }}>Project Automation</th>
-          <th onClick={() => handleSort('release.yml')} style={{ cursor: 'pointer' }}>Release</th>
-          <th onClick={() => handleSort('test.yml')} style={{ cursor: 'pointer' }}>Test</th>
-          <th onClick={() => handleSort('validate-generated-files.yml')} style={{ cursor: 'pointer' }}>Validate Generated Files</th>
+          <th onClick={() => handleSort('project-automation.yml')} style={{ cursor: 'pointer' }}>Workflow: Project Automation</th>
+          <th onClick={() => handleSort('release.yml')} style={{ cursor: 'pointer' }}>Workflow: Release</th>
+          <th onClick={() => handleSort('test.yml')} style={{ cursor: 'pointer' }}>Workflow: Test</th>
+          <th onClick={() => handleSort('validate-generated-files.yml')} style={{ cursor: 'pointer' }}>Workflow: Validate Generated Files</th>
         </tr>
       </thead>
       <tbody>
