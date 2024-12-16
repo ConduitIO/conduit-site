@@ -134,3 +134,29 @@ func (d *Destination) Teardown(context.Context) error {
 ```
 
 ![scarf pixel conduit-site-docs-developing-connectors](https://static.scarf.sh/a.png?x-pxid=3ada0949-fa61-40d6-a44a-76447ea4e39f)
+
+## Schema
+
+By default, the [sdk destination middleware](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#DestinationWithSchemaExtraction) will use the record schema
+fields to decode its key and payload. This isn't as problematic as the [sdk source middleware](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#SourceWithSchemaExtraction),
+as the schema should be already created.
+
+If the destination connector is writing unstructured data, or you want to use your own
+schema writing logic, you can disable the middleware like this:
+
+```go
+func NewDestination() sdk.Destination {
+    return sdk.DestinationWithMiddleware(
+        &Destination{},
+        sdk.DefaultDestinationMiddleware(
+            sdk.DestinationWithSchemaExtractionConfig{
+                PayloadEnabled: lang.Ptr(false),
+                KeyEnabled:     lang.Ptr(false),
+            }
+        )...,
+    )
+}
+```
+
+Otherwise you can use [schema.Get](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk@v0.12.0/schema#Get)
+to manually decode records.

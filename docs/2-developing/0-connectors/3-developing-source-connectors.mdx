@@ -218,3 +218,32 @@ func (s *Source) Teardown(context.Context) error {
 ```
 
 ![scarf pixel conduit-site-docs-developing-connectors](https://static.scarf.sh/a.png?x-pxid=3ada0949-fa61-40d6-a44a-76447ea4e39f)
+
+## Schema
+
+By default, the [sdk source middleware](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#SourceWithSchemaExtraction)
+will dynamically generate a schema for each record. While convenient, this is
+quite slow, as the middleware will try to create a schema for every single
+record.
+
+If the source connector is reading unstructured data, or you want to use your own
+schema extraction logic, you can disable the middleware like this:
+
+```go
+func NewSource() sdk.Source {
+	return sdk.SourceWithMiddleware(
+		&Source{},
+		sdk.DefaultSourceMiddleware(
+			sdk.SourceWithSchemaExtractionConfig{
+				PayloadEnabled: lang.Ptr(false),
+				KeyEnabled:     lang.Ptr(false),
+			},
+		)...,
+	)
+}
+```
+
+Otherwise you can use [schema.Create](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk@v0.12.0/schema#Create)
+to manually handle the schema creation.
+
+An example implementation can be found in the [postgres connector](https://github.com/ConduitIO/conduit-connector-postgres).
