@@ -65,15 +65,15 @@ overwriting the `sdk.SourceWithSchemaExtractionConfig` options:
 
 ```go
 sdk.SourceWithMiddleware(
-        &Source{},
-        sdk.DefaultSourceMiddleware(
-            // disable schema extraction by default, because the source produces raw data
-            sdk.SourceWithSchemaExtractionConfig{
-                PayloadEnabled: lang.Ptr(false),
-                KeyEnabled:     lang.Ptr(false),
-            },
-        )...,
-    )
+    &Source{},
+    sdk.DefaultSourceMiddleware(
+        // disable schema extraction by default, because the source produces raw data
+        sdk.SourceWithSchemaExtractionConfig{
+            PayloadEnabled: lang.Ptr(false),
+            KeyEnabled:     lang.Ptr(false),
+        },
+    )...,
+)
 ```
 :::
 
@@ -217,8 +217,6 @@ func (s *Source) Teardown(context.Context) error {
 }
 ```
 
-![scarf pixel conduit-site-docs-developing-connectors](https://static.scarf.sh/a.png?x-pxid=3ada0949-fa61-40d6-a44a-76447ea4e39f)
-
 ## Schema
 
 By default, the [sdk source middleware](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#SourceWithSchemaExtraction)
@@ -227,7 +225,8 @@ quite slow, as the middleware will try to create a schema for every single
 record.
 
 If the source connector is reading unstructured data, or you want to use your own
-schema extraction logic, you can disable the middleware like this:
+schema extraction logic, you can disable the middleware like this, as mentioned
+before:
 
 ```go
 func NewSource() sdk.Source {
@@ -244,6 +243,30 @@ func NewSource() sdk.Source {
 ```
 
 Otherwise you can use [schema.Create](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk@v0.12.0/schema#Create)
-to manually handle the schema creation.
+to manually handle the schema creation:
+
+```go
+	import (
+		"github.com/conduitio/conduit-connector-sdk/schema"
+		hambaavro "github.com/hamba/avro/v2"
+	)
+
+	// create a user schema with name string and age int
+
+	recordSchema, err := avro.NewBuilder("users", "example_namespace").
+		AddField("name", hambaavro.NewPrimitiveSchema(hambaavro.String, nil)).
+		AddField("age", hambaavro.NewPrimitiveSchema(hambaavro.Int, nil)).
+		Build()
+	if err != nil {
+		panic(err)
+	}
+
+	s, err := schema.Create(ctx, schema.TypeAvro, "users", []byte(recordSchema.String()))
+	if err != nil {
+		panic(err)
+	}
+```
 
 An example implementation can be found in the [postgres connector](https://github.com/ConduitIO/conduit-connector-postgres).
+
+![scarf pixel conduit-site-docs-developing-connectors](https://static.scarf.sh/a.png?x-pxid=3ada0949-fa61-40d6-a44a-76447ea4e39f)
