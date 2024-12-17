@@ -46,6 +46,16 @@ Conduit's [Connector SDK](https://github.com/ConduitIO/conduit-connector-sdk) an
   schema extraction isn't enough and a schema needs to be built manually using
   the information from a source)
 
+When developing / testing your connector, the schemas will be created in memory
+by the sdk, so that you can simulate interacting with conduit without having to
+worry about starting up a conduit instance.
+When using [sdk.Serve](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#Serve)
+the connector will use the grpc API instead. The schema fetches are cached, but
+if by any chance you want to customize that behaviour you can override the
+[schema.Service](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk@v0.12.0/schema#pkg-variables)
+variable.
+
+
 More information about how to work with schemas can be found in the relevant
 pages
 for [source connectors](/docs/developing/connectors/developing-source-connectors), [destination connectors](/docs/developing/connectors/developing-destination-connectors)
