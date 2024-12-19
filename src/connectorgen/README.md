@@ -18,7 +18,7 @@ in [update-connectors-list.yaml](/.github/workflows/update-connectors-list.yaml)
 
 ## Manual
 
-Assuming that `gh` is installed, `connectorgen` can be invoked in the following
+Assuming that [gh](https://cli.github.com/) is installed, `connectorgen` can be invoked in the following
 way:
 
 ```shell
