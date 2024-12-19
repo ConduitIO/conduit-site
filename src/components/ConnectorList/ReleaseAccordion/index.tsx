@@ -61,35 +61,6 @@ const ReleaseAccordion = styled((props: IAccordionProps) => (
         </IconButton>
       </Stack>
     </MuiAccordionSummary>
-    <MuiAccordionDetails>
-      <TableContainer>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell>File</TableCell>
-              <TableCell>OS</TableCell>
-              <TableCell>Arch</TableCell>
-              <TableCell>Size</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {props.release.assets.map(asset => (
-              <TableRow key={asset.name} >
-                <TableCell>
-                  <a href={asset.browser_download_url}>{asset.name}</a>
-                </TableCell>
-                <TableCell>{asset.os}</TableCell>
-                <TableCell>{asset.arch}</TableCell>
-                <TableCell>{humanFileSize(asset.size)}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Typography variant='body2' component='span'>
-        <Markdown>{props.release.body}</Markdown>
-      </Typography>
-    </MuiAccordionDetails>
   </MuiAccordion>
 ))(({ theme }) => ({
   border: `1px solid ${theme.palette.divider}`,

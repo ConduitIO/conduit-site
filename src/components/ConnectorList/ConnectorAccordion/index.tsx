@@ -20,7 +20,7 @@ export class Connector {
   created_at: string;
   stargazerCount: number;
   forkCount: number;
-  releases: Release[];
+  latestRelease: Release;
 }
 
 export interface ConnectorAccordionProps extends AccordionProps {
@@ -32,11 +32,7 @@ const ConnectorAccordion = styled((props: ConnectorAccordionProps) => (
     <ConnectorAccordionSummary connector={props.connector} />
     <MuiAccordionDetails>
       {
-        props.connector.releases.length > 0
-          ? props.connector.releases.map((release: Release, index: number) => (
-            <ReleaseAccordion key={release.tag_name} release={release} defaultExpanded={index==0}  children=''/>
-          ))
-          : <Typography>No releases.</Typography>
+        props.connector.latestRelease ? <ReleaseAccordion key={props.connector.latestRelease.tag_name} release={props.connector.latestRelease} defaultExpanded={true} children=''/> : <Typography>No releases.</Typography>
       }
     </MuiAccordionDetails>
   </MuiAccordion>
