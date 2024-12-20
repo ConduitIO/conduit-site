@@ -19,17 +19,41 @@ import Tooltip from '@mui/material/Tooltip';
 
 # {{ .Specification.Name }}
 
-<Stack className='align-items-center' direction='row' justifyContent='flex-start' spacing={2} >
-    {{if or (lower .NameWithOwner | hasPrefix "conduitio/") (lower .NameWithOwner | hasPrefix "conduitio-labs/")}}
-    <Tooltip title="Created by the Conduit team"><img src='/img/conduit/conduit-ring.png' width='18'/></Tooltip>
-    {{ end }}
+<Stack
+  className='align-items-center'
+  direction='row'
+  justifyContent='flex-start'
+  spacing={2}
+>
+    {/* Wrap each item in a container with consistent height */}
+    <Box sx={{printf "{{" }} display: 'flex', alignItems: 'center', height: 48 {{printf "}}" }}>
+      {/* Conduit logo */}
+      {{if or (lower .NameWithOwner | hasPrefix "conduitio/") (lower .NameWithOwner | hasPrefix "conduitio-labs/")}}
+      <Tooltip title="Created by the Conduit team">
+        <img src='/img/conduit/conduit-ring.png' width='18' alt="Conduit team logo" />
+      </Tooltip>
+      {{ end }}
+    </Box>
 
-    <IconButton size='large' href="{{ .URL }}" target='_blank' >
-      <GitHubIcon fontSize='inherit' />
-    </IconButton>
+    <Box sx={{printf "{{" }} display: 'flex', alignItems: 'center', height: 48 {{printf "}}" }}>
+      <IconButton
+        size='large'
+        href="{{ .URL }}"
+        target='_blank'
+        sx={{printf "{{" }} padding: '12px' {{printf "}}" }}
+      >
+        <GitHubIcon fontSize='inherit' />
+      </IconButton>
+    </Box>
 
-    <Chip icon={<StarIcon />} label="{{ .Stargazers }}" size='large' />
-
+    <Box sx={{printf "{{" }} display: 'flex', alignItems: 'center', height: 48 {{printf "}}" }}>
+      <Chip
+        icon={<StarIcon />}
+        label="{{ .Stargazers }}"
+        size='large'
+        sx={{printf "{{" }} height: 32 {{printf "}}" }} 
+      />
+    </Box>
 </Stack>
 
 ## Author
