@@ -1,4 +1,4 @@
-import ConnectorAccordion, {Connector} from '@site/src/components/ConnectorList/ConnectorAccordion';
+import {ConnectorAccordion, NonExpandableAccordion, Connector} from '@site/src/components/ConnectorList/ConnectorAccordion';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
@@ -24,8 +24,7 @@ class Filter {
   }
 
   matches(connector: Connector): boolean {
-    if (!this.showWithoutRelease &&
-      (!connector.releases || connector.releases.length == 0)) {
+    if (!this.showWithoutRelease && !connector.latestRelease) {
       return false;
     }
     if (!this.showCommunity &&
@@ -159,9 +158,7 @@ class ConnectorList extends React.Component<{connectors: Connector[]}, Connector
             ),
           }}
         />
-        {connectors.map(conn => (
-          <ConnectorAccordion key={conn.url} connector={conn} />
-        ))}
+        {connectors.map(conn => conn.conduitIODocsPage ? <NonExpandableAccordion key={conn.url} connector={conn} /> : <ConnectorAccordion key={conn.url} connector={conn} />)}
       </>
     );
   }
