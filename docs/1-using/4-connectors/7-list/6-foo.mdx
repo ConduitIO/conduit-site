@@ -1,0 +1,108 @@
+---
+IMPORTANT: This file was generated using src/connectorgen/main.go. DO NOT EDIT.
+
+title: "foo"
+description: "describe your connector"
+---
+
+import ReactDiffViewer from 'react-diff-viewer';
+import Chip from '@mui/material/Chip';
+import Box from "@mui/system/Box";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import IconButton from '@mui/material/IconButton';
+import Stack from '@mui/material/Stack';
+import Link from '@mui/material/Link';
+import StarIcon from '@mui/icons-material/Star';
+import Tooltip from '@mui/material/Tooltip';
+
+# foo
+
+<Stack className='align-items-center' direction='row' justifyContent='flex-start' spacing={2} >
+    
+
+    <IconButton size='large' href="https://github.com/hariso/conduit-connector-foo" target='_blank' >
+      <GitHubIcon fontSize='inherit' />
+    </IconButton>
+
+    <Chip icon={<StarIcon />} label="0" size='large' />
+
+</Stack>
+
+## Author
+
+your name
+
+## Latest release
+- [conduit-connector-foo_0.6.0_Darwin_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/hariso/conduit-connector-foo/releases/download/v0.6.0/conduit-connector-foo_0.6.0_Darwin_arm64.tar.gz)
+- [conduit-connector-foo_0.6.0_Darwin_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/hariso/conduit-connector-foo/releases/download/v0.6.0/conduit-connector-foo_0.6.0_Darwin_x86_64.tar.gz)
+- [conduit-connector-foo_0.6.0_Linux_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/hariso/conduit-connector-foo/releases/download/v0.6.0/conduit-connector-foo_0.6.0_Linux_arm64.tar.gz)
+- [conduit-connector-foo_0.6.0_Linux_i386.tar.gz](https://conduit.gateway.scarf.sh/connector/download/hariso/conduit-connector-foo/releases/download/v0.6.0/conduit-connector-foo_0.6.0_Linux_i386.tar.gz)
+- [conduit-connector-foo_0.6.0_Linux_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/hariso/conduit-connector-foo/releases/download/v0.6.0/conduit-connector-foo_0.6.0_Linux_x86_64.tar.gz)
+- [conduit-connector-foo_0.6.0_Windows_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/hariso/conduit-connector-foo/releases/download/v0.6.0/conduit-connector-foo_0.6.0_Windows_arm64.tar.gz)
+- [conduit-connector-foo_0.6.0_Windows_i386.tar.gz](https://conduit.gateway.scarf.sh/connector/download/hariso/conduit-connector-foo/releases/download/v0.6.0/conduit-connector-foo_0.6.0_Windows_i386.tar.gz)
+- [conduit-connector-foo_0.6.0_Windows_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/hariso/conduit-connector-foo/releases/download/v0.6.0/conduit-connector-foo_0.6.0_Windows_x86_64.tar.gz)
+
+## Description
+
+describe your connector in detail
+
+## Source Parameters
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      - id: example-source
+        type: source
+        plugin: "foo"
+        name: example-source
+        settings:
+          # SourceConfigParam is named foo and must be provided by the user.
+          # Type: string
+          foo: ""
+          # GlobalConfigParam is named global_config_param_name and needs to be
+          # provided by the user.
+          # Type: string
+          global_config_param_name: ""
+          # Maximum delay before an incomplete batch is read from the source.
+          # Type: duration
+          sdk.batch.delay: "0"
+          # Maximum size of batch before it gets read from the source.
+          # Type: int
+          sdk.batch.size: "0"
+          # Specifies whether to use a schema context name. If set to false, no
+          # schema context name will be used, and schemas will be saved with the
+          # subject name specified in the connector (not safe because of name
+          # conflicts).
+          # Type: bool
+          sdk.schema.context.enabled: "true"
+          # Schema context name to be used. Used as a prefix for all schema
+          # subject names. If empty, defaults to the connector ID.
+          # Type: string
+          sdk.schema.context.name: ""
+          # Whether to extract and encode the record key with a schema.
+          # Type: bool
+          sdk.schema.extract.key.enabled: "true"
+          # The subject of the key schema. If the record metadata contains the
+          # field "opencdc.collection" it is prepended to the subject name and
+          # separated with a dot.
+          # Type: string
+          sdk.schema.extract.key.subject: "key"
+          # Whether to extract and encode the record payload with a schema.
+          # Type: bool
+          sdk.schema.extract.payload.enabled: "true"
+          # The subject of the payload schema. If the record metadata contains
+          # the field "opencdc.collection" it is prepended to the subject name
+          # and separated with a dot.
+          # Type: string
+          sdk.schema.extract.payload.subject: "payload"
+          # The type of the payload schema.
+          # Type: string
+          sdk.schema.extract.type: "avro"
+```
+
+## Destination Parameters
+Writing data with foo is not supported.

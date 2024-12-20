@@ -12,10 +12,12 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import ReleaseAccordion, {Release} from "@site/src/components/ConnectorList/ReleaseAccordion";
+import { Link } from '@mui/material';
 
 export class Connector {
   nameWithOwner: string;
   description: string;
+  conduitIODocsPage: string;
   url: string;
   created_at: string;
   stargazerCount: number;
@@ -50,17 +52,14 @@ export interface ConnectorAccordionSummaryProps extends AccordionSummaryProps {
   connector: Connector;
 }
 
-export const ConnectorAccordionSummary = styled((props: ConnectorAccordionSummaryProps) => (
-    <MuiAccordionSummary
-        expandIcon={<ArrowForwardIosSharpIcon />}
-        {...props}
-    >
-      <Stack className='width-100pct' direction='row' spacing={2} >
-        <Stack className='width-100pct' >
+export const ConnectorAccordionSummary = styled((props: ConnectorAccordionSummaryProps) => {
+  const content = (
+      <Stack className='width-100pct' direction='row' spacing={2}>
+        <Stack className='width-100pct'>
           <Typography variant='body1'>{props.connector.nameWithOwner}</Typography>
-          <Typography variant='body2' className='color-6b7280' >{props.connector.description}</Typography>
+          <Typography variant='body2' className='color-6b7280'>{props.connector.description}</Typography>
         </Stack>
-        <Stack className='align-items-center' direction='row' justifyContent='flex-end' spacing={1} >
+        <Stack className='align-items-center' direction='row' justifyContent='flex-end' spacing={1}>
           {
             props.connector.nameWithOwner.toLowerCase().startsWith('conduitio/') || props.connector.nameWithOwner.toLowerCase().startsWith('conduitio-labs/')
                 ? <Tooltip title="Created by the Conduit team"><img src='/img/conduit/conduit-ring.png' width='18'/></Tooltip>
@@ -72,8 +71,28 @@ export const ConnectorAccordionSummary = styled((props: ConnectorAccordionSummar
           <Chip icon={<StarIcon />} label={props.connector.stargazerCount} size='small' />
         </Stack>
       </Stack>
-    </MuiAccordionSummary>
-))(({ theme }) => ({
+  );
+
+  return (
+      <MuiAccordionSummary
+          expandIcon={<ArrowForwardIosSharpIcon />}
+          {...props}
+      >
+        {props.connector.conduitIODocsPage ? (
+            <Link
+                href={props.connector.conduitIODocsPage}
+                underline="none"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={stopPropagation}
+                sx={{ color: 'inherit' }}
+            >
+              {content}
+            </Link>
+        ) : content}
+      </MuiAccordionSummary>
+  );
+})(({ theme }) => ({  // Fixed the syntax here - removed extra parenthesis
   flexDirection: 'row-reverse',
   '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
     transform: 'rotate(90deg)',
@@ -91,7 +110,7 @@ export const ConnectorAccordionSummary = styled((props: ConnectorAccordionSummar
     alignItems: 'center',
   },
   '& .color-6b7280': {
-    color:'#6B7280',
+    color: '#6B7280',
   }
 }));
 
