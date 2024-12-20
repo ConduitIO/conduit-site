@@ -46,6 +46,8 @@ var excludedRepositories = []string{
 	"gopherslab/conduit-connector-zendesk",
 	"gopherslab/conduit-connector-redis",
 	"hariso/conduit-connector-s3",
+	"hariso/conduit-connector-kafka",
+	"hariso/conduit-connector-foo",
 	"neha-Gupta1/conduit-connector-bigquery",
 	"neovintage/conduit-connector-redis",
 	"tsinghgill/conduit-connector-notion",
