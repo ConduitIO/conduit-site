@@ -62,7 +62,7 @@ export const NonExpandableAccordion = styled((props: ConnectorAccordionProps) =>
 
   return (
     <Paper elevation={0} onClick={handleClick} {...props}>
-      <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
+      <Stack className='width-100pct' direction="row" spacing={2} alignItems="center" justifyContent="space-between">
         <Stack flexGrow={1}>
           <Typography variant="body1">{props.connector.nameWithOwner}</Typography>
           <Typography variant="body2" className="color-6b7280">
@@ -106,7 +106,7 @@ export interface ConnectorAccordionSummaryProps extends AccordionSummaryProps {
 
 export const ConnectorAccordionSummary = styled((props: ConnectorAccordionSummaryProps) => {
   const content = (
-    <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
+    <Stack className='width-100pct' direction="row" spacing={2} alignItems="center" justifyContent="space-between">
       <Stack flexGrow={1}>
         <Typography variant="body1">{props.connector.nameWithOwner}</Typography>
         <Typography variant="body2" className="color-6b7280">
