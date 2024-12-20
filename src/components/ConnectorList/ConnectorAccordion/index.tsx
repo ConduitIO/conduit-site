@@ -48,6 +48,14 @@ const ConnectorAccordion = styled((props: ConnectorAccordionProps) => (
   },
 }));
 
+const NonExpandableAccordion = styled(ConnectorAccordion)(({ theme }) => ({
+  pointerEvents: 'none', // Prevents interaction
+  disabled: true,
+  '& .MuiAccordion-root': {
+    disabled: true, // Removes the pointer cursor
+  },
+}));
+
 export interface ConnectorAccordionSummaryProps extends AccordionSummaryProps {
   connector: Connector;
 }
@@ -78,18 +86,7 @@ export const ConnectorAccordionSummary = styled((props: ConnectorAccordionSummar
           expandIcon={<ArrowForwardIosSharpIcon />}
           {...props}
       >
-        {props.connector.conduitIODocsPage ? (
-            <Link
-                href={props.connector.conduitIODocsPage}
-                underline="none"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={stopPropagation}
-                sx={{ color: 'inherit' }}
-            >
-              {content}
-            </Link>
-        ) : content}
+        {content}
       </MuiAccordionSummary>
   );
 })(({ theme }) => ({  // Fixed the syntax here - removed extra parenthesis
