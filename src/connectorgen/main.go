@@ -206,24 +206,22 @@ func formatParameterValueYAML(value string) string {
 
 // Repository represents GitHub repository information.
 type Repository struct {
-	NameWithOwner     string    `json:"nameWithOwner"`
-	Description       string    `json:"description"`
-	ConduitIODocsPage string    `json:"conduitIODocsPage"`
-	CreatedAt         string    `json:"createdAt"`
-	URL               string    `json:"url"`
-	Stargazers        int       `json:"stargazerCount"`
-	Forks             int       `json:"forkCount"`
-	Releases          []Release `json:"releases"`
+	NameWithOwner     string   `json:"nameWithOwner"`
+	Description       string   `json:"description"`
+	ConduitIODocsPage string   `json:"conduitIODocsPage"`
+	CreatedAt         string   `json:"createdAt"`
+	URL               string   `json:"url"`
+	Stargazers        int      `json:"stargazerCount"`
+	Forks             int      `json:"forkCount"`
+	LatestRelease     *Release `json:"latestRelease,omitempty"`
 }
 
 func (r Repository) LatestReleaseTag() string {
-	for _, rel := range r.Releases {
-		if rel.IsLatest {
-			return rel.TagName
-		}
+	if r.LatestRelease == nil {
+		return ""
 	}
 
-	return ""
+	return r.LatestRelease.TagName
 }
 
 func (r Repository) Name() string {
@@ -318,13 +316,13 @@ func main() {
 			os.Exit(1)
 		}
 
-		releases, err := fetchReleases(ctx, client, repo)
+		release, err := FetchLatestRelease(ctx, client, repo)
 		if err != nil {
 			fmt.Printf("Error fetching releases for %s: %v\n", repo, err)
 			os.Exit(1)
 		}
 
-		repoInfo.Releases = releases
+		repoInfo.LatestRelease = release
 		repositories = append(repositories, &repoInfo)
 	}
 
@@ -388,6 +386,37 @@ func fetchRepoInfo(ctx context.Context, client *github.Client, repo string) (Rep
 		Stargazers:    repoInfo.GetStargazersCount(),
 		Forks:         repoInfo.GetForksCount(),
 	}, nil
+}
+
+func FetchLatestRelease(ctx context.Context, client *github.Client, ownerRepo string) (*Release, error) {
+	fmt.Println("- 📥 Fetching releases...")
+
+	ghRel, _, err := client.Repositories.GetLatestRelease(
+		ctx,
+		strings.Split(ownerRepo, "/")[0],
+		strings.Split(ownerRepo, "/")[1],
+	)
+	if err != nil {
+		// If there is no release, return an empty release and no error (normally, it'd be a 404 Not Found error)
+		return nil, nil
+	}
+
+	rel := &Release{
+		TagName:     ghRel.GetTagName(),
+		Name:        ghRel.GetName(),
+		Body:        ghRel.GetBody(),
+		Draft:       ghRel.GetDraft(),
+		Prerelease:  ghRel.GetPrerelease(),
+		PublishedAt: ghRel.GetPublishedAt().Time,
+		HTMLURL:     ghRel.GetHTMLURL(),
+	}
+	releaseAssets, err := fetchReleaseAssets(ctx, client, ownerRepo, ghRel)
+	if err != nil {
+		return nil, fmt.Errorf("failed fetching assets for release %v: %w", ghRel.GetTagName(), err)
+	}
+	rel.Assets = releaseAssets
+
+	return rel, nil
 }
 
 func fetchReleases(ctx context.Context, client *github.Client, ownerRepo string) ([]Release, error) {

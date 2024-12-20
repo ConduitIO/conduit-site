@@ -24,8 +24,7 @@ class Filter {
   }
 
   matches(connector: Connector): boolean {
-    if (!this.showWithoutRelease &&
-      (!connector.releases || connector.releases.length == 0)) {
+    if (!this.showWithoutRelease && !connector.latestRelease) {
       return false;
     }
     if (!this.showCommunity &&

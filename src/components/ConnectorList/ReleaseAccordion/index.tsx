@@ -51,46 +51,17 @@ function humanFileSize(size) {
 }
 
 const ReleaseAccordion = styled((props: IAccordionProps) => (
-  <MuiAccordion disableGutters {...props}>
-    <MuiAccordionSummary>
-      <Stack direction='row' spacing={1}>
-        <Chip label={props.release.tag_name} size='small' className='header-content' />
-        <Typography variant="body2" className='header-content'>{Intl.DateTimeFormat('en-US', {dateStyle: 'medium'}).format(new Date(props.release.published_at))}</Typography>
-        <IconButton size='small' href={props.release.html_url} target='_blank' onClick={stopPropagation}>
-          <OpenInNewIcon fontSize='inherit' />
-        </IconButton>
-      </Stack>
-    </MuiAccordionSummary>
-    <MuiAccordionDetails>
-      <TableContainer>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell>File</TableCell>
-              <TableCell>OS</TableCell>
-              <TableCell>Arch</TableCell>
-              <TableCell>Size</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {props.release.assets?.map(asset => (
-              <TableRow key={asset.name} >
-                <TableCell>
-                  <a href={asset.browser_download_url}>{asset.name}</a>
-                </TableCell>
-                <TableCell>{asset.os}</TableCell>
-                <TableCell>{asset.arch}</TableCell>
-                <TableCell>{humanFileSize(asset.size)}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Typography variant='body2' component='span'>
-        <Markdown>{props.release.body}</Markdown>
-      </Typography>
-    </MuiAccordionDetails>
-  </MuiAccordion>
+    <MuiAccordion disableGutters {...props}>
+      <MuiAccordionSummary>
+        <Stack direction='row' spacing={1}>
+          <Chip label={props.release.tag_name} size='small' className='header-content' />
+          <Typography variant="body2" className='header-content'>{Intl.DateTimeFormat('en-US', {dateStyle: 'medium'}).format(new Date(props.release.published_at))}</Typography>
+          <IconButton size='small' href={props.release.html_url} target='_blank' onClick={stopPropagation}>
+            <OpenInNewIcon fontSize='inherit' />
+          </IconButton>
+        </Stack>
+      </MuiAccordionSummary>
+    </MuiAccordion>
 ))(({ theme }) => ({
   border: `1px solid ${theme.palette.divider}`,
   '&:not(:last-child)': {
