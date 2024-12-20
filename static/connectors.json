@@ -5201,7 +5201,7 @@
   {
     "nameWithOwner": "hariso/conduit-connector-foo",
     "description": "",
-    "conduitIODocsPage": "",
+    "conduitIODocsPage": "foo",
     "createdAt": "2024-12-03 12:43:18 +0000 UTC",
     "url": "https://github.com/hariso/conduit-connector-foo",
     "stargazerCount": 0,
@@ -5310,7 +5310,7 @@
   {
     "nameWithOwner": "hariso/conduit-connector-kafka",
     "description": "",
-    "conduitIODocsPage": "",
+    "conduitIODocsPage": "kafka",
     "createdAt": "2024-12-09 10:23:39 +0000 UTC",
     "url": "https://github.com/hariso/conduit-connector-kafka",
     "stargazerCount": 0,
