@@ -92,7 +92,7 @@ export const ConnectorAccordionSummary = styled((props: ConnectorAccordionSummar
         ) : content}
       </MuiAccordionSummary>
   );
-})(({ theme }) => ({  // Fixed the syntax here - removed extra parenthesis
+})(({ theme }) => ({
   flexDirection: 'row-reverse',
   '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
     transform: 'rotate(90deg)',

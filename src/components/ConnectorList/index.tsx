@@ -1,4 +1,5 @@
 import ConnectorAccordion, {Connector} from '@site/src/components/ConnectorList/ConnectorAccordion';
+import DocumentedConnector from '@site/src/components/ConnectorList/DocumentedConnector';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
@@ -159,7 +160,11 @@ class ConnectorList extends React.Component<{connectors: Connector[]}, Connector
           }}
         />
         {connectors.map(conn => (
-          <ConnectorAccordion key={conn.url} connector={conn} />
+            conn.conduitIODocsPage ? (
+                <DocumentedConnector key={conn.url} connector={conn} />
+            ) : (
+                <ConnectorAccordion key={conn.url} connector={conn} />
+            )
         ))}
       </>
     );
