@@ -34,50 +34,60 @@ type Destination struct {
 
 A constructor function for your Destination struct. Note that this is the same
 function that should be set as the value of `Connector.NewDestination`. The
-constructor should be used to wrap your Destination in the default middleware.
-You can add additional middleware, but unless you have a very good reason, you
-should always include the default middleware.
+constructor should be used to wrap your destination with the SDK destination
+middleware. The middleware is configured through the destination's configuration
+and is explained in the following section.
 
 ```go
 func NewDestination() sdk.Destination {
-    // Create Destination and wrap it in the default middleware.
-    return sdk.DestinationWithMiddleware(
-      &Destination{}, 
-      sdk.DefaultDestinationMiddleware()...,
-    )
+    // Create a Destination and wrap it in the default middleware.
+	return sdk.DestinationWithMiddleware(&Destination{})
 }
 ```
 
-**Additional options via `DestinationMiddlewareOption`**:
+### `Config()`
 
-Currently, the available destination middleware options can be
-found [here](https://github.com/ConduitIO/conduit-connector-sdk/blob/1cbe778fabc8f903e075872560e6a91049d2e978/destination_middleware.go#L44-L50).
-
-### `Parameters()`
-
-A map of named Parameters that describe how to configure the connector. This map
-is typically generated using [
-`paramgen`](https://github.com/ConduitIO/conduit-commons/tree/main/paramgen).
+The `Config()` function needs to return a pointer to the connector's active
+configuration:
 
 ```go
-func (d *Destination) Parameters() config.Parameters {
-    return d.config.Parameters()
+func NewDestination() sdk.Destination {
+	return sdk.DestinationWithMiddleware(&Destination{})
 }
 ```
 
-### `Configure()`
+The SDK will parse the configuration map provided by a user (e.g. though a
+pipeline configuration file), validate it, and, if the configuration is valid,
+set the values into the value returned by `Config()`.
 
-Validates and stores configuration data for the connector. Any complex
-validation logic should be implemented here.
+`d.config` needs to be a struct that embeds `sdk.UnimplementedDestinationConfig`.
+
+We recommend that this struct embeds `sdk.DefaultDestinationMiddleware`, which is a
+configuration struct through which the following functionality is automatically
+added to the destination:
+
+- batching (i.e. the destination can write data in batches)
+- rate limiting
+- [record formatting](/docs/using/connectors/configuration-parameters/output-format)
+- automatically decoding a record using its schema
+
+A developer can choose to add all the mentioned features by embedding
+`sdk.DefaultDestinationMiddleware`, embedding only some of those or none.
+
+The default configuration values can be set in `NewDestination()` in the following
+way:
 
 ```go
-func (d *Destination) Configure(ctx context.Context, cfg config.Config) error {
-    err := sdk.Util.ParseConfig(ctx, cfg, &d.config, NewDestination().Parameters())
-    if err != nil {
-        return err
-    }
-    // add custom validations here
-    return nil
+func NewDestination() sdk.Destination {
+	return sdk.DestinationWithMiddleware(&Destination{
+		config: destination.Config{
+			DefaultDestinationMiddleware: sdk.DefaultDestinationMiddleware{
+				DestinationWithBatch: sdk.DestinationWithBatch{
+					BatchSize: 100,
+				},
+			},
+		},
+	})
 }
 ```
 
