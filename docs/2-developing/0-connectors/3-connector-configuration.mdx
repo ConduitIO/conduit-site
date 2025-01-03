@@ -12,7 +12,7 @@ Here's an example:
 type SourceConfig struct {
     sdk.UnimplementedSourceConfig
     
-	// Number of records to be generated (0 means infinite).
+    // Number of records to be generated (0 means infinite).
     RecordCount int
 }
 
@@ -73,8 +73,8 @@ file, the connector settings will be as follows:
 ```go
 type SourceConfig struct {
     sdk.UnimplementedSourceConfig
-    
-	// Number of records to be generated (0 means infinite).
+	
+    // Number of records to be generated (0 means infinite).
     RecordCount int `json:rec_count`
 }
 ```
@@ -99,8 +99,8 @@ through _validation tags_.
 ```go
 type SourceConfig struct {
     sdk.UnimplementedSourceConfig
-    
-	// Number of records to be generated (0 means infinite).
+	
+    // Number of records to be generated (0 means infinite).
     RecordCount int `json:"recordCount" validate:"gt=-1"`
 }
 ```
