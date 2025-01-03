@@ -1,0 +1,238 @@
+---
+title: "Connector Configuration"
+---
+
+A source or destination connector's configuration is provided through a struct,
+with typed parameter values, which makes it simple to work with throughout the
+connector code.
+
+Here's an example:
+
+```go
+type SourceConfig struct {
+    sdk.UnimplementedSourceConfig
+    
+	// Number of records to be generated (0 means infinite).
+    RecordCount int
+}
+
+type Source struct {
+    config SourceConfig
+}
+
+func (s *Source) Config() sdk.SourceConfig {
+    return &s.config
+}
+
+func (s *Source) Read(ctx context.Context) (opencdc.Record, error) {
+    // do something with s.config.RecordCount
+}
+
+// other source connector methods
+```
+
+The Conduit Connector SDK will automatically parse a user configuration (e.g.
+the one in
+a [pipeline configuration file](/docs/using/pipelines/configuration-file)) into
+the instance returned by `Config()`.
+
+As it can be seen from the example, every configuration structs needs to embed
+either `sdk.UnimplementedSourceConfig` or `sdk.UnimplementedDestinationConfig`.
+
+## Parameter names
+
+Parameter names are used in configuration maps that are populated by a user. A
+parameter's name is taken from a field's `json` tag. If the tag is not present,
+then the parameter name is the field name written in camel case.
+
+### Example: no `json` tag
+
+```go
+type SourceConfig struct {
+    sdk.UnimplementedSourceConfig
+    
+	// Number of records to be generated (0 means infinite).
+    RecordCount int
+}
+```
+
+In this case, the parameter name is `recordCount`. In a pipeline configuration
+file, the connector settings will be as follows:
+
+```yaml
+    connectors:
+      - id: source1
+        type: source
+        plugin: foo-connector
+        settings:
+          recordCount: 100
+```
+
+### Example: with `json` tag
+
+```go
+type SourceConfig struct {
+    sdk.UnimplementedSourceConfig
+    
+	// Number of records to be generated (0 means infinite).
+    RecordCount int `json:rec_count`
+}
+```
+
+In this case, the parameter name is `rec_count`. In a pipeline configuration
+file, the connector settings will be as follows:
+
+```yaml
+    connectors:
+      - id: source1
+        type: source
+        plugin: foo-connector
+        settings:
+          rec_count: 100
+```
+
+## Parameter validation
+
+The Connector SDK can validate input user values. Such validations are specified
+through _validation tags_.
+
+```go
+type SourceConfig struct {
+    sdk.UnimplementedSourceConfig
+    
+	// Number of records to be generated (0 means infinite).
+    RecordCount int `json:"recordCount" validate:"gt=-1"`
+}
+```
+
+The supported validations are described in the following sections:
+
+### `required`
+
+A boolean tag to indicate if a field is required or not. If it is added to the
+validate tag without a value, then we assume the field is required.
+
+```go
+  NameRequired    string `validate:"required"`
+  NameRequired2   string `validate:"required=true"`
+  NameNotRequired string `validate:"required=false"`
+```
+
+### `lt` or `less-than`
+
+Takes an int or a float value, indicated that the parameter should be less than
+the value provided.
+
+### `gt` or `greater-than`
+
+Takes an int or a float value, indicated that the parameter should be greater
+than the value provided.
+
+```go
+  Age int `validate:"gt=0,lt=200"`
+  Age2 float `validate:"greater-than=0,less-than=200.2"`
+```
+
+### `inclusion`
+
+Validates that the parameter value is included in a specified list, this list
+values are separated using a pipe character `|`.
+
+```go
+    Gender string `validate:"inclusion=male|female|other"`
+```
+
+### `exclusion`
+
+Validates that the parameter value is NOT included in a specified list, this
+list values are separated using a pipe character `|`.
+
+ ```go
+    Color string `validate:"exclusion=red|green"`
+ ```
+
+### `regex`
+
+Validates that the parameter value matches the regex pattern.
+
+ ```go
+    Email string `validate:"regex=^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$"`
+ ```
+
+## Custom parameter validation and parsing
+
+If custom validation and parsing is needed, it can be added through the
+`Validate()` method, as in the example below:
+
+```go
+func (c *SourceConfig) Validate(ctx context.Context) error {
+	// custom validation can be added here
+	return nil
+}
+```
+
+## Middleware
+
+We recommend that configuration structs embed SDK middleware structs, so that
+certain commonly used functionalities are automatically added to connectors.
+
+### Source configuration middleware
+
+When a source configuration struct embeds `sdk.DefaultSourceMiddleware`, the
+following functionality is automatically added to the source:
+
+- batching (i.e. the source can return data in batches)
+- encoding with a [schema](/docs/using/other-features/schema-support) (i.e. if
+  the data has an attached schema, it will be encoded with it)
+- customizing the schema context name
+- auto-generating a schema
+
+A developer can choose to add all the mentioned features by embedding
+`sdk.DefaultSourceMiddleware`, embedding only some of those or none.
+
+The default configuration values can be set in `NewSource()` in the following
+way:
+
+```go
+func NewSource() sdk.Source {
+	return sdk.SourceWithMiddleware(&Source{
+		config: source.Config{
+			DefaultSourceMiddleware: sdk.DefaultSourceMiddleware{
+				SourceWithSchemaExtraction: sdk.SourceWithSchemaExtraction{
+					PayloadEnabled: lang.Ptr(false),
+				},
+			},
+		},
+	})
+}
+```
+
+### Destination configuration middleware
+
+When a destination configuration struct embeds `sdk.DefaultDestinationMiddleware`, the
+following functionality is automatically added to the source:
+
+- batching (i.e. the destination can write data in batches)
+- rate limiting
+- [record formatting](/docs/using/connectors/configuration-parameters/output-format)
+- automatically decoding a record using its schema
+
+A developer can choose to add all the mentioned features by embedding
+`sdk.DefaultDestinationMiddleware`, embedding only some of those or none.
+
+The default configuration values can be set in `NewDestination()` in the following
+way:
+
+```go
+func NewDestination() sdk.Destination {
+	return sdk.DestinationWithMiddleware(&Destination{
+		config: destination.Config{
+			DefaultDestinationMiddleware: sdk.DefaultDestinationMiddleware{
+				DestinationWithBatch: sdk.DestinationWithBatch{
+					BatchSize: 100,
+				},
+			},
+		},
+	})
+}
+```

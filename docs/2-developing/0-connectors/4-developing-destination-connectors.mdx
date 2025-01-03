@@ -60,36 +60,9 @@ The SDK will parse the configuration map provided by a user (e.g. though a
 pipeline configuration file), validate it, and, if the configuration is valid,
 set the values into the value returned by `Config()`.
 
+More information about configuration structs can be found
+in [Connector Configuration](/docs/developing/connectors/connector-configuration).
 `d.config` needs to be a struct that embeds `sdk.UnimplementedDestinationConfig`.
-
-We recommend that this struct embeds `sdk.DefaultDestinationMiddleware`, which is a
-configuration struct through which the following functionality is automatically
-added to the destination:
-
-- batching (i.e. the destination can write data in batches)
-- rate limiting
-- [record formatting](/docs/using/connectors/configuration-parameters/output-format)
-- automatically decoding a record using its schema
-
-A developer can choose to add all the mentioned features by embedding
-`sdk.DefaultDestinationMiddleware`, embedding only some of those or none.
-
-The default configuration values can be set in `NewDestination()` in the following
-way:
-
-```go
-func NewDestination() sdk.Destination {
-	return sdk.DestinationWithMiddleware(&Destination{
-		config: destination.Config{
-			DefaultDestinationMiddleware: sdk.DefaultDestinationMiddleware{
-				DestinationWithBatch: sdk.DestinationWithBatch{
-					BatchSize: 100,
-				},
-			},
-		},
-	})
-}
-```
 
 ### `Open()`
 
