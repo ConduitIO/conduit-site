@@ -124,4 +124,32 @@ If you run `go generate ./...` or just use `make generate` from the connector
 template, you'll see that the `connector.yaml` is updated with the source and/or
 destination parameters.
 
+## Default values
+
+Default values are taken from the following sources (higher to lower precedence):
+
+1. a source or destination connector's configuration (returned by a connector's
+   `Config()` method)
+2. `default` tag on fields in a configuration struct
+
+For example:
+
+```go
+type SourceConfig struct {
+	URL string `default:"http://localhost:8080"`
+}
+
+func NewSource() sdk.Source {
+    return sdk.SourceWithMiddleware(&Source{
+        config: source.Config{
+			URL: "https://example.com"
+        },
+    })
+}
+```
+
+In this example, the default value in the generated specification will be
+`"https://example.com"`, i.e. if a user doesn't specify a URL, its value will be
+`"https://example.com"`.
+
 ![scarf pixel conduit-site-docs-developing-connectors](https://static.scarf.sh/a.png?x-pxid=3ada0949-fa61-40d6-a44a-76447ea4e39f)
