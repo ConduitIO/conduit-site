@@ -26,9 +26,14 @@ connectors):
 
 
 :::caution
-`sdk.schema.extract.payload.enabled` and `sdk.schema.extract.key.enabled` should be set to `false` when producing raw (not structured) data, as shown in the example below. 
+`sdk.schema.extract.payload.enabled` and `sdk.schema.extract.key.enabled` should
+be set to `false` when producing raw (not structured) data, as shown in the
+example below.
 
-If you are developing a connector, you can disable this automatically by updating the connector's default middleware. For more information about `NewSource()` when developing a source connector, see [here](/docs/developing/connectors/developing-source-connectors/#newsource).
+If you are developing a connector, you can disable this automatically by
+updating the connector's default middleware. For more information about
+`NewSource()` when developing a source connector,
+see [here](/docs/developing/connectors/developing-source-connectors/#newsource).
 :::
 
 ## Example
@@ -66,7 +71,8 @@ pipelines:
           path: /tmp/file-destination.txt
 ```
 
-When the pipeline is run, `/tmp/file-destination.txt` will contain output similar to this:
+When the pipeline is run, `/tmp/file-destination.txt` will contain output
+similar to this:
 
 ```json
 {
