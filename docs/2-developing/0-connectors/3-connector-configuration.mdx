@@ -99,7 +99,7 @@ through _validation tags_.
 ```go
 type SourceConfig struct {
     sdk.UnimplementedSourceConfig
-	
+
     // Number of records to be generated (0 means infinite).
     RecordCount int `json:"recordCount" validate:"gt=-1"`
 }
