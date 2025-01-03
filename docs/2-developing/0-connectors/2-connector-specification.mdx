@@ -5,7 +5,9 @@ title: "Connector Specification"
 A connector's specification is used to present information about the connector
 and validate connector parameters. The specification can be found in the
 `connectors.yaml` file, that's found in the root of a connector's repository.
-The following is an example of the file connector's `connector.yaml`:
+The following is an example of
+the [file connector's](https://github.com/ConduitIO/conduit-connector-file)
+`connector.yaml`:
 
 ```yaml
 version: "1.0"
@@ -120,9 +122,9 @@ var Connector = sdk.Connector{
 }
 ```
 
-If you run `go generate ./...` or just use `make generate` from the connector
-template, you'll see that the `connector.yaml` is updated with the source and/or
-destination parameters.
+If you run `go generate ./...` or just use `make generate` (that's provided by
+the connector template), you'll see that the `connector.yaml` is updated with
+the source and/or destination parameters.
 
 ## Default values
 
