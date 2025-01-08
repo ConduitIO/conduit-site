@@ -16,7 +16,7 @@ jobs:
       - name: Update connectors' list
         working-directory: src/connectorgen
         run: |
-          go run main.go ${GITHUB_WORKSPACE}/static/connectors.json
+          go run main.go ${GITHUB_WORKSPACE}/static/connectors.json ${GITHUB_WORKSPACE}/docs/1-using/4-connectors/7-list
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v7.0.6
