@@ -13,25 +13,17 @@ each configuration option based on the following priorities:
 
  **CLI flags** (highest priority) - if a CLI flag is provided it will always be
   respected, regardless of the environment variable or configuration file. To
-  see a full list of available flags run `conduit --help`:
-
+  see a full list of available flags run `conduit run --help`:
 
 ```text
-Conduit CLI is a command-line that helps you interact with and manage Conduit.
+Starts the Conduit server and runs the configured pipelines.
 
 Usage:
-  conduit [flags]
-  conduit [command]
-
-Pipelines
-  pipelines   Initialize and manage pipelines
-
-Additional Commands:
-  help        Help about any command
-  init        Initialize Conduit with a configuration file and directories.
+  conduit run [flags]
 
 Flags:
       --api.enabled                                            enable HTTP and gRPC API (default true)
+      --config.path string                                     global conduit configuration file (default "/home/haris/projects/conduitio/conduit/conduit.yaml")
       --connectors.path string                                 path to standalone connectors' directory (default "/home/haris/projects/conduitio/conduit/connectors")
       --db.badger.path string                                  path to badger DB (default "/home/haris/projects/conduitio/conduit/conduit.db")
       --db.postgres.connection-string string                   postgres connection string, may be a database URL or in PostgreSQL keyword/value format
@@ -39,8 +31,11 @@ Flags:
       --db.sqlite.path string                                  path to sqlite3 DB (default "/home/haris/projects/conduitio/conduit/conduit.db")
       --db.sqlite.table string                                 sqlite3 table in which to store data (will be created if it does not exist) (default "conduit_kv_store")
       --db.type string                                         database type; accepts badger,postgres,inmemory,sqlite (default "badger")
+      --dev.blockprofile string                                write block profile to file
+      --dev.cpuprofile string                                  write CPU profile to file
+      --dev.memprofile string                                  write memory profile to file
       --grpc.address string                                    address for serving the gRPC API (default ":8084")
-  -h, --help                                                   help for conduit
+  -h, --help                                                   help for run
       --http.address string                                    address for serving the HTTP API (default ":8080")
       --log.format string                                      sets the format of the logging; accepts json, cli (default "cli")
       --log.level string                                       sets logging level; accepts debug, info, warn, error, trace (default "info")
@@ -49,15 +44,12 @@ Flags:
       --pipelines.error-recovery.max-retries int               maximum number of retries (default -1)
       --pipelines.error-recovery.max-retries-window duration   amount of time running without any errors after which a pipeline is considered healthy (default 5m0s)
       --pipelines.error-recovery.min-delay duration            minimum delay before restart (default 1s)
-      --pipelines.exit-on-degraded                             exit Conduit if a pipeline enters a degraded state
-      --pipelines.path string                                  path to the directory that has the yaml pipeline configuration files, or a single pipeline configuration file (default "/home/haris/projects/conduitio/conduit/pipelines")
+      --pipelines.exit-on-degraded                             exit Conduit if a pipeline is degraded
+      --pipelines.path string                                  path to pipelines' directory (default "/home/haris/projects/conduitio/conduit/pipelines")
       --preview.pipeline-arch-v2                               enables experimental pipeline architecture v2 (note that the new architecture currently supports only 1 source and 1 destination per pipeline)
       --processors.path string                                 path to standalone processors' directory (default "/home/haris/projects/conduitio/conduit/processors")
       --schema-registry.confluent.connection-string string     confluent schema registry connection string
       --schema-registry.type string                            schema registry type; accepts builtin,confluent (default "builtin")
-  -v, --version                                                version for conduit
-
-Use "conduit [command] --help" for more information about a command.
 ```
 
 ## Environment variables
