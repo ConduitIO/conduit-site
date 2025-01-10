@@ -101,7 +101,9 @@ A file called `conduit.tgz` will be in your current directory. The next step is 
 $ tar zxvf conduit.tgz
 ```
 
-Then change directories to the appropriate folder. Keep in mind that the folder name might be different between releases since it's tied to the latest git sha for the commit.
+Then change directories to the appropriate folder. Keep in mind that the folder
+name might be different between releases since it's tied to the latest git sha
+for the commit.
 
 ```shell
 $ cd conduit-0.13.0
@@ -113,15 +115,17 @@ Now build the project:
 $ make
 ```
 
-You will have a new binary built for your architecture and machine. All that's left is to run it!
+You will have a new binary built for your architecture and machine. All that's
+left is to run it!
 
 ```shell
-./conduit
+./conduit run
 ```
   </TabItem>
 </Tabs>
 
-You should now be able to interact with the Conduit UI and HTTP API on port 8080:
+You should now be able to interact with Conduit through the CLI or its HTTP API
+on port 8080:
 
 ```shell
              ....
@@ -132,24 +136,29 @@ You should now be able to interact with the Conduit UI and HTTP API on port 8080
  `::::::::          ::::::::‘
       `::::        ::::‘
        `:::::....:::::‘
-         `::::::::::‘        Conduit v0.13.0 windows/amd64
+         `::::::::::‘        Conduit v0.13.0 linux/amd64
              ‘‘‘‘
-2024-02-20T21:37:45+00:00 INF All 0 tables opened in 0s component=badger.DB
-2024-02-20T21:37:45+00:00 INF Discard stats nextEmptySlot: 0 component=badger.DB
-2024-02-20T21:37:45+00:00 INF Set nextTxnTs to 0 component=badger.DB
-2024-02-20T21:37:45+00:00 INF builtin plugins initialized component=builtin.Registry count=6
-2024-02-20T21:37:45+00:00 WRN could not read plugin directory error="open /app/connectors: no such file or directory" component=standalone.Registry
-2024-02-20T21:37:45+00:00 INF standalone plugins initialized component=standalone.Registry count=0 plugin_path=/app/connectors
-2024-02-20T21:37:45+00:00 INF processors initialized component=processor.Service count=0
-2024-02-20T21:37:45+00:00 INF connectors initialized component=connector.Service count=0
-2024-02-20T21:37:45+00:00 INF pipelines initialized component=pipeline.Service count=0
-2024-02-20T21:37:45+00:00 INF pipeline configs provisioned component=provisioning.Service created=[] deleted=[] pipelines_path=./pipelines
-2024-02-20T21:37:45+00:00 INF grpc server started address=[::]:8084
-2024-02-20T21:37:45+00:00 INF http server started address=[::]:8080
-2024-02-20T21:37:45+00:00 INF
-2024-02-20T21:37:45+00:00 INF click here to navigate to Conduit UI: http://localhost:8080/ui
-2024-02-20T21:37:45+00:00 INF click here to navigate to explore the HTTP API: http://localhost:8080/openapi
-2024-02-20T21:37:45+00:00 INF
+2025-01-10T09:40:07+00:00 INF All 0 tables opened in 0s component=badger.DB
+2025-01-10T09:40:07+00:00 INF Discard stats nextEmptySlot: 0 component=badger.DB
+2025-01-10T09:40:07+00:00 INF Set nextTxnTs to 0 component=badger.DB
+2025-01-10T09:40:07+00:00 INF loading processor plugins from directory /app/processors ... component=plugin.processor.standalone.Registry
+2025-01-10T09:40:07+00:00 WRN could not read processor plugin directory error="open /app/processors: no such file or directory" component=plugin.processor.standalone.Registry
+2025-01-10T09:40:07+00:00 INF standalone processor plugins initialized component=plugin.processor.standalone.Registry count=0 plugin_path=/app/processors
+2025-01-10T09:40:07+00:00 INF builtin processor plugins initialized component=plugin.processor.builtin.Registry count=17
+2025-01-10T09:40:07+00:00 INF processors initialized component=processor.Service count=0
+2025-01-10T09:40:07+00:00 INF connector utilities started address=[::]:33955
+2025-01-10T09:40:07+00:00 INF connector utilities started on [::]:33955
+2025-01-10T09:40:07+00:00 INF builtin connector plugins initialized component=plugin.connector.builtin.Registry count=6
+2025-01-10T09:40:07+00:00 WRN could not read connector plugin directory error="open /app/connectors: no such file or directory" component=plugin.connector.standalone.Registry
+2025-01-10T09:40:07+00:00 INF standalone connector plugins initialized component=plugin.connector.standalone.Registry count=0 plugin_path=/app/connectors
+2025-01-10T09:40:07+00:00 INF connectors initialized component=connector.Service count=0
+2025-01-10T09:40:07+00:00 INF pipelines initialized component=pipeline.Service count=0
+2025-01-10T09:40:07+00:00 INF pipeline configs provisioned component=provisioning.Service created=[] deleted=[] pipelines_path=/app/pipelines
+2025-01-10T09:40:07+00:00 INF grpc API started address=[::]:8084
+2025-01-10T09:40:07+00:00 INF http API started address=[::]:8080
+2025-01-10T09:40:07+00:00 INF
+2025-01-10T09:40:07+00:00 INF click here to navigate to explore the HTTP API: http://localhost:8080/openapi
+2025-01-10T09:40:07+00:00 INF
 ```
 
 ## Next Steps
@@ -160,6 +169,6 @@ You can also explore some other topics, such as:
 
 - [Pipelines](/docs/using/pipelines/configuration-file)
 - [Connectors](/docs/using/connectors/getting-started)
-- [Processors](/docs/using/processors/getting-started
+- [Processors](/docs/using/processors/getting-started)
 
 ![scarf pixel conduit-site-docs-using](https://static.scarf.sh/a.png?x-pxid=76d5981f-cd63-422b-8cf7-eab9e99f0cd3)
