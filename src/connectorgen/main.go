@@ -40,6 +40,7 @@ var excludedRepositories = []string{
 	"ConduitIO/streaming-benchmarks",
 	"ConduitIO/conduit-connector-template",
 	"ConduitIO/conduit-operator",
+	"ConduitIO/conduit-connector-sdk",
 
 	"ahamidi/conduit-connector-template",
 	"gopherslab/conduit-connector-google-sheets",
