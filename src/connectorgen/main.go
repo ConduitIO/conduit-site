@@ -40,6 +40,9 @@ var excludedRepositories = []string{
 	"ConduitIO/streaming-benchmarks",
 	"ConduitIO/conduit-connector-template",
 	"ConduitIO/conduit-operator",
+	// Test modules within the SDK use SDK as a dependency,
+	// so the SDK is included as a dependent of itself.
+	"ConduitIO/conduit-connector-sdk",
 
 	"ahamidi/conduit-connector-template",
 	"gopherslab/conduit-connector-google-sheets",
