@@ -212,10 +212,10 @@ func NewSource() sdk.Source {
 When a destination configuration struct embeds `sdk.DefaultDestinationMiddleware`, the
 following functionality is automatically added to the source:
 
-- batching (i.e. the destination can write data in batches)
-- rate limiting
+- [batching](/docs/using/connectors/configuration-parameters/batching) (i.e. the destination can write data in batches)
+- [rate limiting](/docs/using/connectors/configuration-parameters/rate-limiting)
 - [record formatting](/docs/using/connectors/configuration-parameters/output-format)
-- automatically decoding a record using its schema
+- automatically decoding a record using its [schema](/docs/using/other-features/schema-support)
 
 A developer can choose to add all the mentioned features by embedding
 `sdk.DefaultDestinationMiddleware`, embedding only some of those or none.
