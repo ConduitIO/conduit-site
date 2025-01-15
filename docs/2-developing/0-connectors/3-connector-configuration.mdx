@@ -36,7 +36,7 @@ the one in
 a [pipeline configuration file](/docs/using/pipelines/configuration-file)) into
 the instance returned by `Config()`.
 
-As it can be seen from the example, every configuration structs needs to embed
+As it can be seen from the example, every configuration struct needs to embed
 either `sdk.UnimplementedSourceConfig` or `sdk.UnimplementedDestinationConfig`.
 
 ## Parameter names
@@ -188,7 +188,7 @@ following functionality is automatically added to the source:
 - auto-generating a schema
 
 A developer can choose to add all the mentioned features by embedding
-`sdk.DefaultSourceMiddleware`, embedding only some of those or none.
+`sdk.DefaultSourceMiddleware`, embedding only some of those, or none.
 
 The default configuration values can be set in `NewSource()` in the following
 way:
@@ -210,7 +210,7 @@ func NewSource() sdk.Source {
 ### Destination configuration middleware
 
 When a destination configuration struct embeds `sdk.DefaultDestinationMiddleware`, the
-following functionality is automatically added to the source:
+following functionalities are automatically added to the destination:
 
 - [batching](/docs/using/connectors/configuration-parameters/batching) (i.e. the destination can write data in batches)
 - [rate limiting](/docs/using/connectors/configuration-parameters/rate-limiting)
@@ -218,7 +218,7 @@ following functionality is automatically added to the source:
 - automatically decoding a record using its [schema](/docs/using/other-features/schema-support)
 
 A developer can choose to add all the mentioned features by embedding
-`sdk.DefaultDestinationMiddleware`, embedding only some of those or none.
+`sdk.DefaultDestinationMiddleware`, embedding only some of those, or none.
 
 The default configuration values can be set in `NewDestination()` in the following
 way:
