@@ -95,7 +95,7 @@ then the `specgen` tool is already listed in `tools.go` and can be installed
 with `make install-tools`.
 
 `specgen` is run as part of `go generate`. It also needs access to the
-`sdk.Connector` variable that holds references to constructor functions for the
+`sdk.Connector` variable that holds references to the constructor functions for the
 source and the destination, so it's best to place it in the `connector.go` file.
 The following is an example from the Kafka connector:
 
