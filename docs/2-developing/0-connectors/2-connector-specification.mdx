@@ -126,6 +126,10 @@ If you run `go generate ./...` or just use `make generate` (that's provided by
 the connector template), you'll see that the `connector.yaml` is updated with
 the source and/or destination parameters.
 
+What you also see in the example above is how to embed the `connector.yaml`
+file (with `//go:embed connector.yaml`) and then extract the specification from
+it (`NewSpecification: sdk.YAMLSpecification(specs)`).
+
 ## Default values
 
 Default values are taken from the following sources (higher to lower precedence):
