@@ -10,7 +10,7 @@ Here's an example:
 
 ```go
 type SourceConfig struct {
-    sdk.UnimplementedSourceConfig
+    sdk.DefaultSourceMiddleware
     
     // Number of records to be generated (0 means infinite).
     RecordCount int
@@ -36,8 +36,10 @@ the one in
 a [pipeline configuration file](/docs/using/pipelines/configuration-file)) into
 the instance returned by `Config()`.
 
-As it can be seen from the example, every configuration struct needs to embed
-either `sdk.UnimplementedSourceConfig` or `sdk.UnimplementedDestinationConfig`.
+As it can be seen from the example, every configuration struct should embed
+either `sdk.DefaultSourceMiddleware` or `sdk.DefaultDestinationMiddleware`,
+which ensures that certain functionality is automatically added to the source or
+destination connector.
 
 ## Parameter names
 
@@ -49,7 +51,7 @@ then the parameter name is the field name written in camel case.
 
 ```go
 type SourceConfig struct {
-    sdk.UnimplementedSourceConfig
+    sdk.DefaultSourceMiddleware
 	
     // Number of records to be generated (0 means infinite).
     RecordCount int
@@ -72,7 +74,7 @@ file, the connector settings will be as follows:
 
 ```go
 type SourceConfig struct {
-    sdk.UnimplementedSourceConfig
+    sdk.DefaultSourceMiddleware
 	
     // Number of records to be generated (0 means infinite).
     RecordCount int `json:rec_count`
@@ -98,7 +100,7 @@ through _validation tags_.
 
 ```go
 type SourceConfig struct {
-    sdk.UnimplementedSourceConfig
+    sdk.DefaultSourceMiddleware
 
     // Number of records to be generated (0 means infinite).
     RecordCount int `json:"recordCount" validate:"gt=-1"`
@@ -175,6 +177,10 @@ func (c *SourceConfig) Validate(ctx context.Context) error {
 
 We recommend that configuration structs embed SDK middleware structs, so that
 certain commonly used functionalities are automatically added to connectors.
+
+If there's a strong reason for **not** embedding any of the middleware, then a
+configuration still needs to embed `sdk.UnimplementedSourceConfig`/
+`sdk.UnimplementedDestinationConfig`.
 
 ### Source configuration middleware
 
