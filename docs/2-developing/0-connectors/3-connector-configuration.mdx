@@ -161,6 +161,67 @@ Validates that the parameter value matches the regex pattern.
     Email string `validate:"regex=^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$"`
  ```
 
+## Special parameter types
+
+### Slices
+
+Comma-separated values in a user configuration map is automatically parsed into
+a slice. For example, let's say we have the following configuration struct:
+
+```go
+type SourceConfig struct {
+    MyIntSlice   []int
+}
+```
+
+and the following configuration provided by a user:
+
+```yaml
+        - id: source1
+          type: source
+          plugin: builtin:your-connector
+          name: source1
+          settings:
+            myIntSlice: "1,2,3"
+```
+
+then the value that the SDK will parse is the following:
+
+```go
+SourceConfig{
+    MyIntSlice: []int{1, 2, 3},
+}
+```
+
+### Dynamic parameter names (maps of configurations)
+
+The Connector SDK supports structs that are nested in maps. This is especially
+useful when multiple entities need to be configured, like multiple tables.
+Here's an example:
+
+```go
+type Config struct {
+    TableConfigs map[string]TableConfig `json:"tables"`
+}
+
+type TableConfig struct {
+	// SortingColumn allows to force using a custom column to sort the snapshot. 
+	SortingColumn string `json:"sortingColumn"`
+}
+```
+
+This allows a user to use the following configuration:
+
+```yaml
+        - id: source1
+          type: source
+          plugin: builtin:your-connector
+          name: source1
+          settings:
+            tables.users_table.sortingColumn: updated_at
+            tables.admins.sortingColumn: last_updated_at
+```
+
 ## Custom parameter validation and parsing
 
 If custom validation and parsing is needed, it can be added through the

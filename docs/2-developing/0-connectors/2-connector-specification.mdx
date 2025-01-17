@@ -148,7 +148,7 @@ type SourceConfig struct {
 func NewSource() sdk.Source {
     return sdk.SourceWithMiddleware(&Source{
         config: source.Config{
-			URL: "https://example.com"
+            URL: "https://example.com"
         },
     })
 }
