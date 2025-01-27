@@ -72,12 +72,12 @@ func (cmd *CommandDocs) Execute(ctx context.Context) error {
 
 		specifications := cmd.loadSpecifications(repo)
 		if len(specifications) == 0 {
-			fmt.Printf("  ⚠️ Warning: no connector.yaml found for %s, skipping\n", repo.NameWithOwner)
+			fmt.Printf("  ⚠️  Warning: no connector.yaml found for %s, skipping\n", repo.NameWithOwner)
 			continue
 		}
 		connectorName := getConnectorName(specifications)
 		if connectorName == "" {
-			fmt.Printf("  ⚠️ Warning: could not get connector name for %s, skipping\n", repo.NameWithOwner)
+			fmt.Printf("  ⚠️  Warning: could not get connector name for %s, skipping\n", repo.NameWithOwner)
 			continue
 		}
 
@@ -115,7 +115,7 @@ func (cmd *CommandDocs) loadSpecifications(repo Repository) map[string]any {
 	// Split owner and repo name
 	owner, repoName, found := strings.Cut(repo.NameWithOwner, "/")
 	if !found {
-		fmt.Printf("  ⚠️ Warning: invalid repository name format %s\n", repo.NameWithOwner)
+		fmt.Printf("  ⚠️  Warning: invalid repository name format %s\n", repo.NameWithOwner)
 		return nil
 	}
 
@@ -127,7 +127,7 @@ func (cmd *CommandDocs) loadSpecifications(repo Repository) map[string]any {
 
 		specs, err := cmd.readSpecs(connectorYamlPath)
 		if err != nil {
-			fmt.Printf("  ⚠️ Warning: could not load connector.yaml for %s@%s\n",
+			fmt.Printf("  ⚠️  Warning: could not load connector.yaml for %s@%s\n",
 				owner+"/"+repoName, release.TagName)
 			continue
 		}

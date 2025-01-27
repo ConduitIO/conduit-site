@@ -78,12 +78,12 @@ func (cmd *CommandSpecifications) Execute(ctx context.Context) error {
 		// Split owner and repo name
 		owner, repoName, found := strings.Cut(repo.NameWithOwner, "/")
 		if !found {
-			fmt.Printf("  ⚠️ Warning: invalid repository name format %s\n", repo.NameWithOwner)
+			fmt.Printf("  ⚠️  Warning: invalid repository name format %s\n", repo.NameWithOwner)
 			continue
 		}
 
 		if len(repo.Releases) == 0 {
-			fmt.Printf("  ⚠️ Warning: no releases found for %s\n", repo.NameWithOwner)
+			fmt.Printf("  ⚠️  Warning: no releases found for %s\n", repo.NameWithOwner)
 			continue
 		}
 
