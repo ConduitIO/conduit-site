@@ -28,5 +28,7 @@ yarn-error.log*
 .env
 
 src/connectorgen/connectors.json
+src/connectorgen/connectors
+src/connectorgen/docs
 
 .vscode
