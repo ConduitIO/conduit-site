@@ -5,7 +5,7 @@ draft: false
 tags: [conduit, deprecate]
 ---
 
-In this new release of [`Conduit 0.13`](/changelog/2025-02-04-conduit-0-13-0-release), we're sunsetting the flag `pipelines.exit-on-error` we had previously deprecated on [this other announcement](/changelog/2024-10-15-pipelines-exit-on-degraded). Going forward, you can use `pipelines.exit-on-degraded` to provide the same functionality.
+In this new release of **Conduit 0.13**, we're sunsetting the flag `pipelines.exit-on-error` we had previously deprecated on [this other announcement](/changelog/2024-10-15-pipelines-exit-on-degraded). Going forward, you can use `pipelines.exit-on-degraded` to provide the same functionality.
 
 
 <!--truncate-->
