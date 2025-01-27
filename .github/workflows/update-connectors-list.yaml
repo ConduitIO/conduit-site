@@ -13,10 +13,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Update connectors' list
+      - name: Update connectors list
         working-directory: src/connectorgen
-        run: |
-          go run main.go ${GITHUB_WORKSPACE}/static/connectors.json ${GITHUB_WORKSPACE}/docs/1-using/4-connectors/7-list
+        run: go run main.go -o ${GITHUB_WORKSPACE}/static/connectors.json
+
+      - name: Update connector YAML files
+        working-directory: src/connectorgen
+        run: go run main.go -c ${GITHUB_WORKSPACE}/static/connectors.json -o ${GITHUB_WORKSPACE}/static/connectors
+
+      - name: Generate connector documentation
+        working-directory: src/connectorgen
+        run: go run main.go -c ${GITHUB_WORKSPACE}/static/connectors.json -s ${GITHUB_WORKSPACE}/static/connectors -o ${GITHUB_WORKSPACE}/docs/1-using/4-connectors/7-list
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v7.0.6
