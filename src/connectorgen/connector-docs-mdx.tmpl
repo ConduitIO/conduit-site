@@ -61,8 +61,13 @@ import Tooltip from '@mui/material/Tooltip';
 {{ .Specifications.latest.specification.author }}
 
 ## Latest release
-
-TODO
+{{ range $i, $release := .Releases }}
+  {{- if $release.IsLatest }}
+    {{- range $i, $asset := $release.Assets }}
+- [{{ $asset.Name }}]({{ $asset.BrowserDownload }})
+    {{- end }}
+  {{- end }}
+{{- end }}
 
 ## Description
 
