@@ -26,11 +26,11 @@ Flags:
       --api.grpc.address string                                address for serving the gRPC API (default ":8084")
       --api.http.address string                                address for serving the HTTP API (default ":8080")
       --config.path string                                     global conduit configuration file (default "/Users/username/repo/conduit/conduit.yaml")
-      --connectors.path string                                 path to standalone connectors' directory (default "/Users/username/repos/conduit/connectors")
-      --db.badger.path string                                  path to badger DB (default "/Users/username/repos/conduit/conduit.db")
+      --connectors.path string                                 path to standalone connectors' directory (default "/Users/username/repo/conduit/connectors")
+      --db.badger.path string                                  path to badger DB (default "/Users/username/repo/conduit/conduit.db")
       --db.postgres.connection-string string                   postgres connection string, may be a database URL or in PostgreSQL keyword/value format
       --db.postgres.table string                               postgres table in which to store data (will be created if it does not exist) (default "conduit_kv_store")
-      --db.sqlite.path string                                  path to sqlite3 DB (default "/Users/username/repos/conduit/conduit.db")
+      --db.sqlite.path string                                  path to sqlite3 DB (default "/Users/username/repo/conduit/conduit.db")
       --db.sqlite.table string                                 sqlite3 table in which to store data (will be created if it does not exist) (default "conduit_kv_store")
       --db.type string                                         database type; accepts badger,postgres,inmemory,sqlite (default "badger")
       --dev.blockprofile string                                write block profile to file
@@ -45,9 +45,9 @@ Flags:
       --pipelines.error-recovery.max-retries-window duration   amount of time running without any errors after which a pipeline is considered healthy (default 5m0s)
       --pipelines.error-recovery.min-delay duration            minimum delay before restart (default 1s)
       --pipelines.exit-on-degraded                             exit Conduit if a pipeline is degraded
-      --pipelines.path string                                  path to pipelines' directory (default "/Users/username/repos/conduit/pipelines")
+      --pipelines.path string                                  path to pipelines' directory (default "/Users/username/repo/conduit/pipelines")
       --preview.pipeline-arch-v2                               enables experimental pipeline architecture v2 (note that the new architecture currently supports only 1 source and 1 destination per pipeline)
-      --processors.path string                                 path to standalone processors' directory (default "/Users/username/repos/conduit/processors")
+      --processors.path string                                 path to standalone processors' directory (default "/Users/username/repo/conduit/processors")
       --schema-registry.confluent.connection-string string     confluent schema registry connection string
       --schema-registry.type string                            schema registry type; accepts builtin,confluent (default "builtin")
 ```
@@ -55,20 +55,20 @@ Flags:
 To know the current configurations that conduit will use when you run it, run `conduit config`:
 ```text
 ./conduit config
-config.path: /Users/username/repos/conduit/conduit.yaml
+config.path: /Users/username/repo/conduit/conduit.yaml
 db.type: badger
-db.badger.path: /Users/username/repos/conduit/conduit.db
+db.badger.path: /Users/username/repo/conduit/conduit.db
 db.postgres.table: conduit_kv_store
-db.sqlite.path: /Users/username/repos/conduit/conduit.db
+db.sqlite.path: /Users/username/repo/conduit/conduit.db
 db.sqlite.table: conduit_kv_store
 api.enabled: true
 api.http.address: :8080
 api.grpc.address: :8084
 log.level: info
 log.format: cli
-connectors.path: /Users/username/repos/conduit/connectors
-processors.path: /Users/username/repos/conduit/processors
-pipelines.path: /Users/username/repos/conduit/pipelines
+connectors.path: /Users/username/repo/conduit/connectors
+processors.path: /Users/username/repo/conduit/processors
+pipelines.path: /Users/username/repo/conduit/pipelines
 pipelines.exit-on-degraded: false
 pipelines.error-recovery.min-delay: 1s
 pipelines.error-recovery.max-delay: 10m0s
