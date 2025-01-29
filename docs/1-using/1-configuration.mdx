@@ -23,20 +23,20 @@ Usage:
 
 Flags:
       --api.enabled                                            enable HTTP and gRPC API (default true)
-      --config.path string                                     global conduit configuration file (default "/home/haris/projects/conduitio/conduit/conduit.yaml")
-      --connectors.path string                                 path to standalone connectors' directory (default "/home/haris/projects/conduitio/conduit/connectors")
-      --db.badger.path string                                  path to badger DB (default "/home/haris/projects/conduitio/conduit/conduit.db")
+      --api.grpc.address string                                address for serving the gRPC API (default ":8084")
+      --api.http.address string                                address for serving the HTTP API (default ":8080")
+      --config.path string                                     global conduit configuration file (default "/Users/username/repos/conduit/conduit.yaml")
+      --connectors.path string                                 path to standalone connectors' directory (default "/Users/username/repos/conduit/connectors")
+      --db.badger.path string                                  path to badger DB (default "/Users/username/repos/conduit/conduit.db")
       --db.postgres.connection-string string                   postgres connection string, may be a database URL or in PostgreSQL keyword/value format
       --db.postgres.table string                               postgres table in which to store data (will be created if it does not exist) (default "conduit_kv_store")
-      --db.sqlite.path string                                  path to sqlite3 DB (default "/home/haris/projects/conduitio/conduit/conduit.db")
+      --db.sqlite.path string                                  path to sqlite3 DB (default "/Users/username/repos/conduit/conduit.db")
       --db.sqlite.table string                                 sqlite3 table in which to store data (will be created if it does not exist) (default "conduit_kv_store")
       --db.type string                                         database type; accepts badger,postgres,inmemory,sqlite (default "badger")
       --dev.blockprofile string                                write block profile to file
       --dev.cpuprofile string                                  write CPU profile to file
       --dev.memprofile string                                  write memory profile to file
-      --grpc.address string                                    address for serving the gRPC API (default ":8084")
   -h, --help                                                   help for run
-      --http.address string                                    address for serving the HTTP API (default ":8080")
       --log.format string                                      sets the format of the logging; accepts json, cli (default "cli")
       --log.level string                                       sets logging level; accepts debug, info, warn, error, trace (default "info")
       --pipelines.error-recovery.backoff-factor int            backoff factor applied to the last delay (default 2)
@@ -45,11 +45,38 @@ Flags:
       --pipelines.error-recovery.max-retries-window duration   amount of time running without any errors after which a pipeline is considered healthy (default 5m0s)
       --pipelines.error-recovery.min-delay duration            minimum delay before restart (default 1s)
       --pipelines.exit-on-degraded                             exit Conduit if a pipeline is degraded
-      --pipelines.path string                                  path to pipelines' directory (default "/home/haris/projects/conduitio/conduit/pipelines")
+      --pipelines.path string                                  path to pipelines' directory (default "/Users/username/repos/conduit/pipelines")
       --preview.pipeline-arch-v2                               enables experimental pipeline architecture v2 (note that the new architecture currently supports only 1 source and 1 destination per pipeline)
-      --processors.path string                                 path to standalone processors' directory (default "/home/haris/projects/conduitio/conduit/processors")
+      --processors.path string                                 path to standalone processors' directory (default "/Users/username/repos/conduit/processors")
       --schema-registry.confluent.connection-string string     confluent schema registry connection string
       --schema-registry.type string                            schema registry type; accepts builtin,confluent (default "builtin")
+```
+
+To know the current configurations that conduit will use when you run it, run `conduit config`:
+```text
+./conduit config
+config.path: /Users/username/repos/conduit/conduit.yaml
+db.type: badger
+db.badger.path: /Users/username/repos/conduit/conduit.db
+db.postgres.table: conduit_kv_store
+db.sqlite.path: /Users/username/repos/conduit/conduit.db
+db.sqlite.table: conduit_kv_store
+api.enabled: true
+api.http.address: :8080
+api.grpc.address: :8084
+log.level: info
+log.format: cli
+connectors.path: /Users/username/repos/conduit/connectors
+processors.path: /Users/username/repos/conduit/processors
+pipelines.path: /Users/username/repos/conduit/pipelines
+pipelines.exit-on-degraded: false
+pipelines.error-recovery.min-delay: 1s
+pipelines.error-recovery.max-delay: 10m0s
+pipelines.error-recovery.backoff-factor: 2
+pipelines.error-recovery.max-retries: -1
+pipelines.error-recovery.max-retries-window: 5m0s
+schema-registry.type: builtin
+preview.pipeline-arch-v2: false
 ```
 
 ## Environment variables
@@ -57,14 +84,14 @@ Flags:
 **Environment variables** (lower priority) - an environment variable is only
   used if no CLI flag is provided for the same option. Environment variables
   have the prefix `CONDUIT` and contain underscores instead of dots and
-  hyphens (e.g. the flag `-db.postgres.connection-string` corresponds
+  hyphens (e.g. the flag `--db.postgres.connection-string` corresponds
   to `CONDUIT_DB_POSTGRES_CONNECTION_STRING`).
 
 ## Configuration file
 
 **Configuration file** (lowest priority) - Conduit by default loads the
   file `conduit.yaml` placed in the same folder as Conduit. The path to the file
-  can be customized using the CLI flag `-config`. It is not required to provide
+  can be customized using the CLI flag `--config.path`. It is not required to provide
   a configuration file and any value in the configuration file can be overridden
   by an environment variable or a flag. The file content should be a YAML
   document where keys can be hierarchically split on `.`. For example:
