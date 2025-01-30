@@ -15,8 +15,7 @@ After Conduit 0.13, make sure you only use `pipelines.exit-on-degraded` when con
 ```bash
 $ conduit run --help
 ...
-  -pipelines.exit-on-degraded:
-      exit Conduit if a pipeline enters a degraded state
+            --pipelines.exit-on-degraded                exit Conduit if a pipeline enters a degraded state
 ...
 ```
 
