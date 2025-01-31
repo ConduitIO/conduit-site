@@ -15,7 +15,7 @@ tags: [conduit, release]
 
 ```bash
 $ tar zxvf conduit_0.1.0_Darwin_x86_64.tar.gz
-$ ./conduit
+$ ./conduit run
 ```
 
 - **User Interface**: Conduit includes a built-in UI for local development, allowing you to easily navigate to [http://localhost:8080/ui/](http://localhost:8080/ui/) and start building pipelines.

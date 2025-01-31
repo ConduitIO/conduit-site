@@ -23,7 +23,7 @@ through parameters of the following form: `db.<db type>.<parameter name>`.
 For example, if we wanted to use a PostgreSQL instance listening on `localhost:5432` using command line flags:
 
 ```shell
-$ ./conduit 
+$ ./conduit run 
   -db.type=postgres 
   -db.postgres.connection-string="postgresql://localhost:5432/conduitdb"
 ```

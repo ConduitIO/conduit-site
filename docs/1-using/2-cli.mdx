@@ -1,0 +1,144 @@
+---
+title: 'Conduit CLI'
+sidebar_label: 'Conduit CLI'
+slug: '/cli'
+---
+
+Conduit CLI is a powerful tool designed to simplify the way users interact with Conduit,
+offering an efficient way to configure, manage, run and observe its components (connector,
+processor, pipelines, etc...). Developed using our open-source library [Ecdysis](https://github.com/ConduitIO/ecdysis)
+that helps with building CLI tools in Go.
+
+## CLI commands
+To list all the commands provided by the Conduit CLI, run `conduit --help`:
+```text
+Conduit CLI is a command-line that helps you interact with and manage Conduit.
+
+Usage:
+  conduit [flags]
+  conduit [command]
+
+Available Commands:
+  config            Shows the configuration to be used when running Conduit.
+  connector-plugins Manage Connector Plugins
+  connectors        Manage Conduit Connectors
+  help              Help about any command
+  init              Initialize Conduit with a configuration file and directories.
+  open              Open in a web browser
+  pipelines         Initialize and manage pipelines
+  processor-plugins Manage Processor Plugins
+  processors        Manage Processors
+  run               Run Conduit
+  version           Show the current version of Conduit.
+
+Flags:
+      --api.grpc.address string   address where Conduit is running
+      --config.path string        path to the configuration file
+  -h, --help                      help for conduit
+  -v, --version                   show the current Conduit version
+
+Use "conduit [command] --help" for more information about a command.
+```
+:::note
+Most of these commands require conduit to be already running, so it could have access to
+the components used by conduit when running, or available to be used by it.
+To run conduit: `conduit run`
+:::
+
+For more details into the commands and how to use them, let's take for example the `connector-plugins` command, to get more
+information about its options, run `conduit connector-plugins --help`, which will show that you have two available commands:
+1. `list`, `ls`
+This command will show all the connector plugins available to be used by conduit, including the builtin connectors
+and the ones under the `connectors` directory.
+```text
+./conduit connector-plugins list
++----------------------------------------------+---------------------------------------------------------------------------------+
+|                     NAME                     |                                     SUMMARY                                     |
++----------------------------------------------+---------------------------------------------------------------------------------+
+| builtin:file@v0.9.0                          | A file source and destination plugin for Conduit.                               |
+| builtin:generator@v0.9.1                     | Generator plugin                                                                |
+| builtin:kafka@v0.11.1                        | A Kafka source and destination plugin for Conduit, written in Go.               |
+| builtin:log@v0.6.0                           | A destination connector that logs all incoming records.                         |
+| builtin:postgres@v0.10.1                     | A PostgreSQL source and destination plugin for Conduit.                         |
+| builtin:s3@v0.8.1                            | An S3 source and destination plugin for Conduit, written in Go.                 |
+| standalone:cassandra@v0.0.1                  | A Cassandra Destination Connector.                                              |
+| standalone:dynamodb@f9aeeee-dirty            | A DynamoDB source plugin for Conduit                                            |
+| standalone:grpc-client@v0.1.0                | A gRPC Source & Destination Clients.                                            |
+| standalone:grpc-server@v0.1.0                | A gRPC Source Server.                                                           |
+| standalone:postgres@v0.5.0-18-g7b9be7e-dirty | A PostgreSQL source and destination plugin for Conduit.                         |
++----------------------------------------------+---------------------------------------------------------------------------------+
+```
+
+2. `describe`, `desc`
+This command shows the detailed description of a specific connector plugin, take the `builtin:postgres@v0.10.1` from the
+output above for example, to show more details about it, run `conduit connector-plugins desc builtin:postgres@v0.10.1`:
+```text
+./conduit connector-plugins desc builtin:postgres@v0.10.1
+Name: builtin:postgres@v0.10.1
+Summary: A PostgreSQL source and destination plugin for Conduit.
+Author: Meroxa, Inc.
+Version: v0.10.1
+
+Source Parameters:
++------------------------------------+----------+------------------------------------------------------------------------------------------------------+-------------+---------------------------+
+|                NAME                |   TYPE   |                                             DESCRIPTION                                              |   DEFAULT   |        VALIDATIONS        |
++------------------------------------+----------+------------------------------------------------------------------------------------------------------+-------------+---------------------------+
+| url                                | string   | URL is the connection string for the Postgres database.                                              |             | [required]                |
+| tables                             | string   | Tables is a List of table names to read from, separated by a comma, e.g.:"table1,table2". Use "*" if |             |                           |
+|                                    |          | you'd like to listen to all tables.                                                                  |             |                           |
+| logrepl.publicationName            | string   | LogreplPublicationName determines the publication name in case the connector uses logical            | conduitpub  |                           |
+|                                    |          | replication to listen to changes (see CDCMode).                                                      |             |                           |
+| snapshotMode                       | string   | SnapshotMode is whether the plugin will take a snapshot of the entire table before starting cdc      | initial     | [inclusion=initial,never] |
+|                                    |          | mode.                                                                                                |             |                           |
+| logrepl.autoCleanup                | bool     | LogreplAutoCleanup determines if the replication slot and publication should be removed when the     | true        |                           |
+|                                    |          | connector is deleted.                                                                                |             |                           |
+| logrepl.slotName                   | string   | LogreplSlotName determines the replication slot name in case the connector uses logical replication  | conduitslot |                           |
+|                                    |          | to listen to changes (see CDCMode).                                                                  |             |                           |
+| logrepl.withAvroSchema             | bool     | WithAvroSchema determines whether the connector should attach an avro schema on each                 | false       |                           |
+|                                    |          | record.                                                                                              |             |                           |
+| cdcMode                            | string   | CDCMode determines how the connector should listen to changes.                                       | auto        | [inclusion=auto,logrepl]  |
+| snapshot.fetchSize                 | int      | Snapshot fetcher size determines the number of rows to retrieve at a time.                           | 50000       |                           |
+| table                              | string   | Deprecated: use `tables` instead.                                                                    |             |                           |
+| sdk.schema.context.name            | string   | Schema context name to be used. Used as a prefix for all schema subject names. Defaults to the       |             |                           |
+|                                    |          | connector ID.                                                                                        |             |                           |
+| sdk.schema.extract.payload.subject | string   | The subject of the payload schema. If the record metadata contains the field "opencdc.collection" it | payload     |                           |
+|                                    |          | is prepended to the subject name and separated with a dot.                                           |             |                           |
+| sdk.schema.extract.payload.enabled | bool     | Whether to extract and encode the record payload with a schema.                                      | false       |                           |
+| sdk.schema.extract.type            | string   | The type of the payload schema.                                                                      | avro        | [inclusion=avro]          |
+| sdk.batch.size                     | int      | Maximum size of batch before it gets read from the source.                                           | 0           |                           |
+| sdk.schema.extract.key.enabled     | bool     | Whether to extract and encode the record key with a schema.                                          | false       |                           |
+| sdk.schema.context.enabled         | bool     | Specifies whether to use a schema context name. If set to false, no schema context name will be      | true        |                           |
+|                                    |          | used, and schemas will be saved with the subject name specified in the connector (not safe because   |             |                           |
+|                                    |          | of name conflicts).                                                                                  |             |                           |
+| sdk.schema.extract.key.subject     | string   | The subject of the key schema. If the record metadata contains the field "opencdc.collection" it is  | key         |                           |
+|                                    |          | prepended to the subject name and separated with a dot.                                              |             |                           |
+| sdk.batch.delay                    | duration | Maximum delay before an incomplete batch is read from the source.                                    | 0s          |                           |
++------------------------------------+----------+------------------------------------------------------------------------------------------------------+-------------+---------------------------+
+
+Destination Parameters:
++------------------------------------+-------------+----------------------------------------------------------------------------------------------------+--------------------------------------------+-------------------------------------------------+
+|                NAME                |    TYPE     |                                            DESCRIPTION                                             |                  DEFAULT                   |                   VALIDATIONS                   |
++------------------------------------+-------------+----------------------------------------------------------------------------------------------------+--------------------------------------------+-------------------------------------------------+
+| url                                | string      | URL is the connection string for the Postgres database.                                            |                                            | [required]                                      |
+| table                              | string      | Table is used as the target table into which records are inserted.                                 | {{ index .Metadata "opencdc.collection" }} |                                                 |
+| key                                | string      | Key represents the column name for the key used to identify and update existing rows.              |                                            |                                                 |
+| sdk.batch.size                     | int         | Maximum size of batch before it gets written to the destination.                                   | 0                                          |                                                 |
+| sdk.batch.delay                    | duration    | Maximum delay before an incomplete batch is written to the destination.                            | 0s                                         |                                                 |
+| sdk.schema.extract.key.enabled     | bool        | Whether to extract and decode the record key with a schema.                                        | true                                       |                                                 |
+| sdk.record.format                  | string      | The format of the output record.                                                                   | opencdc/json                               | [inclusion=debezium/json,opencdc/json,template] |
+| sdk.record.format.options          | string      | Options to configure the chosen output record format. Options are key=value pairs separated with   |                                            |                                                 |
+|                                    |             | comma (e.g. opt1=val2,opt2=val2).                                                                  |                                            |                                                 |
+| sdk.rate.perSecond                 | float       | Maximum number of records written per second (0 means no rate limit).                              | 0                                          |                                                 |
+| sdk.rate.burst                     | int         | Allow bursts of at most X records (0 or less means that bursts are not limited). Only takes effect | 0                                          |                                                 |
+|                                    |             | if a rate limit per second is set. Note that if `sdk.batch.size` is bigger than `sdk.rate.burst`,  |                                            |                                                 |
+|                                    |             | the effective batch size will be equal to `sdk.rate.burst`.                                        |                                            |                                                 |
+| sdk.schema.extract.payload.enabled | bool        | Whether to extract and decode the record payload with a schema.                                    | true                                       |                                                 |
++------------------------------------+-------------+----------------------------------------------------------------------------------------------------+--------------------------------------------+-------------------------------------------------+
+```
+The output shows detailed description about the connector itself, and all the Source and/or Destination parameters that it 
+provides, with details about those parameters too.
+
+These same examples can be used for other commands, like `pipelines list`, `pipelines desc`, `connectors ls`,
+`connectors desc`, `processors list`, etc...
+
+![scarf pixel conduit-site-docs-using](https://static.scarf.sh/a.png?x-pxid=76d5981f-cd63-422b-8cf7-eab9e99f0cd3)

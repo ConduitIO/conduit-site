@@ -32,12 +32,12 @@ The lifecycle of the connector generally looks like this:
 
 ### Connector plugin is loaded
 
-Conduit loads all connector plugins it discovers in the
-[connector path](/docs/using/connectors/installing#installing-a-connector-in-conduit)
+Conduit loads all connector plugins it discovers in
+the [connector path](/docs/using/connectors/installing#installing-a-connector-in-conduit)
 while starting up. Each plugin is started in a separate process to ensure it is
 a valid binary and to obtain the connector specifications. These specifications
 are then stored in Conduit's memory and exposed through the API. This helps the
-UI display the available connector plugins and their corresponding parameters
+API display the available connector plugins and their corresponding parameters
 that can be configured.
 
 During the loading of connector specifications, the
