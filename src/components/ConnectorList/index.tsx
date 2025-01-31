@@ -24,16 +24,16 @@ class Filter {
   }
 
   matches(connector: Connector): boolean {
-    if (!this.showWithoutRelease && !connector.latestRelease) {
+    if (!this.showWithoutRelease && (!connector.releases || connector.releases.length == 0)) {
       return false;
     }
     if (!this.showCommunity &&
-      !connector.nameWithOwner.toLowerCase().startsWith('conduitio/') &&
-      !connector.nameWithOwner.toLowerCase().startsWith('conduitio-labs/')) {
+      !connector.name_with_owner.toLowerCase().startsWith('conduitio/') &&
+      !connector.name_with_owner.toLowerCase().startsWith('conduitio-labs/')) {
       return false;
     }
     if (this.nameWithOwnerQuery &&
-      !connector.nameWithOwner.toLowerCase().includes(this.nameWithOwnerQuery)) {
+      !connector.name_with_owner.toLowerCase().includes(this.nameWithOwnerQuery)) {
       return false;
     }
     return true;
@@ -61,7 +61,7 @@ class ConnectorList extends React.Component<{connectors: Connector[]}, Connector
   sortConnectors(connectors: Connector[]): Connector[] {
     return connectors.sort((a: Connector, b: Connector): number => {
       const hasOwner = (c: Connector, owner: string) => {
-        return c.nameWithOwner.toLowerCase().startsWith(owner + '/');
+        return c.name_with_owner.toLowerCase().startsWith(owner + '/');
       }
 
       // ConduitIO repos first
@@ -77,7 +77,7 @@ class ConnectorList extends React.Component<{connectors: Connector[]}, Connector
       if (!aOwnerIsConduitioLabs && bOwnerIsConduitioLabs) { return 1; }
 
       // Sort by name everywhere else
-      if (a.nameWithOwner.toLowerCase() < b.nameWithOwner.toLowerCase()) {
+      if (a.name_with_owner.toLowerCase() < b.name_with_owner.toLowerCase()) {
         return -1;
       }
       return 1;

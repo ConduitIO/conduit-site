@@ -27,6 +27,7 @@ export class Release {
   published_at: string;
   html_url: string;
   assets: Asset[];
+  is_latest: boolean;
 }
 
 export class Asset {
