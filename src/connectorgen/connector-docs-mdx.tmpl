@@ -1,8 +1,8 @@
 ---
 IMPORTANT: This file was generated using src/connectorgen/main.go. DO NOT EDIT.
 
-title: "{{ .Specification.Name }}"
-description: "{{ .Specification.Summary }}"
+title: "{{ .Specifications.latest.specification.name }}"
+description: "{{ .Specifications.latest.specification.summary }}"
 ---
 
 import ReactDiffViewer from 'react-diff-viewer';
@@ -17,7 +17,7 @@ import Link from '@mui/material/Link';
 import StarIcon from '@mui/icons-material/Star';
 import Tooltip from '@mui/material/Tooltip';
 
-# {{ .Specification.Name }}
+# {{ .Specifications.latest.specification.name }}
 
 <Stack
   className='align-items-center'
@@ -51,30 +51,31 @@ import Tooltip from '@mui/material/Tooltip';
         icon={<StarIcon />}
         label="{{ .Stargazers }}"
         size='large'
-        sx={{printf "{{" }} height: 32 {{printf "}}" }} 
+        sx={{printf "{{" }} height: 32 {{printf "}}" }}
       />
     </Box>
 </Stack>
 
 ## Author
 
-{{ .Specification.Author }}
+{{ .Specifications.latest.specification.author }}
 
 ## Latest release
-
-{{- if .LatestRelease }}
-    {{- range $i, $asset := .LatestRelease.Assets }}
+{{ range $i, $release := .Releases }}
+  {{- if $release.IsLatest }}
+    {{- range $i, $asset := $release.Assets }}
 - [{{ $asset.Name }}]({{ $asset.BrowserDownload }})
     {{- end }}
+  {{- end }}
 {{- end }}
 
 ## Description
 
-{{ .Specification.Description }}
+{{ .Specifications.latest.specification.description }}
 
 ## Source Parameters
 
-{{- if gt (len .Specification.Source.Parameters) 0 }}
+{{- if gt (len .Specifications.latest.specification.source.parameters) 0 }}
 ```yaml
 version: 2.2
 pipelines:
@@ -83,24 +84,24 @@ pipelines:
     connectors:
       - id: example-source
         type: source
-        plugin: "{{ .Specification.Name }}"
+        plugin: "{{ .Specifications.latest.specification.name }}"
         name: example-source
-        {{ if gt (len .Specification.Source.Parameters) 0 -}}
+        {{ if gt (len .Specifications.latest.specification.source.parameters) 0 -}}
         settings:
-          {{- range $name, $param := .Specification.Source.Parameters }}
-          {{ formatParameterDescriptionYAML $param.Description }}
-          # Type: {{ $param.Type }}
-          {{ $param.Name }}: {{ formatParameterValueYAML $param.Default }}
+          {{- range $name, $param := .Specifications.latest.specification.source.parameters }}
+          {{ formatCommentYAML $param.description 10 }}
+          # Type: {{ $param.type }}
+          {{ $param.name }}: {{ formatValueYAML $param.default 10 }}
           {{- end }}
         {{- end }}
 ```
 {{- else }}
-Reading data with {{ .Specification.Name }} is not supported.
+Reading data with {{ .Specifications.latest.specification.name }} is not supported.
 {{- end }}
 
 ## Destination Parameters
 
-{{- if gt (len .Specification.Destination.Parameters) 0 }}
+{{- if gt (len .Specifications.latest.specification.destination.parameters) 0 }}
 ```yaml
 version: 2.2
 pipelines:
@@ -109,15 +110,15 @@ pipelines:
     connectors:
       - id: example-destination
         type: destination
-        plugin: "{{ .Specification.Name }}"
+        plugin: "{{ .Specifications.latest.specification.name }}"
         name: example-destination
         settings:
-          {{- range $name, $param := .Specification.Destination.Parameters }}
-          {{ formatParameterDescriptionYAML $param.Description }}
-          # Type: {{ $param.Type }}
-          {{ $param.Name }}: {{ formatParameterValueYAML $param.Default }}
+          {{- range $name, $param := .Specifications.latest.specification.destination.parameters }}
+          {{ formatCommentYAML $param.description 10 }}
+          # Type: {{ $param.type }}
+          {{ $param.name }}: {{ formatValueYAML $param.default 10 }}
           {{- end }}
 ```
 {{- else }}
-Writing data with {{ .Specification.Name }} is not supported.
+Writing data with {{ .Specifications.latest.specification.name }} is not supported.
 {{- end }}

@@ -9,7 +9,7 @@ export default function APIPage(): React.ReactElement {
       {() => {
         require('rapidoc');
         return <rapi-doc
-          spec-url="https://raw.githubusercontent.com/ConduitIO/conduit/main/pkg/web/openapi/swagger-ui/api/v1/api.swagger.json"
+          spec-url="https://raw.githubusercontent.com/ConduitIO/conduit/main/pkg/http/openapi/swagger-ui/api/v1/api.swagger.json"
           render-style="focused"
           style={{height: "100vh", width: "100%"}}
           schema-style="table"

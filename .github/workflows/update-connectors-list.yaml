@@ -13,18 +13,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Update connectors' list
+      - name: Generate connectors.json, connector YAML files and connector documentation
         working-directory: src/connectorgen
-        run: |
-          go run main.go ${GITHUB_WORKSPACE}/static/connectors.json ${GITHUB_WORKSPACE}/docs/1-using/4-connectors/7-list
+        run: make generate
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v7.0.6
         with:
-          title: Update connectors' list
-          body: Automatic pull request for updating list of connectors
+          title: Update connectors list
+          body: Automatic pull request for updating list of connectors, specifications and documentation.
           branch: update-connectors-list
-          commit-message: "[automated] Update connectors' list"
+          commit-message: "[automated] Update connectors list"
 
       - name: Merge pull request
         run: gh pr merge --auto --squash update-connectors-list
