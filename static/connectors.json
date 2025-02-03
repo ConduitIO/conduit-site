@@ -6360,15 +6360,6 @@
     ]
   },
   {
-    "name_with_owner": "ConduitIO/conduit-site",
-    "description": "",
-    "created_at": "2022-01-19 15:51:58 +0000 UTC",
-    "url": "https://github.com/ConduitIO/conduit-site",
-    "stargazer_count": 1,
-    "fork_count": 7,
-    "releases": []
-  },
-  {
     "name_with_owner": "ViniciusMiana/conduit-connector-pulsar",
     "description": "Provides a source and a destination Pulsar connector, for Conduit.",
     "created_at": "2023-12-07 00:47:43 +0000 UTC",
@@ -12832,46 +12823,10 @@
     "releases": []
   },
   {
-    "name_with_owner": "frillyrequi/conduit-connector-sdk",
-    "description": "SDK for Conduit connectors written in Go conduit, ",
-    "created_at": "2025-01-31 11:40:30 +0000 UTC",
-    "url": "https://github.com/frillyrequi/conduit-connector-sdk",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "hariso/crispy-octo-system",
-    "description": "",
-    "created_at": "2025-01-31 19:24:37 +0000 UTC",
-    "url": "https://github.com/hariso/crispy-octo-system",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "hariso/cuddly-chainsaw",
-    "description": "",
-    "created_at": "2025-01-31 19:41:27 +0000 UTC",
-    "url": "https://github.com/hariso/cuddly-chainsaw",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
     "name_with_owner": "hariso/foobar",
     "description": "",
     "created_at": "2025-01-09 14:10:05 +0000 UTC",
     "url": "https://github.com/hariso/foobar",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "hariso/reimagined-octo-umbrella",
-    "description": "",
-    "created_at": "2025-01-31 19:53:37 +0000 UTC",
-    "url": "https://github.com/hariso/reimagined-octo-umbrella",
     "stargazer_count": 0,
     "fork_count": 0,
     "releases": []

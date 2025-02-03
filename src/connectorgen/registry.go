@@ -35,6 +35,7 @@ var excludedRepositories = []string{
 	"ConduitIO/streaming-benchmarks",
 	"ConduitIO/conduit-connector-template",
 	"ConduitIO/conduit-operator",
+	"ConduitIO/conduit-site",
 	// Test modules within the SDK use SDK as a dependency,
 	// so the SDK is included as a dependent of itself.
 	"ConduitIO/conduit-connector-sdk",
@@ -52,6 +53,10 @@ var excludedRepositories = []string{
 	"WeirdMagician/conduit-connector-google-cloudstorage",
 	"GevorgGal/conduit-connector-influxdb",
 	"EnigmaForLife/shared",
+	"frillyrequi/conduit-connector-sdk",
+	"hariso/crispy-octo-system",
+	"hariso/cuddly-chainsaw",
+	"hariso/reimagined-octo-umbrella",
 }
 
 // maps architectures found in asset names to GOARCH
