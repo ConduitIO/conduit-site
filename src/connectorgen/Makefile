@@ -1,7 +1,9 @@
+CONN_LIST_DIR=../../docs/1-using/5-connectors/7-list/
+
 .PHONY: clean-pages
 clean-pages:
 	# Remove all files in the connectors list directory except index.mdx
-	find ../../docs/1-using/4-connectors/7-list/ ! -name 'index.mdx' -type f -exec rm -f {} +
+	find $(CONN_LIST_DIR) ! -name 'index.mdx' -type f -exec rm -f {} +
 
 .PHONY: registry
 registry:
@@ -13,7 +15,7 @@ specifications:
 
 .PHONY: pages
 pages: clean-pages
-	go run . pages -c ../../static/connectors.json -s ../../static/connectors -o ../../docs/1-using/4-connectors/7-list
+	go run . pages -c ../../static/connectors.json -s ../../static/connectors -o $(CONN_LIST_DIR)
 
 .PHONY: generate
 generate: registry specifications pages

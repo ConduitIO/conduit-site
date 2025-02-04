@@ -1628,6 +1628,106 @@
     "fork_count": 5,
     "releases": [
       {
+        "tag_name": "v0.12.0",
+        "name": "v0.12.0",
+        "body": "## Changelog\n* 42c3104165c01566347e776f8a783893f6b8cfc5: Generate connector yaml (#180) (@lovromazgon)\n* 130e372526c58862399cdfd4ac516a7bdb04c04b: Move scarf pixel to the bottom of the readme (#191) (@lovromazgon)\n* fbc51051820aa677c9ff2bfba34fd48be03fca72: Update version to v0.12.0 (#199) (@hariso)\n\n",
+        "draft": false,
+        "prerelease": false,
+        "published_at": "2025-02-04T13:47:19Z",
+        "html_url": "https://github.com/ConduitIO/conduit-connector-kafka/releases/tag/v0.12.0",
+        "assets": [
+          {
+            "name": "conduit-connector-kafka_0.12.0_Darwin_arm64.tar.gz",
+            "os": "darwin",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-kafka/releases/download/v0.12.0/conduit-connector-kafka_0.12.0_Darwin_arm64.tar.gz",
+            "created_at": "2025-02-04T13:47:16Z",
+            "updated_at": "2025-02-04T13:47:17Z",
+            "download_count": 1,
+            "size": 7537522
+          },
+          {
+            "name": "conduit-connector-kafka_0.12.0_Darwin_x86_64.tar.gz",
+            "os": "darwin",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-kafka/releases/download/v0.12.0/conduit-connector-kafka_0.12.0_Darwin_x86_64.tar.gz",
+            "created_at": "2025-02-04T13:47:16Z",
+            "updated_at": "2025-02-04T13:47:17Z",
+            "download_count": 1,
+            "size": 7957567
+          },
+          {
+            "name": "conduit-connector-kafka_0.12.0_Linux_arm64.tar.gz",
+            "os": "linux",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-kafka/releases/download/v0.12.0/conduit-connector-kafka_0.12.0_Linux_arm64.tar.gz",
+            "created_at": "2025-02-04T13:47:16Z",
+            "updated_at": "2025-02-04T13:47:17Z",
+            "download_count": 1,
+            "size": 7182631
+          },
+          {
+            "name": "conduit-connector-kafka_0.12.0_Linux_i386.tar.gz",
+            "os": "linux",
+            "arch": "386",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-kafka/releases/download/v0.12.0/conduit-connector-kafka_0.12.0_Linux_i386.tar.gz",
+            "created_at": "2025-02-04T13:47:17Z",
+            "updated_at": "2025-02-04T13:47:18Z",
+            "download_count": 1,
+            "size": 7342881
+          },
+          {
+            "name": "conduit-connector-kafka_0.12.0_Linux_x86_64.tar.gz",
+            "os": "linux",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-kafka/releases/download/v0.12.0/conduit-connector-kafka_0.12.0_Linux_x86_64.tar.gz",
+            "created_at": "2025-02-04T13:47:16Z",
+            "updated_at": "2025-02-04T13:47:17Z",
+            "download_count": 1,
+            "size": 7763130
+          },
+          {
+            "name": "conduit-connector-kafka_0.12.0_Windows_arm64.tar.gz",
+            "os": "windows",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-kafka/releases/download/v0.12.0/conduit-connector-kafka_0.12.0_Windows_arm64.tar.gz",
+            "created_at": "2025-02-04T13:47:17Z",
+            "updated_at": "2025-02-04T13:47:18Z",
+            "download_count": 1,
+            "size": 7281274
+          },
+          {
+            "name": "conduit-connector-kafka_0.12.0_Windows_i386.tar.gz",
+            "os": "windows",
+            "arch": "386",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-kafka/releases/download/v0.12.0/conduit-connector-kafka_0.12.0_Windows_i386.tar.gz",
+            "created_at": "2025-02-04T13:47:17Z",
+            "updated_at": "2025-02-04T13:47:18Z",
+            "download_count": 1,
+            "size": 7662671
+          },
+          {
+            "name": "conduit-connector-kafka_0.12.0_Windows_x86_64.tar.gz",
+            "os": "windows",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-kafka/releases/download/v0.12.0/conduit-connector-kafka_0.12.0_Windows_x86_64.tar.gz",
+            "created_at": "2025-02-04T13:47:17Z",
+            "updated_at": "2025-02-04T13:47:18Z",
+            "download_count": 1,
+            "size": 8009820
+          }
+        ],
+        "is_latest": true
+      },
+      {
         "tag_name": "v0.11.1",
         "name": "v0.11.1",
         "body": "## Changelog\n\n",
@@ -1725,7 +1825,7 @@
             "size": 7548644
           }
         ],
-        "is_latest": true
+        "is_latest": false
       },
       {
         "tag_name": "v0.11.0",
@@ -3945,7 +4045,7 @@
     "created_at": "2022-03-07 16:06:24 +0000 UTC",
     "url": "https://github.com/ConduitIO/conduit-connector-postgres",
     "stargazer_count": 12,
-    "fork_count": 9,
+    "fork_count": 10,
     "releases": [
       {
         "tag_name": "v0.11.0",
@@ -12818,15 +12918,6 @@
     "description": "Conduit connector for Weaviate",
     "created_at": "2023-07-13 07:27:26 +0000 UTC",
     "url": "https://github.com/devarispbrown/conduit-connector-weaviate",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "hariso/foobar",
-    "description": "",
-    "created_at": "2025-01-09 14:10:05 +0000 UTC",
-    "url": "https://github.com/hariso/foobar",
     "stargazer_count": 0,
     "fork_count": 0,
     "releases": []
