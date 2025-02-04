@@ -1644,7 +1644,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-kafka/releases/download/v0.12.0/conduit-connector-kafka_0.12.0_Darwin_arm64.tar.gz",
             "created_at": "2025-02-04T13:47:16Z",
             "updated_at": "2025-02-04T13:47:17Z",
-            "download_count": 0,
+            "download_count": 1,
             "size": 7537522
           },
           {
@@ -1655,7 +1655,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-kafka/releases/download/v0.12.0/conduit-connector-kafka_0.12.0_Darwin_x86_64.tar.gz",
             "created_at": "2025-02-04T13:47:16Z",
             "updated_at": "2025-02-04T13:47:17Z",
-            "download_count": 0,
+            "download_count": 1,
             "size": 7957567
           },
           {
@@ -1666,7 +1666,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-kafka/releases/download/v0.12.0/conduit-connector-kafka_0.12.0_Linux_arm64.tar.gz",
             "created_at": "2025-02-04T13:47:16Z",
             "updated_at": "2025-02-04T13:47:17Z",
-            "download_count": 0,
+            "download_count": 1,
             "size": 7182631
           },
           {
@@ -1677,7 +1677,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-kafka/releases/download/v0.12.0/conduit-connector-kafka_0.12.0_Linux_i386.tar.gz",
             "created_at": "2025-02-04T13:47:17Z",
             "updated_at": "2025-02-04T13:47:18Z",
-            "download_count": 0,
+            "download_count": 1,
             "size": 7342881
           },
           {
@@ -1688,7 +1688,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-kafka/releases/download/v0.12.0/conduit-connector-kafka_0.12.0_Linux_x86_64.tar.gz",
             "created_at": "2025-02-04T13:47:16Z",
             "updated_at": "2025-02-04T13:47:17Z",
-            "download_count": 0,
+            "download_count": 1,
             "size": 7763130
           },
           {
@@ -1699,7 +1699,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-kafka/releases/download/v0.12.0/conduit-connector-kafka_0.12.0_Windows_arm64.tar.gz",
             "created_at": "2025-02-04T13:47:17Z",
             "updated_at": "2025-02-04T13:47:18Z",
-            "download_count": 0,
+            "download_count": 1,
             "size": 7281274
           },
           {
@@ -1710,7 +1710,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-kafka/releases/download/v0.12.0/conduit-connector-kafka_0.12.0_Windows_i386.tar.gz",
             "created_at": "2025-02-04T13:47:17Z",
             "updated_at": "2025-02-04T13:47:18Z",
-            "download_count": 0,
+            "download_count": 1,
             "size": 7662671
           },
           {
@@ -1721,7 +1721,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-kafka/releases/download/v0.12.0/conduit-connector-kafka_0.12.0_Windows_x86_64.tar.gz",
             "created_at": "2025-02-04T13:47:17Z",
             "updated_at": "2025-02-04T13:47:18Z",
-            "download_count": 0,
+            "download_count": 1,
             "size": 8009820
           }
         ],
@@ -12918,15 +12918,6 @@
     "description": "Conduit connector for Weaviate",
     "created_at": "2023-07-13 07:27:26 +0000 UTC",
     "url": "https://github.com/devarispbrown/conduit-connector-weaviate",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "hariso/foobar",
-    "description": "",
-    "created_at": "2025-01-09 14:10:05 +0000 UTC",
-    "url": "https://github.com/hariso/foobar",
     "stargazer_count": 0,
     "fork_count": 0,
     "releases": []
