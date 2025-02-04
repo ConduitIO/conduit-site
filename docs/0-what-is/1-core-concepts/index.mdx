@@ -14,6 +14,40 @@ A connector is the internal entity that communicates with a connector plugin and
 records from the plugin into the pipeline (source connector) or the other way around 
 (destination connector).
 
+Conduit ships with connectors that are directly built into the service ([built-in connectors](/docs/using/connectors/getting-started/#conduit-ships-with-a-number-of-built-in-connectors)), but it can also be expanded with additional [standalone connectors](/docs/developing/connectors/).
+
+One of the main differences between Conduit connectors and those that you might find from other services is that all Conduit connectors are **Change Data Capture-first (CDC)**.
+
+CDC allows your pipeline to only get the changes that have happened over time instead of pulling down an entire upstream data store and then tracking diffs between some period of time. This is critical for building real-time, event-driven pipelines and applications. But, we'll note where connectors do or do not have CDC capabilities.
+
+:::info
+Here's a full list of our [Conduit Connectors](/docs/using/connectors/list/).
+:::
+
+### Built-in Connector
+
+To help developers bootstrap pipelines much more quickly, Conduit ships with several built-in connectors by default.
+
+This includes the Postgres, File, Random Data Generator, Kafka and Amazon S3 connectors.
+
+If you are creating and distributing customized, pre-built Conduit binaries yourself,
+you may want to modify the list of built-in connectors, too.
+
+By modifying the list of built-in connectors, your compiled binary will include a set of pre-installed connectors specific to your end users' needs, and it can be run by others, as is, without them having to follow any additional installation instructions.
+
+[Here's how to do it](/docs/using/connectors/additional-built-in-plugins).
+
+### Standalone Connector
+
+In addition to built-in connectors, Conduit can be used together with standalone connectors to enable even more data streaming use cases. The Conduit team and other community developers create and maintain standalone connectors.
+
+Learn more about how you can install [standalone connectors to Conduit here](/docs/using/connectors/installing).
+
+### Source and Destination
+
+- **Source** means the connector has the ability to get data from an upstream data store. 
+- **Destination** means the connector can to write to a downstream data store.
+
 ## Connector plugin 
 
 Sometimes also referred to as "plugin", is an external process which communicates with Conduit 

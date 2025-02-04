@@ -1,0 +1,61 @@
+---
+slug: '2025-02-04-conduit-0-13-0-release'
+title: Conduit v0.13.0 release
+draft: false
+---
+
+New year, new release! We're excited to announce that Conduit [v0.13.0](https://github.com/ConduitIO/conduit/releases/tag/v0.13.0) is off the press. This one includes some features we've been eager to ship for a while now.
+
+<!--truncate-->
+
+### Key Highlights
+
+- A more automated method for keeping your connector documentation up to date. For more information, check out the [original discussion](https://github.com/ConduitIO/conduit/discussions/1522), and the updated [Connector Specification documentation page](/docs/developing/connectors/connector-specification/).
+
+- Conduit doesn't include a User Interface anymore, but it comes with a [Command Line Interface](/docs/cli) that we think will fit better the needs of our users. Check out its dedicated page in our docs [here](/docs/cli) where we'll continue documenting its capabilities. [Here's where the original discussion took place](https://github.com/ConduitIO/conduit/discussions/1642). 
+
+
+Extending the capabilities of our `conduit` binary, in order to run the service, you'll need to use the following command now:
+
+```bash
+$ conduit run
+```
+
+When running simply `conduit` in your terminal, you'll see all the available commands and options this new CLI provides:
+
+```bash
+$ conduit
+Conduit CLI is a command-line that helps you interact with and manage Conduit.
+
+Usage:
+  conduit [flags]
+  conduit [command]
+
+Available Commands:
+  config            Shows the configuration to be used when running Conduit.
+  connector-plugins Manage Connector Plugins
+  connectors        Manage Conduit Connectors
+  help              Help about any command
+  init              Initialize Conduit with a configuration file and directories.
+  open              Open in a web browser
+  pipelines         Initialize and manage pipelines
+  processor-plugins Manage Processor Plugins
+  processors        Manage Processors
+  run               Run Conduit
+  version           Show the current version of Conduit.
+
+Flags:
+      --api.grpc.address string   address where Conduit is running
+      --config.path string        path to the configuration file
+  -h, --help                      help for conduit
+  -v, --version                   show the current Conduit version
+
+Use "conduit [command] --help" for more information about a command.
+```
+
+:::note
+Conduit OSS powers the [Conduit Platform](https://meroxa.com), where we provide a fully featured UI as a separate product offering that should better suit your enterprise needs.
+:::
+
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)
