@@ -81,7 +81,9 @@ import Tooltip from '@mui/material/Tooltip';
 
 ## Source Parameters
 
-{{- if gt (len .Specifications.latest.specification.source.parameters) 0 }}
+{{ if not .Specifications.latest.specification.source -}}
+Connector {{ .Specifications.latest.specification.name }} does not implement a source.
+{{- else -}}
 ```yaml
 version: 2.2
 pipelines:
@@ -94,20 +96,22 @@ pipelines:
         name: example-source
         {{ if gt (len .Specifications.latest.specification.source.parameters) 0 -}}
         settings:
-          {{- range $name, $param := .Specifications.latest.specification.source.parameters }}
+        {{- range $name, $param := .Specifications.latest.specification.source.parameters }}
           {{ formatCommentYAML $param.description 10 }}
           # Type: {{ $param.type }}
           {{ $param.name }}: {{ formatValueYAML $param.default 10 }}
           {{- end }}
+        {{ else -}}
+        # No parameters
         {{- end }}
 ```
-{{- else }}
-Reading data with {{ .Specifications.latest.specification.name }} is not supported.
 {{- end }}
 
 ## Destination Parameters
 
-{{- if gt (len .Specifications.latest.specification.destination.parameters) 0 }}
+{{ if not .Specifications.latest.specification.destination -}}
+Connector {{ .Specifications.latest.specification.name }} does not implement a destination.
+{{ else -}}
 ```yaml
 version: 2.2
 pipelines:
@@ -119,12 +123,12 @@ pipelines:
         plugin: "{{ .Specifications.latest.specification.name }}"
         name: example-destination
         settings:
-          {{- range $name, $param := .Specifications.latest.specification.destination.parameters }}
+        {{- range $name, $param := .Specifications.latest.specification.destination.parameters }}
           {{ formatCommentYAML $param.description 10 }}
           # Type: {{ $param.type }}
           {{ $param.name }}: {{ formatValueYAML $param.default 10 }}
-          {{- end }}
+        {{- else -}}
+        # No parameters
+        {{- end }}
 ```
-{{- else }}
-Writing data with {{ .Specifications.latest.specification.name }} is not supported.
 {{- end }}
