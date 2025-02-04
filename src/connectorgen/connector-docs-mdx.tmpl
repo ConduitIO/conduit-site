@@ -100,8 +100,8 @@ pipelines:
           {{ formatCommentYAML $param.description 10 }}
           # Type: {{ $param.type }}
           {{ $param.name }}: {{ formatValueYAML $param.default 10 }}
-          {{- end }}
-        {{ else -}}
+        {{- end }}
+        {{- else -}}
         # No parameters
         {{- end }}
 ```
@@ -122,11 +122,13 @@ pipelines:
         type: destination
         plugin: "{{ .Specifications.latest.specification.name }}"
         name: example-destination
+        {{ if gt (len .Specifications.latest.specification.destination.parameters) 0 -}}
         settings:
         {{- range $name, $param := .Specifications.latest.specification.destination.parameters }}
           {{ formatCommentYAML $param.description 10 }}
           # Type: {{ $param.type }}
           {{ $param.name }}: {{ formatValueYAML $param.default 10 }}
+        {{- end }}
         {{- else -}}
         # No parameters
         {{- end }}
