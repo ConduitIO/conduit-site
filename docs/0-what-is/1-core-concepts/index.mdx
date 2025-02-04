@@ -14,6 +14,12 @@ A connector is the internal entity that communicates with a connector plugin and
 records from the plugin into the pipeline (source connector) or the other way around 
 (destination connector).
 
+Conduit ships with connectors that are directly built into the service ([built-in connectors](/docs/using/connectors/getting-started/#conduit-ships-with-a-number-of-built-in-connectors)), but it can also be expanded with additional [standalone connectors](/docs/developing/connectors/).
+
+One of the main differences between Conduit connectors and those that you might find from other services is that all Conduit connectors are **Change Data Capture-first (CDC)**.
+
+CDC allows your pipeline to only get the changes that have happened over time instead of pulling down an entire upstream data store and then tracking diffs between some period of time. This is critical for building real-time, event-driven pipelines and applications. But, we'll note where connectors do or do not have CDC capabilities.
+
 ## Connector plugin 
 
 Sometimes also referred to as "plugin", is an external process which communicates with Conduit 
