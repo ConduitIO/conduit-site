@@ -19,46 +19,52 @@ import Tooltip from '@mui/material/Tooltip';
 
 # kafka
 
-<Stack
-  className='align-items-center'
-  direction='row'
-  justifyContent='flex-start'
-  spacing={2}
->
-    {/* Wrap each item in a container with consistent height */}
-    <Box sx={{ display: 'flex', alignItems: 'center', height: 48 }}>
-      {/* Conduit logo */}
-      
-      <Tooltip title="Created by the Conduit team">
-        <img src='/img/conduit/conduit-ring.png' width='18' alt="Conduit team logo" />
-      </Tooltip>
-      
-    </Box>
+<Box sx={{
+  display: 'flex',
+  alignItems: 'center',
+  gap: 2,
+  marginBottom: 4,
+  borderRadius: 1,
+  padding: 2,
+  backgroundColor: 'rgba(0, 0, 0, 0.03)'
+}}>
+  {/* Author info */}
+  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+    <span>Author: Meroxa, Inc.</span>
+    <Tooltip title="Created by the Conduit team">
+      <img src='/img/conduit/conduit-ring.png' width='18' alt="Conduit team logo" />
+    </Tooltip>
+  </Box>
 
-    <Box sx={{ display: 'flex', alignItems: 'center', height: 48 }}>
-      <IconButton
-        size='large'
-        href="https://github.com/ConduitIO/conduit-connector-kafka"
-        target='_blank'
-        sx={{ padding: '12px' }}
-      >
-        <GitHubIcon fontSize='inherit' />
-      </IconButton>
-    </Box>
+  {/* Divider */}
+  <Box sx={{ borderLeft: '1px solid rgba(0, 0, 0, 0.12)', height: 24 }} />
 
-    <Box sx={{ display: 'flex', alignItems: 'center', height: 48 }}>
-      <Chip
-        icon={<StarIcon />}
-        label="7"
-        size='large'
-        sx={{ height: 32 }}
-      />
-    </Box>
-</Stack>
+  {/* GitHub link */}
+  <Link
+    href="https://github.com/ConduitIO/conduit-connector-kafka"
+    target="_blank"
+    sx={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 0.5,
+      color: 'inherit',
+      textDecoration: 'none',
+      '&:hover': {
+        textDecoration: 'underline'
+      }
+    }}
+  >
+    <GitHubIcon sx={{ fontSize: '1.5rem' }} />
+  </Link>
 
-## Author
-
-Meroxa, Inc.
+  {/* Stars */}
+  <Chip
+    icon={<StarIcon sx={{ fontSize: '1rem' }} />}
+    label="7"
+    size="small"
+    sx={{ height: 24 }}
+  />
+</Box>
 
 ## Latest release
 
