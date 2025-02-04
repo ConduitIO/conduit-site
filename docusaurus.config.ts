@@ -161,7 +161,7 @@ const config: Config = {
     },
     announcementBar: {
       id: 'announcement-bar-7', // increment on change
-      content: `Conduit v0.13 is here! <a class='cta' href='/changelog/2025-01-23-conduit-0-13-0-release' target='_blank' rel='noreferrer noopener'>See what's new</a>.`,
+      content: `Conduit v0.13 is here! <a class='cta' href='/changelog/2025-02-04-conduit-0-13-0-release' target='_blank' rel='noreferrer noopener'>See what's new</a>.`,
       isCloseable: true,
     },
     colorMode: {
