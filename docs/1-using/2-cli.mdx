@@ -51,7 +51,7 @@ information about its options, run `conduit connector-plugins --help`, which wil
 This command will show all the connector plugins available to be used by conduit, including the builtin connectors
 and the ones under the `connectors` directory.
 ```text
-./conduit connector-plugins list
+$ ./conduit connector-plugins list
 +----------------------------------------------+---------------------------------------------------------------------------------+
 |                     NAME                     |                                     SUMMARY                                     |
 +----------------------------------------------+---------------------------------------------------------------------------------+
@@ -73,7 +73,7 @@ and the ones under the `connectors` directory.
 This command shows the detailed description of a specific connector plugin, take the `builtin:postgres@v0.10.1` from the
 output above for example, to show more details about it, run `conduit connector-plugins desc builtin:postgres@v0.10.1`:
 ```text
-./conduit connector-plugins desc builtin:postgres@v0.10.1
+$ ./conduit connector-plugins desc builtin:postgres@v0.10.1
 Name: builtin:postgres@v0.10.1
 Summary: A PostgreSQL source and destination plugin for Conduit.
 Author: Meroxa, Inc.
