@@ -61,15 +61,17 @@ const config: Config = {
     navbar: {
       logo: {
         alt: 'Conduit Logo',
-        src: 'img/conduit/on-white-conduit-logo.png',
+        src: '/img/logos/conduit-logo-light.svg',
+        srcDark: '/img/logos/conduit-logo-dark.svg',
       },
       items: [
-        { to: '/', label: 'Home', position: 'left', activeBaseRegex: `///` },
+        { to: '/docs/using/connectors/list', position: 'left', label: 'Connectors' },
         { to: '/docs', position: 'left', label: 'Documentation' },
         { to: '/changelog', position: 'left', label: 'Changelog' },
-        { to: '/api', label: 'HTTP API', position: 'left' },
-        { href: 'https://meroxa.io', label: 'Conduit Platform', position: 'right', class: 'navbar__link navbar__item conduit-platform' },
-        { href: 'https://meroxa.com/blog/?type=Conduit', position: 'right', label: 'Blog' },
+        { to: 'https://meroxa.io', label: 'Conduit Platform', position: 'right', class: 'navbar__link navbar__item conduit-platform' },
+        { to: 'https://meroxa.com/blog/?type=Conduit', position: 'right', label: 'Blog' },
+        { to: 'https://github.com/ConduitIO', position: 'right', label: 'GitHub', class: 'svg-background github' },
+        { to: 'https://discord.meroxa.com', position: 'right', label: 'Discord', class: 'svg-background discord' },
       ],
     },
     algolia: { // https://docusaurus.io/docs/search#using-algolia-docsearch
@@ -165,9 +167,7 @@ const config: Config = {
       isCloseable: true,
     },
     colorMode: {
-      defaultMode: 'light',
-      disableSwitch: true,
-      respectPrefersColorScheme: false,
+      respectPrefersColorScheme: true,
     },
     prism: {
       theme: prismThemes.dracula,

@@ -6,7 +6,6 @@ import Head from '@docusaurus/Head';
 
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import HomepageConnectors from '@site/src/components/HomepageConnectors';
-import HomepageNavbar from '@site/src/components/HomepageNavbar';
 import HomepageFooter from '@site/src/components/HomepageFooter';
 
 import SplitPair from '@site/src/components/SplitPair';
@@ -21,7 +20,7 @@ function HeaderSection() {
   return (
     <>
       <div style={{ 'background': 'linear-gradient(289.62deg, #20BED9 -11.02%, #0B525D 97.11%)' }} className="max-w-full">
-        <HomepageNavbar />
+
         <Wrapper className='py-12'>
           <SplitPair data-reversed data-skewed="60:40">
             <Stack className="basis-3/5">
