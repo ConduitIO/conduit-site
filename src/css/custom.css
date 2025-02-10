@@ -159,11 +159,19 @@ html[data-theme="dark"] {
     filter: invert(1) brightness(2) contrast(1);
   }
 
-  .navbar {
+  nav, main, .navbar {
     background-color: #282D39;
   }
 }
 
 .navbar__logo {
-  height: 40px;
+  height: 45px;
+}
+
+#conduit-logo {
+  margin-bottom: 20px;
+
+  img {
+    width: 300px;
+  }
 }
