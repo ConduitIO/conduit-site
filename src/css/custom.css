@@ -64,17 +64,6 @@ a.conduit-platform::before {
   --docusaurus-announcement-bar-height: 50px;
 }
 
-div[class^='announcementBar_'] {
-  font-size: 18px;
-  background-color: #e3c9c3;
-  font-weight: bold;
-  height: 50px;
-}
-
-div[class^='announcementBar_'] .cta {
-  color: #6e2312;
-}
-
 /* Home page styles */
 html.home .footer {
   background-color: white;
@@ -162,6 +151,18 @@ html[data-theme="dark"] {
   nav, main, .navbar {
     background-color: #282D39;
   }
+
+  .text-dark {
+    color: #282D39
+  }
+
+  .page__header {
+    background: linear-gradient(289.62deg, #414e5b -11.02%, #282d39 97.11%);
+  }
+}
+
+.page__header {
+  background: linear-gradient(289.62deg, #20BED9 -11.02%, #0B525D 97.11%);
 }
 
 .navbar__logo {
@@ -175,3 +176,15 @@ html[data-theme="dark"] {
     width: 300px;
   }
 }
+
+div[class^='announcementBar_'] {
+  font-size: 18px;
+  background-color: #e3c9c3;
+  font-weight: bold;
+  height: 50px;
+}
+
+div[class^='announcementBar_'] .cta {
+  color: #6e2312;
+}
+

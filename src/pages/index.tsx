@@ -19,8 +19,7 @@ function HeaderSection() {
   const {siteConfig} = useDocusaurusContext();
   return (
     <>
-      <div style={{ 'background': 'linear-gradient(289.62deg, #20BED9 -11.02%, #0B525D 97.11%)' }} className="max-w-full">
-
+      <div className="max-w-full page__header">
         <Wrapper className='py-12'>
           <SplitPair data-reversed data-skewed="60:40">
             <Stack className="basis-3/5">
@@ -63,7 +62,7 @@ function FeaturesSection() {
       <Wrapper className="py-12">
         <HomepageFeatures />
       </Wrapper>
-      <DiagonalDivider className="color-light text-slate-100" />
+      <DiagonalDivider className="text-slate-100" />
     </>
 )
 }
