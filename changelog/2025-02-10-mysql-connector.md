@@ -1,6 +1,6 @@
 ---
 slug: '2025-02-10-mysql-connector'
-title: Conduit MySQL Connector
+title: New Conduit MySQL Connector
 draft: false
 tags: [conduit, connector, mysql]
 ---
