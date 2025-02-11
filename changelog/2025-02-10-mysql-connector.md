@@ -28,4 +28,3 @@ Connector provides a practical solution for various data integration use cases.
 
 ![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)
 
-
