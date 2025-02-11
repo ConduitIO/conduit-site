@@ -5,7 +5,7 @@ draft: false
 tags: [conduit, connector, mysql]
 ---
 
-We introduce the new **MySQL Connector for Conduit**, which allows extraction of
+We're introducing the new **MySQL Connector for Conduit**, which allows extraction of
 data from and loading data into MySQL databases. This connector supports dual
 operation modes, including snapshot and Change Data Capture (CDC) for the source
 connector, as well as a destination connector for upserting records.
