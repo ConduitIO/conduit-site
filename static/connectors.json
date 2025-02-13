@@ -13305,15 +13305,6 @@
     "releases": []
   },
   {
-    "name_with_owner": "derElektrobesen/mysql-migrator",
-    "description": "MySQL to Postgres \u0026\u0026 tarantool migration script",
-    "created_at": "2025-02-04 14:43:17 +0000 UTC",
-    "url": "https://github.com/derElektrobesen/mysql-migrator",
-    "stargazer_count": 1,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
     "name_with_owner": "devarismeroxa/conduit-connector-influxdb",
     "description": "Conduit Connector for InfluxDB",
     "created_at": "2024-12-11 11:51:10 +0000 UTC",
@@ -13336,15 +13327,6 @@
     "description": "Experimental connector that acts as a Kafka broker and accepts data produced by Kafka producers.",
     "created_at": "2024-03-28 14:43:44 +0000 UTC",
     "url": "https://github.com/lovromazgon/conduit-connector-kafka-broker",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "lovromazgon/conduit-connector-playground",
-    "description": "My own playground for trying out stuff with the connector.",
-    "created_at": "2025-02-07 12:08:25 +0000 UTC",
-    "url": "https://github.com/lovromazgon/conduit-connector-playground",
     "stargazer_count": 0,
     "fork_count": 0,
     "releases": []

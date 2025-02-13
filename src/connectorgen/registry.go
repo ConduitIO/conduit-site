@@ -58,6 +58,8 @@ var excludedRepositories = []string{
 	"hariso/crispy-octo-system",
 	"hariso/cuddly-chainsaw",
 	"hariso/reimagined-octo-umbrella",
+	"derElektrobesen/mysql-migrator",
+	"lovromazgon/conduit-connector-playground",
 }
 
 // maps architectures found in asset names to GOARCH
