@@ -8181,7 +8181,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.2.1/conduit-connector-dynamodb_0.2.1_Darwin_arm64.tar.gz",
             "created_at": "2025-01-23T21:07:24Z",
             "updated_at": "2025-01-23T21:07:25Z",
-            "download_count": 1,
+            "download_count": 4,
             "size": 7383298
           },
           {
@@ -8675,6 +8675,15 @@
         "is_latest": true
       }
     ]
+  },
+  {
+    "name_with_owner": "conduitio-labs/conduit-connector-enhanced-generator",
+    "description": "",
+    "created_at": "2025-02-13 16:59:06 +0000 UTC",
+    "url": "https://github.com/conduitio-labs/conduit-connector-enhanced-generator",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": []
   },
   {
     "name_with_owner": "conduitio-labs/conduit-connector-firebolt",
@@ -10103,6 +10112,17 @@
     "fork_count": 2,
     "releases": [
       {
+        "tag_name": "v0.1.1",
+        "name": "v0.1.1",
+        "body": "## What's Changed\r\n* Select tables via a list of include/exclude regexes by @nickchomey in https://github.com/conduitio-labs/conduit-connector-mysql/pull/54\r\n* MySQL 5.5 support (with CI fix) by @alarbada in https://github.com/conduitio-labs/conduit-connector-mysql/pull/94\r\n\r\n**Full Changelog**: https://github.com/conduitio-labs/conduit-connector-mysql/compare/v0.1.0...v0.1.1",
+        "draft": false,
+        "prerelease": false,
+        "published_at": "2025-02-13T16:10:23Z",
+        "html_url": "https://github.com/conduitio-labs/conduit-connector-mysql/releases/tag/v0.1.1",
+        "assets": null,
+        "is_latest": true
+      },
+      {
         "tag_name": "v0.1.0",
         "name": "v0.1.0",
         "body": "## What's Changed\r\n* go.mod: bump github.com/golangci/golangci-lint from 1.58.1 to 1.59.0 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/1\r\n* go.mod: bump github.com/golangci/golangci-lint from 1.59.0 to 1.59.1 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/3\r\n* .github: Bump goreleaser/goreleaser-action from 5 to 6 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/2\r\n* Setup source snapshot iterator by @alarbada in https://github.com/conduitio-labs/conduit-connector-mysql/pull/4\r\n* go.mod: bump github.com/jmoiron/sqlx from 1.3.5 to 1.4.0 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/9\r\n* update readme by @alarbada in https://github.com/conduitio-labs/conduit-connector-mysql/pull/7\r\n* fix code owners by @raulb in https://github.com/conduitio-labs/conduit-connector-mysql/pull/11\r\n* .github: Bump dependabot/fetch-metadata from 2.1.0 to 2.2.0 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/14\r\n* Setup test utilities and restructure project by @alarbada in https://github.com/conduitio-labs/conduit-connector-mysql/pull/21\r\n* change params to url by @alarbada in https://github.com/conduitio-labs/conduit-connector-mysql/pull/10\r\n* go.mod: bump github.com/conduitio/conduit-commons from 0.2.0 to 0.3.0 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/39\r\n* Add project automation by @hariso in https://github.com/conduitio-labs/conduit-connector-mysql/pull/37\r\n* Add cdc iterator by @alarbada in https://github.com/conduitio-labs/conduit-connector-mysql/pull/22\r\n* Add combined iterator by @alarbada in https://github.com/conduitio-labs/conduit-connector-mysql/pull/23\r\n* go.mod: bump github.com/conduitio/conduit-connector-sdk from 0.9.1 to 0.10.0 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/38\r\n* go.mod: bump github.com/golangci/golangci-lint from 1.59.1 to 1.60.1 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/40\r\n* go.mod: bump github.com/go-mysql-org/go-mysql from 1.8.0 to 1.9.0 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/42\r\n* go.mod: bump github.com/golangci/golangci-lint from 1.60.1 to 1.60.2 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/41\r\n* go.mod: bump github.com/golangci/golangci-lint from 1.60.2 to 1.60.3 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/43\r\n* go.mod: bump github.com/golangci/golangci-lint from 1.60.3 to 1.61.0 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/46\r\n* Implement consistent snapshot strategy by @alarbada in https://github.com/conduitio-labs/conduit-connector-mysql/pull/24\r\n* Update docs by @alarbada in https://github.com/conduitio-labs/conduit-connector-mysql/pull/44\r\n* go.mod: bump github.com/conduitio/conduit-connector-sdk from 0.10.0 to 0.10.1 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/48\r\n* Update README.md by @maha-hajja in https://github.com/conduitio-labs/conduit-connector-mysql/pull/47\r\n* go.mod: bump github.com/go-mysql-org/go-mysql from 1.9.0 to 1.9.1 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/49\r\n* go.mod: bump github.com/conduitio/conduit-connector-sdk from 0.10.1 to 0.11.0 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/60\r\n* prevent avro uint64 encoding failure by @alarbada in https://github.com/conduitio-labs/conduit-connector-mysql/pull/58\r\n* Add destination connector by @alarbada in https://github.com/conduitio-labs/conduit-connector-mysql/pull/45\r\n* Fixes naïve snapshot iteration by @alarbada in https://github.com/conduitio-labs/conduit-connector-mysql/pull/59\r\n* go.mod: bump github.com/conduitio/conduit-connector-sdk from 0.11.0 to 0.11.1 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/71\r\n* go.mod: bump github.com/conduitio/conduit-commons from 0.4.0 to 0.5.0 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/72\r\n* go.mod: bump github.com/golangci/golangci-lint from 1.61.0 to 1.62.0 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/74\r\n* Destination docs by @alarbada in https://github.com/conduitio-labs/conduit-connector-mysql/pull/67\r\n* go.mod: bump github.com/golangci/golangci-lint from 1.62.0 to 1.62.2 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/77\r\n* go.mod: bump github.com/go-mysql-org/go-mysql from 1.9.1 to 1.10.0 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/76\r\n* go.mod: bump github.com/conduitio/conduit-connector-sdk from 0.11.1 to 0.12.0 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/73\r\n* Smarter and more flexible table configuration by @alarbada in https://github.com/conduitio-labs/conduit-connector-mysql/pull/69\r\n* Add unsafe snapshot parameter by @alarbada in https://github.com/conduitio-labs/conduit-connector-mysql/pull/75\r\n* go.mod: bump github.com/golangci/golangci-lint from 1.62.2 to 1.63.1 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/80\r\n* go.mod: bump github.com/golangci/golangci-lint from 1.63.1 to 1.63.3 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/81\r\n* go.mod: bump github.com/golangci/golangci-lint from 1.63.3 to 1.63.4 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/82\r\n* migrate tests to gorm by @alarbada in https://github.com/conduitio-labs/conduit-connector-mysql/pull/78\r\n* go.mod: bump github.com/go-mysql-org/go-mysql from 1.10.0 to 1.11.0 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/84\r\n* .github: Bump dependabot/fetch-metadata from 2.2.0 to 2.3.0 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/85\r\n* go.mod: bump github.com/conduitio/conduit-connector-sdk from 0.12.0 to 0.13.0 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/87\r\n* go.mod: bump github.com/conduitio/conduit-commons from 0.5.0 to 0.5.1 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/88\r\n* go.mod: bump github.com/conduitio/conduit-connector-sdk from 0.13.0 to 0.13.1 by @dependabot in https://github.com/conduitio-labs/conduit-connector-mysql/pull/89\r\n* Schema support by @alarbada in https://github.com/conduitio-labs/conduit-connector-mysql/pull/79\r\n* Add support for get all tables wildcard by @nickchomey in https://github.com/conduitio-labs/conduit-connector-mysql/pull/51\r\n* Fix config parsing by @derElektrobesen in https://github.com/conduitio-labs/conduit-connector-mysql/pull/90\r\n\r\n## New Contributors\r\n* @raulb made their first contribution in https://github.com/conduitio-labs/conduit-connector-mysql/pull/11\r\n* @hariso made their first contribution in https://github.com/conduitio-labs/conduit-connector-mysql/pull/37\r\n* @maha-hajja made their first contribution in https://github.com/conduitio-labs/conduit-connector-mysql/pull/47\r\n* @nickchomey made their first contribution in https://github.com/conduitio-labs/conduit-connector-mysql/pull/51\r\n* @derElektrobesen made their first contribution in https://github.com/conduitio-labs/conduit-connector-mysql/pull/90\r\n\r\n**Full Changelog**: https://github.com/conduitio-labs/conduit-connector-mysql/commits/v0.1.0",
@@ -10111,7 +10131,7 @@
         "published_at": "2025-02-10T12:41:08Z",
         "html_url": "https://github.com/conduitio-labs/conduit-connector-mysql/releases/tag/v0.1.0",
         "assets": null,
-        "is_latest": true
+        "is_latest": false
       }
     ]
   },
@@ -11080,7 +11100,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-openai-vectorstore/releases/download/v0.1.0/conduit-connector-openai-vectorstore_0.1.0_Darwin_arm64.tar.gz",
             "created_at": "2024-12-11T20:26:23Z",
             "updated_at": "2024-12-11T20:26:23Z",
-            "download_count": 0,
+            "download_count": 2,
             "size": 6111876
           },
           {
@@ -11758,7 +11778,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-salesforce/releases/download/v0.5.4/conduit-connector-salesforce_0.5.4_Darwin_arm64.tar.gz",
             "created_at": "2024-11-21T03:39:03Z",
             "updated_at": "2024-11-21T03:39:04Z",
-            "download_count": 0,
+            "download_count": 2,
             "size": 6176137
           },
           {
@@ -13256,7 +13276,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-weaviate/releases/download/v0.1.1/conduit-connector-weaviate_0.1.1_Darwin_arm64.tar.gz",
             "created_at": "2024-11-13T22:35:01Z",
             "updated_at": "2024-11-13T22:35:02Z",
-            "download_count": 0,
+            "download_count": 2,
             "size": 6942164
           },
           {
