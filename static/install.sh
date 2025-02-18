@@ -39,6 +39,7 @@ initArch() {
   ARCH=$(uname -m)
   case $ARCH in
   aarch64) ARCH="arm64" ;;
+  arm64) ARCH="arm64" ;;
   x86) ARCH="i386" ;;
   x86_64) ARCH="x86_64" ;;
   i686) ARCH="i386" ;;
