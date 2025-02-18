@@ -212,7 +212,7 @@ testVersion() {
     fail "$PROJECT_NAME not found."
   fi
   set -e
-  CONDUIT_VERSION=$($PROJECT_NAME -version)
+  CONDUIT_VERSION=$($PROJECT_NAME --version)
   coloredEcho "\n$CONDUIT_VERSION installed successfully"
 }
 
