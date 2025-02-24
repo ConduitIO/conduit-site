@@ -1,0 +1,212 @@
+version: "1.0"
+specification:
+  name: chaos
+  summary: A chaos destination connector
+  description: |-
+    A [Conduit](https://conduit.io) connector that can be configured to behave in
+    unexpected ways to figure out how Conduit handles it.
+
+    ## Modes
+
+    Each method of the connector can be configured to act in a certain way.
+    Currently supported modes are:
+
+    - `success` - The connector method acts as expected (returns successfully).
+    - `error` - The connector method returns an error with the message "chaos".
+    - `block` - The connector method blocks forever and never returns.
+    - `context-done` - The connector method blocks until the supplied context is
+      closed, after that it returns the context error.
+    - `panic` - The connector method panics.
+
+    Each source and destination method can be configured to act as described in one
+    of the modes above. For a list of methods and their descriptions see the [
+    `sdk.Source`](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#Source)
+    and [
+    `sdk.Destination`](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#Destination)
+    interfaces.
+  version: v0.2.0
+  author: Meroxa, Inc.
+  source:
+    parameters:
+      - name: ackMode
+        description: AckMode controls what the Ack method should do.
+        type: string
+        default: success
+        validations:
+          - type: inclusion
+            value: success,error,context-done,block,panic
+      - name: configureMode
+        description: ConfigureMode controls what the Configure method should do.
+        type: string
+        default: success
+        validations:
+          - type: inclusion
+            value: success,error,context-done,block,panic
+      - name: openMode
+        description: OpenMode controls what the Open method should do.
+        type: string
+        default: success
+        validations:
+          - type: inclusion
+            value: success,error,context-done,block,panic
+      - name: readMode
+        description: ReadMode controls what the Read method should do.
+        type: string
+        default: success
+        validations:
+          - type: inclusion
+            value: success,error,context-done,block,panic
+      - name: teardownMode
+        description: TeardownMode controls what the Teardown method should do.
+        type: string
+        default: success
+        validations:
+          - type: inclusion
+            value: success,error,context-done,block,panic
+      - name: sdk.batch.delay
+        description: Maximum delay before an incomplete batch is read from the source.
+        type: duration
+        default: "0"
+        validations:
+          - type: greater-than
+            value: "-1"
+      - name: sdk.batch.size
+        description: Maximum size of batch before it gets read from the source.
+        type: int
+        default: "0"
+        validations:
+          - type: greater-than
+            value: "-1"
+      - name: sdk.schema.context.enabled
+        description: |-
+          Specifies whether to use a schema context name. If set to false, no schema context name will
+          be used, and schemas will be saved with the subject name specified in the connector
+          (not safe because of name conflicts).
+        type: bool
+        default: "true"
+        validations: []
+      - name: sdk.schema.context.name
+        description: |-
+          Schema context name to be used. Used as a prefix for all schema subject names.
+          If empty, defaults to the connector ID.
+        type: string
+        default: ""
+        validations: []
+      - name: sdk.schema.extract.key.enabled
+        description: Whether to extract and encode the record key with a schema.
+        type: bool
+        default: "true"
+        validations: []
+      - name: sdk.schema.extract.key.subject
+        description: |-
+          The subject of the key schema. If the record metadata contains the field
+          "opencdc.collection" it is prepended to the subject name and separated
+          with a dot.
+        type: string
+        default: key
+        validations: []
+      - name: sdk.schema.extract.payload.enabled
+        description: Whether to extract and encode the record payload with a schema.
+        type: bool
+        default: "true"
+        validations: []
+      - name: sdk.schema.extract.payload.subject
+        description: |-
+          The subject of the payload schema. If the record metadata contains the
+          field "opencdc.collection" it is prepended to the subject name and
+          separated with a dot.
+        type: string
+        default: payload
+        validations: []
+      - name: sdk.schema.extract.type
+        description: The type of the payload schema.
+        type: string
+        default: avro
+        validations:
+          - type: inclusion
+            value: avro
+  destination:
+    parameters:
+      - name: configureMode
+        description: ConfigureMode controls what the Configure method should do.
+        type: string
+        default: success
+        validations:
+          - type: inclusion
+            value: success,error,block,context-done,panic
+      - name: openMode
+        description: OpenMode controls what the Open method should do.
+        type: string
+        default: success
+        validations:
+          - type: inclusion
+            value: success,error,block,context-done,panic
+      - name: teardownMode
+        description: TeardownMode controls what the Teardown method should do.
+        type: string
+        default: success
+        validations:
+          - type: inclusion
+            value: success,error,block,context-done,panic
+      - name: writeMode
+        description: WriteMode controls what the Write method should do.
+        type: string
+        default: success
+        validations:
+          - type: inclusion
+            value: success,error,block,context-done,panic
+      - name: sdk.batch.delay
+        description: Maximum delay before an incomplete batch is written to the destination.
+        type: duration
+        default: "0"
+        validations: []
+      - name: sdk.batch.size
+        description: Maximum size of batch before it gets written to the destination.
+        type: int
+        default: "0"
+        validations:
+          - type: greater-than
+            value: "-1"
+      - name: sdk.rate.burst
+        description: |-
+          Allow bursts of at most X records (0 or less means that bursts are not
+          limited). Only takes effect if a rate limit per second is set. Note that
+          if `sdk.batch.size` is bigger than `sdk.rate.burst`, the effective batch
+          size will be equal to `sdk.rate.burst`.
+        type: int
+        default: "0"
+        validations:
+          - type: greater-than
+            value: "-1"
+      - name: sdk.rate.perSecond
+        description: Maximum number of records written per second (0 means no rate limit).
+        type: float
+        default: "0"
+        validations:
+          - type: greater-than
+            value: "-1"
+      - name: sdk.record.format
+        description: |-
+          The format of the output record. See the Conduit documentation for a full
+          list of supported formats (https://conduit.io/docs/using/connectors/configuration-parameters/output-format).
+        type: string
+        default: opencdc/json
+        validations: []
+      - name: sdk.record.format.options
+        description: |-
+          Options to configure the chosen output record format. Options are normally
+          key=value pairs separated with comma (e.g. opt1=val2,opt2=val2), except
+          for the `template` record format, where options are a Go template.
+        type: string
+        default: ""
+        validations: []
+      - name: sdk.schema.extract.key.enabled
+        description: Whether to extract and decode the record key with a schema.
+        type: bool
+        default: "true"
+        validations: []
+      - name: sdk.schema.extract.payload.enabled
+        description: Whether to extract and decode the record payload with a schema.
+        type: bool
+        default: "true"
+        validations: []
