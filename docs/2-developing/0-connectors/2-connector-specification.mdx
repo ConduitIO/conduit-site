@@ -73,9 +73,9 @@ developer-info:
 ```
 
 The information about a connector's source and destination parameters is
-generated using a tool called [
-[
-`conn-sdk-cli`](https://github.com/ConduitIO/conduit-connector-sdk/tree/main/conn-sdk-cli).
+generated using a tool called
+[`conn-sdk-cli`](https://github.com/ConduitIO/conduit-connector-sdk/tree/main/conn-sdk-cli).
+
 `conn-sdk-cli` uses the configuration structs in a connector's code to generate the
 list of parameters, the validations for those, etc. `conn-sdk-cli` is described in
 more details in the following section.
@@ -158,5 +158,20 @@ func NewSource() sdk.Source {
 In this example, the default value in the generated specification will be
 `"https://example.com"`, i.e. if a user doesn't specify a URL, its value will be
 `"https://example.com"`.
+
+:::tip
+If your connector is on [v.12.0](https://github.com/ConduitIO/conduit-connector-sdk/releases/tag/v0.12.0) of the [Connector SDK](https://github.com/ConduitIO/conduit-connector-sdk) and you want to migrate it to [v0.13.0](https://github.com/ConduitIO/conduit-connector-sdk/releases/tag/v0.13.0), we recommend you follow these steps:
+
+1. Run the [Connector SDK 0.13 migrator](https://github.com/ConduitIO/tools/tree/main/connector-sdk-0.13-migrator).
+1. Create a `connector.yaml` including a description that could be used from what you had on `spec.go`.
+1. Update its README utilizing the [`readmegen`](https://github.com/ConduitIO/conduit-connector-sdk/tree/main/conn-sdk-cli#readmegen) tool from the `conn-sdk-cli`.
+1. Fix any other compiling issues that could arise from the migration.
+
+Here are a couple of examples of connectors that have been migrated from 0.12.0 to 0.13.1:
+
+-  [Conduit Log Connector](https://github.com/ConduitIO/conduit-connector-log/pull/59)
+-  [Conduit Mongo Connector](https://github.com/conduitio-labs/conduit-connector-mongo/pull/151)
+
+:::
 
 ![scarf pixel conduit-site-docs-developing-connectors](https://static.scarf.sh/a.png?x-pxid=3ada0949-fa61-40d6-a44a-76447ea4e39f)
