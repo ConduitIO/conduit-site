@@ -118,18 +118,22 @@ curl localhost:8080/v1/connectors/plugins | jq '.[].name'
 
 ## Next steps
 
-Once you have confirmed that your Conduit Connector is available in your application, you are ready to transfer your pipelines to the custom Conduit application and 
+Once you have confirmed that your Conduit Connector is available in your application, you are ready to transfer any pipeline you had previously tested to the custom Conduit application:
 
 ```bash title="custom-conduit-app"
 mkdir pipelines
-mv PREVIOUSLY_TESTED_CONDUIT/pipelines/* pipelines/
+mv $PREVIOUSLY_TESTED_CONDUIT/pipelines/* pipelines/
 ./custom-conduit run
 ```
 
 Or configure it to read from the desired pipelines directory:
 
 ```bash title="custom-conduit-app"
-./custom-conduit run --pipelines.path YOUR_PIPELINES_DIRECTORY
+./custom-conduit run --pipelines.path $YOUR_PIPELINES_DIRECTORY
 ```
+
+:::note
+If you, on the other hand, didn't have any pipeline previously configured and you'd like to get started, check out this page on [how to build a pipeline](/docs/getting-started#build-a-pipeline). Just remember that any `conduit` command from the terminal would need to be replaced by your custom conduit binary `./custom-conduit`.
+:::
 
 ![scarf pixel conduit-site-docs-using-connectors](https://static.scarf.sh/a.png?x-pxid=53743422-c614-4e45-acaa-f1f9f604321e)
