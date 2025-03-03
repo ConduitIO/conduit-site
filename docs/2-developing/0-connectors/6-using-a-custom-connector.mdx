@@ -2,28 +2,62 @@
 title: "Using a Custom Connector in Conduit"
 ---
 
-## Adding the Connector to Conduit
+## Building your custom connector
 
-The Conduit Connector template includes a `Makefile` that can be used to build a
-binary version of your connector.
+The [Conduit Connector template](https://github.com/ConduitIO/conduit-connector-template) 
+includes a `Makefile` that can be used to build a binary version of your connector. 
 
-```bash
+For the purpose of this guide, we're going to use our [Conduit Snowflake Connector as an example](/docs/using/connectors/list/snowflake). You can imagine it as if you were adding your custom connector for the first time. 
+
+From your standalone connector directory, run:
+
+```shell title="/conduitio-labs/conduit-connector-snowflake"
 make build
 ```
 
-After the command runs you should see a binary file with the name of the
-connector in the local directory.
+## Adding the Connector to Conduit
 
-To run the Connector, you will need to move it to a directory that Conduit can
+After the command runs you should see a binary file with the name of the
+connector in the local directory. 
+
+To run the connector, you will need to move it to a directory that Conduit can
 access. By default, this directory is the `connectors` directory located
 alongside the Conduit binary. Move your newly created Connector binary into the
-`connectors` directory and run Conduit using the following command:
+`connectors` directory.
 
-```bash
+```shell title="/conduitio-labs/conduit-connector-snowflake"
+mv conduit-connector-snowflake /conduitio/conduit/connectors
+```
+
+## Checking your Connector is available in Conduit
+
+Conduit using the following command:
+
+```shell title="/conduitio/conduit"
 ./conduit run
 ```
 
-You can use Conduit's HTTP API to list the available connector plugins:
+Once moved, you should be able to see your custom Connector as a registered connector plugin. Using our [Conduit Snowflake Connector as an example](/docs/using/connectors/list/snowflake), by using our [Conduit CLI](/docs/cli) in a different terminal session, you should see the Snowflake Connector listed as a plugin.
+
+
+### Using the Conduit CLI
+
+```shell title="/conduitio/conduit"
+./conduit connector-plugins list
++-----------------------------------------+----------------------------------------------------------------------+
+|                  NAME                   |                               SUMMARY                                |
++-----------------------------------------+----------------------------------------------------------------------+
+| builtin:file@v0.10.0                    | A file source and destination plugin for Conduit.                    |
+| builtin:generator@v0.10.0               | A plugin capable of generating dummy records (in different formats). |
+| builtin:kafka@v0.12.0                   | A Kafka source and destination plugin for Conduit, written in Go.    |
+| builtin:log@v0.7.0                      | A destination connector that logs all incoming records.              |
+| builtin:postgres@v0.11.0                | Conduit connector for PostgreSQL                                     |
+| builtin:s3@v0.9.0                       | An S3 source and destination plugin for Conduit, written in Go.      |
+| standalone:snowflake@v0.3.1-11-g1dc4b8d | An Snowflake source plugin for Conduit, written in Go.               |
++-----------------------------------------+----------------------------------------------------------------------+
+```
+
+### Using the Conduit HTTP API
 
 ```shell
 curl localhost:8080/v1/connectors/plugins
@@ -54,40 +88,64 @@ Alternatively, the HTTP API can be used.
 
 When using custom Connectors in a pipeline configuration, they are prefixed with
 phrase `standalone` unlike built in Connectors which are prefixed with
-`builtin`. For example, to use a custom Connector named `file-sync` it would
-look as follows:
-`plugin: standalone:file-sync@[replace-with-connector-version]`.
+`builtin`. Continuing with our [Conduit Snowflake Connector](/docs/using/connectors/list/snowflake) as an example, it would
+look as follows: `plugin: standalone:snowflake@v0.3.1-11-g1dc4b8d`.
 
 More information about referencing connectors can be
 found [here](/docs/using/connectors/referencing).
 
-Below is an example of using a custom Connector in a pipeline configuration file:
+Below is an example of using this same Conduit Snowflake Connector in a [pipeline configuration file](/docs/using/pipelines/configuration-file):
 
 ``` yaml title="pipelines/use-custom-connector.yml"
 version: 2.2
 pipelines:
-  - id: use-custom-connector
+  - id: use-snowflake-connector
     # run pipeline on startup
     status: running
     description: >
-      Example pipeline reading to use a custom file sync connector.
+      Example pipeline reading from Postgres to Snowflake.
 
     connectors:
-      - id: source-sync
+      - id: source-postgres
         type: source
-        # use the custom file-sync plugin as the source
-        plugin: standalone:file-sync@v0.1.0
+        plugin: builtin:postgres
         settings:
-          # use ./data as the directory input to the file-sync connector; the connnector will watch for new files in this directory
-          directory: ./data
+          url: "postgres://exampleuser:examplepass@localhost:5433/exampledb?sslmode=disable"
+          tables: "users"
+          cdcMode: "logrepl"
+          logrepl.publicationName: "examplepub"
+          logrepl.slotName": "exampleslot"
 
-      - id: destination-sync
+      - id: destination-snowflake
         type: destination
-        # use the custom file-sync plugin as the destination
-        plugin: standalone:file-sync@v0.1.0
+        # use the snowflake plugin as the destination
+        plugin: standalone:snowflake@v0.3.1-11-g1dc4b8d
         settings:
-        # use ./new_destination as the directory input to the file-sync connector; the connnector will write files from the pipeline to this directory
-          directory: ./new_destination
+          snowflake.url: "snowflake://exampleuser:examplepass@localhost:5433/exampledb?sslmode=disable"
+          snowflake.username: "exampleuser"
+          snowflake.table: "users"
+          snowflake.orderingColumn: "id"
 ```
+
+:::info
+In this page, we used two existing Conduit connectors as an example. If you're curious, here you can find dedicated pages for both of these example connectors to learn more about their configuration:
+
+- [Conduit Postgres Connector](/docs/using/connectors/list/postgres)
+- [Conduit Snowflake Connector](/docs/using/connectors/list/snowflake)
+:::
+
+## Next steps
+
+Once you're able to run and test your custom connector as a [standalone connector](/docs/core-concepts#standalone-connector), we highly recommend you to include it to Conduit as a [builtin connector](/docs/core-concepts#built-in-connector) to increase its performance.
+
+You can check out this separate page on [how to do it](/docs/using/connectors/additional-built-in-plugins).
+
+
+If your connector is ready to be shared with the community, join our [Discord Community](https://discord.meroxa.com/) and let us know so it can be featured in our [ConduitIO Labs GitHub organization](https://github.com/conduitio-labs) or simply to make sure it's listed on our [Connectors List](/docs/using/connectors/list/).
+
+
+
+
+
 
 ![scarf pixel conduit-site-docs-developing-connectors](https://static.scarf.sh/a.png?x-pxid=3ada0949-fa61-40d6-a44a-76447ea4e39f)
