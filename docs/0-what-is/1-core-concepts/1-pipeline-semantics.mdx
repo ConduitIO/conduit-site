@@ -145,7 +145,7 @@ There is an implicit buffer that needs to be filled up before backpressure takes
 number of nodes in a pipeline - similar to how a longer garden hose holds more water, a longer Conduit pipeline can hold
 more messages. There are two exceptions to this rule:
 
-- Conduit is using gRPC streams to communicate with standalone connectors, which internally buffers requests before
+- Conduit is using gRPC streams to communicate with [standalone connectors](/docs/core-concepts#standalone-connector), which internally buffers requests before
 sending them over the wire, thus creating another implicit buffer (we are aware of this
 issue: [#211](https://github.com/ConduitIO/conduit/issues/211)).
 - Destination connectors are allowed to collect multiple records and write them in batches to the destination, which
