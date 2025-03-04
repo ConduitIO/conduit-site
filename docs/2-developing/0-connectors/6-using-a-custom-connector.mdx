@@ -7,7 +7,7 @@ title: "Using a Custom Connector in Conduit"
 The [Conduit Connector template](https://github.com/ConduitIO/conduit-connector-template) 
 includes a `Makefile` that can be used to build a binary version of your connector. 
 
-For the purpose of this guide, we're going to use our [Conduit Snowflake Connector as an example](https://github.com/conduitio-labs/conduit-connector-snowflake). You can imagine it as if you were adding your custom connector for the first time. 
+For the purpose of this guide, we're going to use our [Conduit Snowflake Connector as an example](/docs/using/connectors/list/snowflake). You can imagine it as if you were adding your custom connector for the first time. 
 
 From your standalone connector directory, run:
 
@@ -37,7 +37,7 @@ Conduit using the following command:
 ./conduit run
 ```
 
-Once moved, you should be able to see your custom Connector as a registered connector plugin. Using our [Conduit Snowflake Connector as an example](https://github.com/conduitio-labs/conduit-connector-snowflake), by using our [Conduit CLI](/docs/cli) in a different terminal session, you should see the Snowflake Connector listed as a plugin.
+Once moved, you should be able to see your custom Connector as a registered connector plugin. Using our [Conduit Snowflake Connector as an example](/docs/using/connectors/list/snowflake), by using our [Conduit CLI](/docs/cli) in a different terminal session, you should see the Snowflake Connector listed as a plugin.
 
 
 ### Using the Conduit CLI
@@ -88,7 +88,7 @@ Alternatively, the HTTP API can be used.
 
 When using custom Connectors in a pipeline configuration, they are prefixed with
 phrase `standalone` unlike built in Connectors which are prefixed with
-`builtin`. Continuing with our [Conduit Snowflake Connector](https://github.com/conduitio-labs/conduit-connector-snowflake) as an example, it would
+`builtin`. Continuing with our [Conduit Snowflake Connector](/docs/using/connectors/list/snowflake) as an example, it would
 look as follows: `plugin: standalone:snowflake@v0.3.1-11-g1dc4b8d`.
 
 More information about referencing connectors can be
