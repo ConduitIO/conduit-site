@@ -1,0 +1,60 @@
+---
+slug: '2025-03-20-conduit-0-13-3-release'
+title: Conduit v0.13.3 release
+draft: false
+tags: [conduit, release]
+---
+
+Today, we released a new version of Conduit [v0.13.3](https://github.com/ConduitIO/conduit/releases/tag/v0.13.3), adding new [builtin processors](/docs/using/processors/builtin) and fixing a bug when using batching delay on the connector with an older version of our [Conduit Connector SDK](https://github.com/ConduitIO/conduit-connector-sdk).
+
+:::tip
+If you're experiencing a validation issue when using `sdk.batch.delay`, make sure your connector is using at leat [Conduit Connector SDK v0.13.2](https://github.com/ConduitIO/conduit-connector-sdk/releases/tag/v0.13.2).
+:::
+
+<!--truncate-->
+
+### More information
+
+#### New [builtin processors](/docs/using/processors/builtin)
+
+- [`cohere.command`](/docs/using/processors/builtin/cohere.command)
+- [`cohere.embed`](/docs/using/processors/builtin/cohere.embed)
+- [`cohere.rerank`](/docs/using/processors/builtin/cohere.rerank)
+- [`openai.embeddings`](/docs/using/processors/builtin/openai.embeddings)
+- [`openai.textgen`](/docs/using/processors/builtin/openai.textgen)
+
+#### Bug fix
+
+When using an older version than [0.13.2](https://github.com/ConduitIO/conduit-connector-sdk/releases/tag/v0.13.2) of the [Conduit Connector SDK](https://github.com/ConduitIO/conduit-connector-sdk), and trying to use the `sdk.batch.delay` parameter, you might have encountered a validation issue: 
+
+```json
+{
+  "level": "error",
+  "stack": [
+    {
+      "func": "github.com/conduitio/conduit/pkg/lifecycle.(*Service).runPipeline.func2",
+      "file": "/app/pkg/lifecycle/service.go",
+      "line": 743
+    },
+    {
+      "func": "github.com/conduitio/conduit/pkg/lifecycle/stream.(*SourceNode).Run",
+      "file": "/app/pkg/lifecycle/stream/source.go",
+      "line": 120
+    },
+    {
+      "func": "github.com/conduitio/conduit/pkg/connector.(*Source).configure",
+      "file": "/app/pkg/connector/source.go",
+      "line": 297
+    }
+  ],
+  "error": "node postgres-to-kafka:postgres-source stopped with error: could not open source connector: could not configure source connector plugin: failed to parse configuration: config invalid: error validating \"sdk.batch.delay\": \"1s\" value should be a number: invalid parameter value",
+  "component": "lifecycle.Service",
+  "node_id": "postgres-to-kafka:postgres-source",
+  "time": 1742387716041,
+  "message": "node stopped"
+}
+```
+
+Since all [builtin connectors](/docs/core-concepts#built-in-connector) on [Conduit 0.13.2](https://github.com/ConduitIO/conduit/releases/tag/v0.13.2) were using an older version of the Conduit Connector SDK, we've released a new version of Conduit to ensure all of them work accordingly with the `sdk.batch.delay` parameter.
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)
