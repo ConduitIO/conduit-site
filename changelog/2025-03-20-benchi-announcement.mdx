@@ -1,0 +1,42 @@
+---
+slug: '2025-03-20-benchi-announcement'
+title: Benchi - Benchmarking Made Simple
+draft: false
+tags: [benchi, release]
+---
+
+Today, we released [Benchi](https://github.com/conduitio/benchi), a minimal yet powerful benchmarking framework that makes it easy to configure and run performance benchmarks for any tool.
+
+We are using Benchi to run performance benchmarks for Conduit and other data streaming tools, ensuring that all tools are tested under the same conditions and that the results are comparable. Check out how we use it in the [Streaming Benchmarks](https://github.com/conduitio/streaming-benchmarks) repository.
+
+<!--truncate-->
+
+## Why Benchi?
+
+Benchmarking is supposed to give you confidence. But if you've tried benchmarking tools before, you've probably run into this:
+
+- The need to manually set up the environment.
+- Metrics scattered across logs, dashboards, or worse — missing.
+- No easy way to track progress or compare results across runs and tools.
+
+Benchi fixes this. It's a framework for running and collecting benchmarks without reinventing the wheel for each project.
+
+### Key features of Benchi:
+
+- ⚙️ **Docker-Driven**: Use Docker Compose to spin up isolated, reproducible benchmarking environments.
+- 📊 **Terminal UI**: Real-time feedback while your benchmarks run. See metrics as they are collected.
+- 📁 **Metrics Collection**: Performance data is automatically collected and saved as **CSV** for further analysis. If your app exposes a Prometheus endpoint, Benchi can collect metrics from it!
+- 🪝 **Custom Hooks**: Run any script or command at any stage - before, during, or after the benchmark.
+- 🔄 **Multi-Tool Comparison**: Benchmark multiple tools **under identical conditions** to see which one holds up.
+
+## Start Benchmarking Smarter
+
+🚀 **Try it now:**
+
+```bash
+go install github.com/conduitio/benchi@latest
+```
+
+📚 Full docs + examples: [github.com/conduitio/benchi](https://github.com/conduitio/benchi)
+
+Let us know what you're benchmarking and how Benchi helps you optimize it!
