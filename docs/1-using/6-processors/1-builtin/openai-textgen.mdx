@@ -1,0 +1,503 @@
+---
+IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
+
+title: 'openai-textgen'
+sidebar_position: 17
+---
+
+import ReactDiffViewer from 'react-diff-viewer';
+import Chip from '@mui/material/Chip';
+import Box from "@mui/system/Box";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# `openai-textgen`
+
+modify records using openai models
+
+## Description
+
+textgen is a conduit processor that will transform a record based on a given prompt
+
+## Configuration parameters
+
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "openai-textgen"
+        settings:
+          # APIKey is the OpenAI API key. Required.
+          # Type: string
+          api_key: ""
+          # BackoffFactor is the factor by which the backoff increases. Defaults
+          # to 2.0
+          # Type: float
+          backoff_factor: "2.0"
+          # DeveloperMessage is the system message that guides the model's
+          # behavior. Required.
+          # Type: string
+          developer_message: ""
+          # Field is the reference to the field to process. Defaults to
+          # ".Payload.After".
+          # Type: string
+          field: ".Payload.After"
+          # FrequencyPenalty penalizes new tokens based on frequency in text.
+          # Type: float
+          frequency_penalty: ""
+          # InitialBackoff is the initial backoff duration in milliseconds.
+          # Defaults to 1000ms (1s).
+          # Type: int
+          initial_backoff: "1000"
+          # LogProbs is whether to return log probabilities of output tokens.
+          # Type: bool
+          log_probs: ""
+          # LogitBias modifies the likelihood of specified tokens appearing.
+          # Type: int
+          logit_bias.*: ""
+          # MaxBackoff is the maximum backoff duration in milliseconds. Defaults
+          # to 30000ms (30s).
+          # Type: int
+          max_backoff: "30000"
+          # MaxCompletionTokens is the maximum number of tokens for completion.
+          # Type: int
+          max_completion_tokens: ""
+          # MaxRetries is the maximum number of retries for API calls. Defaults
+          # to 3.
+          # Type: int
+          max_retries: "3"
+          # MaxTokens is the maximum number of tokens to generate.
+          # Type: int
+          max_tokens: ""
+          # Metadata is additional metadata to include with the request.
+          # Type: string
+          metadata.*: ""
+          # Model is the OpenAI model to use (e.g., gpt-4o-mini). Required.
+          # Type: string
+          model: ""
+          # N is the number of completions to generate.
+          # Type: int
+          n: ""
+          # PresencePenalty penalizes new tokens based on presence in text.
+          # Type: float
+          presence_penalty: ""
+          # ReasoningEffort controls the amount of reasoning in the response.
+          # Type: string
+          reasoning_effort: ""
+          # Whether to decode the record key using its corresponding schema from
+          # the schema registry.
+          # Type: bool
+          sdk.schema.decode.key.enabled: "true"
+          # Whether to decode the record payload using its corresponding schema
+          # from the schema registry.
+          # Type: bool
+          sdk.schema.decode.payload.enabled: "true"
+          # Whether to encode the record key using its corresponding schema from
+          # the schema registry.
+          # Type: bool
+          sdk.schema.encode.key.enabled: "true"
+          # Whether to encode the record payload using its corresponding schema
+          # from the schema registry.
+          # Type: bool
+          sdk.schema.encode.payload.enabled: "true"
+          # Seed is the seed for deterministic results.
+          # Type: int
+          seed: ""
+          # Stop are sequences where the API will stop generating.
+          # Type: string
+          stop: ""
+          # Store is whether to store the conversation in OpenAI.
+          # Type: bool
+          store: ""
+          # Stream is whether to stream the results or not. Not used for now.
+          # Type: bool
+          stream: ""
+          # StrictOutput enforces strict output format. Defaults to false.
+          # Type: bool
+          strict_output: "false"
+          # Temperature controls randomness (0-2, lower is more deterministic).
+          # Type: float
+          temperature: ""
+          # TopLogProbs is the number of most likely tokens to return
+          # probabilities for.
+          # Type: int
+          top_log_probs: ""
+          # TopP controls diversity via nucleus sampling.
+          # Type: float
+          top_p: ""
+          # User is the user identifier for OpenAI API.
+          # Type: string
+          user: ""
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td>`api_key`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  APIKey is the OpenAI API key. Required.
+        </td>
+      </tr>
+      <tr>
+        <td>`backoff_factor`</td>
+        <td>float</td>
+        <td>`2.0`</td>
+        <td>
+  BackoffFactor is the factor by which the backoff increases. Defaults to 2.0
+        </td>
+      </tr>
+      <tr>
+        <td>`developer_message`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  DeveloperMessage is the system message that guides the model's behavior. Required.
+        </td>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>string</td>
+        <td>`.Payload.After`</td>
+        <td>
+  Field is the reference to the field to process. Defaults to ".Payload.After".
+        </td>
+      </tr>
+      <tr>
+        <td>`frequency_penalty`</td>
+        <td>float</td>
+        <td><Chip label="null" /></td>
+        <td>
+  FrequencyPenalty penalizes new tokens based on frequency in text.
+        </td>
+      </tr>
+      <tr>
+        <td>`initial_backoff`</td>
+        <td>int</td>
+        <td>`1000`</td>
+        <td>
+  InitialBackoff is the initial backoff duration in milliseconds. Defaults to 1000ms (1s).
+        </td>
+      </tr>
+      <tr>
+        <td>`log_probs`</td>
+        <td>bool</td>
+        <td><Chip label="null" /></td>
+        <td>
+  LogProbs is whether to return log probabilities of output tokens.
+        </td>
+      </tr>
+      <tr>
+        <td>`logit_bias.*`</td>
+        <td>int</td>
+        <td><Chip label="null" /></td>
+        <td>
+  LogitBias modifies the likelihood of specified tokens appearing.
+        </td>
+      </tr>
+      <tr>
+        <td>`max_backoff`</td>
+        <td>int</td>
+        <td>`30000`</td>
+        <td>
+  MaxBackoff is the maximum backoff duration in milliseconds. Defaults to 30000ms (30s).
+        </td>
+      </tr>
+      <tr>
+        <td>`max_completion_tokens`</td>
+        <td>int</td>
+        <td><Chip label="null" /></td>
+        <td>
+  MaxCompletionTokens is the maximum number of tokens for completion.
+        </td>
+      </tr>
+      <tr>
+        <td>`max_retries`</td>
+        <td>int</td>
+        <td>`3`</td>
+        <td>
+  MaxRetries is the maximum number of retries for API calls. Defaults to 3.
+        </td>
+      </tr>
+      <tr>
+        <td>`max_tokens`</td>
+        <td>int</td>
+        <td><Chip label="null" /></td>
+        <td>
+  MaxTokens is the maximum number of tokens to generate.
+        </td>
+      </tr>
+      <tr>
+        <td>`metadata.*`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  Metadata is additional metadata to include with the request.
+        </td>
+      </tr>
+      <tr>
+        <td>`model`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  Model is the OpenAI model to use (e.g., gpt-4o-mini). Required.
+        </td>
+      </tr>
+      <tr>
+        <td>`n`</td>
+        <td>int</td>
+        <td><Chip label="null" /></td>
+        <td>
+  N is the number of completions to generate.
+        </td>
+      </tr>
+      <tr>
+        <td>`presence_penalty`</td>
+        <td>float</td>
+        <td><Chip label="null" /></td>
+        <td>
+  PresencePenalty penalizes new tokens based on presence in text.
+        </td>
+      </tr>
+      <tr>
+        <td>`reasoning_effort`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  ReasoningEffort controls the amount of reasoning in the response.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.decode.key.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to decode the record key using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.decode.payload.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to decode the record payload using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.encode.key.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to encode the record key using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.encode.payload.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to encode the record payload using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`seed`</td>
+        <td>int</td>
+        <td><Chip label="null" /></td>
+        <td>
+  Seed is the seed for deterministic results.
+        </td>
+      </tr>
+      <tr>
+        <td>`stop`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  Stop are sequences where the API will stop generating.
+        </td>
+      </tr>
+      <tr>
+        <td>`store`</td>
+        <td>bool</td>
+        <td><Chip label="null" /></td>
+        <td>
+  Store is whether to store the conversation in OpenAI.
+        </td>
+      </tr>
+      <tr>
+        <td>`stream`</td>
+        <td>bool</td>
+        <td><Chip label="null" /></td>
+        <td>
+  Stream is whether to stream the results or not. Not used for now.
+        </td>
+      </tr>
+      <tr>
+        <td>`strict_output`</td>
+        <td>bool</td>
+        <td>`false`</td>
+        <td>
+  StrictOutput enforces strict output format. Defaults to false.
+        </td>
+      </tr>
+      <tr>
+        <td>`temperature`</td>
+        <td>float</td>
+        <td><Chip label="null" /></td>
+        <td>
+  Temperature controls randomness (0-2, lower is more deterministic).
+        </td>
+      </tr>
+      <tr>
+        <td>`top_log_probs`</td>
+        <td>int</td>
+        <td><Chip label="null" /></td>
+        <td>
+  TopLogProbs is the number of most likely tokens to return probabilities for.
+        </td>
+      </tr>
+      <tr>
+        <td>`top_p`</td>
+        <td>float</td>
+        <td><Chip label="null" /></td>
+        <td>
+  TopP controls diversity via nucleus sampling.
+        </td>
+      </tr>
+      <tr>
+        <td>`user`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  User is the user identifier for OpenAI API.
+        </td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
+
+## Examples
+
+### Transform text using OpenAI models
+
+
+This example shows how to use the OpenAI text generation processor to transform a record's `.Payload.After` field
+using an OpenAI model. The processor will send the content of the field to OpenAI and replace it with the response.
+
+In this example, we're using a system message that instructs the model to convert the input text to uppercase.
+
+#### Configuration parameters
+
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "openai-textgen"
+        settings:
+          api_key: "fake-api-key"
+          backoff_factor: "2.0"
+          developer_message: "You will receive a payload. Your task is to output back the payload in uppercase."
+          field: ".Payload.After"
+          initial_backoff: "1000"
+          max_backoff: "30000"
+          max_retries: "3"
+          model: "gpt-4o-mini"
+          strict_output: "false"
+          temperature: "0"
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`api_key`</td>
+        <td>`fake-api-key`</td>
+      </tr>
+      <tr>
+        <td>`backoff_factor`</td>
+        <td>`2.0`</td>
+      </tr>
+      <tr>
+        <td>`developer_message`</td>
+        <td>`You will receive a payload. Your task is to output back the payload in uppercase.`</td>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>`.Payload.After`</td>
+      </tr>
+      <tr>
+        <td>`initial_backoff`</td>
+        <td>`1000`</td>
+      </tr>
+      <tr>
+        <td>`max_backoff`</td>
+        <td>`30000`</td>
+      </tr>
+      <tr>
+        <td>`max_retries`</td>
+        <td>`3`</td>
+      </tr>
+      <tr>
+        <td>`model`</td>
+        <td>`gpt-4o-mini`</td>
+      </tr>
+      <tr>
+        <td>`strict_output`</td>
+        <td>`false`</td>
+      </tr>
+      <tr>
+        <td>`temperature`</td>
+        <td>`0`</td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
+
+#### Record difference
+
+```mdx-code-block
+<Box className='diff-viewer'>
+  <ReactDiffViewer
+    styles={{
+      diffContainer: {
+        overflowX: 'auto',
+        overflowY: 'hidden',
+      },
+    }}
+    leftTitle={'Before'}
+    rightTitle={'After'}
+    oldValue={"{\n  \"position\": \"cG9zLTE=\",\n  \"operation\": \"create\",\n  \"metadata\": null,\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": \"hello world\"\n  }\n}"}
+    newValue={"{\n  \"position\": \"cG9zLTE=\",\n  \"operation\": \"create\",\n  \"metadata\": null,\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": \"HELLO WORLD\"\n  }\n}"}
+    hideLineNumbers={false}
+    showDiffOnly={false}
+    splitView={true}
+  />
+</Box>
+```
+
+
+
+![scarf pixel conduit-site-docs-using-processors](https://static.scarf.sh/a.png?x-pxid=02ff4382-6501-4410-b523-fa8e7f879b00)

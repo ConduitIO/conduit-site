@@ -1,0 +1,311 @@
+---
+IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
+
+title: 'openai-embeddings'
+sidebar_position: 16
+---
+
+import ReactDiffViewer from 'react-diff-viewer';
+import Chip from '@mui/material/Chip';
+import Box from "@mui/system/Box";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# `openai-embeddings`
+
+Generate embeddings for records using OpenAI models.
+
+## Description
+
+Embeddings is a Conduit processor that will generate vector embeddings for a record using OpenAI's embeddings API.
+
+## Configuration parameters
+
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "openai-embeddings"
+        settings:
+          # APIKey is the OpenAI API key.
+          # Type: string
+          api_key: ""
+          # BackoffFactor is the factor by which the backoff increases. Defaults
+          # to 2.0
+          # Type: float
+          backoff_factor: "2.0"
+          # Dimensions is the number of dimensions the resulting output
+          # embeddings should have.
+          # Type: int
+          dimensions: ""
+          # EncodingFormat is the format to return the embeddings in. Can be
+          # "float" or "base64".
+          # Type: string
+          encoding_format: ""
+          # Field is the reference to the field to process. Defaults to
+          # ".Payload.After".
+          # Type: string
+          field: ".Payload.After"
+          # InitialBackoff is the initial backoff duration in milliseconds.
+          # Defaults to 1000ms (1s).
+          # Type: int
+          initial_backoff: "1000"
+          # MaxBackoff is the maximum backoff duration in milliseconds. Defaults
+          # to 30000ms (30s).
+          # Type: int
+          max_backoff: "30000"
+          # MaxRetries is the maximum number of retries for API calls. Defaults
+          # to 3.
+          # Type: int
+          max_retries: "3"
+          # Model is the OpenAI embeddings model to use (e.g.,
+          # text-embedding-3-small).
+          # Type: string
+          model: ""
+          # Whether to decode the record key using its corresponding schema from
+          # the schema registry.
+          # Type: bool
+          sdk.schema.decode.key.enabled: "true"
+          # Whether to decode the record payload using its corresponding schema
+          # from the schema registry.
+          # Type: bool
+          sdk.schema.decode.payload.enabled: "true"
+          # Whether to encode the record key using its corresponding schema from
+          # the schema registry.
+          # Type: bool
+          sdk.schema.encode.key.enabled: "true"
+          # Whether to encode the record payload using its corresponding schema
+          # from the schema registry.
+          # Type: bool
+          sdk.schema.encode.payload.enabled: "true"
+          # User is the user identifier for OpenAI API.
+          # Type: string
+          user: ""
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td>`api_key`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  APIKey is the OpenAI API key.
+        </td>
+      </tr>
+      <tr>
+        <td>`backoff_factor`</td>
+        <td>float</td>
+        <td>`2.0`</td>
+        <td>
+  BackoffFactor is the factor by which the backoff increases. Defaults to 2.0
+        </td>
+      </tr>
+      <tr>
+        <td>`dimensions`</td>
+        <td>int</td>
+        <td><Chip label="null" /></td>
+        <td>
+  Dimensions is the number of dimensions the resulting output embeddings should have.
+        </td>
+      </tr>
+      <tr>
+        <td>`encoding_format`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  EncodingFormat is the format to return the embeddings in. Can be "float" or "base64".
+        </td>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>string</td>
+        <td>`.Payload.After`</td>
+        <td>
+  Field is the reference to the field to process. Defaults to ".Payload.After".
+        </td>
+      </tr>
+      <tr>
+        <td>`initial_backoff`</td>
+        <td>int</td>
+        <td>`1000`</td>
+        <td>
+  InitialBackoff is the initial backoff duration in milliseconds. Defaults to 1000ms (1s).
+        </td>
+      </tr>
+      <tr>
+        <td>`max_backoff`</td>
+        <td>int</td>
+        <td>`30000`</td>
+        <td>
+  MaxBackoff is the maximum backoff duration in milliseconds. Defaults to 30000ms (30s).
+        </td>
+      </tr>
+      <tr>
+        <td>`max_retries`</td>
+        <td>int</td>
+        <td>`3`</td>
+        <td>
+  MaxRetries is the maximum number of retries for API calls. Defaults to 3.
+        </td>
+      </tr>
+      <tr>
+        <td>`model`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  Model is the OpenAI embeddings model to use (e.g., text-embedding-3-small).
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.decode.key.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to decode the record key using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.decode.payload.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to decode the record payload using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.encode.key.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to encode the record key using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`sdk.schema.encode.payload.enabled`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Whether to encode the record payload using its corresponding schema from the schema registry.
+        </td>
+      </tr>
+      <tr>
+        <td>`user`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  User is the user identifier for OpenAI API.
+        </td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
+
+## Examples
+
+### Generate embeddings for text
+
+This example generates embeddings for the text stored in
+`.Payload.After`. The embeddings are returned as a JSON array of floating point numbers.
+These embeddings can be used for semantic search, clustering, or other machine learning tasks.
+
+#### Configuration parameters
+
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "openai-embeddings"
+        settings:
+          api_key: "your-openai-api-key"
+          backoff_factor: "2.0"
+          field: ".Payload.After"
+          initial_backoff: "1000"
+          max_backoff: "30000"
+          max_retries: "3"
+          model: "text-embedding-3-small"
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`api_key`</td>
+        <td>`your-openai-api-key`</td>
+      </tr>
+      <tr>
+        <td>`backoff_factor`</td>
+        <td>`2.0`</td>
+      </tr>
+      <tr>
+        <td>`field`</td>
+        <td>`.Payload.After`</td>
+      </tr>
+      <tr>
+        <td>`initial_backoff`</td>
+        <td>`1000`</td>
+      </tr>
+      <tr>
+        <td>`max_backoff`</td>
+        <td>`30000`</td>
+      </tr>
+      <tr>
+        <td>`max_retries`</td>
+        <td>`3`</td>
+      </tr>
+      <tr>
+        <td>`model`</td>
+        <td>`text-embedding-3-small`</td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
+
+#### Record difference
+
+```mdx-code-block
+<Box className='diff-viewer'>
+  <ReactDiffViewer
+    styles={{
+      diffContainer: {
+        overflowX: 'auto',
+        overflowY: 'hidden',
+      },
+    }}
+    leftTitle={'Before'}
+    rightTitle={'After'}
+    oldValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": \"test-key\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": \"This is a sample text to generate embeddings for.\"\n  }\n}"}
+    newValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": \"test-key\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": \"[0.1,0.2,0.3,0.4,0.5]\"\n  }\n}"}
+    hideLineNumbers={false}
+    showDiffOnly={false}
+    splitView={true}
+  />
+</Box>
+```
+
+
+
+![scarf pixel conduit-site-docs-using-processors](https://static.scarf.sh/a.png?x-pxid=02ff4382-6501-4410-b523-fa8e7f879b00)
