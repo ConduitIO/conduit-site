@@ -12,7 +12,6 @@ import SplitPair from '@site/src/components/SplitPair';
 import Stack from '@site/src/components/Stack';
 import Wrapper from '@site/src/components/Wrapper';
 import DiagonalDivider from '@site/src/components/DiagonalDivider';
-
 import styles from './index.module.css';
 
 function HeaderSection() {
@@ -50,7 +49,7 @@ function HeaderSection() {
             </div>
           </SplitPair>
         </Wrapper>
-        <DiagonalDivider className="text-white" />
+        <DiagonalDivider className="text-white" lightBgColor="white" darkBgColor="#1B1B1D" />
       </div>
     </>
   );
@@ -62,7 +61,7 @@ function FeaturesSection() {
       <Wrapper className="py-12">
         <HomepageFeatures />
       </Wrapper>
-      <DiagonalDivider className="text-slate-100" />
+      <DiagonalDivider className="text-slate-100" lightBgColor="#101827" darkBgColor="#101827" />
     </>
 )
 }
@@ -89,7 +88,8 @@ function ConnectorsSection() {
         <HomepageConnectors />
       </Wrapper>
 
-      <DiagonalDivider className="text-orange-700" />
+
+      <DiagonalDivider className="text-orange-700" lightBgColor="#C2420D" darkBgColor="#C2420D" />
     </section>
   )
 }
@@ -150,7 +150,7 @@ function CommunitySection() {
         </SplitPair>
       </Wrapper>
 
-      <DiagonalDivider className="text-white" />
+      <DiagonalDivider className="text-white" lightBgColor="white" darkBgColor="#3C4754" />
     </section>
   )
 }

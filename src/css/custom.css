@@ -159,6 +159,10 @@ html[data-theme="dark"] {
   .page__header {
     background: linear-gradient(289.62deg, #414e5b -11.02%, #282d39 97.11%);
   }
+
+  .footer {
+    background-color: #3C4754;
+  }
 }
 
 .page__header {
