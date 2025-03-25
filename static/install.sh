@@ -39,6 +39,7 @@ initArch() {
   ARCH=$(uname -m)
   case $ARCH in
   aarch64) ARCH="arm64" ;;
+  arm64) ARCH="arm64" ;;
   x86) ARCH="i386" ;;
   x86_64) ARCH="x86_64" ;;
   i686) ARCH="i386" ;;
@@ -211,7 +212,7 @@ testVersion() {
     fail "$PROJECT_NAME not found."
   fi
   set -e
-  CONDUIT_VERSION=$($PROJECT_NAME -version)
+  CONDUIT_VERSION=$($PROJECT_NAME --version)
   coloredEcho "\n$CONDUIT_VERSION installed successfully"
 }
 
