@@ -24,7 +24,6 @@ const DiagonalDivider = ({ className, lightBgColor, darkBgColor, ...otherProps }
   }, []);
 
   let fillColor = theme === 'dark' ? darkBgColor : lightBgColor;
-  console.log(fillColor);
   return (
     <div
       role="presentation"

@@ -72,6 +72,11 @@ html.home #footer-logo {
   content:url("/img/logos/conduit-logo-light.svg");
 }
 
+html[data-theme="dark"].home #footer-logo { 
+  content:url("/img/logos/conduit-logo-dark.svg");
+}
+
+
 html.home div[class^='announcementBar_'] {
   border-bottom: 0;
 }
@@ -163,7 +168,75 @@ html[data-theme="dark"] {
   .footer {
     background-color: #3C4754;
   }
+
+  .features {
+    h2 {
+      @apply text-white;
+    }
+
+    ul > li {
+      @apply bg-slate-700;
+    }
+  }
+
+  .connectors li {
+    @apply bg-gray-400;
+  }
+
+  .community  {
+    background-color: #282D39;
+
+    a {
+      @apply bg-gray-500;
+      text-decoration: none;
+
+      &:hover {
+        @apply text-white bg-gray-600;
+      }
+    }
+  }
+
+  .header {
+    a {
+      text-decoration: none;
+      &.docs {
+        @apply hover:text-white hover:bg-gray-600;
+      }
+      
+      &.download {
+        @apply hover:text-white hover:bg-orange-900;
+      }
+    }
+  }
+
+  .navbar__items, .footer__items {
+    a:hover {
+      @apply text-gray-500;
+    }
+  }
 }
+
+.navbar__items, .footer__items {
+  a:hover {
+    text-decoration: none;
+  }
+}
+
+.header {
+  a {
+    text-decoration: none;
+
+    &.docs {
+      @apply hover:text-gray-600 hover:bg-white;
+    }
+    
+    &.download {
+      @apply hover:text-white hover:bg-orange-900;
+    }
+  }
+}
+
+
 
 .page__header {
   background: linear-gradient(289.62deg, #20BED9 -11.02%, #0B525D 97.11%);

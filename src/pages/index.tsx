@@ -18,7 +18,7 @@ function HeaderSection() {
   const {siteConfig} = useDocusaurusContext();
   return (
     <>
-      <div className="max-w-full page__header">
+      <div className="max-w-full page__header header">
         <Wrapper className='py-12'>
           <SplitPair data-reversed data-skewed="60:40">
             <Stack className="basis-3/5">
@@ -32,13 +32,13 @@ function HeaderSection() {
 
               <div className='mt-6'>
                 <a href="/docs/installing-and-running"
-                   className="inline-flex items-center mb-5 px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-700 mr-4 hover:text-white hover:bg-orange-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                   className="download inline-flex items-center mb-5 px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-700 mr-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   <span>Download</span>
                 </a>
 
                 <a href="/docs"
-                   className={clsx(styles['bg-transparent-200'], "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white hover:text-gray-600 hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500")}
+                   className={clsx(styles['bg-transparent-200'], "docs inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500")}
                 >
                   <span>Documentation</span>
                 </a>
@@ -68,7 +68,7 @@ function FeaturesSection() {
 
 function ConnectorsSection() {
   return (
-    <section className="bg-slate-100 pt-10" >
+    <section className="bg-slate-100 pt-10 connectors" >
       <Wrapper className='py-10'>
         <div className="md:flex md:items-center md:justify-between">
           <div className="flex-1 min-w-0">
@@ -89,14 +89,14 @@ function ConnectorsSection() {
       </Wrapper>
 
 
-      <DiagonalDivider className="text-orange-700" lightBgColor="#C2420D" darkBgColor="#C2420D" />
+      <DiagonalDivider className="text-orange-700" lightBgColor="#C2420D" darkBgColor="#282D39" />
     </section>
   )
 }
 
 function CommunitySection() {
   return (
-    <section className="bg-orange-700 pt-10" >
+    <section className="community bg-orange-700 pt-10" >
       <Wrapper className="py-2 pb-10">
         <SplitPair>
             <div className="flex-1 items-start flex flex-col">
