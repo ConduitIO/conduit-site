@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
 const ThemedLogo = () => {
-  const [theme, setTheme] = useState('light');
+  const htmlElement = document.documentElement;
+  const currentTheme = htmlElement.getAttribute('data-theme');
+  const [theme, setTheme] = useState(currentTheme);
 
   useEffect(() => {
-    const htmlElement = document.documentElement;
-
     const updateTheme = () => {
       const currentTheme = htmlElement.getAttribute('data-theme');
       setTheme(currentTheme || 'light');
