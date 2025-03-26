@@ -64,6 +64,11 @@ a.conduit-platform::before {
   --docusaurus-announcement-bar-height: 50px;
 }
 
+html[data-theme="dark"] {
+  --ifm-color-primary: #68c1d1;
+  --ifm-color-primary-light: #0d4651;
+}
+
 /* Home page styles */
 html.home .footer {
   background-color: white;
