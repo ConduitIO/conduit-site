@@ -65,7 +65,7 @@ a.conduit-platform::before {
 }
 
 html[data-theme="dark"] {
-  --ifm-color-primary: #68c1d1;
+  --ifm-color-primary: #75acb6f4;
   --ifm-color-primary-light: #0d4651;
 }
 
@@ -220,7 +220,7 @@ html[data-theme="dark"] {
 
   .navbar__items, .footer__items {
     a:hover {
-      @apply text-gray-500;
+      color: var(--ifm-color-primary);
 
       &.svg-background {
         color: transparent;
