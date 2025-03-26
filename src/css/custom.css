@@ -167,6 +167,10 @@ html[data-theme="dark"] {
 
   .footer {
     background-color: #3C4754;
+    
+    a.github-logo {
+      @apply hover:text-black;
+    }
   }
 
   .features {
@@ -212,6 +216,10 @@ html[data-theme="dark"] {
   .navbar__items, .footer__items {
     a:hover {
       @apply text-gray-500;
+
+      &.svg-background {
+        color: transparent;
+      }
     }
   }
 }
