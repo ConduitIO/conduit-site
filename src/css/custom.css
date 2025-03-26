@@ -154,10 +154,6 @@ html.home div[class^='announcementBar_'] {
 }
 
 html[data-theme="dark"] {
-  .svg-background {
-    filter: invert(1) brightness(2) contrast(1);
-  }
-
   nav, main, .navbar {
     background-color: #282D39;
   }
@@ -220,11 +216,27 @@ html[data-theme="dark"] {
 
   .navbar__items, .footer__items {
     a:hover {
-      color: var(--ifm-color-primary);
-
       &.svg-background {
         color: transparent;
       }
+    }
+  }
+
+  .svg-background.github {
+    background-image: url('/img/logos/github-logo-dark.svg');
+  
+    &:hover {
+      background-image: url('/img/logos/github-logo-dark-hover.svg');
+    }
+  }
+  
+  
+  .svg-background.discord {
+    background-image: url('/img/logos/discord-logo-dark.svg');
+    margin-right: 20px;
+  
+    &:hover {
+      background-image: url('/img/logos/discord-logo-dark-hover.svg');
     }
   }
 }
@@ -248,8 +260,6 @@ html[data-theme="dark"] {
     }
   }
 }
-
-
 
 .page__header {
   background: linear-gradient(289.62deg, #20BED9 -11.02%, #0B525D 97.11%);
