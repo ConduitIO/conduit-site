@@ -1,17 +1,20 @@
 html[data-theme="dark"] {
   --ifm-color-primary: #75acb6f4;
   --ifm-color-primary-light: #0d4651;
+  --color-background: #282D39;
 
+  background-color: var(--color-background);
+  
   nav, main, .navbar {
-    background-color: #282D39;
+    background-color: var(--color-background);
   }
 
   .text-dark {
-    color: #282D39;
+    color: var(--color-background);
   }
 
   .page__header {
-    background: linear-gradient(289.62deg, #414e5b -11.02%, #282d39 97.11%);
+    background: linear-gradient(289.62deg, #414e5b -11.02%, var(--color-background) 97.11%);
   }
 
   .footer {
@@ -37,7 +40,7 @@ html[data-theme="dark"] {
   }
 
   .community {
-    background-color: #282D39;
+    background-color: var(--color-background);
 
     a {
       @apply bg-gray-500;
