@@ -3,10 +3,12 @@ title: 'Getting Started with Processors'
 sidebar_label: 'Getting Started'
 ---
 
+import PipelineExample from '@site/src/components/PipelineExample';
+
 A processor is a component that operates on a single record that flows through a pipeline. It can either **transform** the record, or **filter** it out based on some criteria. Since they are part of pipelines, making
 yourself familiar with [pipeline semantics](/docs/core-concepts/pipeline-semantics) is highly recommended.
 
-![Pipeline](/img/pipeline_example.svg)
+<PipelineExample />
 
 Processors are **optional** components in a pipeline (i.e. a pipeline can be started without them), and they are always
 attached to a single parent, which can be either a connector or a pipeline:
