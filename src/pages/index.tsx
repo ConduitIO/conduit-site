@@ -49,7 +49,7 @@ function HeaderSection() {
             </div>
           </SplitPair>
         </Wrapper>
-        <DiagonalDivider className="text-white" lightBgColor="white" darkBgColor="#1B1B1D" />
+        <DiagonalDivider className="text-white" lightBgColor="white" darkBgColor="#282D39" />
       </div>
     </>
   );
