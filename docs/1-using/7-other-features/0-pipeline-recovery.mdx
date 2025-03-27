@@ -2,6 +2,8 @@
 title: 'Pipeline Recovery'
 ---
 
+import PipelineRecovery from '@site/src/components/PipelineRecovery';
+
 Pipeline Recovery is a feature in Conduit through which pipelines that
 experience certain types of errors are automatically restarted. This document
 describes how Pipeline Recovery in Conduit works and how it can be configured.
@@ -74,7 +76,7 @@ to 0 even in the following cases:
 
 Here's a diagram of the algorithm:
 
-![Pipeline Recovery](/img/pipeline-recovery.png)
+<PipelineRecovery />
 
 ## How to disable Pipeline Recovery
 
