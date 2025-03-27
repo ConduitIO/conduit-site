@@ -4,7 +4,7 @@ slug: '/core-concepts/pipeline-semantics'
 ---
 
 
-import PipelineExample from '@site/src/components/PipelineExample';
+import ThemedImage from '@site/src/components/ThemedImage';
 
 This document describes the inner workings of a Conduit pipeline, its structure, and behavior. It also describes a
 Conduit message and its lifecycle as it flows through the pipeline.
@@ -15,7 +15,14 @@ A Conduit pipeline is a directed acyclic graph of nodes. Each node runs in its o
 nodes via unbuffered Go channels that can transmit messages. In theory, we could create arbitrarily complex graphs of
 nodes, but for the sake of a simpler API we expose the ability to create graphs with the following structure:
 
-<PipelineExample />
+<ThemedImage
+    id="pipeline-example"
+    darkImage="/img/pipeline-example-dark.svg"
+    lightImage="/img/pipeline-example.svg"
+    altText="Pipeline Example"
+    className="py-5"
+  />
+
 
 In the diagram above we see 7 sections:
 

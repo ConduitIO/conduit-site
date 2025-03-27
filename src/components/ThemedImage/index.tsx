@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const ConduitArchitecture = () => {
+const ThemedImage = ({ id, darkImage, lightImage, altText, className }) => {
   const htmlElement = document.documentElement;
   const currentTheme = htmlElement.getAttribute('data-theme');
   const [theme, setTheme] = useState(currentTheme);
@@ -23,16 +23,15 @@ const ConduitArchitecture = () => {
     };
   }, []);
 
-
   return (
-    <div id="conduit-architecture" className="py-5">
+    <div id={id} className={className}>
       {theme === 'dark' ? (
-        <img src="/img/conduit/conduit-architecture-dark.svg" alt="Conduit Architecture Dark Theme" />
+        <img src={darkImage} alt={`${altText} in dark theme`} />
       ) : (
-        <img src="/img/conduit/conduit-architecture.svg" alt="Conduit Architecture Light Theme" />
+        <img src={lightImage} alt={`${altText} in light theme`} />
       )}
     </div>
   );
 };
 
-export default ConduitArchitecture;
+export default ThemedImage;
