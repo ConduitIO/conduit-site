@@ -2,9 +2,10 @@ html[data-theme="dark"] {
   --ifm-color-primary: #75acb6f4;
   --ifm-color-primary-light: #0d4651;
   --color-background: #282D39;
+  --color-border: #3E424D;
 
   background-color: var(--color-background);
-  
+
   nav, main, .navbar {
     background-color: var(--color-background);
   }
@@ -88,6 +89,15 @@ html[data-theme="dark"] {
 
     &:hover {
       background-image: url('/img/logos/discord-logo-dark-hover.svg');
+    }
+  }
+
+  #connectors-list * {
+    border-color: var(--color-border);
+    color: white;
+
+    div {
+      background-color: var(--color-background);
     }
   }
 }
