@@ -17,41 +17,41 @@ If you're experiencing a validation issue when using `sdk.batch.delay`, make sur
 
 #### New [builtin processors](/docs/using/processors/builtin)
 
-- [`cohere.command`](/docs/using/processors/builtin/cohere.command)
-- [`cohere.embed`](/docs/using/processors/builtin/cohere.embed)
-- [`cohere.rerank`](/docs/using/processors/builtin/cohere.rerank)
-- [`openai-embeddings`](/docs/using/processors/builtin/openai-embeddings)
-- [`openai-textgen`](/docs/using/processors/builtin/openai-textgen)
+-   [`cohere.command`](/docs/using/processors/builtin/cohere.command)
+-   [`cohere.embed`](/docs/using/processors/builtin/cohere.embed)
+-   [`cohere.rerank`](/docs/using/processors/builtin/cohere.rerank)
+-   [`openai.embeddings`](/docs/using/processors/builtin/openai.embeddings)
+-   [`openai.textgen`](/docs/using/processors/builtin/openai.textgen)
 
 #### Bug fix
 
-When using an older version than [0.13.2](https://github.com/ConduitIO/conduit-connector-sdk/releases/tag/v0.13.2) of the [Conduit Connector SDK](https://github.com/ConduitIO/conduit-connector-sdk), and trying to use the `sdk.batch.delay` parameter, you might have encountered a validation issue: 
+When using an older version than [0.13.2](https://github.com/ConduitIO/conduit-connector-sdk/releases/tag/v0.13.2) of the [Conduit Connector SDK](https://github.com/ConduitIO/conduit-connector-sdk), and trying to use the `sdk.batch.delay` parameter, you might have encountered a validation issue:
 
 ```json
 {
-  "level": "error",
-  "stack": [
-    {
-      "func": "github.com/conduitio/conduit/pkg/lifecycle.(*Service).runPipeline.func2",
-      "file": "/app/pkg/lifecycle/service.go",
-      "line": 743
-    },
-    {
-      "func": "github.com/conduitio/conduit/pkg/lifecycle/stream.(*SourceNode).Run",
-      "file": "/app/pkg/lifecycle/stream/source.go",
-      "line": 120
-    },
-    {
-      "func": "github.com/conduitio/conduit/pkg/connector.(*Source).configure",
-      "file": "/app/pkg/connector/source.go",
-      "line": 297
-    }
-  ],
-  "error": "node postgres-to-kafka:postgres-source stopped with error: could not open source connector: could not configure source connector plugin: failed to parse configuration: config invalid: error validating \"sdk.batch.delay\": \"1s\" value should be a number: invalid parameter value",
-  "component": "lifecycle.Service",
-  "node_id": "postgres-to-kafka:postgres-source",
-  "time": 1742387716041,
-  "message": "node stopped"
+    "level": "error",
+    "stack": [
+        {
+            "func": "github.com/conduitio/conduit/pkg/lifecycle.(*Service).runPipeline.func2",
+            "file": "/app/pkg/lifecycle/service.go",
+            "line": 743
+        },
+        {
+            "func": "github.com/conduitio/conduit/pkg/lifecycle/stream.(*SourceNode).Run",
+            "file": "/app/pkg/lifecycle/stream/source.go",
+            "line": 120
+        },
+        {
+            "func": "github.com/conduitio/conduit/pkg/connector.(*Source).configure",
+            "file": "/app/pkg/connector/source.go",
+            "line": 297
+        }
+    ],
+    "error": "node postgres-to-kafka:postgres-source stopped with error: could not open source connector: could not configure source connector plugin: failed to parse configuration: config invalid: error validating \"sdk.batch.delay\": \"1s\" value should be a number: invalid parameter value",
+    "component": "lifecycle.Service",
+    "node_id": "postgres-to-kafka:postgres-source",
+    "time": 1742387716041,
+    "message": "node stopped"
 }
 ```
 
