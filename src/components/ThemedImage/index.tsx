@@ -1,26 +1,30 @@
 import React, { useEffect, useState } from 'react';
+import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 
 const ThemedImage = ({ id, darkImage, lightImage, altText, className }) => {
-  const htmlElement = document.documentElement;
-  const currentTheme = htmlElement.getAttribute('data-theme');
-  const [theme, setTheme] = useState(currentTheme);
+  const [theme, setTheme] = useState('light'); // Default to light theme
 
   useEffect(() => {
-    const updateTheme = () => {
-      const currentTheme = htmlElement.getAttribute('data-theme');
-      setTheme(currentTheme || 'light');
-    };
+    if (ExecutionEnvironment.canUseDOM) {
+      const htmlElement = document.documentElement;
+      const currentTheme = htmlElement.getAttribute('data-theme') || 'light';
+      setTheme(currentTheme);
 
-    const observer = new MutationObserver(updateTheme);
+      const updateTheme = () => {
+        const currentTheme = htmlElement.getAttribute('data-theme') || 'light';
+        setTheme(currentTheme);
+      };
 
-    observer.observe(htmlElement, {
-      attributes: true,
-      attributeFilter: ['data-theme'],
-    });
+      const observer = new MutationObserver(updateTheme);
+      observer.observe(htmlElement, {
+        attributes: true,
+        attributeFilter: ['data-theme'],
+      });
 
-    return () => {
-      observer.disconnect();
-    };
+      return () => {
+        observer.disconnect();
+      };
+    }
   }, []);
 
   return (
