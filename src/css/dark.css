@@ -4,6 +4,10 @@ html[data-theme="dark"] {
   --color-background: #282D39;
   --color-border: #3E424D;
 
+  #footer-logo {
+    content: url("/img/logos/conduit-logo-dark.svg");
+  }
+  
   background-color: var(--color-background);
 
   nav, main, .navbar {
