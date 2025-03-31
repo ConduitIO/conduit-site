@@ -68,10 +68,10 @@ const config: Config = {
         { to: '/docs/using/connectors/list', position: 'left', label: 'Connectors' },
         { to: '/docs', position: 'left', label: 'Documentation' },
         { to: '/changelog', position: 'left', label: 'Changelog' },
-        { to: 'https://meroxa.io', label: 'Conduit Platform', position: 'right', class: 'navbar__link navbar__item conduit-platform' },
+        { to: 'https://meroxa.io', label: 'Conduit Platform', position: 'right', className: 'navbar__link navbar__item conduit-platform' },
         { to: 'https://meroxa.com/blog/?type=Conduit', position: 'right', label: 'Blog' },
-        { to: 'https://github.com/ConduitIO', position: 'right', label: 'GitHub', class: 'svg-background github' },
-        { to: 'https://discord.meroxa.com', position: 'right', label: 'Discord', class: 'svg-background discord' },
+        { to: 'https://github.com/ConduitIO', position: 'right', label: 'GitHub', className: 'svg-background github' },
+        { to: 'https://discord.meroxa.com', position: 'right', label: 'Discord', className: 'svg-background discord' },
       ],
     },
     algolia: { // https://docusaurus.io/docs/search#using-algolia-docsearch
