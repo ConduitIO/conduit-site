@@ -6,22 +6,19 @@ import Head from '@docusaurus/Head';
 
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import HomepageConnectors from '@site/src/components/HomepageConnectors';
-import HomepageNavbar from '@site/src/components/HomepageNavbar';
 import HomepageFooter from '@site/src/components/HomepageFooter';
 
 import SplitPair from '@site/src/components/SplitPair';
 import Stack from '@site/src/components/Stack';
 import Wrapper from '@site/src/components/Wrapper';
 import DiagonalDivider from '@site/src/components/DiagonalDivider';
-
 import styles from './index.module.css';
 
 function HeaderSection() {
   const {siteConfig} = useDocusaurusContext();
   return (
     <>
-      <div style={{ 'background': 'linear-gradient(289.62deg, #20BED9 -11.02%, #0B525D 97.11%)' }} className="max-w-full">
-        <HomepageNavbar />
+      <div className="max-w-full page__header header">
         <Wrapper className='py-12'>
           <SplitPair data-reversed data-skewed="60:40">
             <Stack className="basis-3/5">
@@ -35,13 +32,13 @@ function HeaderSection() {
 
               <div className='mt-6'>
                 <a href="/docs/installing-and-running"
-                   className="inline-flex items-center mb-5 px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-700 mr-4 hover:text-white hover:bg-orange-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                   className="download inline-flex items-center mb-5 px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-700 mr-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   <span>Download</span>
                 </a>
 
                 <a href="/docs"
-                   className={clsx(styles['bg-transparent-200'], "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white hover:text-gray-600 hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500")}
+                   className={clsx(styles['bg-transparent-200'], "docs inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500")}
                 >
                   <span>Documentation</span>
                 </a>
@@ -52,7 +49,7 @@ function HeaderSection() {
             </div>
           </SplitPair>
         </Wrapper>
-        <DiagonalDivider className="text-white" />
+        <DiagonalDivider className="text-white" lightBgColor="white" darkBgColor="#282D39" />
       </div>
     </>
   );
@@ -64,14 +61,14 @@ function FeaturesSection() {
       <Wrapper className="py-12">
         <HomepageFeatures />
       </Wrapper>
-      <DiagonalDivider className="color-light text-slate-100" />
+      <DiagonalDivider className="text-slate-100" lightBgColor="#101827" darkBgColor="#101827" />
     </>
 )
 }
 
 function ConnectorsSection() {
   return (
-    <section className="bg-slate-100 pt-10" >
+    <section className="bg-slate-100 pt-10 connectors" >
       <Wrapper className='py-10'>
         <div className="md:flex md:items-center md:justify-between">
           <div className="flex-1 min-w-0">
@@ -91,14 +88,15 @@ function ConnectorsSection() {
         <HomepageConnectors />
       </Wrapper>
 
-      <DiagonalDivider className="text-orange-700" />
+
+      <DiagonalDivider className="text-orange-700" lightBgColor="#C2420D" darkBgColor="#282D39" />
     </section>
   )
 }
 
 function CommunitySection() {
   return (
-    <section className="bg-orange-700 pt-10" >
+    <section className="community bg-orange-700 pt-10" >
       <Wrapper className="py-2 pb-10">
         <SplitPair>
             <div className="flex-1 items-start flex flex-col">
@@ -152,7 +150,7 @@ function CommunitySection() {
         </SplitPair>
       </Wrapper>
 
-      <DiagonalDivider className="text-white" />
+      <DiagonalDivider className="text-white" lightBgColor="white" darkBgColor="#3C4754" />
     </section>
   )
 }

@@ -2,6 +2,8 @@
 title: 'Pipeline Recovery'
 ---
 
+import ThemedImage from '@site/src/components/ThemedImage';
+
 Pipeline Recovery is a feature in Conduit through which pipelines that
 experience certain types of errors are automatically restarted. This document
 describes how Pipeline Recovery in Conduit works and how it can be configured.
@@ -74,7 +76,13 @@ to 0 even in the following cases:
 
 Here's a diagram of the algorithm:
 
-![Pipeline Recovery](/img/pipeline-recovery.png)
+<ThemedImage
+    id="pipeline-recovery"
+    darkImage="/img/pipeline-recovery-dark.png"
+    lightImage="/img/pipeline-recovery.png"
+    altText="Conduit Architecture"
+    className="py-5"
+  />
 
 ## How to disable Pipeline Recovery
 

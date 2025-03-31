@@ -40,7 +40,7 @@ const Feature = ({ img, title, description }) => (
 
 export default function HomepageFeatures() {
   return (
-    <div className="pb-10 mt-10">
+    <div className="pb-10 mt-10 features">
       <h2 className='text-4xl font-bold pb-10 text-forest-100 text-center'> Deliver real-time event-based data in no time </h2>
       <ul className={clsx(styles['feature-grid'], "gap-3 grid grid-cols-1 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0")}>
         {FeatureList.map((feature) => (

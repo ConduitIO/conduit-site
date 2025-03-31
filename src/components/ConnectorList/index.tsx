@@ -118,7 +118,7 @@ class ConnectorList extends React.Component<{connectors: Connector[]}, Connector
   render() {
     const connectors = this.filterConnectors(this.state.filter, this.state.allConnectors);
     return (
-      <>
+      <div id="connectors-list">
         <BorderedSection title="Filters">
           <Stack>
             <Stack direction='row'>
@@ -159,7 +159,7 @@ class ConnectorList extends React.Component<{connectors: Connector[]}, Connector
           }}
         />
         {connectors.map(conn => conn.conduitIODocsPage ? <NonExpandableAccordion key={conn.url} connector={conn} /> : <ConnectorAccordion key={conn.url} connector={conn} />)}
-      </>
+      </div>
     );
   }
 }
