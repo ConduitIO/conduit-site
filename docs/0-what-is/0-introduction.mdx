@@ -6,11 +6,15 @@ sidebar_label: "Introduction"
 slug: '/'
 ---
 
-<img
-  alt="Conduit Logo"
-  style={{ maxWidth: "400px", marginTop: 0 }}
-  src="/img/conduit/on-white-conduit-logo.png"
-/>
+import ThemedImage from '@site/src/components/ThemedImage';
+
+<ThemedImage
+    id="conduit-logo"
+    darkImage="/img/logos/conduit-logo-dark.svg"
+    lightImage="/img/logos/conduit-logo-light.svg"
+    altText="Conduit Logo"
+    className="py-5"
+  />
 
 Conduit is a data streaming tool for software and data engineers, powered
 by [Meroxa](https://meroxa.io). Its purpose is to help you move data from A to
