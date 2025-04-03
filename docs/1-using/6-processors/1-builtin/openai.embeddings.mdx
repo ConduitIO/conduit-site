@@ -1,7 +1,7 @@
 ---
 IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
 
-title: 'openai-embeddings'
+title: 'openai.embeddings'
 sidebar_position: 16
 ---
 
@@ -11,7 +11,7 @@ import Box from "@mui/system/Box";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# `openai-embeddings`
+# `openai.embeddings`
 
 Generate embeddings for records using OpenAI models.
 
@@ -32,7 +32,7 @@ pipelines:
       # define source and destination ...
     processors:
       - id: example
-        plugin: "openai-embeddings"
+        plugin: "openai.embeddings"
         settings:
           # APIKey is the OpenAI API key.
           # Type: string
@@ -235,7 +235,7 @@ pipelines:
       # define source and destination ...
     processors:
       - id: example
-        plugin: "openai-embeddings"
+        plugin: "openai.embeddings"
         settings:
           api_key: "your-openai-api-key"
           backoff_factor: "2.0"
