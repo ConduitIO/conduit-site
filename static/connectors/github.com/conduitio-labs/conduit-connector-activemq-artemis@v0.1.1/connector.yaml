@@ -1,0 +1,302 @@
+version: "1.0"
+specification:
+  name: activemq
+  summary: An ActiveMQ Artemis source and destination plugin for Conduit, written in Go.
+  description: |-
+    The ActiveMQ Classic connector is one of [Conduit](https://conduit.io) plugins. The connector provides both a source and a destination connector for [ActiveMQ Artemis](https://activemq.apache.org/components/artemis/).
+
+    It uses the [stomp protocol](https://stomp.github.io/) to connect to ActiveMQ.
+
+    ## What data does the OpenCDC record consist of?
+
+    - `record.Position`: json object with the destination and the messageId frame header.
+    - `record.Operation`: currently fixed as "create".
+    - `record.Metadata`: a string to string map, with keys prefixed as `activemq.header.{STOMP_HEADER_NAME}`.
+    - `record.Key`: the messageId frame header.
+    - `record.Payload.Before`: empty
+    - `record.Payload.After`: the message body
+  version: v0.1.1
+  author: Meroxa, Inc.
+  source:
+    parameters:
+      - name: destination
+        description: Destination is the name of the STOMP destination.
+        type: string
+        default: ""
+        validations:
+          - type: required
+            value: ""
+      - name: password
+        description: Password is the password to use when connecting to the broker.
+        type: string
+        default: ""
+        validations:
+          - type: required
+            value: ""
+      - name: url
+        description: URL is the URL of the ActiveMQ Artemis broker.
+        type: string
+        default: ""
+        validations:
+          - type: required
+            value: ""
+      - name: user
+        description: User is the username to use when connecting to the broker.
+        type: string
+        default: ""
+        validations:
+          - type: required
+            value: ""
+      - name: consumerWindowSize
+        description: |-
+          ConsumerWindowSize is the size of the consumer window.
+          It maps to the "consumer-window-size" header in the STOMP SUBSCRIBE frame.
+        type: string
+        default: "-1"
+        validations: []
+      - name: recvTimeoutHeartbeat
+        description: |-
+          RecvTimeoutHeartbeat specifies the minimum amount of time between the
+          client expecting to receive heartbeat notifications from the server
+        type: duration
+        default: 2s
+        validations: []
+      - name: sendTimeoutHeartbeat
+        description: |-
+          SendTimeoutHeartbeat specifies the maximum amount of time between the
+          client sending heartbeat notifications from the server
+        type: duration
+        default: 2s
+        validations: []
+      - name: subscriptionType
+        description: |-
+          SubscriptionType is the subscription type. It can be either
+          ANYCAST or MULTICAST, with ANYCAST being the default.
+          Maps to the "subscription-type" header in the STOMP SUBSCRIBE frame.
+        type: string
+        default: ANYCAST
+        validations: []
+      - name: tls.caCertPath
+        description: CaCertPath is the path to the CA certificate file.
+        type: string
+        default: ""
+        validations: []
+      - name: tls.clientCertPath
+        description: ClientCertPath is the path to the client certificate file.
+        type: string
+        default: ""
+        validations: []
+      - name: tls.clientKeyPath
+        description: ClientKeyPath is the path to the client key file.
+        type: string
+        default: ""
+        validations: []
+      - name: tls.enabled
+        description: Enabled is a flag to enable or disable TLS.
+        type: bool
+        default: "false"
+        validations: []
+      - name: tls.insecureSkipVerify
+        description: InsecureSkipVerify is a flag to disable server certificate verification.
+        type: bool
+        default: "false"
+        validations: []
+      - name: sdk.batch.delay
+        description: Maximum delay before an incomplete batch is read from the source.
+        type: duration
+        default: "0"
+        validations: []
+      - name: sdk.batch.size
+        description: Maximum size of batch before it gets read from the source.
+        type: int
+        default: "0"
+        validations:
+          - type: greater-than
+            value: "-1"
+      - name: sdk.schema.context.enabled
+        description: |-
+          Specifies whether to use a schema context name. If set to false, no schema context name will
+          be used, and schemas will be saved with the subject name specified in the connector
+          (not safe because of name conflicts).
+        type: bool
+        default: "true"
+        validations: []
+      - name: sdk.schema.context.name
+        description: |-
+          Schema context name to be used. Used as a prefix for all schema subject names.
+          If empty, defaults to the connector ID.
+        type: string
+        default: ""
+        validations: []
+      - name: sdk.schema.extract.key.enabled
+        description: Whether to extract and encode the record key with a schema.
+        type: bool
+        default: "true"
+        validations: []
+      - name: sdk.schema.extract.key.subject
+        description: |-
+          The subject of the key schema. If the record metadata contains the field
+          "opencdc.collection" it is prepended to the subject name and separated
+          with a dot.
+        type: string
+        default: key
+        validations: []
+      - name: sdk.schema.extract.payload.enabled
+        description: Whether to extract and encode the record payload with a schema.
+        type: bool
+        default: "true"
+        validations: []
+      - name: sdk.schema.extract.payload.subject
+        description: |-
+          The subject of the payload schema. If the record metadata contains the
+          field "opencdc.collection" it is prepended to the subject name and
+          separated with a dot.
+        type: string
+        default: payload
+        validations: []
+      - name: sdk.schema.extract.type
+        description: The type of the payload schema.
+        type: string
+        default: avro
+        validations:
+          - type: inclusion
+            value: avro
+  destination:
+    parameters:
+      - name: destination
+        description: Destination is the name of the STOMP destination.
+        type: string
+        default: ""
+        validations:
+          - type: required
+            value: ""
+      - name: password
+        description: Password is the password to use when connecting to the broker.
+        type: string
+        default: ""
+        validations:
+          - type: required
+            value: ""
+      - name: url
+        description: URL is the URL of the ActiveMQ Artemis broker.
+        type: string
+        default: ""
+        validations:
+          - type: required
+            value: ""
+      - name: user
+        description: User is the username to use when connecting to the broker.
+        type: string
+        default: ""
+        validations:
+          - type: required
+            value: ""
+      - name: destinationHeader
+        description: |-
+          DestinationHeader maps to the "destination" header in the STOMP SEND
+          frame. Useful when using ANYCAST.
+        type: string
+        default: ""
+        validations: []
+      - name: destinationType
+        description: |-
+          DestinationType is the routing type of the destination. It can be either
+          ANYCAST or MULTICAST, with ANYCAST being the default.
+          Maps to the "destination-type" header in the STOMP SEND frame.
+        type: string
+        default: ANYCAST
+        validations: []
+      - name: recvTimeoutHeartbeat
+        description: |-
+          RecvTimeoutHeartbeat specifies the minimum amount of time between the
+          client expecting to receive heartbeat notifications from the server
+        type: duration
+        default: 2s
+        validations: []
+      - name: sendTimeoutHeartbeat
+        description: |-
+          SendTimeoutHeartbeat specifies the maximum amount of time between the
+          client sending heartbeat notifications from the server
+        type: duration
+        default: 2s
+        validations: []
+      - name: tls.caCertPath
+        description: CaCertPath is the path to the CA certificate file.
+        type: string
+        default: ""
+        validations: []
+      - name: tls.clientCertPath
+        description: ClientCertPath is the path to the client certificate file.
+        type: string
+        default: ""
+        validations: []
+      - name: tls.clientKeyPath
+        description: ClientKeyPath is the path to the client key file.
+        type: string
+        default: ""
+        validations: []
+      - name: tls.enabled
+        description: Enabled is a flag to enable or disable TLS.
+        type: bool
+        default: "false"
+        validations: []
+      - name: tls.insecureSkipVerify
+        description: InsecureSkipVerify is a flag to disable server certificate verification.
+        type: bool
+        default: "false"
+        validations: []
+      - name: sdk.batch.delay
+        description: Maximum delay before an incomplete batch is written to the destination.
+        type: duration
+        default: "0"
+        validations: []
+      - name: sdk.batch.size
+        description: Maximum size of batch before it gets written to the destination.
+        type: int
+        default: "0"
+        validations:
+          - type: greater-than
+            value: "-1"
+      - name: sdk.rate.burst
+        description: |-
+          Allow bursts of at most X records (0 or less means that bursts are not
+          limited). Only takes effect if a rate limit per second is set. Note that
+          if `sdk.batch.size` is bigger than `sdk.rate.burst`, the effective batch
+          size will be equal to `sdk.rate.burst`.
+        type: int
+        default: "0"
+        validations:
+          - type: greater-than
+            value: "-1"
+      - name: sdk.rate.perSecond
+        description: Maximum number of records written per second (0 means no rate limit).
+        type: float
+        default: "0"
+        validations:
+          - type: greater-than
+            value: "-1"
+      - name: sdk.record.format
+        description: |-
+          The format of the output record. See the Conduit documentation for a full
+          list of supported formats (https://conduit.io/docs/using/connectors/configuration-parameters/output-format).
+        type: string
+        default: opencdc/json
+        validations: []
+      - name: sdk.record.format.options
+        description: |-
+          Options to configure the chosen output record format. Options are normally
+          key=value pairs separated with comma (e.g. opt1=val2,opt2=val2), except
+          for the `template` record format, where options are a Go template.
+        type: string
+        default: ""
+        validations: []
+      - name: sdk.schema.extract.key.enabled
+        description: Whether to extract and decode the record key with a schema.
+        type: bool
+        default: "true"
+        validations: []
+      - name: sdk.schema.extract.payload.enabled
+        description: Whether to extract and decode the record payload with a schema.
+        type: bool
+        default: "true"
+        validations: []
