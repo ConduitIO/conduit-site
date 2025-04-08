@@ -1,0 +1,165 @@
+---
+IMPORTANT: This file was generated using src/connectorgen/main.go. DO NOT EDIT.
+
+title: "dynamodb"
+description: "A DynamoDB source plugin for Conduit"
+---
+
+import ReactDiffViewer from 'react-diff-viewer';
+import Chip from '@mui/material/Chip';
+import Box from "@mui/system/Box";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import IconButton from '@mui/material/IconButton';
+import Stack from '@mui/material/Stack';
+import Link from '@mui/material/Link';
+import StarIcon from '@mui/icons-material/Star';
+import Tooltip from '@mui/material/Tooltip';
+
+# dynamodb
+
+<Box sx={{
+  display: 'flex',
+  alignItems: 'center',
+  gap: 2,
+  marginBottom: 4,
+  borderRadius: 1,
+  padding: 2,
+  backgroundColor: 'rgba(0, 0, 0, 0.03)'
+}}>
+  {/* Author info */}
+  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+    <span>Author: Meroxa, Inc.</span>
+    <Tooltip title="Created by the Conduit team">
+      <img src='/img/conduit/conduit-ring.png' width='18' alt="Conduit team logo" />
+    </Tooltip>
+  </Box>
+
+  {/* Divider */}
+  <Box sx={{ borderLeft: '1px solid rgba(0, 0, 0, 0.12)', height: 24 }} />
+
+  {/* GitHub link */}
+  <Link
+    href="https://github.com/conduitio-labs/conduit-connector-dynamodb"
+    target="_blank"
+    sx={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 0.5,
+      color: 'inherit',
+      textDecoration: 'none',
+      '&:hover': {
+        textDecoration: 'underline'
+      }
+    }}
+  >
+    <GitHubIcon sx={{ fontSize: '1.5rem' }} />
+  </Link>
+
+  {/* Stars */}
+  <Chip
+    icon={<StarIcon sx={{ fontSize: '1rem' }} />}
+    label="0"
+    size="small"
+    sx={{ height: 24 }}
+  />
+</Box>
+
+## Latest release
+
+- [conduit-connector-dynamodb_0.2.2_Darwin_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.2.2/conduit-connector-dynamodb_0.2.2_Darwin_arm64.tar.gz)
+- [conduit-connector-dynamodb_0.2.2_Darwin_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.2.2/conduit-connector-dynamodb_0.2.2_Darwin_x86_64.tar.gz)
+- [conduit-connector-dynamodb_0.2.2_Linux_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.2.2/conduit-connector-dynamodb_0.2.2_Linux_arm64.tar.gz)
+- [conduit-connector-dynamodb_0.2.2_Linux_i386.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.2.2/conduit-connector-dynamodb_0.2.2_Linux_i386.tar.gz)
+- [conduit-connector-dynamodb_0.2.2_Linux_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.2.2/conduit-connector-dynamodb_0.2.2_Linux_x86_64.tar.gz)
+- [conduit-connector-dynamodb_0.2.2_Windows_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.2.2/conduit-connector-dynamodb_0.2.2_Windows_arm64.tar.gz)
+- [conduit-connector-dynamodb_0.2.2_Windows_i386.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.2.2/conduit-connector-dynamodb_0.2.2_Windows_i386.tar.gz)
+- [conduit-connector-dynamodb_0.2.2_Windows_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.2.2/conduit-connector-dynamodb_0.2.2_Windows_x86_64.tar.gz)
+
+## Description
+
+A DynamoDB source plugin for Conduit, it scans the table at the beginning taking a snapshot, then starts listening to CDC events using DynamoDB streams.
+
+## Source Parameters
+
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      - id: example-source
+        type: source
+        plugin: "dynamodb"
+        name: example-source
+        settings:
+          # AWS access key id.
+          # Type: string
+          aws.accessKeyId: ""
+          # AWS region.
+          # Type: string
+          aws.region: ""
+          # AWS secret access key.
+          # Type: string
+          aws.secretAccessKey: ""
+          # Table is the DynamoDB table name to pull data from.
+          # Type: string
+          table: ""
+          # AWSURL The URL for AWS (useful when testing the connector with
+          # localstack).
+          # Type: string
+          aws.url: ""
+          # discovery polling period for the CDC mode of how often to check for
+          # new shards in the DynamoDB Stream, formatted as a time.Duration
+          # string.
+          # Type: duration
+          discoveryPollingPeriod: "10s"
+          # records polling period for the CDC mode of how often to get new
+          # records from a shard, formatted as a time.Duration string.
+          # Type: duration
+          recordsPollingPeriod: "1s"
+          # skipSnapshot determines weather to skip the snapshot or not.
+          # Type: bool
+          skipSnapshot: "false"
+          # Maximum delay before an incomplete batch is read from the source.
+          # Type: duration
+          sdk.batch.delay: "0"
+          # Maximum size of batch before it gets read from the source.
+          # Type: int
+          sdk.batch.size: "0"
+          # Specifies whether to use a schema context name. If set to false, no
+          # schema context name will be used, and schemas will be saved with the
+          # subject name specified in the connector (not safe because of name
+          # conflicts).
+          # Type: bool
+          sdk.schema.context.enabled: "true"
+          # Schema context name to be used. Used as a prefix for all schema
+          # subject names. If empty, defaults to the connector ID.
+          # Type: string
+          sdk.schema.context.name: ""
+          # Whether to extract and encode the record key with a schema.
+          # Type: bool
+          sdk.schema.extract.key.enabled: "true"
+          # The subject of the key schema. If the record metadata contains the
+          # field "opencdc.collection" it is prepended to the subject name and
+          # separated with a dot.
+          # Type: string
+          sdk.schema.extract.key.subject: "key"
+          # Whether to extract and encode the record payload with a schema.
+          # Type: bool
+          sdk.schema.extract.payload.enabled: "true"
+          # The subject of the payload schema. If the record metadata contains
+          # the field "opencdc.collection" it is prepended to the subject name
+          # and separated with a dot.
+          # Type: string
+          sdk.schema.extract.payload.subject: "payload"
+          # The type of the payload schema.
+          # Type: string
+          sdk.schema.extract.type: "avro"
+```
+
+## Destination Parameters
+
+Connector dynamodb does not implement a destination.
+
