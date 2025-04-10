@@ -1,0 +1,107 @@
+html[data-theme="dark"] {
+  --ifm-color-primary: #75acb6f4;
+  --ifm-color-primary-light: #0d4651;
+  --color-background: #282D39;
+  --color-border: #3E424D;
+
+  #footer-logo {
+    content: url("/img/logos/conduit-logo-dark.svg");
+  }
+  
+  background-color: var(--color-background);
+
+  nav, main, .navbar {
+    background-color: var(--color-background);
+  }
+
+  .text-dark {
+    color: var(--color-background);
+  }
+
+  .page__header {
+    background: linear-gradient(289.62deg, #414e5b -11.02%, var(--color-background) 97.11%);
+  }
+
+  .footer {
+    background-color: #3C4754;
+
+    a.github-logo {
+      @apply hover:text-black;
+    }
+  }
+
+  .features {
+    h2 {
+      @apply text-white;
+    }
+
+    ul > li {
+      @apply bg-slate-700;
+    }
+  }
+
+  .connectors li {
+    @apply bg-gray-400;
+  }
+
+  .community {
+    background-color: var(--color-background);
+
+    a {
+      @apply bg-gray-500;
+      text-decoration: none;
+
+      &:hover {
+        @apply text-white bg-gray-600;
+      }
+    }
+  }
+
+  .header {
+    a {
+      text-decoration: none;
+
+      &.docs {
+        @apply hover:text-white hover:bg-gray-600;
+      }
+
+      &.download {
+        @apply hover:text-white hover:bg-orange-900;
+      }
+    }
+  }
+
+  .navbar__items, .footer__items {
+    a:hover {
+      &.svg-background {
+        color: transparent;
+      }
+    }
+  }
+
+  .svg-background.github {
+    background-image: url('/img/logos/github-logo-dark.svg');
+
+    &:hover {
+      background-image: url('/img/logos/github-logo-dark-hover.svg');
+    }
+  }
+
+  .svg-background.discord {
+    background-image: url('/img/logos/discord-logo-dark.svg');
+    margin-right: 20px;
+
+    &:hover {
+      background-image: url('/img/logos/discord-logo-dark-hover.svg');
+    }
+  }
+
+  #connectors-list * {
+    border-color: var(--color-border);
+    color: white;
+
+    div {
+      background-color: var(--color-background);
+    }
+  }
+}

@@ -60,7 +60,7 @@ import Tooltip from '@mui/material/Tooltip';
   {/* Stars */}
   <Chip
     icon={<StarIcon sx={{ fontSize: '1rem' }} />}
-    label="12"
+    label="13"
     size="small"
     sx={{ height: 24 }}
   />
@@ -68,14 +68,14 @@ import Tooltip from '@mui/material/Tooltip';
 
 ## Latest release
 
-- [conduit-connector-postgres_0.11.0_Darwin_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.11.0/conduit-connector-postgres_0.11.0_Darwin_arm64.tar.gz)
-- [conduit-connector-postgres_0.11.0_Darwin_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.11.0/conduit-connector-postgres_0.11.0_Darwin_x86_64.tar.gz)
-- [conduit-connector-postgres_0.11.0_Linux_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.11.0/conduit-connector-postgres_0.11.0_Linux_arm64.tar.gz)
-- [conduit-connector-postgres_0.11.0_Linux_i386.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.11.0/conduit-connector-postgres_0.11.0_Linux_i386.tar.gz)
-- [conduit-connector-postgres_0.11.0_Linux_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.11.0/conduit-connector-postgres_0.11.0_Linux_x86_64.tar.gz)
-- [conduit-connector-postgres_0.11.0_Windows_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.11.0/conduit-connector-postgres_0.11.0_Windows_arm64.tar.gz)
-- [conduit-connector-postgres_0.11.0_Windows_i386.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.11.0/conduit-connector-postgres_0.11.0_Windows_i386.tar.gz)
-- [conduit-connector-postgres_0.11.0_Windows_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.11.0/conduit-connector-postgres_0.11.0_Windows_x86_64.tar.gz)
+- [conduit-connector-postgres_0.11.2_Darwin_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.11.2/conduit-connector-postgres_0.11.2_Darwin_arm64.tar.gz)
+- [conduit-connector-postgres_0.11.2_Darwin_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.11.2/conduit-connector-postgres_0.11.2_Darwin_x86_64.tar.gz)
+- [conduit-connector-postgres_0.11.2_Linux_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.11.2/conduit-connector-postgres_0.11.2_Linux_arm64.tar.gz)
+- [conduit-connector-postgres_0.11.2_Linux_i386.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.11.2/conduit-connector-postgres_0.11.2_Linux_i386.tar.gz)
+- [conduit-connector-postgres_0.11.2_Linux_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.11.2/conduit-connector-postgres_0.11.2_Linux_x86_64.tar.gz)
+- [conduit-connector-postgres_0.11.2_Windows_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.11.2/conduit-connector-postgres_0.11.2_Windows_arm64.tar.gz)
+- [conduit-connector-postgres_0.11.2_Windows_i386.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.11.2/conduit-connector-postgres_0.11.2_Windows_i386.tar.gz)
+- [conduit-connector-postgres_0.11.2_Windows_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.11.2/conduit-connector-postgres_0.11.2_Windows_x86_64.tar.gz)
 
 ## Description
 
@@ -182,6 +182,10 @@ pipelines:
         plugin: "postgres"
         name: example-source
         settings:
+          # Tables is a List of table names to read from, separated by a comma,
+          # e.g.:"table1,table2". Use "*" if you'd like to listen to all tables.
+          # Type: string
+          tables: ""
           # URL is the connection string for the Postgres database.
           # Type: string
           url: ""
@@ -206,6 +210,14 @@ pipelines:
           # avro schema on each record.
           # Type: bool
           logrepl.withAvroSchema: "true"
+          # Snapshot fetcher size determines the number of rows to retrieve at a
+          # time.
+          # Type: int
+          snapshot.fetchSize: "50000"
+          # SnapshotMode is whether the plugin will take a snapshot of the
+          # entire table before starting cdc mode.
+          # Type: string
+          snapshotMode: "initial"
           # Maximum delay before an incomplete batch is read from the source.
           # Type: duration
           sdk.batch.delay: "0"
@@ -241,21 +253,6 @@ pipelines:
           # The type of the payload schema.
           # Type: string
           sdk.schema.extract.type: "avro"
-          # Snapshot fetcher size determines the number of rows to retrieve at a
-          # time.
-          # Type: int
-          snapshot.fetchSize: "50000"
-          # SnapshotMode is whether the plugin will take a snapshot of the
-          # entire table before starting cdc mode.
-          # Type: string
-          snapshotMode: "initial"
-          # Deprecated: use `tables` instead.
-          # Type: string
-          table: ""
-          # Tables is a List of table names to read from, separated by a comma,
-          # e.g.:"table1,table2". Use "*" if you'd like to listen to all tables.
-          # Type: string
-          tables: ""
 ```
 
 ## Destination Parameters
@@ -278,6 +275,9 @@ pipelines:
           # update existing rows.
           # Type: string
           key: ""
+          # Table is used as the target table into which records are inserted.
+          # Type: string
+          table: "{{ index .Metadata "opencdc.collection" }}"
           # Maximum delay before an incomplete batch is written to the
           # destination.
           # Type: duration
@@ -312,7 +312,4 @@ pipelines:
           # Whether to extract and decode the record payload with a schema.
           # Type: bool
           sdk.schema.extract.payload.enabled: "true"
-          # Table is used as the target table into which records are inserted.
-          # Type: string
-          table: "{{ index .Metadata "opencdc.collection" }}"
 ```

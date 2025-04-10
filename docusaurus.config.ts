@@ -49,7 +49,7 @@ const config: Config = {
           showLastUpdateTime: true,
         },
         theme: {
-          customCss: './src/css/custom.css',
+          customCss: ['./src/css/custom.css', './src/css/dark.css'],
         },
       } satisfies Preset.Options,
     ],
@@ -61,15 +61,17 @@ const config: Config = {
     navbar: {
       logo: {
         alt: 'Conduit Logo',
-        src: 'img/conduit/on-white-conduit-logo.png',
+        src: '/img/logos/conduit-logo-light.svg',
+        srcDark: '/img/logos/conduit-logo-dark.svg',
       },
       items: [
-        { to: '/', label: 'Home', position: 'left', activeBaseRegex: `///` },
+        { to: '/docs/using/connectors/list', position: 'left', label: 'Connectors' },
         { to: '/docs', position: 'left', label: 'Documentation' },
         { to: '/changelog', position: 'left', label: 'Changelog' },
-        { to: '/api', label: 'HTTP API', position: 'left' },
-        { href: 'https://meroxa.io', label: 'Conduit Platform', position: 'right', class: 'navbar__link navbar__item conduit-platform' },
-        { href: 'https://meroxa.com/blog/?type=Conduit', position: 'right', label: 'Blog' },
+        { to: 'https://meroxa.io', label: 'Conduit Platform', position: 'right', className: 'navbar__link navbar__item conduit-platform' },
+        { to: 'https://meroxa.com/blog/?type=Conduit', position: 'right', label: 'Blog' },
+        { to: 'https://github.com/ConduitIO', position: 'right', label: 'GitHub', className: 'svg-background github' },
+        { to: 'https://discord.meroxa.com', position: 'right', label: 'Discord', className: 'svg-background discord' },
       ],
     },
     algolia: { // https://docusaurus.io/docs/search#using-algolia-docsearch
@@ -124,7 +126,7 @@ const config: Config = {
     </g>
 </svg>
                   </a>
-                  <a href='https://github.com/ConduitIO/' class='text-black ml-4'>
+                  <a href='https://github.com/ConduitIO/' class='github-logo text-black ml-4'>
                     <svg aria-label="ConduitIO on GitHub" width="35" height="35" viewBox="0 0 72 70" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0)"><path fill-rule="evenodd" clip-rule="evenodd" d="M36 0C55.8895 0 72 16.0623 72 35.8923C72 51.7564 61.6796 65.1967 47.3812 69.9559C45.5912 70.2864 44.9282 69.1848 44.9282 68.2153C44.9282 67.356 44.9503 65.1086 44.9724 62.112C54.9834 64.2713 57.105 57.3088 57.105 57.3088C58.7403 53.1665 61.105 52.0428 61.105 52.0428C64.3757 49.8174 60.8619 49.8615 60.8619 49.8615C57.2597 50.1259 55.337 53.5631 55.337 53.5631C52.1326 59.0494 46.9171 57.463 44.8619 56.5376C44.5304 54.2241 43.6022 52.6377 42.5856 51.7343C50.5635 50.853 58.9613 47.7683 58.9613 34.0195C58.9613 30.0976 57.5691 26.9027 55.2486 24.3909C55.6243 23.4655 56.8619 19.83 54.9171 14.8946C54.9171 14.8946 51.8895 13.9251 45.0166 18.5741C42.1436 17.7809 39.0718 17.3843 36 17.3623C32.9503 17.3843 29.8564 17.7809 26.9834 18.5741C20.1105 13.9251 17.0829 14.8946 17.0829 14.8946C15.116 19.83 16.3536 23.4876 16.7293 24.3909C14.4309 26.9027 13.0387 30.0976 13.0387 34.0195C13.0387 47.8124 21.4586 50.831 29.4807 51.7343C28.1989 52.836 27.0276 55.0393 27.0276 58.3884C27.0276 63.1917 27.0718 67.0475 27.0718 68.2373C27.0718 69.2068 26.4309 70.3085 24.5967 69.9559C10.2983 65.1967 0 51.7564 0 35.9144C0 16.0623 16.1105 0 36 0Z" fill="currentColor"></path></g><defs><clipPath id="clip0"><rect width="72" height="70" fill="white"></rect></clipPath></defs></svg>
                   </a>
                   <a href='https://discord.meroxa.com' class='ml-4'>
@@ -165,12 +167,11 @@ const config: Config = {
       isCloseable: true,
     },
     colorMode: {
-      defaultMode: 'light',
-      disableSwitch: true,
-      respectPrefersColorScheme: false,
+      respectPrefersColorScheme: true,
     },
     prism: {
       theme: prismThemes.dracula,
+      darkTheme: prismThemes.dracula,
       additionalLanguages: ['bash', 'diff', 'json', 'hcl', 'yaml'],
     },
   } satisfies Preset.ThemeConfig,
