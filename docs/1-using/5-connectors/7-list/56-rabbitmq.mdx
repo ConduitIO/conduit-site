@@ -1,0 +1,333 @@
+---
+IMPORTANT: This file was generated using src/connectorgen/main.go. DO NOT EDIT.
+
+title: "rabbitmq"
+description: "A RabbitMQ source and destination plugin for Conduit, written in Go."
+---
+
+import ReactDiffViewer from 'react-diff-viewer';
+import Chip from '@mui/material/Chip';
+import Box from "@mui/system/Box";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import IconButton from '@mui/material/IconButton';
+import Stack from '@mui/material/Stack';
+import Link from '@mui/material/Link';
+import StarIcon from '@mui/icons-material/Star';
+import Tooltip from '@mui/material/Tooltip';
+
+# rabbitmq
+
+<Box sx={{
+  display: 'flex',
+  alignItems: 'center',
+  gap: 2,
+  marginBottom: 4,
+  borderRadius: 1,
+  padding: 2,
+  backgroundColor: 'rgba(0, 0, 0, 0.03)'
+}}>
+  {/* Author info */}
+  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+    <span>Author: Meroxa, Inc.</span>
+    <Tooltip title="Created by the Conduit team">
+      <img src='/img/conduit/conduit-ring.png' width='18' alt="Conduit team logo" />
+    </Tooltip>
+  </Box>
+
+  {/* Divider */}
+  <Box sx={{ borderLeft: '1px solid rgba(0, 0, 0, 0.12)', height: 24 }} />
+
+  {/* GitHub link */}
+  <Link
+    href="https://github.com/conduitio-labs/conduit-connector-rabbitmq"
+    target="_blank"
+    sx={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 0.5,
+      color: 'inherit',
+      textDecoration: 'none',
+      '&:hover': {
+        textDecoration: 'underline'
+      }
+    }}
+  >
+    <GitHubIcon sx={{ fontSize: '1.5rem' }} />
+  </Link>
+
+  {/* Stars */}
+  <Chip
+    icon={<StarIcon sx={{ fontSize: '1rem' }} />}
+    label="0"
+    size="small"
+    sx={{ height: 24 }}
+  />
+</Box>
+
+## Latest release
+
+- [conduit-connector-rabbitmq_0.2.0_Darwin_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-rabbitmq/releases/download/v0.2.0/conduit-connector-rabbitmq_0.2.0_Darwin_arm64.tar.gz)
+- [conduit-connector-rabbitmq_0.2.0_Darwin_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-rabbitmq/releases/download/v0.2.0/conduit-connector-rabbitmq_0.2.0_Darwin_x86_64.tar.gz)
+- [conduit-connector-rabbitmq_0.2.0_Linux_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-rabbitmq/releases/download/v0.2.0/conduit-connector-rabbitmq_0.2.0_Linux_arm64.tar.gz)
+- [conduit-connector-rabbitmq_0.2.0_Linux_i386.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-rabbitmq/releases/download/v0.2.0/conduit-connector-rabbitmq_0.2.0_Linux_i386.tar.gz)
+- [conduit-connector-rabbitmq_0.2.0_Linux_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-rabbitmq/releases/download/v0.2.0/conduit-connector-rabbitmq_0.2.0_Linux_x86_64.tar.gz)
+- [conduit-connector-rabbitmq_0.2.0_Windows_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-rabbitmq/releases/download/v0.2.0/conduit-connector-rabbitmq_0.2.0_Windows_arm64.tar.gz)
+- [conduit-connector-rabbitmq_0.2.0_Windows_i386.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-rabbitmq/releases/download/v0.2.0/conduit-connector-rabbitmq_0.2.0_Windows_i386.tar.gz)
+- [conduit-connector-rabbitmq_0.2.0_Windows_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-rabbitmq/releases/download/v0.2.0/conduit-connector-rabbitmq_0.2.0_Windows_x86_64.tar.gz)
+
+## Description
+
+A RabbitMQ source and destination plugin for Conduit, written in Go.
+
+## Source Parameters
+
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      - id: example-source
+        type: source
+        plugin: "rabbitmq"
+        name: example-source
+        settings:
+          # Name is the name of the queue to consume from / publish to
+          # Type: string
+          queue.name: ""
+          # URL is the RabbitMQ server URL
+          # Type: string
+          url: ""
+          # AutoAck indicates if the server should consider messages
+          # acknowledged once delivered.
+          # Type: bool
+          consumer.autoAck: "false"
+          # Exclusive indicates if the consumer should be exclusive.
+          # Type: bool
+          consumer.exclusive: "false"
+          # Name is the name of the consumer
+          # Type: string
+          consumer.name: ""
+          # NoLocal indicates if the server should not deliver messages
+          # published by the same connection.
+          # Type: bool
+          consumer.noLocal: "false"
+          # NoWait indicates if the consumer should be declared without waiting
+          # for server confirmation.
+          # Type: bool
+          consumer.noWait: "false"
+          # AutoDelete indicates if the queue will be deleted when there are no
+          # more consumers.
+          # Type: bool
+          queue.autoDelete: "false"
+          # Durable indicates if the queue will survive broker restarts.
+          # Type: bool
+          queue.durable: "true"
+          # Exclusive indicates if the queue can be accessed by other
+          # connections.
+          # Type: bool
+          queue.exclusive: "false"
+          # NoWait indicates if the queue should be declared without waiting for
+          # server confirmation.
+          # Type: bool
+          queue.noWait: "false"
+          # CACert is the path to the CA certificate to use for TLS
+          # Type: string
+          tls.caCert: ""
+          # ClientCert is the path to the client certificate to use for TLS
+          # Type: string
+          tls.clientCert: ""
+          # ClientKey is the path to the client key to use for TLS
+          # Type: string
+          tls.clientKey: ""
+          # Enabled indicates if TLS should be used
+          # Type: bool
+          tls.enabled: "false"
+          # Maximum delay before an incomplete batch is read from the source.
+          # Type: duration
+          sdk.batch.delay: "0"
+          # Maximum size of batch before it gets read from the source.
+          # Type: int
+          sdk.batch.size: "0"
+          # Specifies whether to use a schema context name. If set to false, no
+          # schema context name will be used, and schemas will be saved with the
+          # subject name specified in the connector (not safe because of name
+          # conflicts).
+          # Type: bool
+          sdk.schema.context.enabled: "true"
+          # Schema context name to be used. Used as a prefix for all schema
+          # subject names. If empty, defaults to the connector ID.
+          # Type: string
+          sdk.schema.context.name: ""
+          # Whether to extract and encode the record key with a schema.
+          # Type: bool
+          sdk.schema.extract.key.enabled: "true"
+          # The subject of the key schema. If the record metadata contains the
+          # field "opencdc.collection" it is prepended to the subject name and
+          # separated with a dot.
+          # Type: string
+          sdk.schema.extract.key.subject: "key"
+          # Whether to extract and encode the record payload with a schema.
+          # Type: bool
+          sdk.schema.extract.payload.enabled: "true"
+          # The subject of the payload schema. If the record metadata contains
+          # the field "opencdc.collection" it is prepended to the subject name
+          # and separated with a dot.
+          # Type: string
+          sdk.schema.extract.payload.subject: "payload"
+          # The type of the payload schema.
+          # Type: string
+          sdk.schema.extract.type: "avro"
+```
+
+## Destination Parameters
+
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      - id: example-destination
+        type: destination
+        plugin: "rabbitmq"
+        name: example-destination
+        settings:
+          # Name is the name of the queue to consume from / publish to
+          # Type: string
+          queue.name: ""
+          # URL is the RabbitMQ server URL
+          # Type: string
+          url: ""
+          # AppID specifies the application that created the message.
+          # Type: string
+          delivery.appID: ""
+          # ContentEncoding specifies the encoding of the message content.
+          # Type: string
+          delivery.contentEncoding: ""
+          # ContentType specifies the MIME type of the message content. Defaults
+          # to "application/json".
+          # Type: string
+          delivery.contentType: "application/json"
+          # CorrelationID is used to correlate RPC responses with requests.
+          # Type: string
+          delivery.correlationID: ""
+          # DeliveryMode indicates the message delivery mode. Non-persistent (1)
+          # or persistent (2). Default is 2 (persistent).
+          # Type: int
+          delivery.deliveryMode: "2"
+          # Expiration specifies the message expiration time, if any.
+          # Type: string
+          delivery.expiration: ""
+          # Immediate indicates if the message should be treated as immediate.
+          # If true, the message is not queued if no consumers are on the
+          # matching queue.
+          # Type: bool
+          delivery.immediate: "false"
+          # Mandatory indicates if the message is mandatory. If true, tells the
+          # server to return the message if it cannot be routed to a queue.
+          # Type: bool
+          delivery.mandatory: "false"
+          # MessageTypeName specifies the message type name.
+          # Type: string
+          delivery.messageTypeName: ""
+          # Priority specifies the message priority. Ranges from 0 to 9. Default
+          # is 0.
+          # Type: int
+          delivery.priority: "0"
+          # ReplyTo specifies the address to reply to.
+          # Type: string
+          delivery.replyTo: ""
+          # UserID specifies the user who created the message. Useful for
+          # publishers.
+          # Type: string
+          delivery.userID: ""
+          # AutoDelete indicates if the exchange will be deleted when the last
+          # queue is unbound from it.
+          # Type: bool
+          exchange.autoDelete: "false"
+          # Durable indicates if the exchange will survive broker restarts.
+          # Type: bool
+          exchange.durable: "true"
+          # Internal indicates if the exchange is used for internal purposes and
+          # cannot be directly published to by a client.
+          # Type: bool
+          exchange.internal: "false"
+          # Name is the name of the exchange.
+          # Type: string
+          exchange.name: ""
+          # NoWait indicates if the exchange should be declared without waiting
+          # for server confirmation.
+          # Type: bool
+          exchange.noWait: "false"
+          # Type is the type of the exchange (e.g., direct, fanout, topic,
+          # headers).
+          # Type: string
+          exchange.type: ""
+          # AutoDelete indicates if the queue will be deleted when there are no
+          # more consumers.
+          # Type: bool
+          queue.autoDelete: "false"
+          # Durable indicates if the queue will survive broker restarts.
+          # Type: bool
+          queue.durable: "true"
+          # Exclusive indicates if the queue can be accessed by other
+          # connections.
+          # Type: bool
+          queue.exclusive: "false"
+          # NoWait indicates if the queue should be declared without waiting for
+          # server confirmation.
+          # Type: bool
+          queue.noWait: "false"
+          # RoutingKey is the routing key to use when publishing to an exchange
+          # Type: string
+          routingKey: ""
+          # CACert is the path to the CA certificate to use for TLS
+          # Type: string
+          tls.caCert: ""
+          # ClientCert is the path to the client certificate to use for TLS
+          # Type: string
+          tls.clientCert: ""
+          # ClientKey is the path to the client key to use for TLS
+          # Type: string
+          tls.clientKey: ""
+          # Enabled indicates if TLS should be used
+          # Type: bool
+          tls.enabled: "false"
+          # Maximum delay before an incomplete batch is written to the
+          # destination.
+          # Type: duration
+          sdk.batch.delay: "0"
+          # Maximum size of batch before it gets written to the destination.
+          # Type: int
+          sdk.batch.size: "0"
+          # Allow bursts of at most X records (0 or less means that bursts are
+          # not limited). Only takes effect if a rate limit per second is set.
+          # Note that if `sdk.batch.size` is bigger than `sdk.rate.burst`, the
+          # effective batch size will be equal to `sdk.rate.burst`.
+          # Type: int
+          sdk.rate.burst: "0"
+          # Maximum number of records written per second (0 means no rate
+          # limit).
+          # Type: float
+          sdk.rate.perSecond: "0"
+          # The format of the output record. See the Conduit documentation for a
+          # full list of supported formats
+          # (https://conduit.io/docs/using/connectors/configuration-parameters/output-format).
+          # Type: string
+          sdk.record.format: "opencdc/json"
+          # Options to configure the chosen output record format. Options are
+          # normally key=value pairs separated with comma (e.g.
+          # opt1=val2,opt2=val2), except for the `template` record format, where
+          # options are a Go template.
+          # Type: string
+          sdk.record.format.options: ""
+          # Whether to extract and decode the record key with a schema.
+          # Type: bool
+          sdk.schema.extract.key.enabled: "true"
+          # Whether to extract and decode the record payload with a schema.
+          # Type: bool
+          sdk.schema.extract.payload.enabled: "true"
+```
