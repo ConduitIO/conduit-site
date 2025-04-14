@@ -61,6 +61,7 @@ var excludedRepositories = []string{
 	"derElektrobesen/mysql-migrator",
 	"lovromazgon/conduit-connector-playground",
 	"raulb/custom-conduit",
+	"stupidraid/conduit-connector-postgres",
 }
 
 // maps architectures found in asset names to GOARCH
