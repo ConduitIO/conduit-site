@@ -16493,15 +16493,6 @@
     "releases": []
   },
   {
-    "name_with_owner": "stupidraid/conduit-connector-postgres",
-    "description": "Conduit connector for PostgreSQL conduit, postgresql",
-    "created_at": "2025-04-10 09:47:42 +0000 UTC",
-    "url": "https://github.com/stupidraid/conduit-connector-postgres",
-    "stargazer_count": 21,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
     "name_with_owner": "tomialagbe/conduit-connector-influxdb",
     "description": "Influxdb destination connector for conduit",
     "created_at": "2024-06-05 09:08:38 +0000 UTC",
