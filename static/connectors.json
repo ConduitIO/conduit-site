@@ -2124,7 +2124,7 @@
     "description": "Conduit connector for Apache Kafka",
     "created_at": "2022-02-22 13:02:13 +0000 UTC",
     "url": "https://github.com/ConduitIO/conduit-connector-kafka",
-    "stargazer_count": 8,
+    "stargazer_count": 9,
     "fork_count": 4,
     "releases": [
       {
@@ -6754,7 +6754,7 @@
     "description": "Conduit connector for Amazon S3",
     "created_at": "2022-02-17 14:40:01 +0000 UTC",
     "url": "https://github.com/ConduitIO/conduit-connector-s3",
-    "stargazer_count": 8,
+    "stargazer_count": 9,
     "fork_count": 4,
     "releases": [
       {
@@ -7769,6 +7769,15 @@
     "releases": []
   },
   {
+    "name_with_owner": "actualrancher/conduit-connector-postgres",
+    "description": "Conduit connector for PostgreSQL conduit, postgresql",
+    "created_at": "2025-04-20 19:20:46 +0000 UTC",
+    "url": "https://github.com/actualrancher/conduit-connector-postgres",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": []
+  },
+  {
     "name_with_owner": "ahamidi/conduit-connector-neo4j",
     "description": "Conduit Connector Plugin for Neo4j",
     "created_at": "2022-02-28 18:10:29 +0000 UTC",
@@ -8600,7 +8609,7 @@
   },
   {
     "name_with_owner": "conduitio-labs/conduit-connector-box",
-    "description": "Conduit connector for the box content management system",
+    "description": "Conduit connector for the Box content management system",
     "created_at": "2025-04-01 05:26:17 +0000 UTC",
     "url": "https://github.com/conduitio-labs/conduit-connector-box",
     "stargazer_count": 0,
@@ -16362,6 +16371,15 @@
     "description": "Conduit connector for Weaviate",
     "created_at": "2023-07-13 07:27:26 +0000 UTC",
     "url": "https://github.com/devarispbrown/conduit-connector-weaviate",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": []
+  },
+  {
+    "name_with_owner": "hariso/conduit-connector-postgres-test",
+    "description": "",
+    "created_at": "2025-04-18 14:32:41 +0000 UTC",
+    "url": "https://github.com/hariso/conduit-connector-postgres-test",
     "stargazer_count": 0,
     "fork_count": 0,
     "releases": []
