@@ -7760,78 +7760,6 @@
     ]
   },
   {
-    "name_with_owner": "ViniciusMiana/conduit-connector-pulsar",
-    "description": "Provides a source and a destination Pulsar connector, for Conduit.",
-    "created_at": "2023-12-07 00:47:43 +0000 UTC",
-    "url": "https://github.com/ViniciusMiana/conduit-connector-pulsar",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "actualrancher/conduit-connector-postgres",
-    "description": "Conduit connector for PostgreSQL conduit, postgresql",
-    "created_at": "2025-04-20 19:20:46 +0000 UTC",
-    "url": "https://github.com/actualrancher/conduit-connector-postgres",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "ahamidi/conduit-connector-neo4j",
-    "description": "Conduit Connector Plugin for Neo4j",
-    "created_at": "2022-02-28 18:10:29 +0000 UTC",
-    "url": "https://github.com/ahamidi/conduit-connector-neo4j",
-    "stargazer_count": 2,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "ahamidi/conduit-connector-pulsar",
-    "description": "",
-    "created_at": "2022-10-14 15:37:25 +0000 UTC",
-    "url": "https://github.com/ahamidi/conduit-connector-pulsar",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "ahamidi/conduit-connector-redis",
-    "description": "",
-    "created_at": "2022-03-03 20:54:43 +0000 UTC",
-    "url": "https://github.com/ahamidi/conduit-connector-redis",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "ahamidi/conduit-connector-rockset",
-    "description": "Rockset connector for Conduit",
-    "created_at": "2023-05-09 21:06:24 +0000 UTC",
-    "url": "https://github.com/ahamidi/conduit-connector-rockset",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "alejandromav/conduit-connector-tinybird",
-    "description": "Tinybird Conduit Connector",
-    "created_at": "2022-10-24 19:33:56 +0000 UTC",
-    "url": "https://github.com/alejandromav/conduit-connector-tinybird",
-    "stargazer_count": 1,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "brharrelldev/pulsar-connector",
-    "description": "Testing out ConduitIO framework for fun",
-    "created_at": "2023-12-18 06:01:07 +0000 UTC",
-    "url": "https://github.com/brharrelldev/pulsar-connector",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
     "name_with_owner": "conduitio-labs/conduit-connector-activemq-artemis",
     "description": "Conduit connector for ActiveMQ Artemis",
     "created_at": "2024-03-05 16:27:42 +0000 UTC",
@@ -16349,91 +16277,10 @@
     "releases": []
   },
   {
-    "name_with_owner": "devarismeroxa/conduit-connector-box",
-    "description": "Conduit Connector for the Box API",
-    "created_at": "2025-03-24 20:47:18 +0000 UTC",
-    "url": "https://github.com/devarismeroxa/conduit-connector-box",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "devarismeroxa/conduit-connector-influxdb",
-    "description": "Conduit Connector for InfluxDB",
-    "created_at": "2025-03-18 22:57:56 +0000 UTC",
-    "url": "https://github.com/devarismeroxa/conduit-connector-influxdb",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "devarispbrown/conduit-connector-weaviate",
-    "description": "Conduit connector for Weaviate",
-    "created_at": "2023-07-13 07:27:26 +0000 UTC",
-    "url": "https://github.com/devarispbrown/conduit-connector-weaviate",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "hariso/conduit-connector-postgres-test",
-    "description": "",
-    "created_at": "2025-04-18 14:32:41 +0000 UTC",
-    "url": "https://github.com/hariso/conduit-connector-postgres-test",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "hariso/custom-conduit",
-    "description": "",
-    "created_at": "2025-02-11 13:19:33 +0000 UTC",
-    "url": "https://github.com/hariso/custom-conduit",
-    "stargazer_count": 0,
-    "fork_count": 1,
-    "releases": []
-  },
-  {
     "name_with_owner": "lovromazgon/conduit-connector-kafka-broker",
     "description": "Experimental connector that acts as a Kafka broker and accepts data produced by Kafka producers.",
     "created_at": "2024-03-28 14:43:44 +0000 UTC",
     "url": "https://github.com/lovromazgon/conduit-connector-kafka-broker",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "maha-hajja/conduit-connector-slack",
-    "description": "destination for slack",
-    "created_at": "2023-05-12 10:30:43 +0000 UTC",
-    "url": "https://github.com/maha-hajja/conduit-connector-slack",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "mer-oscar/conduit-connector-azure-event-hub",
-    "description": "",
-    "created_at": "2024-02-16 18:07:18 +0000 UTC",
-    "url": "https://github.com/mer-oscar/conduit-connector-azure-event-hub",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "mer-oscar/conduit-connector-kinesis",
-    "description": "conduit connector for kinesis",
-    "created_at": "2024-02-05 07:21:55 +0000 UTC",
-    "url": "https://github.com/mer-oscar/conduit-connector-kinesis",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "mer-oscar/conduit-connector-zeromq",
-    "description": "",
-    "created_at": "2024-03-11 06:31:36 +0000 UTC",
-    "url": "https://github.com/mer-oscar/conduit-connector-zeromq",
     "stargazer_count": 0,
     "fork_count": 0,
     "releases": []
@@ -16457,66 +16304,12 @@
     "releases": []
   },
   {
-    "name_with_owner": "miwialex/test-connector",
-    "description": "",
-    "created_at": "2025-03-26 15:23:41 +0000 UTC",
-    "url": "https://github.com/miwialex/test-connector",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "mtami/conduit-connector-pulsar",
-    "description": "Conduit connector for Apache Pulsar",
-    "created_at": "2023-11-18 13:44:37 +0000 UTC",
-    "url": "https://github.com/mtami/conduit-connector-pulsar",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "mvrilo/conduit-connector-pulsar",
-    "description": "",
-    "created_at": "2023-12-04 12:10:45 +0000 UTC",
-    "url": "https://github.com/mvrilo/conduit-connector-pulsar",
-    "stargazer_count": 2,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
     "name_with_owner": "nickchomey/conduit-connector-surrealdb",
     "description": "",
     "created_at": "2024-09-19 17:41:02 +0000 UTC",
     "url": "https://github.com/nickchomey/conduit-connector-surrealdb",
     "stargazer_count": 1,
     "fork_count": 1,
-    "releases": []
-  },
-  {
-    "name_with_owner": "nstehr/conduit-connector-mqtt",
-    "description": "",
-    "created_at": "2024-12-09 16:39:17 +0000 UTC",
-    "url": "https://github.com/nstehr/conduit-connector-mqtt",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "shubhamdixit863/Conduit-Connector-Apache-pulsar",
-    "description": "",
-    "created_at": "2023-11-28 12:37:27 +0000 UTC",
-    "url": "https://github.com/shubhamdixit863/Conduit-Connector-Apache-pulsar",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": []
-  },
-  {
-    "name_with_owner": "tomialagbe/conduit-connector-influxdb",
-    "description": "Influxdb destination connector for conduit",
-    "created_at": "2024-06-05 09:08:38 +0000 UTC",
-    "url": "https://github.com/tomialagbe/conduit-connector-influxdb",
-    "stargazer_count": 0,
-    "fork_count": 0,
     "releases": []
   }
 ]

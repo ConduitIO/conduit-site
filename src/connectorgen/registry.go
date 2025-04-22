@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -26,43 +27,13 @@ import (
 
 	"github.com/google/go-github/v67/github"
 	"github.com/otiai10/gh-dependents/ghdeps"
+	"gopkg.in/yaml.v3"
 )
 
+//go:embed registry-config.yaml
+var registryConfigYaml []byte
+
 var connectorSdkRepoOwnerWithName = "conduitio/conduit-connector-sdk"
-
-var excludedRepositories = []string{
-	"ConduitIO/conduit",
-	"ConduitIO/streaming-benchmarks",
-	"ConduitIO/conduit-connector-template",
-	"ConduitIO/conduit-operator",
-	"ConduitIO/conduit-site",
-	// Test modules within the SDK use SDK as a dependency,
-	// so the SDK is included as a dependent of itself.
-	"ConduitIO/conduit-connector-sdk",
-
-	"ahamidi/conduit-connector-template",
-	"gopherslab/conduit-connector-google-sheets",
-	"gopherslab/conduit-connector-zendesk",
-	"gopherslab/conduit-connector-redis",
-	"hariso/conduit-connector-s3",
-	"hariso/conduit-connector-kafka",
-	"hariso/conduit-connector-foo",
-	"hariso/foobar",
-	"neha-Gupta1/conduit-connector-bigquery",
-	"neovintage/conduit-connector-redis",
-	"tsinghgill/conduit-connector-notion",
-	"WeirdMagician/conduit-connector-google-cloudstorage",
-	"GevorgGal/conduit-connector-influxdb",
-	"EnigmaForLife/shared",
-	"frillyrequi/conduit-connector-sdk",
-	"hariso/crispy-octo-system",
-	"hariso/cuddly-chainsaw",
-	"hariso/reimagined-octo-umbrella",
-	"derElektrobesen/mysql-migrator",
-	"lovromazgon/conduit-connector-playground",
-	"raulb/custom-conduit",
-	"stupidraid/conduit-connector-postgres",
-}
 
 // maps architectures found in asset names to GOARCH
 var assetArchToGOARCH = map[string]string{
@@ -157,27 +128,71 @@ type Asset struct {
 	Size            int       `json:"size"`
 }
 
-type CommandRegistry struct {
-	client     *github.Client
-	outputFile string
+type registryConfig struct {
+	Allow []filterExpr `yaml:"allow"`
+	Deny  []filterExpr `yaml:"deny"`
 }
 
-func NewCommandRegistry(client *github.Client, outputFile string) *CommandRegistry {
+type filterExpr struct {
+	org  string
+	repo string
+}
+
+func (f filterExpr) Matches(org, repo string) bool {
+	return strings.EqualFold(f.org, org) &&
+		(f.repo == "*" || strings.EqualFold(f.repo, repo))
+}
+
+type CommandRegistry struct {
+	client      *github.Client
+	allowedFile string
+	deniedFile  string
+
+	config registryConfig
+}
+
+func NewCommandRegistry(client *github.Client, allowedFile, deniedFile string) *CommandRegistry {
 	return &CommandRegistry{
-		client:     client,
-		outputFile: outputFile,
+		client:      client,
+		allowedFile: allowedFile,
+		deniedFile:  deniedFile,
 	}
 }
 
 func (cmd *CommandRegistry) Execute(ctx context.Context) error {
+	var err error
+	cmd.config, err = cmd.parseConfig()
+	if err != nil {
+		return err
+	}
+
 	reposList, err := cmd.fetchDependents(connectorSdkRepoOwnerWithName)
 	if err != nil {
 		return fmt.Errorf("failed to fetch dependent repositories: %w", err)
 	}
 
-	var repositories []Repository
-	for _, repo := range reposList {
-		fmt.Printf("\n🕵  Processing repository %v\n", repo)
+	allowed, denied := cmd.filterRepos(reposList)
+
+	if err = cmd.processAllowedRepositories(ctx, allowed); err != nil {
+		return fmt.Errorf("failed to process allowed repositories: %w", err)
+	}
+
+	if cmd.deniedFile != "" {
+		if err = cmd.processDeniedRepositories(ctx, denied); err != nil {
+			return fmt.Errorf("failed to process denied repositories: %w", err)
+		}
+	} else {
+		fmt.Println("⏭️ Skipping denied repositories")
+	}
+
+	fmt.Println("✅ Done")
+	return nil
+}
+
+func (cmd *CommandRegistry) processAllowedRepositories(ctx context.Context, repos []ghdeps.Repository) error {
+	repositories := make([]Repository, len(repos))
+	for i, repo := range repos {
+		fmt.Printf("\n🕵  Processing repository %v/%v\n", repo.User, repo.Repo)
 
 		repoInfo, err := cmd.fetchRepoInfo(ctx, repo)
 		if err != nil {
@@ -190,10 +205,10 @@ func (cmd *CommandRegistry) Execute(ctx context.Context) error {
 		}
 
 		repoInfo.Releases = releases
-		repositories = append(repositories, repoInfo)
+		repositories[i] = repoInfo
 	}
 
-	fmt.Printf("\n🪚 Building %s ...\n", cmd.outputFile)
+	fmt.Printf("\n🪚 Building %s ...\n", cmd.allowedFile)
 	slices.SortFunc(repositories, func(a, b Repository) int {
 		return strings.Compare(a.URL, b.URL)
 	})
@@ -202,16 +217,83 @@ func (cmd *CommandRegistry) Execute(ctx context.Context) error {
 		return fmt.Errorf("failed to marshal repositories to JSON: %w", err)
 	}
 
-	err = os.WriteFile(cmd.outputFile, connectorsJSON, 0644)
+	err = os.WriteFile(cmd.allowedFile, connectorsJSON, 0644)
 	if err != nil {
-		return fmt.Errorf("failed to write %s: %w", cmd.outputFile, err)
+		return fmt.Errorf("failed to write %s: %w", cmd.allowedFile, err)
 	}
 
-	fmt.Println("✅ Done")
 	return nil
 }
 
-func (cmd *CommandRegistry) fetchDependents(repo string) ([]string, error) {
+func (cmd *CommandRegistry) processDeniedRepositories(ctx context.Context, repos []ghdeps.Repository) error {
+	repositories := make([]Repository, len(repos))
+	for i, repo := range repos {
+		repositories[i] = Repository{
+			NameWithOwner: repo.User + "/" + repo.Repo,
+			URL:           fmt.Sprintf("https://github.com/%s/%s", repo.User, repo.Repo),
+			Stargazers:    repo.Stars,
+			Forks:         repo.Forks,
+		}
+	}
+
+	fmt.Printf("\n🪚 Building denied connectors file %s ...\n", cmd.deniedFile)
+	slices.SortFunc(repositories, func(a, b Repository) int {
+		return strings.Compare(a.URL, b.URL)
+	})
+	connectorsJSON, err := json.MarshalIndent(repositories, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal repositories to JSON: %w", err)
+	}
+
+	err = os.WriteFile(cmd.deniedFile, connectorsJSON, 0644)
+	if err != nil {
+		return fmt.Errorf("failed to write %s: %w", cmd.deniedFile, err)
+	}
+
+	return nil
+}
+
+func (cmd *CommandRegistry) parseConfig() (registryConfig, error) {
+	var tmp struct {
+		Allow []string `yaml:"allow"`
+		Deny  []string `yaml:"deny"`
+	}
+	if err := yaml.Unmarshal(registryConfigYaml, &tmp); err != nil {
+		return registryConfig{}, fmt.Errorf("failed to parse registry-config.yaml: %w", err)
+	}
+
+	var cfg registryConfig
+	for _, expr := range tmp.Allow {
+		fe, err := cmd.parseFilterExpr(expr)
+		if err != nil {
+			return registryConfig{}, fmt.Errorf("failed to parse allow expression %q: %w", expr, err)
+		}
+		cfg.Allow = append(cfg.Allow, fe)
+	}
+	for _, expr := range tmp.Deny {
+		fe, err := cmd.parseFilterExpr(expr)
+		if err != nil {
+			return registryConfig{}, fmt.Errorf("failed to parse deny expression %q: %w", expr, err)
+		}
+		cfg.Deny = append(cfg.Deny, fe)
+	}
+
+	return cfg, nil
+}
+
+func (cmd *CommandRegistry) parseFilterExpr(expr string) (filterExpr, error) {
+	parts := strings.Split(expr, "/")
+	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
+		return filterExpr{}, fmt.Errorf("invalid filter expression, expected <org>/<repo>")
+	}
+
+	return filterExpr{
+		org:  strings.TrimSpace(parts[0]),
+		repo: strings.TrimSpace(parts[1]),
+	}, nil
+}
+
+func (cmd *CommandRegistry) fetchDependents(repo string) ([]ghdeps.Repository, error) {
 	fmt.Println("📥 Fetching dependents ...")
 
 	c := ghdeps.NewCrawler(repo)
@@ -219,23 +301,41 @@ func (cmd *CommandRegistry) fetchDependents(repo string) ([]string, error) {
 		return nil, err
 	}
 
-	var reposList []string
-	for _, dependent := range c.Dependents {
-		name := dependent.User + "/" + dependent.Repo
-		if !slices.Contains(excludedRepositories, name) {
-			reposList = append(reposList, name)
-		}
-	}
+	sort.Slice(c.Dependents, func(i, j int) bool {
+		return strings.Compare(c.Dependents[i].User+"/"+c.Dependents[i].Repo, c.Dependents[j].User+"/"+c.Dependents[j].Repo) < 0
+	})
 
-	sort.Strings(reposList)
-
-	return reposList, nil
+	return c.Dependents, nil
 }
 
-func (cmd *CommandRegistry) fetchRepoInfo(ctx context.Context, repo string) (Repository, error) {
+// filterRepos filters the repositories based on the allow and deny lists in
+// the config.
+func (cmd *CommandRegistry) filterRepos(repos []ghdeps.Repository) (allowed []ghdeps.Repository, denied []ghdeps.Repository) {
+REPOS:
+	for _, repo := range repos {
+		for _, denyExpr := range cmd.config.Deny {
+			if denyExpr.Matches(repo.User, repo.Repo) {
+				denied = append(denied, repo)
+				continue REPOS
+			}
+		}
+		for _, allowExpr := range cmd.config.Allow {
+			if allowExpr.Matches(repo.User, repo.Repo) {
+				allowed = append(allowed, repo)
+				continue REPOS
+			}
+		}
+		// If no allow or deny expression matched, add to denied list
+		denied = append(denied, repo)
+	}
+
+	return allowed, denied
+}
+
+func (cmd *CommandRegistry) fetchRepoInfo(ctx context.Context, repo ghdeps.Repository) (Repository, error) {
 	fmt.Println("  📥 Fetching repository information ...")
 
-	repoInfo, _, err := cmd.client.Repositories.Get(ctx, strings.Split(repo, "/")[0], strings.Split(repo, "/")[1])
+	repoInfo, _, err := cmd.client.Repositories.Get(ctx, repo.User, repo.Repo)
 	if err != nil {
 		return Repository{}, err
 	}
@@ -250,16 +350,10 @@ func (cmd *CommandRegistry) fetchRepoInfo(ctx context.Context, repo string) (Rep
 	}, nil
 }
 
-func (cmd *CommandRegistry) fetchReleases(ctx context.Context, ownerRepo string) ([]Release, error) {
+func (cmd *CommandRegistry) fetchReleases(ctx context.Context, repo ghdeps.Repository) ([]Release, error) {
 	fmt.Println("  📥 Fetching releases ...")
 
-	owner, repoName := strings.Split(ownerRepo, "/")[0], strings.Split(ownerRepo, "/")[1]
-	ghReleases, _, err := cmd.client.Repositories.ListReleases(
-		ctx,
-		owner,
-		repoName,
-		nil,
-	)
+	ghReleases, _, err := cmd.client.Repositories.ListReleases(ctx, repo.User, repo.Repo, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -269,7 +363,7 @@ func (cmd *CommandRegistry) fetchReleases(ctx context.Context, ownerRepo string)
 	}
 
 	// Fetch the latest release
-	latestRel, _, err := cmd.client.Repositories.GetLatestRelease(ctx, owner, repoName)
+	latestRel, _, err := cmd.client.Repositories.GetLatestRelease(ctx, repo.User, repo.Repo)
 	if err != nil && !is404Error(err) {
 		return nil, fmt.Errorf("failed to fetch latest release: %w", err)
 	}
@@ -288,7 +382,7 @@ func (cmd *CommandRegistry) fetchReleases(ctx context.Context, ownerRepo string)
 			IsLatest:    isLatest,
 		}
 
-		releaseAssets, err := cmd.fetchReleaseAssets(ctx, ownerRepo, ghRel)
+		releaseAssets, err := cmd.fetchReleaseAssets(ctx, repo, ghRel)
 		if err != nil {
 			return nil, fmt.Errorf("failed fetching assets for release %v: %w", ghRel.GetTagName(), err)
 		}
@@ -300,16 +394,10 @@ func (cmd *CommandRegistry) fetchReleases(ctx context.Context, ownerRepo string)
 	return releasesList, nil
 }
 
-func (cmd *CommandRegistry) fetchReleaseAssets(ctx context.Context, repo string, release *github.RepositoryRelease) ([]Asset, error) {
+func (cmd *CommandRegistry) fetchReleaseAssets(ctx context.Context, repo ghdeps.Repository, release *github.RepositoryRelease) ([]Asset, error) {
 	fmt.Printf("    📥 Fetching release assets for %v ...\n", release.GetTagName())
 
-	assets, _, err := cmd.client.Repositories.ListReleaseAssets(
-		ctx,
-		strings.Split(repo, "/")[0],
-		strings.Split(repo, "/")[1],
-		release.GetID(),
-		nil,
-	)
+	assets, _, err := cmd.client.Repositories.ListReleaseAssets(ctx, repo.User, repo.Repo, release.GetID(), nil)
 	if err != nil {
 		return nil, err
 	}

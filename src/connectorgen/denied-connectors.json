@@ -1,0 +1,362 @@
+[
+  {
+    "name_with_owner": "ConduitIO/conduit",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/ConduitIO/conduit",
+    "stargazer_count": 463,
+    "fork_count": 50,
+    "releases": null
+  },
+  {
+    "name_with_owner": "ConduitIO/conduit-connector-template",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/ConduitIO/conduit-connector-template",
+    "stargazer_count": 5,
+    "fork_count": 2,
+    "releases": null
+  },
+  {
+    "name_with_owner": "ConduitIO/conduit-operator",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/ConduitIO/conduit-operator",
+    "stargazer_count": 1,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "ConduitIO/conduit-site",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/ConduitIO/conduit-site",
+    "stargazer_count": 1,
+    "fork_count": 7,
+    "releases": null
+  },
+  {
+    "name_with_owner": "ConduitIO/streaming-benchmarks",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/ConduitIO/streaming-benchmarks",
+    "stargazer_count": 4,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "GevorgGal/conduit-connector-influxdb",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/GevorgGal/conduit-connector-influxdb",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "ViniciusMiana/conduit-connector-pulsar",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/ViniciusMiana/conduit-connector-pulsar",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "WeirdMagician/conduit-connector-google-cloudstorage",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/WeirdMagician/conduit-connector-google-cloudstorage",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "ahamidi/conduit-connector-neo4j",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/ahamidi/conduit-connector-neo4j",
+    "stargazer_count": 2,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "ahamidi/conduit-connector-pulsar",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/ahamidi/conduit-connector-pulsar",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "ahamidi/conduit-connector-redis",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/ahamidi/conduit-connector-redis",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "ahamidi/conduit-connector-rockset",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/ahamidi/conduit-connector-rockset",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "ahamidi/conduit-connector-template",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/ahamidi/conduit-connector-template",
+    "stargazer_count": 1,
+    "fork_count": 1,
+    "releases": null
+  },
+  {
+    "name_with_owner": "alejandromav/conduit-connector-tinybird",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/alejandromav/conduit-connector-tinybird",
+    "stargazer_count": 1,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "brharrelldev/pulsar-connector",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/brharrelldev/pulsar-connector",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "derElektrobesen/mysql-migrator",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/derElektrobesen/mysql-migrator",
+    "stargazer_count": 1,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "devarismeroxa/conduit-connector-box",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/devarismeroxa/conduit-connector-box",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "devarismeroxa/conduit-connector-influxdb",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/devarismeroxa/conduit-connector-influxdb",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "devarispbrown/conduit-connector-weaviate",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/devarispbrown/conduit-connector-weaviate",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "gopherslab/conduit-connector-google-sheets",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/gopherslab/conduit-connector-google-sheets",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "gopherslab/conduit-connector-redis",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/gopherslab/conduit-connector-redis",
+    "stargazer_count": 1,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "gopherslab/conduit-connector-zendesk",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/gopherslab/conduit-connector-zendesk",
+    "stargazer_count": 1,
+    "fork_count": 1,
+    "releases": null
+  },
+  {
+    "name_with_owner": "hariso/conduit-connector-foo",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/hariso/conduit-connector-foo",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "hariso/conduit-connector-kafka",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/hariso/conduit-connector-kafka",
+    "stargazer_count": 1,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "hariso/conduit-connector-postgres-test",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/hariso/conduit-connector-postgres-test",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "hariso/conduit-connector-s3",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/hariso/conduit-connector-s3",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "hariso/custom-conduit",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/hariso/custom-conduit",
+    "stargazer_count": 0,
+    "fork_count": 1,
+    "releases": null
+  },
+  {
+    "name_with_owner": "maha-hajja/conduit-connector-slack",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/maha-hajja/conduit-connector-slack",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "mer-oscar/conduit-connector-azure-event-hub",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/mer-oscar/conduit-connector-azure-event-hub",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "mer-oscar/conduit-connector-kinesis",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/mer-oscar/conduit-connector-kinesis",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "mer-oscar/conduit-connector-zeromq",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/mer-oscar/conduit-connector-zeromq",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "miwialex/test-connector",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/miwialex/test-connector",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "mtami/conduit-connector-pulsar",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/mtami/conduit-connector-pulsar",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "mvrilo/conduit-connector-pulsar",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/mvrilo/conduit-connector-pulsar",
+    "stargazer_count": 2,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "neha-Gupta1/conduit-connector-bigquery",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/neha-Gupta1/conduit-connector-bigquery",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "neovintage/conduit-connector-redis",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/neovintage/conduit-connector-redis",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "nstehr/conduit-connector-mqtt",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/nstehr/conduit-connector-mqtt",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "raulb/custom-conduit",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/raulb/custom-conduit",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "shubhamdixit863/Conduit-Connector-Apache-pulsar",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/shubhamdixit863/Conduit-Connector-Apache-pulsar",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "tomialagbe/conduit-connector-influxdb",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/tomialagbe/conduit-connector-influxdb",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  }
+]
