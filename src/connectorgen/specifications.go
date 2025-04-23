@@ -97,7 +97,7 @@ func (cmd *CommandSpecifications) Execute(ctx context.Context) error {
 			// Check if connector.yaml already exists
 			commitSHA, err := cmd.getCommitForTag(ctx, owner, repoName, release.TagName)
 			if err != nil {
-				fmt.Printf("  ❌ Error: failed to get commit for tag %s: %w\n", release.TagName, err)
+				fmt.Printf("  ❌ Error: failed to get commit for tag %s: %v\n", release.TagName, err)
 				continue
 			}
 
@@ -114,7 +114,7 @@ func (cmd *CommandSpecifications) Execute(ctx context.Context) error {
 					repo.NameWithOwner, release.TagName)
 				// Still write the metadata file
 			} else if err != nil {
-				fmt.Printf("  ❌ Error: failed to fetch connector.yaml for %s@%s: %w\n",
+				fmt.Printf("  ❌ Error: failed to fetch connector.yaml for %s@%s: %v\n",
 					repo.NameWithOwner, release.TagName, err)
 				continue
 			}
@@ -179,7 +179,7 @@ func (cmd *CommandSpecifications) getCommitForTag(ctx context.Context, owner, re
 	// Get the reference to the specific tag
 	ref, _, err := cmd.client.Git.GetRef(ctx, owner, repo, refName)
 	if err != nil {
-		log.Fatalf("failed to fetch reference for tag %s: %w", tag, err)
+		log.Fatalf("failed to fetch reference for tag %s: %v", tag, err)
 	}
 
 	// Determine the commit SHA
@@ -188,7 +188,7 @@ func (cmd *CommandSpecifications) getCommitForTag(ctx context.Context, owner, re
 		// Resolve the object the tag refers to
 		object, _, err := cmd.client.Git.GetTag(ctx, owner, repo, *ref.Object.SHA)
 		if err != nil {
-			log.Fatalf("failed to fetch annotated tag object for %s: %w", tag, err)
+			log.Fatalf("failed to fetch annotated tag object for %s: %v", tag, err)
 		}
 
 		commitSHA = *object.Object.SHA
