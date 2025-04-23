@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"regexp"
 	"slices"
 	"sort"
 	"strings"
@@ -134,13 +135,51 @@ type registryConfig struct {
 }
 
 type filterExpr struct {
-	org  string
-	repo string
+	org  *regexp.Regexp
+	repo *regexp.Regexp
 }
 
-func (f filterExpr) Matches(org, repo string) bool {
-	return strings.EqualFold(f.org, org) &&
-		(f.repo == "*" || strings.EqualFold(f.repo, repo))
+func newFilterExpr(expr string) (filterExpr, error) {
+	expr = strings.TrimSpace(expr)
+	expr = strings.ToLower(expr)
+	parts := strings.Split(expr, "/")
+	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
+		return filterExpr{}, fmt.Errorf("invalid filter expression, expected <org>/<repo>")
+	}
+
+	org, repo := parts[0], parts[1]
+
+	wildcardToRegex := func(pattern string) (*regexp.Regexp, error) {
+		// Escape all special regex characters
+		pattern = regexp.QuoteMeta(pattern)
+		// Replace escaped asterisks (\*) with .*
+		pattern = strings.ReplaceAll(pattern, "\\*", ".*")
+		// Anchor regular expression to match the entire string
+		pattern = "^" + pattern + "$"
+
+		return regexp.Compile(pattern)
+	}
+
+	orgRegex, err := wildcardToRegex(org)
+	if err != nil {
+		return filterExpr{}, fmt.Errorf("failed to compile org regex: %w", err)
+	}
+
+	repoRegex, err := wildcardToRegex(repo)
+	if err != nil {
+		return filterExpr{}, fmt.Errorf("failed to compile repo regex: %w", err)
+	}
+
+	return filterExpr{
+		org:  orgRegex,
+		repo: repoRegex,
+	}, nil
+}
+
+func (f filterExpr) Match(org, repo string) bool {
+	org = strings.ToLower(org)
+	repo = strings.ToLower(repo)
+	return f.org.MatchString(org) && f.repo.MatchString(repo)
 }
 
 type CommandRegistry struct {
@@ -264,14 +303,14 @@ func (cmd *CommandRegistry) parseConfig() (registryConfig, error) {
 
 	var cfg registryConfig
 	for _, expr := range tmp.Allow {
-		fe, err := cmd.parseFilterExpr(expr)
+		fe, err := newFilterExpr(expr)
 		if err != nil {
 			return registryConfig{}, fmt.Errorf("failed to parse allow expression %q: %w", expr, err)
 		}
 		cfg.Allow = append(cfg.Allow, fe)
 	}
 	for _, expr := range tmp.Deny {
-		fe, err := cmd.parseFilterExpr(expr)
+		fe, err := newFilterExpr(expr)
 		if err != nil {
 			return registryConfig{}, fmt.Errorf("failed to parse deny expression %q: %w", expr, err)
 		}
@@ -279,18 +318,6 @@ func (cmd *CommandRegistry) parseConfig() (registryConfig, error) {
 	}
 
 	return cfg, nil
-}
-
-func (cmd *CommandRegistry) parseFilterExpr(expr string) (filterExpr, error) {
-	parts := strings.Split(expr, "/")
-	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
-		return filterExpr{}, fmt.Errorf("invalid filter expression, expected <org>/<repo>")
-	}
-
-	return filterExpr{
-		org:  strings.TrimSpace(parts[0]),
-		repo: strings.TrimSpace(parts[1]),
-	}, nil
 }
 
 func (cmd *CommandRegistry) fetchDependents(repo string) ([]ghdeps.Repository, error) {
@@ -314,13 +341,13 @@ func (cmd *CommandRegistry) filterRepos(repos []ghdeps.Repository) (allowed []gh
 REPOS:
 	for _, repo := range repos {
 		for _, denyExpr := range cmd.config.Deny {
-			if denyExpr.Matches(repo.User, repo.Repo) {
+			if denyExpr.Match(repo.User, repo.Repo) {
 				denied = append(denied, repo)
 				continue REPOS
 			}
 		}
 		for _, allowExpr := range cmd.config.Allow {
-			if allowExpr.Matches(repo.User, repo.Repo) {
+			if allowExpr.Match(repo.User, repo.Repo) {
 				allowed = append(allowed, repo)
 				continue REPOS
 			}

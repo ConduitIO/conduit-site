@@ -4,9 +4,9 @@
 # The comparison will be case-insensitive.
 allow:
   # Allow Meroxa and Conduit organizations
-  - ConduitIO/*
-  - conduitio-labs/*
-  - meroxa/*
+  - ConduitIO/conduit-connector-*
+  - conduitio-labs/conduit-connector-*
+  - meroxa/conduit-connector-*
 
   # Individual repositories
   - derElektrobesen/conduit-connector-tarantool
@@ -20,8 +20,4 @@ allow:
 # The comparison will be case-insensitive.
 deny:
   # Deny specific repositories that are allowed in the orgs above
-  - ConduitIO/conduit
   - ConduitIO/conduit-connector-template
-  - ConduitIO/conduit-operator
-  - ConduitIO/conduit-site
-  - ConduitIO/streaming-benchmarks
