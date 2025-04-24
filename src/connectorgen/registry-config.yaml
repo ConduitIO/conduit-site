@@ -1,0 +1,23 @@
+# Only repositories on the allow list will be added to the registry.
+# The allow list can either contain a string that matches the repository name
+# or an organization name with a wildcard (*) as the repository name.
+# The comparison will be case-insensitive.
+allow:
+  # Allow Meroxa and Conduit organizations
+  - ConduitIO/conduit-connector-*
+  - conduitio-labs/conduit-connector-*
+  - meroxa/conduit-connector-*
+
+  # Individual repositories
+  - derElektrobesen/conduit-connector-tarantool
+  - lovromazgon/conduit-connector-kafka-broker
+  - nickchomey/conduit-connector-surrealdb
+
+# The deny list is used to exclude specific repositories from the allow list.
+# The deny list takes precedence over the allow list.
+# The deny list can either contain a string that matches the repository name
+# or an organization name with a wildcard (*) as the repository name.
+# The comparison will be case-insensitive.
+deny:
+  # Deny specific repositories that are allowed in the orgs above
+  - ConduitIO/conduit-connector-template

@@ -7,7 +7,7 @@ clean-pages:
 
 .PHONY: registry
 registry:
-	go run . registry -o ../../static/connectors.json
+	go run . registry -o ../../static/connectors.json -d ./denied-connectors.json
 
 .PHONY: specifications
 specifications:

@@ -10,6 +10,7 @@ require (
 	github.com/gofri/go-github-ratelimit v1.1.0
 	github.com/google/go-github/v67 v67.0.0
 	github.com/otiai10/gh-dependents v0.3.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
