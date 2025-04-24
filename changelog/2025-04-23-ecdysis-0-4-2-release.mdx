@@ -1,0 +1,30 @@
+---
+slug: '2025-04-23-ecdysis-0-4-2-release'
+title: Ecdysis v0.4.2 release
+draft: false
+tags: [ecdysis, release]
+---
+
+[Ecdysis v0.4.2](https://github.com/ConduitIO/ecdysis/releases/tag/v0.4.2) was released and will be part of the next Conduit release fixing an issue with the environment variable `CONDUIT_CONFIG_PATH`.
+
+<!--truncate-->
+
+### More information
+
+Thanks to the report by one of our community members, we identified [a bug in ecdysis](https://github.com/ConduitIO/ecdysis/issues/25) that caused the environment variable `CONDUIT_CONFIG_PATH` not to be respected. 
+
+This environment variable is used to specify the path to the configuration file for Conduit, and it's one way to set the configuration for Conduit (check out the docs for [more information](/docs/configuration#environment-variables)).
+
+This was added to Conduit on [this pull-request](https://github.com/ConduitIO/conduit/pull/2261), and will be part of the next Conduit release.
+
+:::tip
+Until the next Conduit release, you can change the default path to the configuration file using the `--config.path` flag when using the [Conduit CLI](/docs/cli). For example:
+
+```bash
+conduit run --config.path /path/to/conduit.yaml
+```
+:::
+
+If you have any questions, or more feedback feel free to join our [Discord Community](https://discord.meroxa.com/)!
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)
