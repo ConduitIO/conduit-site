@@ -41,16 +41,22 @@ import (
 	"github.com/conduitio/conduit-commons/opencdc"
 	sdk "github.com/conduitio/conduit-processor-sdk"
 	"github.com/conduitio/conduit/pkg/foundation/log"
+	"github.com/conduitio/conduit/pkg/plugin/processor/builtin"
+	"github.com/yourusername/conduit-processor-foo"
 )
 
 func main() {
 	// Get the default configuration, including all built-in processors
 	cfg := conduit.DefaultConfig()
 
-	// Add the custom processor to list of built-in processors
-	cfg.ProcessorPlugins["foo"] = func(logger log.CtxLogger) sdk.Processor {
+
+	// Import a full processor from an external repo
+	cfg.ProcessorPlugins["foo"] = builtin.Constructor(NewFooProcessor)
+
+	// Add a simple custom processor in-line
+	cfg.ProcessorPlugins["bar"] = func(logger log.CtxLogger) sdk.Processor {
 		specs := sdk.Specification{
-			Name:        "foo",
+			Name:        "bar",
 			Summary:     "A simple pass-through processor",
 			Description: "This processor simply passes records through without modification",
 			Version:     "v0.1.0",
