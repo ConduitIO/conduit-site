@@ -3,15 +3,15 @@ title: "Core concepts"
 slug: '/core-concepts'
 ---
 
-## Pipeline 
+## Pipeline
 
-A pipeline receives records from one or multiple source connectors, pushes them through zero 
+A pipeline receives records from one or multiple source connectors, pushes them through zero
 or multiple processors until they reach one or multiple destination connectors.
 
-## Connector 
+## Connector
 
-A connector is the internal entity that communicates with a connector plugin and either pushes 
-records from the plugin into the pipeline (source connector) or the other way around 
+A connector is the internal entity that communicates with a connector plugin and either pushes
+records from the plugin into the pipeline (source connector) or the other way around
 (destination connector).
 
 Conduit ships with connectors that are directly built into the service ([built-in connectors](/docs/using/connectors/getting-started/#conduit-ships-with-a-number-of-built-in-connectors)), but it can also be expanded with additional [standalone connectors](/docs/developing/connectors/).
@@ -45,28 +45,37 @@ Learn more about how you can install [standalone connectors to Conduit here](/do
 
 ### Source and Destination
 
-- **Source** means the connector has the ability to get data from an upstream data store. 
+- **Source** means the connector has the ability to get data from an upstream data store.
 - **Destination** means the connector can to write to a downstream data store.
 
-## Connector plugin 
+## Connector plugin
 
-Sometimes also referred to as "plugin", is an external process which communicates with Conduit 
-and knows how to read/write records from/to a data source/destination (e.g. a database).
+Sometimes also referred to as "plugin", is an external process which communicates with Conduit and knows how to read/write records from/to a data source/destination (e.g. a database).
 
-## Processor 
+## Processor
 
-A component that executes an operation on a single record that flows through the pipeline. 
-It can either change the record or filter it out based on some criteria.
+A component that executes an operation on a single record that flows through the pipeline. It can either change the record or filter it out based on some criteria.
 
-## OpenCDC Record 
+Conduit ships with processors that are directly built into the service (built-in processors), but it can also be expanded with additional [standalone processors](/docs/developing/processors/).
 
-A record represents a single piece of data that flows through a pipeline (e.g. one database row). 
-[More info here](/docs/using/opencdc-record).
+### Built-in Processor
 
-## Collection 
+To help developers process data more efficiently, Conduit ships with several built-in processors by default.
 
-A generic term used in Conduit to describe an entity in a 3rd party system from which records 
-are read from or to which records they are written to. Examples are: topics (in Kafka), tables 
-(in a database), indexes (in a search engine), collections (in NoSQL databases), etc.
+This includes processors for encoding/decoding data formats like Avro, Base64, and JSON, as well as processors for field manipulation, filtering, and more.
+
+If you are creating and distributing customized, pre-built Conduit binaries yourself, you may want to modify the list of built-in processors, too.
+
+By modifying the list of built-in processors, your compiled binary will include a set of pre-installed processors specific to your end users' needs, and it can be run by others, as is, without them having to follow any additional installation instructions.
+
+[Here's how to do it](/docs/using/processors/additional-built-in-plugins).
+
+## OpenCDC Record
+
+A record represents a single piece of data that flows through a pipeline (e.g. one database row). [More info here](/docs/using/opencdc-record).
+
+## Collection
+
+A generic term used in Conduit to describe an entity in a 3rd party system from which records are read from or to which records they are written to. Examples are: topics (in Kafka), tables (in a database), indexes (in a search engine), collections (in NoSQL databases), etc.
 
 ![scarf pixel conduit-site-docs-what-is-core-concepts](https://static.scarf.sh/a.png?x-pxid=8d2e502f-e2dd-43ab-a1c1-7a00ac3b0d68)
