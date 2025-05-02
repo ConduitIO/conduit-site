@@ -42,11 +42,13 @@ func main() {
 			}
 
 			outputPath := cmd.Flag("output-path").Value.String()
+			deniedPath := cmd.Flag("denied-path").Value.String()
 
-			return NewCommandRegistry(githubClient, outputPath).Execute(cmd.Context())
+			return NewCommandRegistry(githubClient, outputPath, deniedPath).Execute(cmd.Context())
 		},
 	}
 	cmdRegistry.Flags().StringP("output-path", "o", "./connectors.json", "path where the output file will be written")
+	cmdRegistry.Flags().StringP("denied-path", "d", "", "path where the denied connectors file will be written (skipped by default)")
 
 	cmdSpecifications := &cobra.Command{
 		Use:   "specifications",
