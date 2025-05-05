@@ -4,8 +4,8 @@
     "description": "",
     "created_at": "",
     "url": "https://github.com/ConduitIO/conduit",
-    "stargazer_count": 465,
-    "fork_count": 50,
+    "stargazer_count": 489,
+    "fork_count": 51,
     "releases": null
   },
   {
@@ -328,6 +328,15 @@
     "description": "",
     "created_at": "",
     "url": "https://github.com/nstehr/conduit-connector-mqtt",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "raulb/conduit-pipelines",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/raulb/conduit-pipelines",
     "stargazer_count": 0,
     "fork_count": 0,
     "releases": null
