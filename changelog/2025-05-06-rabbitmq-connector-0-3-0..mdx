@@ -1,0 +1,69 @@
+---
+slug: '2025-05-06-rabbitmq-connector-0-3-0.'
+title: Conduit RabbitMQ Connector v0.3.0
+draft: false
+toc_max_heading_level: 4
+tags: [conduit, connector, rabbitmq, release]
+---
+
+[Conduit RabbitMQ Connector v0.3.0](https://github.com/conduitio-labs/conduit-connector-rabbitmq/releases/tag/v0.3.0) was released today, propagating AMQP 0.9 headers via OpenCDC headers, and with a breaking change on the `routingKey`, but this will make it more flexible to use with other connectors by utilizing [Go templates](https://pkg.go.dev/text/template).
+
+<!--truncate-->
+
+### Changes
+
+#### Docker Image Update
+
+The RabbitMQ Docker image has been updated to version ⁠4.1, ensuring compatibility with the latest RabbitMQ features and improvements.
+
+#### Metadata Propagation to RabbitMQ Headers
+
+Record metadata keys prefixed with `rabbitmq.header.` are now propagated to AMQP 0.9 headers (and vice versa). 
+
+This feature allows users to pass custom headers when publishing messages to RabbitMQ.
+
+**Example:**
+
+```yaml
+version: 2.2
+pipelines:
+  - id: rabbitmq-headers-example
+    connectors:
+      - id: source
+        # other connector configuration
+        processors:
+          - id: add-headers
+            plugin: builtin:field.set
+            settings:
+              field: metadata.rabbitmq.header.app_id
+              value: "inventory-service"
+      destination:
+        plugin: rabbitmq
+        config:
+          ...
+```
+
+In this example, the messages sent to RabbitMQ will include `app_id` in the headers:
+
+```json
+{
+  "app_id": "inventory-service",
+}
+```
+
+#### RoutingKey as a Go Template
+
+The `routingKey` configuration now supports [Go templates](https://pkg.go.dev/text/template), enabling dynamic routing key generation based on metadata.
+
+- **Breaking Change**: This replaces the previous static `routingKey` implementation.  
+- **Improvement**: Users can now use a single pipeline with a processor to set `rabbitmq.routingKey` dynamically, reducing the need for multiple pipelines.  
+
+Example: A processor can set `rabbitmq.routingKey` to a desired value, which will then be used as the topic exchange routing key.
+
+:::tip
+For more information, check out the [RabbitMQ Connector documentation](/docs/using/connectors/list/rabbitmq).
+:::
+
+If you have any questions, or more feedback feel free to join our [Discord Community](https://discord.meroxa.com/)!
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)
