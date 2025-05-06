@@ -1,0 +1,32 @@
+---
+slug: '2025-05-06-postgres-connector-0-12-0'
+title: Conduit Postgres Connector v0.12.0
+draft: false
+toc_max_heading_level: 4
+tags: [conduit, connector, postgres, release]
+---
+
+[Conduit Postgres Connector v0.12.0](https://github.com/ConduitIO/conduit-connector-postgres/releases/tag/v0.12.0) is now available, and it will be part of the next Conduit release as a [builtin connector](/docs/core-concepts#built-in-connector), making use of the the new Connector SDK `ReadN` method, and adding validation for the logical replication slot name.
+
+<!--truncate-->
+
+### More information
+
+#### [`ReadN` addition](https://github.com/ConduitIO/conduit-connector-postgres/pull/276)
+
+Since the introduction of [end-to-end batching on the Connector SDK](https://github.com/ConduitIO/conduit-connector-sdk/pull/193), (part of the [Connector SDK 0.12.0](https://github.com/ConduitIO/conduit-connector-sdk/releases/tag/v0.12.0)), source connectors could add support for batching by implementing the `ReadN` method. 
+
+#### [Validating logical replication slot name](https://github.com/ConduitIO/conduit-connector-postgres/pull/280)
+
+This validation was introduced by one of our newest Conduit users. Thanks [Rauan Mayemir](https://github.com/rauanmayemir)!
+
+Rauan reported that publications are fine with special characters in the name, but not replication slots, so with Conduit Connector Postgres [0.12.0](https://github.com/ConduitIO/conduit-connector-postgres/releases/tag/v0.12.0), you can ensure that the replication slot name is valid before starting the connector.
+
+
+:::tip
+For more information, check out the [Postgres Connector documentation](/docs/using/connectors/list/postgres).
+:::
+
+If you have any questions, or more feedback feel free to join our [Discord Community](https://discord.meroxa.com/)!
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)
