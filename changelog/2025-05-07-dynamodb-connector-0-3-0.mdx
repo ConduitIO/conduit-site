@@ -35,6 +35,8 @@ pipelines:
 :::warning
 We still recommend our users to use IAM roles instead of session tokens, as the session token will expire and the connector will stop working. If you need to use a session token, make sure to refresh it periodically.
 
+Here's what we recommend using instead: 
+
 ```yaml
 version: 2.2
 pipelines:
@@ -52,9 +54,6 @@ pipelines:
           # Type: string
           # Required: yes
           aws.secretAccessKey: ""
-          # Table is the DynamoDB table name to pull data from.
-          # Type: string
-          # Required: yes
 ```
 
 This is a temporary solution until we implement a more robust way to handle session tokens.
