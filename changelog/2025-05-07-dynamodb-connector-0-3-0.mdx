@@ -1,0 +1,69 @@
+---
+slug: '2025-05-07-dynamodb-connector-0-3-0'
+title: Conduit DynamoDB Connector v0.3.0
+draft: false
+toc_max_heading_level: 4
+tags: [conduit, connector, dynamodb, release]
+---
+
+Today, we released [Conduit DynamoDB Connector v0.3.0](https://github.com/conduitio-labs/conduit-connector-dynamodb/releases/tag/v0.3.0), adding the ability to connnect to the source connector with a session token via `aws.sessionToken` to help those users who can't use IAM roles.
+
+<!--truncate-->
+
+### More information
+
+New source field `aws.sessionToken` to connect to the source connector with a session token. 
+
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      - id: example
+        plugin: "dynamodb"
+        settings:
+          # AWS temporary session token. Note that to keep the connector running
+          # long-term, you should use an IAM user with no temporary session
+          # token. If the session token is used, then the connector will fail
+          # once it expires.
+          # Type: string
+          # Required: no
+          aws.sessionToken: ""
+```
+
+:::warning
+We still recommend our users to use IAM roles instead of session tokens, as the session token will expire and the connector will stop working. If you need to use a session token, make sure to refresh it periodically.
+
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      - id: example
+        plugin: "dynamodb"
+        settings:
+          # AWS access key id.
+          # Type: string
+          # Required: yes
+          aws.accessKeyId: ""
+          # AWS secret access key.
+          # Type: string
+          # Required: yes
+          aws.secretAccessKey: ""
+          # Table is the DynamoDB table name to pull data from.
+          # Type: string
+          # Required: yes
+```
+
+This is a temporary solution until we implement a more robust way to handle session tokens.
+:::
+
+If you have any questions, or more feedback feel free to join our [Discord Community](https://discord.meroxa.com/)
+
+:::tip
+For more information, check out the [DynamoDB Connector documentation](/docs/using/connectors/list/dynamodb).
+:::
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)
