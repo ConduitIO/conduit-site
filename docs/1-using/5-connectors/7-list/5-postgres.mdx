@@ -68,14 +68,14 @@ import Tooltip from '@mui/material/Tooltip';
 
 ## Latest release
 
-- [conduit-connector-postgres_0.11.2_Darwin_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.11.2/conduit-connector-postgres_0.11.2_Darwin_arm64.tar.gz)
-- [conduit-connector-postgres_0.11.2_Darwin_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.11.2/conduit-connector-postgres_0.11.2_Darwin_x86_64.tar.gz)
-- [conduit-connector-postgres_0.11.2_Linux_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.11.2/conduit-connector-postgres_0.11.2_Linux_arm64.tar.gz)
-- [conduit-connector-postgres_0.11.2_Linux_i386.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.11.2/conduit-connector-postgres_0.11.2_Linux_i386.tar.gz)
-- [conduit-connector-postgres_0.11.2_Linux_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.11.2/conduit-connector-postgres_0.11.2_Linux_x86_64.tar.gz)
-- [conduit-connector-postgres_0.11.2_Windows_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.11.2/conduit-connector-postgres_0.11.2_Windows_arm64.tar.gz)
-- [conduit-connector-postgres_0.11.2_Windows_i386.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.11.2/conduit-connector-postgres_0.11.2_Windows_i386.tar.gz)
-- [conduit-connector-postgres_0.11.2_Windows_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.11.2/conduit-connector-postgres_0.11.2_Windows_x86_64.tar.gz)
+- [conduit-connector-postgres_0.12.1_Darwin_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.12.1/conduit-connector-postgres_0.12.1_Darwin_arm64.tar.gz)
+- [conduit-connector-postgres_0.12.1_Darwin_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.12.1/conduit-connector-postgres_0.12.1_Darwin_x86_64.tar.gz)
+- [conduit-connector-postgres_0.12.1_Linux_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.12.1/conduit-connector-postgres_0.12.1_Linux_arm64.tar.gz)
+- [conduit-connector-postgres_0.12.1_Linux_i386.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.12.1/conduit-connector-postgres_0.12.1_Linux_i386.tar.gz)
+- [conduit-connector-postgres_0.12.1_Linux_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.12.1/conduit-connector-postgres_0.12.1_Linux_x86_64.tar.gz)
+- [conduit-connector-postgres_0.12.1_Windows_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.12.1/conduit-connector-postgres_0.12.1_Windows_arm64.tar.gz)
+- [conduit-connector-postgres_0.12.1_Windows_i386.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.12.1/conduit-connector-postgres_0.12.1_Windows_i386.tar.gz)
+- [conduit-connector-postgres_0.12.1_Windows_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.12.1/conduit-connector-postgres_0.12.1_Windows_x86_64.tar.gz)
 
 ## Description
 
@@ -130,7 +130,7 @@ pipelines:
           tables: "users"
           cdcMode: "logrepl"
           logrepl.publicationName: "examplepub"
-          logrepl.slotName": "exampleslot"
+          logrepl.slotName: "exampleslot"
       - id: log
         type: destination
         plugin: builtin:log
@@ -203,7 +203,8 @@ pipelines:
           logrepl.publicationName: "conduitpub"
           # LogreplSlotName determines the replication slot name in case the
           # connector uses logical replication to listen to changes (see
-          # CDCMode).
+          # CDCMode). Can only contain lower-case letters, numbers, and the
+          # underscore character.
           # Type: string
           logrepl.slotName: "conduitslot"
           # WithAvroSchema determines whether the connector should attach an

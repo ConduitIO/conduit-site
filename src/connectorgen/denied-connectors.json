@@ -4,7 +4,7 @@
     "description": "",
     "created_at": "",
     "url": "https://github.com/ConduitIO/conduit",
-    "stargazer_count": 489,
+    "stargazer_count": 494,
     "fork_count": 51,
     "releases": null
   },
@@ -240,6 +240,15 @@
     "url": "https://github.com/hariso/custom-conduit",
     "stargazer_count": 0,
     "fork_count": 1,
+    "releases": null
+  },
+  {
+    "name_with_owner": "joeblew999/pb-stack",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/joeblew999/pb-stack",
+    "stargazer_count": 1,
+    "fork_count": 0,
     "releases": null
   },
   {

@@ -1,0 +1,129 @@
+version: "1.0"
+specification:
+  name: google-drive
+  summary: Conduit Connector for Google Drive.
+  description: |-
+    The Google Drive connector is one of [Conduit](https://github.com/ConduitIO/conduit)'s plugins. It provides a **destination connector** for writing records into a specified Google Drive folder.
+
+    ## Destination
+
+    The Google Drive Destination Connector connects to a Google Drive account using a service account's credentials and uploads incoming records as files into a configured folder.
+
+    Note: The destination connector only supports the `create` and `snapshot` operations. It does not support the `delete` or `update` operations.
+
+    ### Authentication
+
+    This connector uses a **Google service account** for authentication. Ensure that the service account has write access to the target Drive folder by either:
+
+    - Sharing the folder directly with the service account email, or
+    - Using domain-wide delegation (if operating within a Google Workspace organization)"
+  version: v0.1.0
+  author: Meroxa, Inc.
+  destination:
+    parameters:
+      - name: drive.clientCertUrl
+        description: The URL to the X.509 certificate for the service account, used to verify its identity.
+        type: string
+        default: ""
+        validations:
+          - type: required
+            value: ""
+      - name: drive.clientEmail
+        description: The email address of the service account (e.g. my-service-account@project.iam.gserviceaccount.com).
+        type: string
+        default: ""
+        validations:
+          - type: required
+            value: ""
+      - name: drive.clientId
+        description: The OAuth2 client ID associated with the service account.
+        type: string
+        default: ""
+        validations:
+          - type: required
+            value: ""
+      - name: drive.privateKey
+        description: The private key (PEM-encoded) used to sign service account requests.
+        type: string
+        default: ""
+        validations:
+          - type: required
+            value: ""
+      - name: drive.privateKeyId
+        description: The ID of the private key used to authenticate the service account.
+        type: string
+        default: ""
+        validations:
+          - type: required
+            value: ""
+      - name: drive.projectId
+        description: The Google Cloud project ID associated with the service account.
+        type: string
+        default: ""
+        validations:
+          - type: required
+            value: ""
+      - name: folderId
+        description: |-
+          The ID of the Google Drive folder where records will be uploaded.
+          This can be found in the folder's URL: https://drive.google.com/drive/folders/<folderId>
+        type: string
+        default: ""
+        validations:
+          - type: required
+            value: ""
+      - name: sdk.batch.delay
+        description: Maximum delay before an incomplete batch is written to the destination.
+        type: duration
+        default: "0"
+        validations: []
+      - name: sdk.batch.size
+        description: Maximum size of batch before it gets written to the destination.
+        type: int
+        default: "0"
+        validations:
+          - type: greater-than
+            value: "-1"
+      - name: sdk.rate.burst
+        description: |-
+          Allow bursts of at most X records (0 or less means that bursts are not
+          limited). Only takes effect if a rate limit per second is set. Note that
+          if `sdk.batch.size` is bigger than `sdk.rate.burst`, the effective batch
+          size will be equal to `sdk.rate.burst`.
+        type: int
+        default: "0"
+        validations:
+          - type: greater-than
+            value: "-1"
+      - name: sdk.rate.perSecond
+        description: Maximum number of records written per second (0 means no rate limit).
+        type: float
+        default: "0"
+        validations:
+          - type: greater-than
+            value: "-1"
+      - name: sdk.record.format
+        description: |-
+          The format of the output record. See the Conduit documentation for a full
+          list of supported formats (https://conduit.io/docs/using/connectors/configuration-parameters/output-format).
+        type: string
+        default: opencdc/json
+        validations: []
+      - name: sdk.record.format.options
+        description: |-
+          Options to configure the chosen output record format. Options are normally
+          key=value pairs separated with comma (e.g. opt1=val2,opt2=val2), except
+          for the `template` record format, where options are a Go template.
+        type: string
+        default: ""
+        validations: []
+      - name: sdk.schema.extract.key.enabled
+        description: Whether to extract and decode the record key with a schema.
+        type: bool
+        default: "true"
+        validations: []
+      - name: sdk.schema.extract.payload.enabled
+        description: Whether to extract and decode the record payload with a schema.
+        type: bool
+        default: "true"
+        validations: []
