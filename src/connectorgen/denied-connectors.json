@@ -4,8 +4,8 @@
     "description": "",
     "created_at": "",
     "url": "https://github.com/ConduitIO/conduit",
-    "stargazer_count": 494,
-    "fork_count": 51,
+    "stargazer_count": 513,
+    "fork_count": 53,
     "releases": null
   },
   {
@@ -328,6 +328,15 @@
     "description": "",
     "created_at": "",
     "url": "https://github.com/neovintage/conduit-connector-redis",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
+    "name_with_owner": "nickchomey/conduit-processor-benthos",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/nickchomey/conduit-processor-benthos",
     "stargazer_count": 0,
     "fork_count": 0,
     "releases": null
