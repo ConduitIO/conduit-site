@@ -12787,6 +12787,162 @@
     "fork_count": 2,
     "releases": [
       {
+        "tag_name": "v0.2.0",
+        "name": "v0.2.0",
+        "body": "## Changelog\n* 182fca1c49451f5f64f1e93181c3642366c85106: prepare 0.2.0 (#142) (@raulb)\n\n",
+        "draft": false,
+        "prerelease": false,
+        "published_at": "2025-05-12T10:59:40Z",
+        "html_url": "https://github.com/conduitio-labs/conduit-connector-mysql/releases/tag/v0.2.0",
+        "assets": [
+          {
+            "name": "conduit-connector-mysql_0.2.0_Darwin_arm64.tar.gz",
+            "os": "darwin",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-mysql/releases/download/v0.2.0/conduit-connector-mysql_0.2.0_Darwin_arm64.tar.gz",
+            "created_at": "2025-05-12T10:59:39Z",
+            "updated_at": "2025-05-12T10:59:39Z",
+            "download_count": 0,
+            "size": 9219942
+          },
+          {
+            "name": "conduit-connector-mysql_0.2.0_Darwin_x86_64.tar.gz",
+            "os": "darwin",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-mysql/releases/download/v0.2.0/conduit-connector-mysql_0.2.0_Darwin_x86_64.tar.gz",
+            "created_at": "2025-05-12T10:59:39Z",
+            "updated_at": "2025-05-12T10:59:39Z",
+            "download_count": 0,
+            "size": 9725848
+          },
+          {
+            "name": "conduit-connector-mysql_0.2.0_Linux_arm64.tar.gz",
+            "os": "linux",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-mysql/releases/download/v0.2.0/conduit-connector-mysql_0.2.0_Linux_arm64.tar.gz",
+            "created_at": "2025-05-12T10:59:38Z",
+            "updated_at": "2025-05-12T10:59:38Z",
+            "download_count": 0,
+            "size": 8744809
+          },
+          {
+            "name": "conduit-connector-mysql_0.2.0_Linux_x86_64.tar.gz",
+            "os": "linux",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-mysql/releases/download/v0.2.0/conduit-connector-mysql_0.2.0_Linux_x86_64.tar.gz",
+            "created_at": "2025-05-12T10:59:38Z",
+            "updated_at": "2025-05-12T10:59:38Z",
+            "download_count": 0,
+            "size": 9504027
+          },
+          {
+            "name": "conduit-connector-mysql_0.2.0_Windows_arm64.tar.gz",
+            "os": "windows",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-mysql/releases/download/v0.2.0/conduit-connector-mysql_0.2.0_Windows_arm64.tar.gz",
+            "created_at": "2025-05-12T10:59:38Z",
+            "updated_at": "2025-05-12T10:59:38Z",
+            "download_count": 0,
+            "size": 8849330
+          },
+          {
+            "name": "conduit-connector-mysql_0.2.0_Windows_x86_64.tar.gz",
+            "os": "windows",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-mysql/releases/download/v0.2.0/conduit-connector-mysql_0.2.0_Windows_x86_64.tar.gz",
+            "created_at": "2025-05-12T10:59:38Z",
+            "updated_at": "2025-05-12T10:59:38Z",
+            "download_count": 0,
+            "size": 9760336
+          }
+        ],
+        "is_latest": true
+      },
+      {
+        "tag_name": "v0.1.4",
+        "name": "v0.1.4",
+        "body": "## Changelog\n* bf9780ad2cf67b5bac9ff1bdc99c0aaa8be88224: Add record batch support and multicollection mode (#114) (@alarbada)\n* 3f29cf07562986e345134c69bc8d1fe9b829349b: Bug: some records could be lost during CDC-iterator read (#120) (@derElektrobesen)\n* 390ae593d22ef19046039f35fda57d450902f710: Composite key (#107) (@alarbada)\n* e1077087bf52f72b0ec5b12c32bdc18bd7a35339: Feature: add new noSnapshot source config parameter (#131) (@alarbada)\n* fbbc3eec85eccfe11937b1152cd941a38dedab22: Fix snapshot.enabled functionality (#141) (@alarbada)\n* b5af108cb210deb6ff03bca5f561cccb8af26052: Schema generation fix: some mysql types could contain integers in parenthesis (#115) (@derElektrobesen)\n* 929bb19f2b8f436ee1c425dd7d4e09728a41579f: add record structure description (#132) (@alarbada)\n* 0741573303fd9629bd37a25713f2ad092f57f1de: pass regexes to canal cdc iterator (#124) (@nickchomey)\n\n",
+        "draft": false,
+        "prerelease": false,
+        "published_at": "2025-05-12T10:19:33Z",
+        "html_url": "https://github.com/conduitio-labs/conduit-connector-mysql/releases/tag/v0.1.4",
+        "assets": [
+          {
+            "name": "conduit-connector-mysql_0.1.4_Darwin_arm64.tar.gz",
+            "os": "darwin",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-mysql/releases/download/v0.1.4/conduit-connector-mysql_0.1.4_Darwin_arm64.tar.gz",
+            "created_at": "2025-05-12T10:19:31Z",
+            "updated_at": "2025-05-12T10:19:32Z",
+            "download_count": 0,
+            "size": 9219939
+          },
+          {
+            "name": "conduit-connector-mysql_0.1.4_Darwin_x86_64.tar.gz",
+            "os": "darwin",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-mysql/releases/download/v0.1.4/conduit-connector-mysql_0.1.4_Darwin_x86_64.tar.gz",
+            "created_at": "2025-05-12T10:19:31Z",
+            "updated_at": "2025-05-12T10:19:31Z",
+            "download_count": 0,
+            "size": 9725842
+          },
+          {
+            "name": "conduit-connector-mysql_0.1.4_Linux_arm64.tar.gz",
+            "os": "linux",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-mysql/releases/download/v0.1.4/conduit-connector-mysql_0.1.4_Linux_arm64.tar.gz",
+            "created_at": "2025-05-12T10:19:31Z",
+            "updated_at": "2025-05-12T10:19:31Z",
+            "download_count": 0,
+            "size": 8744805
+          },
+          {
+            "name": "conduit-connector-mysql_0.1.4_Linux_x86_64.tar.gz",
+            "os": "linux",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-mysql/releases/download/v0.1.4/conduit-connector-mysql_0.1.4_Linux_x86_64.tar.gz",
+            "created_at": "2025-05-12T10:19:32Z",
+            "updated_at": "2025-05-12T10:19:32Z",
+            "download_count": 0,
+            "size": 9504011
+          },
+          {
+            "name": "conduit-connector-mysql_0.1.4_Windows_arm64.tar.gz",
+            "os": "windows",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-mysql/releases/download/v0.1.4/conduit-connector-mysql_0.1.4_Windows_arm64.tar.gz",
+            "created_at": "2025-05-12T10:19:32Z",
+            "updated_at": "2025-05-12T10:19:32Z",
+            "download_count": 0,
+            "size": 8849330
+          },
+          {
+            "name": "conduit-connector-mysql_0.1.4_Windows_x86_64.tar.gz",
+            "os": "windows",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-mysql/releases/download/v0.1.4/conduit-connector-mysql_0.1.4_Windows_x86_64.tar.gz",
+            "created_at": "2025-05-12T10:19:31Z",
+            "updated_at": "2025-05-12T10:19:32Z",
+            "download_count": 0,
+            "size": 9760330
+          }
+        ],
+        "is_latest": false
+      },
+      {
         "tag_name": "v0.1.3",
         "name": "v0.1.3",
         "body": "## Changelog\n* f8a5e2aba6239aeecbb6096d9ea92d069c27253c: Rename project_automation.yaml to project-automation.yml (#103) (@simonl2002)\n* fa1a9392e839c09bee752265feba63d1d2bd5b26: Update SDK to v0.13.2 (#112) (@hariso)\n* 61bc508b85ea6fc8c902457fa7eb4c1aa759192c: update connector spec description (#104) (@alarbada)\n\n",
@@ -12862,7 +13018,7 @@
             "size": 9503195
           }
         ],
-        "is_latest": true
+        "is_latest": false
       },
       {
         "tag_name": "v0.1.2",

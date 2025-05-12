@@ -1,0 +1,31 @@
+---
+slug: '2025-05-12-mysql-connector-0-2-0'
+title: Conduit MySQL Connector v0.2.0
+draft: false
+tags: [conduit, connector, mysql, release]
+---
+
+[Conduit MySQL Connector v0.2.0](https://github.com/conduitio-labs/conduit-connector-mysql/releases/tag/v0.2.0) is now available, introducing new features, bug fixes, and improvements to enhance functionality and reliability.
+
+<!--truncate-->
+
+### Key Highlights
+
+
+- [**Record Batch Support and Multi-Collection Mode**](https://github.com/conduitio-labs/conduit-connector-mysql/pull/114). Added support for processing records in batches and introduced multi-collection mode for better flexibility by [@alarbada](https://github.com/alarbada).
+- [**New `snapshot.enabled` Source Configuration Parameter**](https://github.com/conduitio-labs/conduit-connector-mysql/pull/141). Introduced a `snapshot.enabled` parameter to allow users to skip the initial snapshot phase when configuring the source by [@alarbada](https://github.com/alarbada). (note: this was initially introduced by [#131](https://github.com/conduitio-labs/conduit-connector-mysql/pull/131)).
+- [**Composite Key Support**](https://github.com/conduitio-labs/conduit-connector-mysql/pull/107). Added support for composite keys, enabling more complex primary key configurations by [@alarbada](https://github.com/alarbada).
+- [**Regex Support for Canal CDC Iterator**](https://github.com/conduitio-labs/conduit-connector-mysql/pull/124). Enhanced the Canal CDC iterator to accept regex patterns for more granular control over data processing by [@nickchomey](https://github.com/nickchomey).
+- [**Improved Schema Generation**](https://github.com/conduitio-labs/conduit-connector-mysql/pull/115). Fixed an issue where certain MySQL types containing integers in parentheses were not handled correctly during schema generation by [@derElektrobesen](https://github.com/derElektrobesen).
+- [**Bug Fix: CDC Iterator Record Loss**](https://github.com/conduitio-labs/conduit-connector-mysql/pull/120). Fixed a bug where some records could be lost during CDC iterator reads by [@derElektrobesen](https://github.com/derElektrobesen).
+
+
+Thanks to the contributions from our community, we are able to continuously improve the [Conduit MySQL Connector](/docs/using/connectors/list/mysql). We appreciate your feedback and support!
+
+If you have any questions, or more feedback feel free to join our [Discord Community](https://discord.meroxa.com/).
+
+:::tip
+For detailed setup and configuration instructions, refer to our [documentation](/docs/using/connectors/list/mysql).
+:::
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)
