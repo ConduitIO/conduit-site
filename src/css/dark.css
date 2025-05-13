@@ -104,4 +104,18 @@ html[data-theme="dark"] {
       background-color: var(--color-background);
     }
   }
+
+  .theme-doc-markdown {
+    .MuiBox-root {
+      background-color: #3C4754;
+
+      &.css-1cra3ly {
+        border-color: #93959C;
+      }
+    }
+
+    &, span, svg {
+      color: var(--ifm-color-content-secondary);
+    }
+  }
 }
