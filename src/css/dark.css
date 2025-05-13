@@ -2,7 +2,9 @@ html[data-theme="dark"] {
   --ifm-color-primary: #75acb6f4;
   --ifm-color-primary-light: #0d4651;
   --color-background: #282D39;
+  --color-background-dark: #3C4754;
   --color-border: #3E424D;
+  --color-border-dark: #93959C;
 
   #footer-logo {
     content: url("/img/logos/conduit-logo-dark.svg");
@@ -107,11 +109,8 @@ html[data-theme="dark"] {
 
   .theme-doc-markdown {
     .MuiBox-root {
-      background-color: #3C4754;
-
-      &.css-1cra3ly {
-        border-color: #93959C;
-      }
+      background-color: var(--color-background-dark);
+      border-color: var(--color-border-dark);
     }
 
     &, span, svg {
