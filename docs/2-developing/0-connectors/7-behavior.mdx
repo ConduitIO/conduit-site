@@ -33,14 +33,14 @@ connector.
 
 ![Standalone vs built-in connectors](/img/standalone-vs-builtin.svg)
 
-**Standalone connectors** are run as separate processes, separate from the
+**[Standalone connectors](/docs/core-concepts#standalone-connector)** are run as separate processes, separate from the
 Conduit process. They need to have an entrypoint (binary or script) which runs
 the connector and starts the gRPC server responsible for communicating with
 Conduit. A standalone connector process is started and stopped by Conduit on
 demand. One connector process will be started for every pipeline connector in
 Conduit.
 
-**Built-in connectors** on the other hand are executed in the same process as
+**[Built-in connectors](/docs/core-concepts#built-in-connector)** on the other hand are executed in the same process as
 Conduit and communicate with Conduit through Go channels instead of gRPC. Any
 connector written in Go can be compiled into the Conduit binary and used as a
 built-in connector.
