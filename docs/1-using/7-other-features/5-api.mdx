@@ -9,8 +9,16 @@ Conduit exposes a gRPC API and a REST API.
 The gRPC API is by default running on port 8084. You can define a custom address
 using the CLI flag `-grpc.address`. To learn more about the gRPC API please have
 a look at
-the [protobuf file](https://github.com/ConduitIO/conduit/blob/main/proto/api/v1/api.proto)
-.
+the [protobuf file](https://github.com/ConduitIO/conduit/blob/main/proto/api/v1/api.proto).
+
+:::info
+Conduit uses gRPC streams to communicate with [standalone connectors](/docs/core-concepts#standalone-connector).
+
+Make sure to keep the [api configuration](/docs/configuration) enabled (`--api.enabled`) if you want to use [standalone connectors](/docs/core-concepts#standalone-connector). 
+
+Check out the [Connector Behavior documentation](/docs/developing/connectors/behavior) for more information.
+:::
+
 
 ## REST API
 
