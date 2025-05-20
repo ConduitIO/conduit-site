@@ -1,8 +1,10 @@
 html[data-theme="dark"] {
   --ifm-color-primary: #75acb6f4;
   --ifm-color-primary-light: #0d4651;
+  --color-background-light: #4a5767;
   --color-background: #282D39;
   --color-background-dark: #3C4754;
+  --color-background-darker: #2c303d;
   --color-border: #3E424D;
   --color-border-dark: #93959C;
 
@@ -115,6 +117,48 @@ html[data-theme="dark"] {
 
     &, span, svg {
       color: var(--ifm-color-content-secondary);
+    }
+  }
+
+  .diff-viewer {
+    table tr {
+      background-color: var(--color-background-dark);
+    }
+
+    table tr:nth-child(2n) {
+      background-color: var(--color-background-darker);
+    }
+
+    [class$="-title-block"] {
+      background-color: var(--color-background-light);
+      border-color: var(--color-background-light);
+
+      [class$="-content-text"] {
+        color: var(--ifm-color-border-dark);
+      }
+    }
+
+    [class$="-gutter"] {
+      background-color: var(--color-background-dark);
+
+      [class$="-line-number"] {
+        color: var(--ifm-color-border-dark);
+      }
+    }
+
+    [class$="-diff-added"], [class$="-diff-added"] pre {
+      background-color: #cdffd8;
+      span {
+        color: #2f855a;
+      }
+    }
+
+    [class$="-diff-removed"], [class$="-diff-removed"] pre {
+        background-color: #ffdce0;
+
+        span {
+          color: #c53030;
+        }
     }
   }
 }
