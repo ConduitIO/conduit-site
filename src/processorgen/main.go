@@ -203,30 +203,26 @@ func formatParameterValueYAML(value string) string {
 
 // formatRecord formats a record as an escaped string.
 func formatRecord(rec map[string]any) string {
-	var input any
+	var out string
 
 	switch {
 	case len(rec) == 0:
 		return ""
 	case rec["error"] != nil:
-		input = rec
+		out = mustJSONMarshal(rec)
 	case rec["multi-record"] != nil:
 		// store the records in a struct so we control the order of the fields in JSON
-		recs := make([]record, len(rec["multi-record"].([]any)))
+		recs := make([]string, len(rec["multi-record"].([]any)))
 		for i, r := range rec["multi-record"].([]any) {
-			recs[i] = mapToRecord(r.(map[string]any))
+			recs[i] = mustJSONMarshal(mapToRecord(r.(map[string]any)))
 		}
-		input = recs
+		out = strings.Join(recs, "\n")
 	default:
-		// store the record in a struct so we control the order of the fields in JSON
-		input = mapToRecord(rec)
+		// map the record to a struct so we control the order of the fields in JSON
+		out = mustJSONMarshal(mapToRecord(rec))
 	}
 
-	b, err := json.MarshalIndent(input, "", "  ")
-	if err != nil {
-		return fmt.Sprintf("failed to marshal record: %v", err)
-	}
-	return strings.Trim(fmt.Sprintf("%#v", string(b)), "\"")
+	return strings.Trim(fmt.Sprintf("%#v", out), "\"")
 }
 
 func mapToRecord(rec map[string]any) record {
@@ -243,6 +239,14 @@ func mapToRecord(rec map[string]any) record {
 			After:  rec["payload"].(map[string]any)["after"],
 		},
 	}
+}
+
+func mustJSONMarshal(v any) string {
+	b, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		panic(fmt.Errorf("failed to marshal value: %w", err))
+	}
+	return string(b)
 }
 
 type record struct {
