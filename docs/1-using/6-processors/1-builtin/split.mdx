@@ -1,8 +1,8 @@
 ---
 IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
 
-title: 'unwrap.debezium'
-sidebar_position: 20
+title: 'split'
+sidebar_position: 19
 ---
 
 import ReactDiffViewer from 'react-diff-viewer';
@@ -11,19 +11,25 @@ import Box from "@mui/system/Box";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# `unwrap.debezium`
+# `split`
 
-Unwraps a Debezium record from the input [OpenCDC record](https://conduit.io/docs/using/opencdc-record).
+Split records.
 
 ## Description
 
-In this processor, the wrapped (Debezium) record replaces the wrapping record (being processed) 
-completely, except for the position.
+Split the records into multiple records based on the field
+provided in the configuration. If the field is an array, each element of the
+array will be converted into a separate record. The new record will contain the
+same data as the original record, but the field specified in the configuration
+will be replaced with the element of the array. The index of the element in the
+array will be stored in the metadata of the new record under the key
+`split.index`.
 
-The Debezium record's metadata and the wrapping record's metadata is merged, with the Debezium metadata having precedence.
-
-This is useful in cases where Conduit acts as an intermediary between a Debezium source and a Debezium destination. 
-In such cases, the Debezium record is set as the [OpenCDC record](https://conduit.io/docs/using/opencdc-record)'s payload,and needs to be unwrapped for further usage.
+This processor is only applicable to `.Key`, `.Payload.Before`
+and `.Payload.After` prefixes, and only applicable if said fields
+contain structured data. If the record contains raw JSON data, then use the
+processor [`json.decode`](/docs/using/processors/builtin/json.decode)
+to parse it into structured data first.
 
 ## Configuration parameters
 
@@ -38,13 +44,16 @@ pipelines:
       # define source and destination ...
     processors:
       - id: example
-        plugin: "unwrap.debezium"
+        plugin: "split"
         settings:
-          # Field is a reference to the field that contains the Debezium record.
+          # Field is the target field that should be split. Note that the target
+          # field has to contain an array so it can be split, otherwise the
+          # processor returns an error. This also means you can only split on
+          # fields in structured data under `.Key` and `.Payload`.
           # For more information about the format, see [Referencing
           # fields](https://conduit.io/docs/using/processors/referencing-fields).
           # Type: string
-          field: ".Payload.After"
+          field: ""
           # Whether to decode the record key using its corresponding schema from
           # the schema registry.
           # Type: bool
@@ -74,9 +83,12 @@ pipelines:
       <tr>
         <td>`field`</td>
         <td>string</td>
-        <td>`.Payload.After`</td>
+        <td><Chip label="null" /></td>
         <td>
-  Field is a reference to the field that contains the Debezium record.
+  Field is the target field that should be split. Note that the target
+field has to contain an array so it can be split, otherwise the processor
+returns an error. This also means you can only split on fields in
+structured data under `.Key` and `.Payload`.
 
 For more information about the format, see [Referencing fields](https://conduit.io/docs/using/processors/referencing-fields).
         </td>
@@ -119,10 +131,9 @@ For more information about the format, see [Referencing fields](https://conduit.
 
 ## Examples
 
-### Unwrap a Debezium record
+### Split array into multiple records
 
-This example how to unwrap a Debezium record from a field nested in a record's
-`.Payload.After` field. It additionally shows how the key is unwrapped, and the metadata merged.
+This example takes the array in field `.Payload.After.users` and splits it into separate records, each containing one element.
 
 #### Configuration parameters
 
@@ -137,9 +148,9 @@ pipelines:
       # define source and destination ...
     processors:
       - id: example
-        plugin: "unwrap.debezium"
+        plugin: "split"
         settings:
-          field: ".Payload.After.nested"
+          field: ".Payload.After.users"
 ```
   </TabItem>
   <TabItem value="table" label="Table">
@@ -150,7 +161,7 @@ pipelines:
       </tr>
       <tr>
         <td>`field`</td>
-        <td>`.Payload.After.nested`</td>
+        <td>`.Payload.After.users`</td>
       </tr>
     </table>
   </TabItem>
@@ -169,8 +180,8 @@ pipelines:
     }}
     leftTitle={'Before'}
     rightTitle={'After'}
-    oldValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"metadata-key\": \"metadata-value\"\n  },\n  \"key\": \"{\\\"payload\\\":\\\"27\\\"}\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"nested\": \"{\\n  \\\"payload\\\": {\\n    \\\"after\\\": {\\n      \\\"description\\\": \\\"test1\\\",\\n      \\\"id\\\": 27\\n    },\\n    \\\"before\\\": null,\\n    \\\"op\\\": \\\"c\\\",\\n    \\\"source\\\": {\\n      \\\"opencdc.readAt\\\": \\\"1674061777225877000\\\",\\n      \\\"opencdc.version\\\": \\\"v1\\\"\\n    },\\n    \\\"transaction\\\": null,\\n    \\\"ts_ms\\\": 1674061777225\\n  },\\n  \\\"schema\\\": {}\\n}\"\n    }\n  }\n}"}
-    newValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"metadata-key\": \"metadata-value\",\n    \"opencdc.readAt\": \"1674061777225877000\",\n    \"opencdc.version\": \"v1\"\n  },\n  \"key\": \"27\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"description\": \"test1\",\n      \"id\": 27\n    }\n  }\n}"}
+    oldValue={"{\n  \"position\": null,\n  \"operation\": \"update\",\n  \"metadata\": null,\n  \"key\": {\n    \"id\": 123\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"users\": [\n        {\n          \"age\": 30,\n          \"name\": \"Alice\"\n        },\n        {\n          \"age\": 25,\n          \"name\": \"Bob\"\n        },\n        {\n          \"age\": 35,\n          \"name\": \"Charlie\"\n        }\n      ]\n    }\n  }\n}"}
+    newValue={"[\n  {\n    \"position\": null,\n    \"operation\": \"update\",\n    \"metadata\": {\n      \"split.index\": \"0\"\n    },\n    \"key\": {\n      \"id\": 123\n    },\n    \"payload\": {\n      \"before\": null,\n      \"after\": {\n        \"users\": {\n          \"age\": 30,\n          \"name\": \"Alice\"\n        }\n      }\n    }\n  },\n  {\n    \"position\": null,\n    \"operation\": \"update\",\n    \"metadata\": {\n      \"split.index\": \"1\"\n    },\n    \"key\": {\n      \"id\": 123\n    },\n    \"payload\": {\n      \"before\": null,\n      \"after\": {\n        \"users\": {\n          \"age\": 25,\n          \"name\": \"Bob\"\n        }\n      }\n    }\n  },\n  {\n    \"position\": null,\n    \"operation\": \"update\",\n    \"metadata\": {\n      \"split.index\": \"2\"\n    },\n    \"key\": {\n      \"id\": 123\n    },\n    \"payload\": {\n      \"before\": null,\n      \"after\": {\n        \"users\": {\n          \"age\": 35,\n          \"name\": \"Charlie\"\n        }\n      }\n    }\n  }\n]"}
     hideLineNumbers={false}
     showDiffOnly={false}
     splitView={true}

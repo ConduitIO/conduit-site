@@ -210,21 +210,16 @@ func formatRecord(rec map[string]any) string {
 		return ""
 	case rec["error"] != nil:
 		input = rec
+	case rec["multi-record"] != nil:
+		// store the records in a struct so we control the order of the fields in JSON
+		recs := make([]record, len(rec["multi-record"].([]any)))
+		for i, r := range rec["multi-record"].([]any) {
+			recs[i] = mapToRecord(r.(map[string]any))
+		}
+		input = recs
 	default:
 		// store the record in a struct so we control the order of the fields in JSON
-		input = record{
-			Position:  rec["position"],
-			Operation: rec["operation"],
-			Metadata:  rec["metadata"],
-			Key:       rec["key"],
-			Payload: struct {
-				Before any `json:"before"`
-				After  any `json:"after"`
-			}{
-				Before: rec["payload"].(map[string]any)["before"],
-				After:  rec["payload"].(map[string]any)["after"],
-			},
-		}
+		input = mapToRecord(rec)
 	}
 
 	b, err := json.MarshalIndent(input, "", "  ")
@@ -232,6 +227,22 @@ func formatRecord(rec map[string]any) string {
 		return fmt.Sprintf("failed to marshal record: %v", err)
 	}
 	return strings.Trim(fmt.Sprintf("%#v", string(b)), "\"")
+}
+
+func mapToRecord(rec map[string]any) record {
+	return record{
+		Position:  rec["position"],
+		Operation: rec["operation"],
+		Metadata:  rec["metadata"],
+		Key:       rec["key"],
+		Payload: struct {
+			Before any `json:"before"`
+			After  any `json:"after"`
+		}{
+			Before: rec["payload"].(map[string]any)["before"],
+			After:  rec["payload"].(map[string]any)["after"],
+		},
+	}
 }
 
 type record struct {
