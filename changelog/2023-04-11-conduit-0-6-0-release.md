@@ -2,7 +2,7 @@
 slug: '2023-04-11-conduit-0-6-0-release'
 title: Conduit 0.6.0 release
 draft: false
-tags: [conduit, release]
+tags: [conduit, release, conduit-release]
 ---
 
 [**Conduit v0.6**](https://github.com/ConduitIO/conduit/releases/tag/v0.6.0) is now available, bringing a range of new features and improvements designed to enhance your data integration capabilities. This version focuses on providing users with more flexibility and efficiency in managing their data pipelines.

@@ -2,7 +2,7 @@
 slug: '2023-07-19-conduit-0-7-0-release'
 title: Conduit 0.7.0 release
 draft: false
-tags: [conduit, release]
+tags: [conduit, release, conduit-release]
 ---
 
 [**Conduit v0.7**](https://github.com/ConduitIO/conduit/releases/tag/v0.7.0) has a new release! We continue to enhance Conduit as a powerful alternative to Kafka Connect, moving closer to our goal of supporting elaborate data pipelines.

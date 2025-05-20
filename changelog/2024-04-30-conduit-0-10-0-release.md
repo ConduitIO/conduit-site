@@ -2,7 +2,7 @@
 slug: '2024-04-30-conduit-0-10-0-release'
 title: Conduit 0.10.0 release
 draft: false
-tags: [conduit, release]
+tags: [conduit, release, conduit-release]
 ---
 
 [**Conduit v0.10**](https://github.com/ConduitIO/conduit/releases/tag/v0.10.0) is here! This release introduces **native support for multiple collections**, addressing user feedback and enhancing the flexibility of data integration.

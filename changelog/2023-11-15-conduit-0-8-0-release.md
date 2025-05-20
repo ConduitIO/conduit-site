@@ -2,7 +2,7 @@
 slug: '2023-11-15-conduit-0-8-0-release'
 title: Conduit 0.8.0 release
 draft: false
-tags: [conduit, release]
+tags: [conduit, release, conduit-release]
 ---
 
 

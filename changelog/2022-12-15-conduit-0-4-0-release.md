@@ -2,7 +2,7 @@
 slug: '2022-12-15-conduit-0-4-0-release'
 title: Conduit 0.4.0 release
 draft: false
-tags: [conduit, release]
+tags: [conduit, release, conduit-release]
 ---
 
 [**Conduit v0.4**](https://github.com/ConduitIO/conduit/releases/tag/v0.4.0) is out now. This release enhances error handling and debugging capabilities for developers building streaming data pipelines.

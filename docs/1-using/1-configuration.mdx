@@ -47,6 +47,7 @@ Flags:
       --pipelines.exit-on-degraded                             exit Conduit if a pipeline is degraded
       --pipelines.path string                                  path to pipelines' directory (default "/Users/username/repo/conduit/pipelines")
       --preview.pipeline-arch-v2                               enables experimental pipeline architecture v2 (note that the new architecture currently supports only 1 source and 1 destination per pipeline)
+      --preview.pipeline-arch-v2-disable-metrics               disables metrics about amount of data (in bytes) moved in pipeline architecture v2 (increases performance)
       --processors.path string                                 path to standalone processors' directory (default "/Users/username/repo/conduit/processors")
       --schema-registry.confluent.connection-string string     confluent schema registry connection string
       --schema-registry.type string                            schema registry type; accepts builtin,confluent (default "builtin")
@@ -77,6 +78,7 @@ pipelines.error-recovery.max-retries: -1
 pipelines.error-recovery.max-retries-window: 5m0s
 schema-registry.type: builtin
 preview.pipeline-arch-v2: false
+preview.pipeline-arch-v2-disable-metrics: false
 ```
 
 ## Environment variables

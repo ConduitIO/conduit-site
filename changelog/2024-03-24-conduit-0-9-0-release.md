@@ -2,7 +2,7 @@
 slug: '2024-03-24-conduit-0-9-0-release'
 title: Conduit 0.9.0 release
 draft: false
-tags: [conduit, release]
+tags: [conduit, release, conduit-release]
 ---
 
 Revolutionize your data processing with [**Conduit v0.9**](https://github.com/ConduitIO/conduit/releases/tag/v0.9.0), featuring **enhanced processors**. This release introduces powerful new capabilities that allow you to transform and manage your data more effectively.
