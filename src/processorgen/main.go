@@ -54,6 +54,10 @@ func main() {
 			// skip directories
 			continue
 		}
+		if !strings.HasSuffix(dirEntry.Name(), ".json") {
+			// skip non-JSON files
+			continue
+		}
 
 		log.Printf("🔄 %v ...", dirEntry.Name())
 		log.SetPrefix("  ") // indent
