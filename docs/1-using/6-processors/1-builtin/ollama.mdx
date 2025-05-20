@@ -1,8 +1,8 @@
 ---
 IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
 
-title: 'unwrap.debezium'
-sidebar_position: 19
+title: 'ollama'
+sidebar_position: 16
 ---
 
 import ReactDiffViewer from 'react-diff-viewer';
@@ -11,19 +11,13 @@ import Box from "@mui/system/Box";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# `unwrap.debezium`
+# `ollama`
 
-Unwraps a Debezium record from the input [OpenCDC record](https://conduit.io/docs/using/opencdc-record).
+Processes data through an Ollama instance
 
 ## Description
 
-In this processor, the wrapped (Debezium) record replaces the wrapping record (being processed) 
-completely, except for the position.
-
-The Debezium record's metadata and the wrapping record's metadata is merged, with the Debezium metadata having precedence.
-
-This is useful in cases where Conduit acts as an intermediary between a Debezium source and a Debezium destination. 
-In such cases, the Debezium record is set as the [OpenCDC record](https://conduit.io/docs/using/opencdc-record)'s payload,and needs to be unwrapped for further usage.
+This processor runs provided records through a specified model on a provided Ollama instance. It uses the provided prompt to transform the incoming records.
 
 ## Configuration parameters
 
@@ -38,13 +32,18 @@ pipelines:
       # define source and destination ...
     processors:
       - id: example
-        plugin: "unwrap.debezium"
+        plugin: "ollama"
         settings:
-          # Field is a reference to the field that contains the Debezium record.
-          # For more information about the format, see [Referencing
-          # fields](https://conduit.io/docs/using/processors/referencing-fields).
+          # Field is the reference to the field to process. Defaults to
+          # ".Payload.After".
           # Type: string
           field: ".Payload.After"
+          # Model is the name of the model used with ollama
+          # Type: string
+          model: "llama3.2"
+          # Prompt is the prompt to pass into ollama to tranform the data
+          # Type: string
+          prompt: ""
           # Whether to decode the record key using its corresponding schema from
           # the schema registry.
           # Type: bool
@@ -61,6 +60,9 @@ pipelines:
           # from the schema registry.
           # Type: bool
           sdk.schema.encode.payload.enabled: "true"
+          # OllamaURL is the url to the ollama instance
+          # Type: string
+          url: ""
 ```
   </TabItem>
   <TabItem value="table" label="Table">
@@ -76,9 +78,23 @@ pipelines:
         <td>string</td>
         <td>`.Payload.After`</td>
         <td>
-  Field is a reference to the field that contains the Debezium record.
-
-For more information about the format, see [Referencing fields](https://conduit.io/docs/using/processors/referencing-fields).
+  Field is the reference to the field to process. Defaults to ".Payload.After".
+        </td>
+      </tr>
+      <tr>
+        <td>`model`</td>
+        <td>string</td>
+        <td>`llama3.2`</td>
+        <td>
+  Model is the name of the model used with ollama
+        </td>
+      </tr>
+      <tr>
+        <td>`prompt`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  Prompt is the prompt to pass into ollama to tranform the data
         </td>
       </tr>
       <tr>
@@ -113,16 +129,25 @@ For more information about the format, see [Referencing fields](https://conduit.
   Whether to encode the record payload using its corresponding schema from the schema registry.
         </td>
       </tr>
+      <tr>
+        <td>`url`</td>
+        <td>string</td>
+        <td><Chip label="null" /></td>
+        <td>
+  OllamaURL is the url to the ollama instance
+        </td>
+      </tr>
     </table>
   </TabItem>
 </Tabs>
 
 ## Examples
 
-### Unwrap a Debezium record
+### Ollama Prompt Example
 
-This example how to unwrap a Debezium record from a field nested in a record's
-`.Payload.After` field. It additionally shows how the key is unwrapped, and the metadata merged.
+This example will process the record stored in
+`.Payload.After`. The model is prompted to return the records unchanged. 
+The records are returned as a JSON with the same format as the data. 
 
 #### Configuration parameters
 
@@ -137,9 +162,12 @@ pipelines:
       # define source and destination ...
     processors:
       - id: example
-        plugin: "unwrap.debezium"
+        plugin: "ollama"
         settings:
-          field: ".Payload.After.nested"
+          field: ".Payload.After"
+          model: "llama3.2"
+          prompt: "Take the incoming record in JSON format, with a structure of {'test-field': integer}. Add one to the value of the integer and return that field."
+          url: "http://localhost:11434"
 ```
   </TabItem>
   <TabItem value="table" label="Table">
@@ -150,7 +178,19 @@ pipelines:
       </tr>
       <tr>
         <td>`field`</td>
-        <td>`.Payload.After.nested`</td>
+        <td>`.Payload.After`</td>
+      </tr>
+      <tr>
+        <td>`model`</td>
+        <td>`llama3.2`</td>
+      </tr>
+      <tr>
+        <td>`prompt`</td>
+        <td>`Take the incoming record in JSON format, with a structure of {'test-field': integer}. Add one to the value of the integer and return that field.`</td>
+      </tr>
+      <tr>
+        <td>`url`</td>
+        <td>`http://localhost:11434`</td>
       </tr>
     </table>
   </TabItem>
@@ -169,8 +209,8 @@ pipelines:
     }}
     leftTitle={'Before'}
     rightTitle={'After'}
-    oldValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"metadata-key\": \"metadata-value\"\n  },\n  \"key\": \"{\\\"payload\\\":\\\"27\\\"}\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"nested\": \"{\\n  \\\"payload\\\": {\\n    \\\"after\\\": {\\n      \\\"description\\\": \\\"test1\\\",\\n      \\\"id\\\": 27\\n    },\\n    \\\"before\\\": null,\\n    \\\"op\\\": \\\"c\\\",\\n    \\\"source\\\": {\\n      \\\"opencdc.readAt\\\": \\\"1674061777225877000\\\",\\n      \\\"opencdc.version\\\": \\\"v1\\\"\\n    },\\n    \\\"transaction\\\": null,\\n    \\\"ts_ms\\\": 1674061777225\\n  },\\n  \\\"schema\\\": {}\\n}\"\n    }\n  }\n}"}
-    newValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"metadata-key\": \"metadata-value\",\n    \"opencdc.readAt\": \"1674061777225877000\",\n    \"opencdc.version\": \"v1\"\n  },\n  \"key\": \"27\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"description\": \"test1\",\n      \"id\": 27\n    }\n  }\n}"}
+    oldValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": \"test-key\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"test-field\": 123\n    }\n  }\n}"}
+    newValue={"{\n  \"position\": \"dGVzdC1wb3NpdGlvbg==\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": \"test-key\",\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"test-field\": 124\n    }\n  }\n}"}
     hideLineNumbers={false}
     showDiffOnly={false}
     splitView={true}
