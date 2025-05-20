@@ -2,7 +2,7 @@
 slug: '2024-10-10-conduit-0-12-0-release'
 title: Conduit 0.12.0 release
 draft: false
-tags: [conduit, release]
+tags: [conduit, release, conduit-release]
 ---
 
 We’re excited to announce the release of [**Conduit v0.12.0**](https://github.com/ConduitIO/conduit/releases/tag/v0.12.0), which introduces **Pipeline Recovery**! This new feature enhances the resilience of your data streaming pipelines, ensuring they can recover from temporary errors without manual intervention.

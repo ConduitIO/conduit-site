@@ -2,7 +2,7 @@
 slug: '2022-09-27-conduit-0-3-0-release'
 title: Conduit 0.3.0 release
 draft: false
-tags: [conduit, release]
+tags: [conduit, release, conduit-release]
 ---
 
 [**Conduit v0.3**](https://github.com/ConduitIO/conduit/releases/tag/v0.3.0) is ready for use, and this release enhances the tool's capabilities for moving data within your infrastructure.

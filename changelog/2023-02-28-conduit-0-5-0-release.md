@@ -2,7 +2,7 @@
 slug: '2023-02-28-conduit-0-5-0-release'
 title: Conduit 0.5.0 release
 draft: false
-tags: [conduit, release]
+tags: [conduit, release, conduit-release]
 ---
 
 [**Conduit v0.5**](https://github.com/ConduitIO/conduit/releases/tag/v0.5.0) is out! This release focuses on making Conduit easier to operate as a service, with enhancements aimed at improving usability and functionality for developers building streaming data pipelines.
