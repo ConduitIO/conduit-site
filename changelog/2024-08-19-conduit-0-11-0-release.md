@@ -2,7 +2,7 @@
 slug: '2024-08-19-conduit-0-11-0-release'
 title: Conduit 0.11.0 release
 draft: false
-tags: [conduit, release]
+tags: [conduit, release, conduit-release]
 ---
 
 We’re thrilled to announce the release of [**Conduit v0.11**](https://github.com/ConduitIO/conduit/releases/tag/v0.11.0), featuring **enhanced schema support** for improved data integration! This update empowers users to manage and transform data more effectively across various sources and destinations.

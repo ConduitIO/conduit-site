@@ -2,7 +2,7 @@
 slug: '2024-11-05-salesforce-destination-connector'
 title: New Salesforce destination connector
 draft: false
-tags: [conduit, connector, salesforce]
+tags: [conduit, connector, salesforce, connector-release]
 ---
 
 We're happy to announce a new **Salesforce Destination Connector 0.5** for Conduit on [`v0.5.0`](https://github.com/conduitio-labs/conduit-connector-salesforce/releases/tag/v0.5.0), featuring real-time data integration with Salesforce Platform Events. This release enhances your ability to publish records directly to Salesforce, leveraging the power of Platform Events for seamless real-time communication between systems.

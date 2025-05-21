@@ -2,7 +2,7 @@
 slug: '2025-02-10-mysql-connector'
 title: New Conduit MySQL Connector
 draft: false
-tags: [conduit, connector, mysql, release]
+tags: [conduit, connector, mysql, release, connector-release]
 ---
 
 We're introducing the new **MySQL Connector for Conduit**, which allows extraction of

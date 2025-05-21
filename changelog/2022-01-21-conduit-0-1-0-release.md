@@ -2,7 +2,7 @@
 slug: '2022-01-21-conduit-0-1-0-release'
 title: Conduit 0.1.0 release
 draft: false
-tags: [conduit, release]
+tags: [conduit, release, conduit-release]
 ---
 
 [**Conduit** is now open-sourced](https://github.com/ConduitIO/conduit/releases/tag/v0.1.0)! Designed to simplify data integration for software engineers, Conduit provides a flexible and developer-friendly solution for streaming data orchestration.

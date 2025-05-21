@@ -1,0 +1,26 @@
+---
+slug: '2025-05-16-dynamodb-connector-0-3-1'
+title: Conduit DynamoDB Connector v0.3.1
+draft: false
+toc_max_heading_level: 4
+tags: [conduit, connector, dynamodb, release, connector-release]
+---
+
+[Conduit DynamoDB Connector v0.3.1](https://github.com/conduitio-labs/conduit-connector-dynamodb/releases/tag/v0.3.1) is
+now available, introducing a new feature for AWS authentication.
+
+<!--truncate-->
+
+### Key Highlights
+
+- [**Make AWS credentials optional with fallback to default credential chain**](https://github.com/conduitio-labs/conduit-connector-dynamodb/pull/164).
+This change allows the connector to authenticate with AWS using either static credentials or AWS default config chain,
+providing more flexibility in how the connector accesses DynamoDB resources. Thanks [@annsway](https://github.com/annsway) for the contribution!
+
+If you have any questions, or more feedback feel free to join our [Discord Community](https://discord.meroxa.com/).
+
+:::tip
+For more information, check out the [DynamoDB Connector documentation](/docs/using/connectors/list/dynamodb).
+:::
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)
