@@ -36,9 +36,7 @@ Find out how to [reference your connector](/docs/using/connectors/referencing).
 ### Record Size Limitations
 
 When using standalone connectors, the maximum size of a record is limited by the
-gRPC protocol. This means that the maximum size of a record is limited to **4 MB by
-default**. If you try to send a record larger than this limit, you will see an error
-like this in the logs:
+**gRPC** go library [grpc/grpc-go](https://github.com/grpc/grpc-go/blob/master/server.go#L59). This means that the maximum size of a record is limited to **4 MB by default**. If you try to send a record larger than this limit, you will see an error like this in the logs:
 
 ```bash
 2022-07-28T14:00:01+00:00 ERR node stopped 
@@ -46,10 +44,16 @@ like this in the logs:
          error receiving ack: grpc: received message larger than max (5000117 vs. 4194304)"
 ```
 
+This limitation can be changed by setting the `--connectors.max-receive-record-size` flag when starting Conduit. For example, to set the maximum record size to 10 MB, you can run:
 
-:::tip
-If you need to process larger records, you can increase the maximum
-size of a record by setting the `-max-record-size` flag when starting Conduit.
+```bash
+conduit run --connectors.max-receive-record-size 10485760
+```
+
+This option could be also be set in the [configuration file](/docs/configuration#configuration-file) or with the [environment variable](/docs/configuration#environment-variables) `CONDUIT_CONNECTORS_MAX_RECEIVE_RECORD_SIZE`. 
+
+:::warning
+For this configuration to take effect, your standalone connector must be using [conduit-connector-sdk](https://github.com/ConduitIO/conduit-connector-sdk) >= v0.14.0
 :::
 
 
