@@ -68,6 +68,7 @@ const config: Config = {
         { to: '/docs/using/connectors/list', position: 'left', label: 'Connectors' },
         { to: '/docs', position: 'left', label: 'Documentation' },
         { to: '/changelog', position: 'left', label: 'Changelog' },
+        { to: '/api', position: 'left', label: 'HTTP API' },
         { to: 'https://meroxa.io', label: 'Conduit Platform', position: 'right', className: 'navbar__link navbar__item conduit-platform' },
         { to: 'https://meroxa.com/blog/?type=Conduit', position: 'right', label: 'Blog' },
         { to: 'https://github.com/ConduitIO', position: 'right', label: 'GitHub', className: 'svg-background github' },
