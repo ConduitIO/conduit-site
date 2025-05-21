@@ -68,6 +68,7 @@ const config: Config = {
         { to: '/docs/using/connectors/list', position: 'left', label: 'Connectors' },
         { to: '/docs', position: 'left', label: 'Documentation' },
         { to: '/changelog', position: 'left', label: 'Changelog' },
+        { to: '/api', position: 'left', label: 'HTTP API' },
         { to: 'https://meroxa.io', label: 'Conduit Platform', position: 'right', className: 'navbar__link navbar__item conduit-platform' },
         { to: 'https://meroxa.com/blog/?type=Conduit', position: 'right', label: 'Blog' },
         { to: 'https://github.com/ConduitIO', position: 'right', label: 'GitHub', className: 'svg-background github' },
@@ -162,8 +163,8 @@ const config: Config = {
       copyright: `Copyright © ${new Date().getFullYear()} Meroxa, Inc.`,
     },
     announcementBar: {
-      id: 'announcement-bar-12', // increment on change
-      content: `Conduit v0.13.5 is here! <a class='cta' href='/changelog/2025-05-20-conduit-0-13-5-release' target='_blank' rel='noreferrer noopener'>See what's new</a>.`,
+      id: 'announcement-bar-13', // increment on change
+      content: `Conduit v0.14.0 is here! <a class='cta' href='/changelog/2025-MM-DD-conduit-0-14-0-release' target='_blank' rel='noreferrer noopener'>See what's new</a>.`,
       isCloseable: true,
     },
     colorMode: {
