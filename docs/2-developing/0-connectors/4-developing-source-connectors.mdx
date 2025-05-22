@@ -125,7 +125,7 @@ func (s *Source) Open(ctx context.Context, p opencdc.Position) error {
 Gathers data from the configured data source and formats it into a
 `opencdc.Record` that is returned from the function. The returned
 `opencdc.Record` is queued into the pipeline to be consumed by a Destination
-connector.
+connector, if [ReadN()](#readn) is not implemented, the SDK will fallback to this method.
 
 ```go
 func (s *Source) Read(ctx context.Context) (opencdc.Record, error) {
@@ -145,6 +145,54 @@ func (s *Source) Read(ctx context.Context) (opencdc.Record, error) {
     case <-ctx.Done():
         return opencdc.Record{}, ctx.Err()
     }
+}
+```
+
+### `ReadN()`
+
+`ReadN` is used to support source **batching**. Implementation wise, it
+is the same as `Read`, but returns a batch of records. The connector
+is expected to return at most n records. If there are fewer records
+available, it should return all of them. If there are no records available
+it should block until there are records available or the context is
+cancelled. If the context is cancelled while ReadN is running, it should
+return the context error.
+
+> if this method is not implemented, the SDK will fallback to [Read()](#read).
+
+```go
+func (s *Source) ReadN(ctx context.Context, n int) ([]opencdc.Record, error) {
+	if n <= 0 {
+		return nil, fmt.Errorf("n must be greater than 0, got %d", n)
+	}
+	var records []opencdc.Record
+	// Get the first record {blocking}
+	select {
+	case <-ctx.Done():
+		return nil, fmt.Errorf("context is done: %w", ctx.Err())
+	case rec, ok := <-s.data:
+		if !ok {
+			return records, nil
+		}
+		records = append(records, rec)
+	}
+
+	// Get the remaining records {non-blocking}
+	for len(records) < n {
+		select {
+		case <-ctx.Done():
+			return records, ctx.Err()
+		case rec, ok := <-s.data:
+			if !ok { // closed
+				return records, nil
+			}
+			records = append(records, rec)
+		default:
+			// No more records currently available
+			return records, nil
+		}
+	}
+	return records, nil
 }
 ```
 
