@@ -5,13 +5,10 @@ title: "Batching"
 ## Overview
 
 Batching can significantly improve a pipeline's throughput, as it reduces the
-number of round-trips between Conduit and external systems.
-
-In Conduit's context, it means that source connectors can read batches of
-records and that destination records can write batches of records. That doesn't
-apply to processors: the input to a processor is always a single record. In that
-sense, processors act like map functions that are applied to collections (i.e.,
-batches).
+number of round-trips between systems. In Conduit's context, it means that
+source connectors can read batches of records and that destination records can
+write batches of records. Here, processors act like map functions that are
+applied to collections (i.e., batches).
 
 :::note
 While batching can improve the performance of a pipeline, it can also increase
@@ -20,25 +17,43 @@ memory before flushing the batch). It can also increase the latency of the
 connector, as it needs to wait for the batch to be full.
 :::
 
+## Batching support in connectors
+
 It should be noted that Conduit _facilitates_ batching and that the actual
 implementation of batching is a connector's responsibility. For example, Conduit
 can collect a batch of records and send it to a destination connector. Whether
 the destination writes the records in a single request or not is a matter of its
-implementation. Similarly, Conduit can request a batch of `N` records from a
+implementation. 
+
+Similarly, Conduit can request a batch of `N` records from a
 source connector. The source connector might read `N` records in one request,
 but it might also issue `N` read requests.
 
 :::tip
 
-Please consult a connector's documentation to find out if it supports batching
-or not.
+Please consult a connector's documentation to find out if and how it supports
+batching.
 
 :::
+
+## Pipeline engines and batching
+
+Batching can be effective regardless of the [pipeline architecture](/TBD) used,
+because the optimization occurs in the connector itself. However, pipeline
+architecture v2 takes better advantage of batching, since it's able to move the
+whole batch, as a single unit, through the pipeline.
+
+## Configuration
+
+Batching can be configured in a source, destination, or both. Using batching in
+both is discouraged and will be removed in a future release.
+
+:::note
 
 By default, batching is disabled, i.e., Conduit reads and writes records one by
 one.
 
-## Configuration parameters
+:::
 
 ### `sdk.batch.size`
 
@@ -64,7 +79,7 @@ batch size to be reached either for a long time or indefinitely.
 
 ## Examples
 
-### Example 1: Batch delay (classic architecture)
+### Example 1: Batch delay
 
 The following pipeline is configured to collect records for 5 seconds before
 flushing the batch to the destination resource. Note that the source connector
@@ -99,11 +114,11 @@ pipelines:
           path: /tmp/file-destination.txt
 ```
 
-### Example 2: Batch size and delay (classic architecture)
+### Example 2: Batch size and delay
 
 The following pipeline is configured to collect batches of 100 records for up to
 5 seconds before flushing them to the destination resource. This means that
-records will be flushed at most every 5 seconds or sooner if the batch collects
+records will be flushed at most every 5 seconds, or sooner if the batch collects
 100 records.
 
 ```yaml
@@ -133,37 +148,6 @@ pipelines:
           sdk.batch.size: 100
           sdk.batch.delay: "5s"
           path: /tmp/file-destination.txt
-```
-
-### Example 3: Pipeline architecture v2
-
-The following configuration file is for a pipeline that streams data from a
-Postgres table to a Kafka topic. The Postgres source connector is configured to
-return batches of 100 records (table rows) at most. If 5 seconds pass, it will
-return the number of records it has available.
-
-```yaml
-version: "2.2"
-pipelines:
-   - id: postgres-to-kafka
-     status: running
-     description: Postgres to Kafka (CDC)
-     connectors:
-        - id: postgres-source
-          type: source
-          plugin: builtin:postgres
-          settings:
-             tables: "employees"
-             url: "postgresql://user:password@localhost:5432/companydb"
-             sdk.batch.size: 100
-             sdk.batch.delay: "5s"
-        - id: kafka-destination
-          type: destination
-          plugin: builtin:kafka
-          name: kafka-destination
-          settings:
-             servers: "localhost:9092"
-             topic: "employees_topic"
 ```
 
 ![scarf pixel conduit-site-docs-using-connectors](https://static.scarf.sh/a.png?x-pxid=53743422-c614-4e45-acaa-f1f9f604321e)
