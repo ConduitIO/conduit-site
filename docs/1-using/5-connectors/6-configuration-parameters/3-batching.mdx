@@ -2,62 +2,116 @@
 title: "Batching"
 ---
 
-Destination connectors can be configured to process records in batches. This is especially useful when the destination
-resource can receive multiple records in a single round-trip. By default, Conduit processes records one by one.
+## Overview
 
-Enabling batch processing can improve the performance of the connector, as it reduces the number of round-trips to the
-destination resource. However, it can also increase the memory usage of the connector, as it needs to store multiple records
-in memory before flushing the batch. It can also increase the latency of the connector, as it needs to wait for the batch
-to be full.
+Batching can significantly improve a pipeline's throughput, as it reduces the
+number of round-trips between Conduit and external systems.
+
+In Conduit's context, it means that source connectors can read and return a
+batch of records and that destination records can write batches of records. That
+doesn't apply to processors: the input to a processor is always a single record.
+In that sense, processors act like map functions that are applied to
+collections.
+
+:::note
+While batching can improve the performance of a pipeline, it can also increase
+the memory usage of the connector (as it needs to store multiple records in
+memory before flushing the batch). It can also increase the latency of the
+connector, as it needs to wait for the batch to be full.
+:::
+
+The semantics and configuration of batching are slightly different in the
+two [pipeline architectures](https://meroxa.com/blog/optimizing-conduit-5x-the-throughput/)
+that Conduit supports. In both, a destination connector is given a batch of
+records. The main difference is that, in the classic architecture (the default)
+a source connector can't return a batch of records, whereas in the v2
+architecture it can.
+
+It's important to remember that Conduit _facilitates_ batching and that the
+actual implementation of batching is a connector's responsibility. Conduit makes
+it possible for a source connector to return a batch of records. A source
+connector can read a batch from the source system in one request, or it can
+perform `N` round-trips to create a batch is a matter of the connector's
+implementation. The same is true for the destination: Conduit can send a batch
+of records to a destination connector. The destination connector can write the
+batch in a single request, but it could also be writing the records one by one.
+
+## Batching in the classic architecture
+
+Batching in the classic architecture is enabled by setting the configuration
+parameters explained below. The configuration parameters are available in
+destination connectors only.
+
+Records flow through a pipeline in the following way:
+
+1. Conduit reads records from a source _one by one_.
+2. Conduit sends the records to processors (if any) one by one.
+3. Just before a destination connector is invoked, Conduit builds a batch
+   _internally_ (by either waiting for the maximum batch size to be reached or
+   the batch delay to pass).
+4. Conduit sends a batch of records to a destination connector.
+
+Hence, in the classic architecture it can take multiple round-trips to read a
+batch and a single round-trip to write it.
+
+## Batching in pipeline architecture v2
+
+As in the case of the classic architecture, batching in pipeline architecture v2
+is enabled by setting the configuration parameters explained below. Batching
+should be configured in source connectors only.
+
+Records flow through a pipeline in the following way:
+
+1. Conduit reads a _batch_ of records from a source.
+2. Conduit invokes the processors (if any) on individual records in the batch.
+   Processors are essentially map functions.
+3. Conduit sends the batch of records to a destination connector.
+
+Therefore, in pipeline architecture v2, it can take a single round-trip to a
+source to read the data and a single round-trip to a destination to write the
+data.
 
 ## Configuration parameters
 
-There are two connector configuration parameters which control the batch size:
+By default, batching is disabled, i.e., Conduit reads and writes records one by
+one. Batching is controlled via the parameters below.
 
-* `sdk.batch.size`: used to configure the number of records to be sent in a single batch. Default value is `1`.
-* `sdk.batch.delay`: used to configure the maximum time to wait for a batch to be full before sending it to the destination resource. Default value is `0`.
+### `sdk.batch.size`
+
+This is the maximum number of the records in a batch.
+
+**In the classic architecture**, this is the maximum size of a batch that
+Conduit builds and sends to a destination connector. 
+
+**In pipeline architecture v2**, this is the number of records that Conduit
+requests from a source connector. A source connector may return fewer records if
+`sdk.batch.size` of records aren't available.
+
+Default value: `1`.
+
+### `sdk.batch.delay`
+
+This is the maximum time to wait for a batch to be full before sending
+it to the destination resource.
+
+Default value: `0`.
+
+:::important
+
+Both parameters need to be set for batching to work. If `sdk.batch.size` is set,
+but `sdk.batch.delay` isn't, Conduit might wait for the batch size to be reached
+either for a long time or indefinitely.
+
+:::
 
 ## Examples
 
-### Example 1: Batch size
+### Example 1: Batch delay (classic architecture)
 
-The following pipeline is configured to process batches of 100 records when writing to the destination resource. Note that
-the source connector is generating records at a rate of 10 records per second, meaning that records will be flushed
-approximately every 10 seconds.
-
-```yaml
-version: 2.2
-
-pipelines:
-  - id: pipeline1
-    status: running
-    name: pipeline1
-    description: 'A pipeline batching 100 records at a time.'
-    connectors:
-      - id: source1
-        type: source
-        plugin: builtin:generator
-        name: source1
-        settings:
-          rate: 10
-          operations: "create"
-          format.type: "structured"
-          format.options.name: "string"
-          format.options.company: "string"
-      - id: destination1
-        type: destination
-        plugin: "builtin:file"
-        name: destination1
-        settings:
-          sdk.batch.size: 100
-          path: /tmp/file-destination.txt
-```
-
-### Example 2: Batch delay
-
-The following pipeline is configured to collect records for 5 seconds before flushing the batch to the destination resource.
-Note that the source connector is generating records at a rate of 10 records per second, meaning that a batch will
-contain approximately 50 records.
+The following pipeline is configured to collect records for 5 seconds before
+flushing the batch to the destination resource. Note that the source connector
+is generating records at a rate of 10 records per second, meaning that a batch
+will contain approximately 50 records.
 
 ```yaml
 version: 2.2
@@ -87,10 +141,11 @@ pipelines:
           path: /tmp/file-destination.txt
 ```
 
-### Example 3: Batch size and delay
+### Example 2: Batch size and delay (classic architecture)
 
-The following pipeline is configured to collect batches of 100 records for up to 5 seconds before flushing them to the
-destination resource. This means that records will be flushed at most every 5 seconds, or sooner if the batch collects
+The following pipeline is configured to collect batches of 100 records for up to
+5 seconds before flushing them to the destination resource. This means that
+records will be flushed at most every 5 seconds or sooner if the batch collects
 100 records.
 
 ```yaml
@@ -120,6 +175,37 @@ pipelines:
           sdk.batch.size: 100
           sdk.batch.delay: "5s"
           path: /tmp/file-destination.txt
+```
+
+### Example 3: Pipeline architecture v2
+
+The following configuration file is for a pipeline that streams data from a
+Postgres table to a Kafka topic. The Postgres source connector is configured to
+return batches of 100 records (table rows) at most. If 5 seconds pass, it will
+return the number of records it has available.
+
+```yaml
+version: "2.2"
+pipelines:
+   - id: postgres-to-kafka
+     status: running
+     description: Postgres to Kafka (CDC)
+     connectors:
+        - id: postgres-source
+          type: source
+          plugin: builtin:postgres
+          settings:
+             tables: "employees"
+             url: "postgresql://user:password@localhost:5432/companydb"
+             sdk.batch.size: 100
+             sdk.batch.delay: "5s"
+        - id: kafka-destination
+          type: destination
+          plugin: builtin:kafka
+          name: kafka-destination
+          settings:
+             servers: "localhost:9092"
+             topic: "employees_topic"
 ```
 
 ![scarf pixel conduit-site-docs-using-connectors](https://static.scarf.sh/a.png?x-pxid=53743422-c614-4e45-acaa-f1f9f604321e)
