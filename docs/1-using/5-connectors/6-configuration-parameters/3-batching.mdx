@@ -78,6 +78,22 @@ batch size to be reached either for a long time or indefinitely.
 
 :::
 
+## Best practices
+
+1. Consult a connector's documentation to verify whether it uses batching.
+2. Monitor the pipeline's performance, which should include the message
+   throughput and resource usage (CPU, memory, etc.). You can use
+   Conduit's [built-in metrics](/using/other-features/metrics) to monitor
+   throughput.
+3. Monitor the latency in the destination system (batching might increase it,
+   which isn't desirable if the pipeline is required to be real-time).
+4. Verify which batch size can work with the source or destination connector.
+   Certain source and destination systems limit the batch size.
+5. Know the volume of the data being generated in the source. Determine how that
+   affects the batch size and delay.
+6. Experiment with different batch sizes and delays. There's likely going to be
+   a point of diminishing returns.
+
 ## Examples
 
 ### Example 1: Batch delay
