@@ -24,7 +24,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/conduitio/conduit-connector-sdk/cmd/readmegen/util"
+	"github.com/conduitio/conduit-connector-sdk/conn-sdk-cli/readmegen"
 	"github.com/conduitio/yaml/v3"
 )
 
@@ -169,7 +169,7 @@ func (cmd *CommandDocs) generateDocPage(
 	defer f.Close()
 
 	fmt.Printf("  💾 Writing %s ...\n", path)
-	return util.Generate(util.GenerateOptions{
+	return readmegen.Generate(readmegen.GenerateOptions{
 		Data: data{
 			Repository:     repo,
 			Specifications: specifications,
