@@ -4,8 +4,8 @@
     "description": "",
     "created_at": "",
     "url": "https://github.com/ConduitIO/conduit",
-    "stargazer_count": 519,
-    "fork_count": 54,
+    "stargazer_count": 520,
+    "fork_count": 55,
     "releases": null
   },
   {
@@ -23,7 +23,7 @@
     "created_at": "",
     "url": "https://github.com/ConduitIO/conduit-operator",
     "stargazer_count": 1,
-    "fork_count": 0,
+    "fork_count": 1,
     "releases": null
   },
   {
@@ -211,7 +211,7 @@
     "description": "",
     "created_at": "",
     "url": "https://github.com/hariso/conduit-connector-kafka",
-    "stargazer_count": 1,
+    "stargazer_count": 0,
     "fork_count": 0,
     "releases": null
   },
