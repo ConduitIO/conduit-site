@@ -7,7 +7,7 @@ toolchain go1.23.4
 require (
 	github.com/conduitio/conduit-connector-sdk v0.12.1-0.20250127175725-7ae239181f7a
 	github.com/conduitio/yaml/v3 v3.3.0
-	github.com/gofri/go-github-ratelimit v1.1.0
+	github.com/gofri/go-github-ratelimit v1.1.1
 	github.com/google/go-github/v67 v67.0.0
 	github.com/otiai10/gh-dependents v0.3.0
 	gopkg.in/yaml.v3 v3.0.1
