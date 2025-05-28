@@ -83,7 +83,7 @@ Some questions that typically need to be answered:
 
 ### Familiarize with the Connector SDK/connector protocol
 
-Conduit's Connector SDK is the Go software development kit for implementing a
+[Conduit's Connector SDK](https://github.com/ConduitIO/conduit-connector-sdk) is the Go software development kit for implementing a
 connector for Conduit. If you want to implement a connector in another language
 please check
 the [connector protocol](https://github.com/conduitio/conduit-connector-protocol).
@@ -117,7 +117,7 @@ user's configuration map into the configuration struct.
 
 ### Middleware
 
-Conduit's Connector SDK adds default middleware that, by default, enables some
+[Conduit's Connector SDK](https://github.com/ConduitIO/conduit-connector-sdk) adds default middleware that, by default, enables some
 functionality. A connector developer should be familiar with the middleware,
 especially with
 the [schema related middleware](/docs/using/connectors/configuration-parameters/schema-extraction).
@@ -259,6 +259,105 @@ Batch 3: [create_2]
 
 This way, ordering is preserved and the connector can still take advantage of
 batching.
+
+### Logging
+
+The [Conduit Connector SDK](https://github.com/ConduitIO/conduit-connector-sdk) provides a structured logger via `sdk.Logger(ctx)`, powered by [`zerolog`](https://github.com/rs/zerolog). 
+
+This logger supports multiple log levels and outputs logs in a structured, key-value format. Log levels are controlled by the [`log.level` configuration option](/docs/configuration) you use when running Conduit being `info` its default value:
+
+```bash
+conduit run --log.level info
+```
+
+:::info
+
+The log level can be set to `debug`, `info`, `warn`, `error`, or `trace`.
+
+:::
+
+#### Debug
+
+Use the Debug level for verbose output useful during development or troubleshooting. This level is only shown if Conduit is started with `--log.level debug`. For example, a line like this in your code:
+
+```go
+sdk.Logger(ctx).Debug().Msg("Snapshot completed, switching to CDC mode")
+```
+
+Would produce a log entry like this when running Conduit:
+
+```json
+2025-05-27T20:40:57+00:00 DBG Snapshot completed, switching to CDC mode
+```
+
+#### Info
+
+This is the default log level and is used for general operational messages that confirm things are working as expected. 
+
+_Example:_
+
+```go
+sdk.Logger(ctx).Info().Msg("connector started")
+```
+
+Would produce:
+
+```json
+2025-05-27T20:40:57+00:00 INF connector started
+```
+
+#### Warn
+
+Warn level indicates something unexpected happened, or indicative of some problem in the near future.
+
+_Example:_
+
+```go
+sdk.Logger(ctx).Warn().Str("state", state.String()).Msg("connector state is not running, skipping stop")
+```
+
+Would produce log output like this when running Conduit with `--log.level warn`:
+
+```json
+2025-05-27T20:40:57+00:00 WRN connector state is not running, skipping stop state="stopped"
+```
+
+#### Error
+
+Error level is used for errors that are recoverable or expected, but still indicate a problem that needs attention.
+
+_Example:_
+
+```go
+sdk.Logger(ctx).Error().Err(err).Msg("replication exited with an error")
+```
+
+Could produce log output like this when running Conduit with `--log.level error`:
+
+```json
+2025-05-27T20:40:57+00:00 ERR replication exited with an error 
+                          error="failed to send status: walWrite should be >= walFlush"
+```
+
+#### Trace
+
+Trace level is used for detailed debugging information. It is not commonly used in production but can be very useful during development. _Example:_
+
+```go
+sdk.Logger(ctx).Trace().
+		Str("table_name", tableName).
+		Msg("upserting record")
+```
+
+Would produce log output like this when running Conduit with `--log.level trace`:
+
+```json
+2025-05-27T20:40:57+00:00 TRC upserting record table_name="users"
+```
+
+:::tip
+For more information about the logger, check out the [Conduit Connector SDK documentation](https://pkg.go.dev/github.com/conduitio/conduit-connector-sdk#Logger).
+:::
 
 ### Acceptance tests
 
