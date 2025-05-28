@@ -162,37 +162,34 @@ return the context error.
 
 ```go
 func (s *Source) ReadN(ctx context.Context, n int) ([]opencdc.Record, error) {
-	if n <= 0 {
-		return nil, fmt.Errorf("n must be greater than 0, got %d", n)
+	rows, err := s.db.QueryContext(ctx, "SELECT id, name FROM ? LIMIT ?", s.config.TableName, n)
+	if err != nil {
+		return nil, fmt.Errorf("query failed: %w", err)
 	}
-	var records []opencdc.Record
-	// Get the first record {blocking}
-	select {
-	case <-ctx.Done():
-		return nil, fmt.Errorf("context is done: %w", ctx.Err())
-	case rec, ok := <-s.data:
-		if !ok {
-			return records, nil
-		}
-		records = append(records, rec)
-	}
+	defer rows.Close()
 
-	// Get the remaining records {non-blocking}
-	for len(records) < n {
-		select {
-		case <-ctx.Done():
-			return records, ctx.Err()
-		case rec, ok := <-s.data:
-			if !ok { // closed
-				return records, nil
-			}
-			records = append(records, rec)
-		default:
-			// No more records currently available
-			return records, nil
+	var records []opencdc.Record
+	for rows.Next() {
+		var id int
+		var name string
+		if err := rows.Scan(&id, &name); err != nil {
+			return nil, fmt.Errorf("failed to scan row: %w", err)
 		}
+
+		record := opencdc.Record{
+			Key:   opencdc.StructuredData{
+				"id": id,
+			},
+			Payload: opencdc.Change{
+				After: opencdc.StructuredData{
+					"id": id,
+					"name": name,
+				},
+			},
+		}
+		records = append(records, record)
 	}
-	return records, nil
+	return records, rows.Err()
 }
 ```
 
