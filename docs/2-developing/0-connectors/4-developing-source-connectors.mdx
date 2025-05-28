@@ -125,7 +125,7 @@ func (s *Source) Open(ctx context.Context, p opencdc.Position) error {
 Gathers data from the configured data source and formats it into a
 `opencdc.Record` that is returned from the function. The returned
 `opencdc.Record` is queued into the pipeline to be consumed by a Destination
-connector.
+connector, if [ReadN()](#readn) is not implemented, the SDK will fallback to this method.
 
 ```go
 func (s *Source) Read(ctx context.Context) (opencdc.Record, error) {
@@ -145,6 +145,51 @@ func (s *Source) Read(ctx context.Context) (opencdc.Record, error) {
     case <-ctx.Done():
         return opencdc.Record{}, ctx.Err()
     }
+}
+```
+
+### `ReadN()`
+
+`ReadN` is used to support source **batching**. Implementation wise, it
+is the same as `Read`, but returns a batch of records. The connector
+is expected to return at most n records. If there are fewer records
+available, it should return all of them. If there are no records available
+it should block until there are records available or the context is
+cancelled. If the context is cancelled while ReadN is running, it should
+return the context error.
+
+> if this method is not implemented, the SDK will fallback to [Read()](#read).
+
+```go
+func (s *Source) ReadN(ctx context.Context, n int) ([]opencdc.Record, error) {
+	rows, err := s.db.QueryContext(ctx, "SELECT id, name FROM ? LIMIT ?", s.config.TableName, n)
+	if err != nil {
+		return nil, fmt.Errorf("query failed: %w", err)
+	}
+	defer rows.Close()
+
+	var records []opencdc.Record
+	for rows.Next() {
+		var id int
+		var name string
+		if err := rows.Scan(&id, &name); err != nil {
+			return nil, fmt.Errorf("failed to scan row: %w", err)
+		}
+
+		record := opencdc.Record{
+			Key:   opencdc.StructuredData{
+				"id": id,
+			},
+			Payload: opencdc.Change{
+				After: opencdc.StructuredData{
+					"id": id,
+					"name": name,
+				},
+			},
+		}
+		records = append(records, record)
+	}
+	return records, rows.Err()
 }
 ```
 
