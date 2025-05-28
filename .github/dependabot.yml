@@ -12,9 +12,7 @@ updates:
 
   # Maintain dependencies for Go
   - package-ecosystem: "gomod"
-    directories:
-      - "/src/connectorgen"
-      - "/src/processorgen"
+    directory: "/src/connectorgen"
     schedule:
       interval: "daily"
     commit-message:
