@@ -1,6 +1,7 @@
 ---
 title: "Conduit Architecture"
 slug: '/core-concepts/architecture'
+toc_max_heading_level: 6
 ---
 
 import ThemedImage from '@site/src/components/ThemedImage';
@@ -87,15 +88,72 @@ Processors are stateless components that operate on a single record and can exec
 
 ### Pipeline Engine
 
-The pipeline engine consists of nodes that can be connected together with Go channels to form a data pipeline.
-  
-#### Node
+A pipeline engine is responsible for running a pipeline: reading records from a
+source, calling processors for the read data, sending it to destinations,
+writing failed records into a dead-letter queue, handling errors, etc. We
+sometimes call it a pipeline architecture; the terms are used interchangeably.
 
-A node is a lightweight component that runs in its own goroutine and runs as long as the incoming channel
-is open. As soon as the previous node stops forwarding records and closes its out channel, the current node also
-stops running and closes its out channel. This continues down the pipeline until all records are drained and the
-pipeline gracefully stops. In case a node experiences an error all other nodes will be notified and stop running
-as soon as possible without draining the pipeline.
+Conduit has two pipeline engines with two different internal architectures: v1 (
+the default) and v2 (under preview).
+
+#### Pipeline engine (architecture) v1
+
+:::info
+Pipeline architecture v1 is the default architecture used by Conduit.
+:::
+
+The pipeline engine consists of nodes that can be connected with Go channels to
+form a data pipeline.
+
+##### Nodes
+
+A node is a lightweight component that runs in its own goroutine and runs as
+long as the incoming channel is open. As soon as the previous node stops
+forwarding records and closes its out channel, the current node also stops
+running and closes its out channel. This continues down the pipeline until all
+records are drained and the pipeline gracefully stops. In case a node
+experiences an error, all other nodes will be notified and stop running as soon
+as possible without draining the pipeline.
+
+#### Pipeline engine (architecture) v2
+
+:::warning
+Pipeline architecture v2 is currently in preview and is not yet the default
+architecture. It can be enabled with the `--preview.pipeline-arch-v2` flag when running Conduit. 
+
+Once we implement the remaining features and gather sufficient data on the new architecture's stability—both on the Conduit Platform and from community feedback—it will become the default architecture.
+:::
+
+An engine with pipeline architecture v2 is composed of multiple _tasks_ that
+send batches of records in a specific order. For example, a source task reads a
+batch of records from a source connector, then sends the batch to _processor
+tasks_ (if any), which are then sent to a _destination task_.
+
+The major differences between v1 and v2 are the following:
+
+1. Goroutines:
+    - v1 uses multiple goroutines for a single pipeline. Individual records are
+      moved between pipelines.
+    - v2 uses a single goroutine for all the work associated with a single
+      source.
+2. Batching:
+    - v1 collects individual records from a source. The Connector SDK builds
+      batches at the destination.
+    - v2 collects batches of records from a source. The whole batch is moved as
+      a single unit through the whole pipeline.
+
+##### Benefits
+
+Pipeline architecture v2 has shown significant performance improvements when
+compared to v1 that has been
+described [here](https://meroxa.com/blog/optimizing-conduit-5x-the-throughput/).
+It's also easier to maintain and troubleshoot due to its simplicity.
+
+##### Limitations
+
+Currently, only pipelines with a single source and a single destination are
+supported. We plan to add support for multiple destinations, followed by support
+for multiple sources.
 
 ## Persistence layer
 
