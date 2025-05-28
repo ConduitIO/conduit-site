@@ -5,7 +5,7 @@ go 1.24.3
 require (
 	github.com/conduitio/conduit-connector-sdk v0.13.4
 	github.com/conduitio/yaml/v3 v3.3.0
-	github.com/gofri/go-github-ratelimit v1.1.0
+	github.com/gofri/go-github-ratelimit v1.1.1
 	github.com/google/go-github/v67 v67.0.0
 	github.com/otiai10/gh-dependents v0.3.0
 	github.com/spf13/cobra v1.9.1
