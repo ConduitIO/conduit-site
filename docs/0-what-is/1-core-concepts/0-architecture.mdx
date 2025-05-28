@@ -1,6 +1,7 @@
 ---
 title: "Conduit Architecture"
 slug: '/core-concepts/architecture'
+toc_max_heading_level: 6
 ---
 
 import ThemedImage from '@site/src/components/ThemedImage';
@@ -97,6 +98,10 @@ the default) and v2 (under preview).
 
 #### Pipeline engine (architecture) v1
 
+:::info
+Pipeline architecture v1 is the default architecture used by Conduit.
+:::
+
 The pipeline engine consists of nodes that can be connected with Go channels to
 form a data pipeline.
 
@@ -111,6 +116,13 @@ experiences an error, all other nodes will be notified and stop running as soon
 as possible without draining the pipeline.
 
 #### Pipeline engine (architecture) v2
+
+:::warning
+Pipeline architecture v2 is currently in preview and is not yet the default
+architecture. It can be enabled with the `--preview.pipeline-arch-v2` flag when running Conduit. 
+
+Once we implement the remaining features and gather sufficient data on the new architecture's stability—both on the Conduit Platform and from community feedback—it will become the default architecture.
+:::
 
 An engine with pipeline architecture v2 is composed of multiple _tasks_ that
 send batches of records in a specific order. For example, a source task reads a
@@ -142,14 +154,6 @@ It's also easier to maintain and troubleshoot due to its simplicity.
 Currently, only pipelines with a single source and a single destination are
 supported. We plan to add support for multiple destinations, followed by support
 for multiple sources.
-
-##### Status
-
-This is currently a preview feature that can be enabled with the
-`--preview.pipeline-arch-v2` flag. Once we implement the remaining features
-and gather sufficient data on the new architecture's stability—both on the
-Conduit Platform and from community feedback—it will become the default
-architecture.
 
 ## Persistence layer
 
