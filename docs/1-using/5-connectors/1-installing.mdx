@@ -1,8 +1,8 @@
 ---
-title: "Installing Connectors"
+title: "Installing Standalone Connectors"
 ---
 
-Beside the built-in connectors shipped with Conduit there is a
+Beside the [built-in](/docs/core-concepts#built-in-connector) connectors shipped with Conduit there is a
 [list](/docs/using/connectors/list) of
 connectors that can be added to Conduit as plugins. These are called [standalone connectors](/docs/core-concepts#standalone-connector).
 
@@ -31,5 +31,30 @@ Names of the connector binaries are not important, since Conduit is getting the
 information about connectors from connectors themselves (using their gRPC API).
 
 Find out how to [reference your connector](/docs/using/connectors/referencing).
+
+
+### Record Size Limitations
+
+When using standalone connectors, the maximum size of a record is limited by the
+**gRPC** go library [grpc/grpc-go](https://github.com/grpc/grpc-go/blob/master/server.go#L59). This means that the maximum size of a record is limited to **4 MB by default**. If you try to send a record larger than this limit, you will see an error like this in the logs:
+
+```bash
+2022-07-28T14:00:01+00:00 ERR node stopped 
+  error="node stopped with error: failed to receive ack: 
+         error receiving ack: grpc: received message larger than max (5000117 vs. 4194304)"
+```
+
+This limitation can be changed by setting the `--connectors.max-receive-record-size` flag when starting Conduit. For example, to set the maximum record size to 10 MB, you can run:
+
+```bash
+conduit run --connectors.max-receive-record-size 10485760
+```
+
+This option could be also be set in the [configuration file](/docs/configuration#configuration-file) or with the [environment variable](/docs/configuration#environment-variables) `CONDUIT_CONNECTORS_MAX_RECEIVE_RECORD_SIZE`. 
+
+:::warning
+For this configuration to take effect, your standalone connector must be using [conduit-connector-sdk](https://github.com/ConduitIO/conduit-connector-sdk) >= v0.14.0
+:::
+
 
 ![scarf pixel conduit-site-docs-using-connectors](https://static.scarf.sh/a.png?x-pxid=53743422-c614-4e45-acaa-f1f9f604321e)
