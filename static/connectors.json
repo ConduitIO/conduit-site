@@ -10220,6 +10220,106 @@
     "fork_count": 1,
     "releases": [
       {
+        "tag_name": "v0.4.0",
+        "name": "v0.4.0",
+        "body": "## Changelog\n* 80fe79cd86aa83207f797188cbd8059c555c3d21: Destination Connector (#150) (@maha-hajja)\n\n",
+        "draft": false,
+        "prerelease": false,
+        "published_at": "2025-05-28T20:38:38Z",
+        "html_url": "https://github.com/conduitio-labs/conduit-connector-dynamodb/releases/tag/v0.4.0",
+        "assets": [
+          {
+            "name": "conduit-connector-dynamodb_0.4.0_Darwin_arm64.tar.gz",
+            "os": "darwin",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.4.0/conduit-connector-dynamodb_0.4.0_Darwin_arm64.tar.gz",
+            "created_at": "2025-05-28T20:38:36Z",
+            "updated_at": "2025-05-28T20:38:37Z",
+            "download_count": 0,
+            "size": 8151654
+          },
+          {
+            "name": "conduit-connector-dynamodb_0.4.0_Darwin_x86_64.tar.gz",
+            "os": "darwin",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.4.0/conduit-connector-dynamodb_0.4.0_Darwin_x86_64.tar.gz",
+            "created_at": "2025-05-28T20:38:36Z",
+            "updated_at": "2025-05-28T20:38:37Z",
+            "download_count": 0,
+            "size": 8652036
+          },
+          {
+            "name": "conduit-connector-dynamodb_0.4.0_Linux_arm64.tar.gz",
+            "os": "linux",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.4.0/conduit-connector-dynamodb_0.4.0_Linux_arm64.tar.gz",
+            "created_at": "2025-05-28T20:38:36Z",
+            "updated_at": "2025-05-28T20:38:37Z",
+            "download_count": 0,
+            "size": 7760089
+          },
+          {
+            "name": "conduit-connector-dynamodb_0.4.0_Linux_i386.tar.gz",
+            "os": "linux",
+            "arch": "386",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.4.0/conduit-connector-dynamodb_0.4.0_Linux_i386.tar.gz",
+            "created_at": "2025-05-28T20:38:37Z",
+            "updated_at": "2025-05-28T20:38:37Z",
+            "download_count": 0,
+            "size": 7875445
+          },
+          {
+            "name": "conduit-connector-dynamodb_0.4.0_Linux_x86_64.tar.gz",
+            "os": "linux",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.4.0/conduit-connector-dynamodb_0.4.0_Linux_x86_64.tar.gz",
+            "created_at": "2025-05-28T20:38:37Z",
+            "updated_at": "2025-05-28T20:38:38Z",
+            "download_count": 0,
+            "size": 8444160
+          },
+          {
+            "name": "conduit-connector-dynamodb_0.4.0_Windows_arm64.tar.gz",
+            "os": "windows",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.4.0/conduit-connector-dynamodb_0.4.0_Windows_arm64.tar.gz",
+            "created_at": "2025-05-28T20:38:36Z",
+            "updated_at": "2025-05-28T20:38:37Z",
+            "download_count": 0,
+            "size": 7861740
+          },
+          {
+            "name": "conduit-connector-dynamodb_0.4.0_Windows_i386.tar.gz",
+            "os": "windows",
+            "arch": "386",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.4.0/conduit-connector-dynamodb_0.4.0_Windows_i386.tar.gz",
+            "created_at": "2025-05-28T20:38:37Z",
+            "updated_at": "2025-05-28T20:38:38Z",
+            "download_count": 0,
+            "size": 8264536
+          },
+          {
+            "name": "conduit-connector-dynamodb_0.4.0_Windows_x86_64.tar.gz",
+            "os": "windows",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.4.0/conduit-connector-dynamodb_0.4.0_Windows_x86_64.tar.gz",
+            "created_at": "2025-05-28T20:38:37Z",
+            "updated_at": "2025-05-28T20:38:38Z",
+            "download_count": 0,
+            "size": 8695658
+          }
+        ],
+        "is_latest": true
+      },
+      {
         "tag_name": "v0.3.1",
         "name": "v0.3.1",
         "body": "## Changelog\n* 896551adede98477cdd263b2bbba467d9b716de3: feat: Make AWS credentials optional with fallback to default credential chain (#164) (@annsway)\n\n",
@@ -10317,7 +10417,7 @@
             "size": 8642293
           }
         ],
-        "is_latest": true
+        "is_latest": false
       },
       {
         "tag_name": "v0.3.0",
