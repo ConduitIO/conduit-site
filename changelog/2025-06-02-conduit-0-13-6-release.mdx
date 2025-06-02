@@ -1,0 +1,29 @@
+---
+slug: '2025-06-02-conduit-0-13-6-release'
+title: Conduit v0.13.6 release
+draft: false
+tags: [conduit, release, conduit-release]
+---
+
+The Conduit team is happy to announce the release of
+Conduit [v0.13.6](https://github.com/ConduitIO/conduit/releases/tag/v0.13.6).
+This release comes with a few bug fixes.
+
+<!--truncate-->
+
+### More information
+
+- Fix processor task handling filtered records (pipeline architecture
+  v2) [#2257](https://github.com/ConduitIO/conduit/pull/2257)
+- New option `--connectors.max-receive-record-size` in `conduit run` to
+  configure the record size when using standalone
+  connectors. [More information](/docs/using/connectors/installing#record-size-limitations).
+- Read symbolic links in the `pipelines`
+  directory [#2298](https://github.com/ConduitIO/conduit/pull/2298)
+- The destination of Cohere processors is now
+  configurable [#2231](https://github.com/ConduitIO/conduit/issues/2231)
+- Under certain circumstances, a pipeline with multiple connectors cannot be
+  provisioned using a configuration file. We fixed that
+  in [#2314](https://github.com/ConduitIO/conduit/pull/2314).
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)
