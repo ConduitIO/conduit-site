@@ -11994,7 +11994,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-google-drive/releases/download/v0.1.0/conduit-connector-google-drive_0.1.0_Darwin_arm64.tar.gz",
             "created_at": "2025-05-08T16:18:48Z",
             "updated_at": "2025-05-08T16:18:49Z",
-            "download_count": 1,
+            "download_count": 2,
             "size": 7519659
           },
           {
@@ -12016,7 +12016,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-google-drive/releases/download/v0.1.0/conduit-connector-google-drive_0.1.0_Linux_arm64.tar.gz",
             "created_at": "2025-05-08T16:18:48Z",
             "updated_at": "2025-05-08T16:18:49Z",
-            "download_count": 0,
+            "download_count": 1,
             "size": 7167116
           },
           {
@@ -12038,7 +12038,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-google-drive/releases/download/v0.1.0/conduit-connector-google-drive_0.1.0_Linux_x86_64.tar.gz",
             "created_at": "2025-05-08T16:18:48Z",
             "updated_at": "2025-05-08T16:18:49Z",
-            "download_count": 0,
+            "download_count": 1,
             "size": 7763030
           },
           {
@@ -12049,7 +12049,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-google-drive/releases/download/v0.1.0/conduit-connector-google-drive_0.1.0_Windows_arm64.tar.gz",
             "created_at": "2025-05-08T16:18:50Z",
             "updated_at": "2025-05-08T16:18:51Z",
-            "download_count": 0,
+            "download_count": 1,
             "size": 7266173
           },
           {
