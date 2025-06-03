@@ -1,0 +1,31 @@
+---
+slug: '2025-06-03-http-connector-0-4-0'
+title: Conduit HTTP Connector v0.4.0
+draft: false
+toc_max_heading_level: 4
+tags: [conduit, connector, http, release, connector-release]
+---
+
+[Conduit HTTP Connector v0.4.0](https://github.com/conduitio-labs/conduit-connector-http/releases/tag/v0.4.0) is now
+available, introducing new features and improvements for the HTTP connector.
+
+
+<!--truncate-->
+
+### Key Highlights
+
+- [**Add validateConnection configuration parameter**](https://github.com/conduitio-labs/conduit-connector-http/pull/83)
+This release offers the new parameter `validateConnection`, it gives the user the freedom of choosing weather to validate the
+connection to the HTTP server before streaming data or not. This can be useful if the source or destination's HTTP server
+don't support receiving `HEAD` requests (which is what the connector uses to validate the connection), or if the server
+is not expecting such a request. So now the user can choose if the connection will be validated or not.
+
+---
+
+Have questions or feedback? Join us on [Discord](https://discord.meroxa.com/).
+
+:::tip
+For more information, check out the full [HTTP Connector documentation](/docs/using/connectors/list/http).
+:::
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)
