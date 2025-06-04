@@ -15,7 +15,7 @@ available, introducing new features and improvements for the HTTP connector.
 ### Key Highlights
 
 - [**Add validateConnection configuration parameter**](https://github.com/conduitio-labs/conduit-connector-http/pull/83)
-This release offers the new parameter `validateConnection`, it gives the user the freedom of choosing weather to validate the
+This release adds the new configuration option `validateConnection`, giving the user the freedom to choose whether to validate the
 connection to the HTTP server before streaming data or not. This can be useful if the source or destination's HTTP server
 don't support receiving `HEAD` requests (which is what the connector uses to validate the connection), or if the server
 is not expecting such a request. So now the user can choose if the connection will be validated or not.
