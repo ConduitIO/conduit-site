@@ -1300,7 +1300,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-generator/releases/download/v0.10.3/conduit-connector-generator_0.10.3_Windows_i386.tar.gz",
             "created_at": "2025-05-19T15:08:46Z",
             "updated_at": "2025-05-19T15:08:47Z",
-            "download_count": 0,
+            "download_count": 1,
             "size": 7395680
           },
           {
@@ -3310,7 +3310,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-kafka/releases/download/v0.10.0/conduit-connector-kafka_0.10.0_Windows_i386.tar.gz",
             "created_at": "2024-10-09T13:05:22Z",
             "updated_at": "2024-10-09T13:05:22Z",
-            "download_count": 1,
+            "download_count": 2,
             "size": 7203007
           },
           {
