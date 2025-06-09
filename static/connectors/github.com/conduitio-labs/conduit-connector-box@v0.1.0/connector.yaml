@@ -1,0 +1,137 @@
+version: "1.0"
+specification:
+  name: box
+  summary: A Conduit connector for Box.com.
+  description: |
+    ## Destination
+
+    The Box Destination takes a Conduit record and uploads it to the remote Box directory.
+
+    ### Create, Update and Snapshot Operations
+
+    The Box destination connector uploads the records in 3 different ways.
+
+    * For a file which is <= 4MB, it uploads the single record file using a single
+    `POST /files/content`.
+    * For a file which is >= 4MB and <= 20MB, it assembles the file in memory. Once
+    the file is fully assembled, it uploads it using a single
+    `POST /files/content` request.
+    * For a file which is > 20MB, it uploads the file using chunk upload endpoint.
+    It first creates a new session for chunk upload which gives session id and
+    part size in response. Using this session id and part size the records are
+    then uploaded. It prepares the parts by keeping them in memory and upload the
+    parts one by one using chunk upload endpoint.
+
+    ### Delete Operation
+
+    An OpenCDC record with the `delete` operation is processed so that the file
+    that's found in the `opencdc.file.name` metadata field is deleted.
+
+    ## Generating an Access Token
+
+    The destination connector requires a token so it can authenticate with the
+    Box.com HTTP API. To generate it, please follow the steps below.
+
+    ### Step 1: Access the Box Developer Console
+
+    1. Navigate to [https://app.box.com/developers/console](https://app.box.com/developers/console).
+    2. Sign in using your Box.com credentials.
+
+    ### Step 2: Create a New App
+
+    1. In the Box Developer Console, click **Create Platform App**.
+    2. Choose **Custom App** as the app type.
+    3. Select **User Authentication (OAuth 2.0)** as the authentication method.
+    4. Enter your app details:
+       - **App Name**: Use a descriptive name (e.g., *Conduit Box Connector Prod*).
+       - **Description**: Provide a brief explanation of your app's purpose.
+       - **Purpose**: Describe the app's purpose. This field is informational only and does not affect connector functionality.
+    5. Click **Create App**.
+
+    ### Step 3: Configure App Settings
+
+    1. On your app's configuration page, go to the **Configuration** tab.
+    2. Under **Application Scopes**, enable:
+       - **Read all files and folders stored in Box**
+
+    ### Step 4: Obtain an Access Token
+
+    1. In the **Developer Token** section, click **Generate Developer Token**.
+    2. Copy the generated token for use.
+
+    ### Token Management
+
+    You can store the access token in one of the following ways:
+    - As a plain string in a configuration file
+    - As an environment variable
+  version: v0.1.0
+  author: Meroxa, Inc.
+  destination:
+    parameters:
+      - name: token
+        description: Token used to authenticate API access.
+        type: string
+        default: ""
+        validations:
+          - type: required
+            value: ""
+      - name: parentID
+        description: ID of the Box directory to read/write files. Default is 0 for the root directory.
+        type: string
+        default: "0"
+        validations: []
+      - name: sdk.batch.delay
+        description: Maximum delay before an incomplete batch is written to the destination.
+        type: duration
+        default: "0"
+        validations: []
+      - name: sdk.batch.size
+        description: Maximum size of batch before it gets written to the destination.
+        type: int
+        default: "0"
+        validations:
+          - type: greater-than
+            value: "-1"
+      - name: sdk.rate.burst
+        description: |-
+          Allow bursts of at most X records (0 or less means that bursts are not
+          limited). Only takes effect if a rate limit per second is set. Note that
+          if `sdk.batch.size` is bigger than `sdk.rate.burst`, the effective batch
+          size will be equal to `sdk.rate.burst`.
+        type: int
+        default: "0"
+        validations:
+          - type: greater-than
+            value: "-1"
+      - name: sdk.rate.perSecond
+        description: Maximum number of records written per second (0 means no rate limit).
+        type: float
+        default: "0"
+        validations:
+          - type: greater-than
+            value: "-1"
+      - name: sdk.record.format
+        description: |-
+          The format of the output record. See the Conduit documentation for a full
+          list of supported formats (https://conduit.io/docs/using/connectors/configuration-parameters/output-format).
+        type: string
+        default: opencdc/json
+        validations: []
+      - name: sdk.record.format.options
+        description: |-
+          Options to configure the chosen output record format. Options are normally
+          key=value pairs separated with comma (e.g. opt1=val2,opt2=val2), except
+          for the `template` record format, where options are a Go template.
+        type: string
+        default: ""
+        validations: []
+      - name: sdk.schema.extract.key.enabled
+        description: Whether to extract and decode the record key with a schema.
+        type: bool
+        default: "true"
+        validations: []
+      - name: sdk.schema.extract.payload.enabled
+        description: Whether to extract and decode the record payload with a schema.
+        type: bool
+        default: "true"
+        validations: []
