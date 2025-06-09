@@ -68,14 +68,14 @@ import Tooltip from '@mui/material/Tooltip';
 
 ## Latest release
 
-- [conduit-connector-box_0.1.0_Darwin_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.0/conduit-connector-box_0.1.0_Darwin_arm64.tar.gz)
-- [conduit-connector-box_0.1.0_Darwin_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.0/conduit-connector-box_0.1.0_Darwin_x86_64.tar.gz)
-- [conduit-connector-box_0.1.0_Linux_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.0/conduit-connector-box_0.1.0_Linux_arm64.tar.gz)
-- [conduit-connector-box_0.1.0_Linux_i386.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.0/conduit-connector-box_0.1.0_Linux_i386.tar.gz)
-- [conduit-connector-box_0.1.0_Linux_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.0/conduit-connector-box_0.1.0_Linux_x86_64.tar.gz)
-- [conduit-connector-box_0.1.0_Windows_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.0/conduit-connector-box_0.1.0_Windows_arm64.tar.gz)
-- [conduit-connector-box_0.1.0_Windows_i386.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.0/conduit-connector-box_0.1.0_Windows_i386.tar.gz)
-- [conduit-connector-box_0.1.0_Windows_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.0/conduit-connector-box_0.1.0_Windows_x86_64.tar.gz)
+- [conduit-connector-box_0.1.1_Darwin_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.1/conduit-connector-box_0.1.1_Darwin_arm64.tar.gz)
+- [conduit-connector-box_0.1.1_Darwin_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.1/conduit-connector-box_0.1.1_Darwin_x86_64.tar.gz)
+- [conduit-connector-box_0.1.1_Linux_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.1/conduit-connector-box_0.1.1_Linux_arm64.tar.gz)
+- [conduit-connector-box_0.1.1_Linux_i386.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.1/conduit-connector-box_0.1.1_Linux_i386.tar.gz)
+- [conduit-connector-box_0.1.1_Linux_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.1/conduit-connector-box_0.1.1_Linux_x86_64.tar.gz)
+- [conduit-connector-box_0.1.1_Windows_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.1/conduit-connector-box_0.1.1_Windows_arm64.tar.gz)
+- [conduit-connector-box_0.1.1_Windows_i386.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.1/conduit-connector-box_0.1.1_Windows_i386.tar.gz)
+- [conduit-connector-box_0.1.1_Windows_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.1/conduit-connector-box_0.1.1_Windows_x86_64.tar.gz)
 
 ## Description
 
@@ -87,9 +87,9 @@ The Box Destination takes a Conduit record and uploads it to the remote Box dire
 
 The Box destination connector uploads the records in 3 different ways.
 
-* For a file which is <= 4MB, it uploads the single record file using a single
+* For a file which is ≤ 4MB, it uploads the single record file using a single
 `POST /files/content`.
-* For a file which is >= 4MB and <= 20MB, it assembles the file in memory. Once
+* For a file which is ≥ 4MB and ≤ 20MB, it assembles the file in memory. Once
 the file is fully assembled, it uploads it using a single
 `POST /files/content` request.
 * For a file which is > 20MB, it uploads the file using chunk upload endpoint.

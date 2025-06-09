@@ -9944,6 +9944,106 @@
     "fork_count": 0,
     "releases": [
       {
+        "tag_name": "v0.1.1",
+        "name": "v0.1.1",
+        "body": "## Changelog\n* 675459bca319082168b980686daa660e102c4bca: fix: Markdown build (#15) (@raulb)\n\n",
+        "draft": false,
+        "prerelease": false,
+        "published_at": "2025-06-09T13:13:18Z",
+        "html_url": "https://github.com/conduitio-labs/conduit-connector-box/releases/tag/v0.1.1",
+        "assets": [
+          {
+            "name": "conduit-connector-box_0.1.1_Darwin_arm64.tar.gz",
+            "os": "darwin",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.1/conduit-connector-box_0.1.1_Darwin_arm64.tar.gz",
+            "created_at": "2025-06-09T13:13:17Z",
+            "updated_at": "2025-06-09T13:13:18Z",
+            "download_count": 1,
+            "size": 6710830
+          },
+          {
+            "name": "conduit-connector-box_0.1.1_Darwin_x86_64.tar.gz",
+            "os": "darwin",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.1/conduit-connector-box_0.1.1_Darwin_x86_64.tar.gz",
+            "created_at": "2025-06-09T13:13:17Z",
+            "updated_at": "2025-06-09T13:13:18Z",
+            "download_count": 1,
+            "size": 7115764
+          },
+          {
+            "name": "conduit-connector-box_0.1.1_Linux_arm64.tar.gz",
+            "os": "linux",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.1/conduit-connector-box_0.1.1_Linux_arm64.tar.gz",
+            "created_at": "2025-06-09T13:13:17Z",
+            "updated_at": "2025-06-09T13:13:18Z",
+            "download_count": 1,
+            "size": 6388344
+          },
+          {
+            "name": "conduit-connector-box_0.1.1_Linux_i386.tar.gz",
+            "os": "linux",
+            "arch": "386",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.1/conduit-connector-box_0.1.1_Linux_i386.tar.gz",
+            "created_at": "2025-06-09T13:13:16Z",
+            "updated_at": "2025-06-09T13:13:17Z",
+            "download_count": 1,
+            "size": 6579119
+          },
+          {
+            "name": "conduit-connector-box_0.1.1_Linux_x86_64.tar.gz",
+            "os": "linux",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.1/conduit-connector-box_0.1.1_Linux_x86_64.tar.gz",
+            "created_at": "2025-06-09T13:13:17Z",
+            "updated_at": "2025-06-09T13:13:18Z",
+            "download_count": 1,
+            "size": 6935781
+          },
+          {
+            "name": "conduit-connector-box_0.1.1_Windows_arm64.tar.gz",
+            "os": "windows",
+            "arch": "arm64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.1/conduit-connector-box_0.1.1_Windows_arm64.tar.gz",
+            "created_at": "2025-06-09T13:13:16Z",
+            "updated_at": "2025-06-09T13:13:17Z",
+            "download_count": 1,
+            "size": 6490212
+          },
+          {
+            "name": "conduit-connector-box_0.1.1_Windows_i386.tar.gz",
+            "os": "windows",
+            "arch": "386",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.1/conduit-connector-box_0.1.1_Windows_i386.tar.gz",
+            "created_at": "2025-06-09T13:13:16Z",
+            "updated_at": "2025-06-09T13:13:17Z",
+            "download_count": 1,
+            "size": 6883137
+          },
+          {
+            "name": "conduit-connector-box_0.1.1_Windows_x86_64.tar.gz",
+            "os": "windows",
+            "arch": "amd64",
+            "content_type": "application/gzip",
+            "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.1/conduit-connector-box_0.1.1_Windows_x86_64.tar.gz",
+            "created_at": "2025-06-09T13:13:16Z",
+            "updated_at": "2025-06-09T13:13:17Z",
+            "download_count": 1,
+            "size": 7158019
+          }
+        ],
+        "is_latest": true
+      },
+      {
         "tag_name": "v0.1.0",
         "name": "v0.1.0",
         "body": "## Changelog\n* 4d785a5a3639592bb98919525e3070a8aab2ee97: Destination implementation (#4) (Parikshit Gothwal \u003cparikshit.g@gopherslab.com\u003e)\n* 2ea62f7a91cfc57934054a1ebee1cd14ff420f6c: Initial commit (Guillem \u003c16207732+alarbada@users.noreply.github.com\u003e)\n* c720b03ca7d963c8774ed24ffbe46df3ef7c133f: Update CODEOWNERS (#10) (Haris Osmanagić \u003charis.osmanagic@gmail.com\u003e)\n* 9094764bf175f7dd2bcd01273a13914bb8b908e7: Update version to v0.1.0 (#13) (Haris Osmanagić \u003charis.osmanagic@gmail.com\u003e)\n* fbd768e8f5b4a7c7926ffcc2ee7b2359e0915828: initial commit (Guillem \u003csomeemail@dot.com\u003e)\n\n",
@@ -9960,7 +10060,7 @@
             "browser_download_url": "https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-box/releases/download/v0.1.0/conduit-connector-box_0.1.0_Darwin_arm64.tar.gz",
             "created_at": "2025-06-04T14:13:45Z",
             "updated_at": "2025-06-04T14:13:45Z",
-            "download_count": 0,
+            "download_count": 1,
             "size": 6710785
           },
           {
@@ -10041,7 +10141,7 @@
             "size": 7158059
           }
         ],
-        "is_latest": true
+        "is_latest": false
       }
     ]
   },
