@@ -1,0 +1,257 @@
+---
+title: "How to build an AI ticket summarizer pipeline"
+---
+
+In this guide, we'll learn how to build an AI-powered pipeline that automatically summarizes customer support tickets and posts notifications to Slack. The pipeline will use:
+
+- A PostgreSQL source connector that monitors your support tickets table using Change Data Capture (CDC)
+- OpenAI's GPT models to generate concise summaries
+- An HTTP destination connector to send formatted notifications to Slack
+
+As you'll see, building this intelligent automation requires only a [pipeline configuration file](/docs/using/pipelines/configuration-file) and a few environment variables!
+
+The steps below will guide you through setting up your database, configuring the AI processing, and running the complete pipeline. If you're in a hurry, you can skip ahead and [run the pipeline](#step-7-run-the-pipeline) immediately.
+
+## Step 1: Install Conduit
+
+Download the [latest Conduit release](https://github.com/ConduitIO/conduit/releases/latest) to a directory of your choice. In this guide, the directory will be `~/conduit-ai-demo`.
+
+## Step 2: Set up your PostgreSQL database
+
+Create a `tickets` table that the pipeline will monitor:
+
+```sql
+CREATE TABLE tickets (
+    id SERIAL PRIMARY KEY,
+    message TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+## Step 3: Create a pipeline configuration file
+
+Pipelines can be created through YAML configuration files, that are, by default, put into a directory called `pipelines`.
+
+With the following command, we'll create the `pipelines` directory and a file that will contain our pipeline's configuration:
+
+```bash
+mkdir pipelines && touch pipelines/ai-ticket-summarizer.yaml
+```
+
+The directory layout should be as below:
+
+```console
+~/conduit-ai-demo
+├── conduit
+└── pipelines
+    └── ai-ticket-summarizer.yaml
+```
+
+## Step 4: The pipeline's basics
+
+Next, write the following to `ai-ticket-summarizer.yaml`:
+
+```yaml
+version: "2.2"
+pipelines:
+  - id: showcase-summarize
+    # Tells Conduit to run the pipeline automatically
+    status: running
+    name: ai-ticket-summarizer
+    description: AI-powered ticket summarization with Slack notifications
+```
+
+## Step 5: Add the PostgreSQL source
+
+Now we can start adding connectors to the pipeline. Add a source connector under `connectors` in the configuration file:
+
+```yaml
+    connectors:
+      - id: pgsource
+        type: source
+        plugin: postgres
+        settings:
+          tables: "tickets"
+          url: ${POSTGRES_URL}
+```
+
+This source connector will monitor the `tickets` table for new records using Change Data Capture, streaming them in real-time as they're inserted.
+
+## Step 6: Add processors for AI summarization
+
+The magic happens in the processors section. Add the following processors to transform and enhance the ticket data:
+
+```yaml
+    processors:
+      # Generate AI summary using OpenAI
+      - id: openai
+        plugin: "openai.textgen"
+        settings:
+          api_key: ${OPENAI_API_KEY}
+          developer_message: "Perform a summarization of the following user text. ONLY return the summary, and no annotations or labels."
+          field: ".Payload.After.message"
+          model: "gpt-4.1"
+      
+      # Rename field for Slack compatibility
+      - id: frename
+        plugin: "field.rename"
+        settings:
+          mapping: ".Payload.After.message:text"
+      
+      # Format the Slack notification
+      - id: fset
+        plugin: "field.set"
+        settings:
+          field: ".Payload.After.text"
+          value: "*NEW TICKET FROM USER {{.Payload.After.id}}*\n{{.Payload.After.text}}"
+      
+      # Clean up unnecessary fields
+      - id: fexclude
+        plugin: "field.exclude"
+        settings:
+          fields: ".Payload.After.id"
+```
+
+These processors work together to:
+1. **Generate summaries**: OpenAI analyzes each ticket message and creates a concise summary
+2. **Rename fields**: Prepares the data format for Slack
+3. **Format messages**: Creates an attractive Slack notification with ticket context
+4. **Clean data**: Removes fields that aren't needed in the final notification
+
+## Step 7: Add the Slack destination
+
+The final piece is the destination connector that sends notifications to Slack:
+
+```yaml
+      # Send to Slack via webhook
+      - id: slackdest
+        type: destination
+        plugin: http
+        settings:
+          url: ${SLACK_WEBHOOK_URL}
+          headers: "Content-type:application/json"
+          # Some webhook implementations do not respect HEAD requests to confirm valid endpoints
+          # Since Slack is one of those endpoints, we disable HEAD request validation
+          validateConnection: false
+```
+
+## Step 8: Set up environment variables
+
+Before running the pipeline, set up the required environment variables:
+
+```bash
+# Database connection
+export POSTGRES_URL="postgresql://username:password@host:port/database"
+
+# OpenAI API key
+export OPENAI_API_KEY="sk-your-openai-api-key-here"
+
+# Slack webhook URL
+export SLACK_WEBHOOK_URL="https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
+```
+
+## Step 9: Run the pipeline
+
+To summarize the steps from above, we have the following directory structure:
+
+```console
+~/conduit-ai-demo
+├── conduit
+└── pipelines
+    └── ai-ticket-summarizer.yaml
+```
+
+The file `ai-ticket-summarizer.yaml` has the following complete content:
+
+```yaml
+version: "2.2"
+pipelines:
+  - id: showcase-summarize
+    status: running
+    name: ai-ticket-summarizer
+    description: AI-powered ticket summarization with Slack notifications
+    connectors:
+      # PostgreSQL source monitoring tickets table
+      - id: pgsource
+        type: source
+        plugin: postgres
+        settings:
+          tables: "tickets"
+          url: ${POSTGRES_URL}
+      
+      # Slack destination via HTTP webhook
+      - id: slackdest
+        type: destination
+        plugin: http
+        settings:
+          url: ${SLACK_WEBHOOK_URL}
+          headers: "Content-type:application/json"
+          validateConnection: false
+    
+    processors:
+      # Generate AI summary using OpenAI
+      - id: openai
+        plugin: "openai.textgen"
+        settings:
+          api_key: ${OPENAI_API_KEY}
+          developer_message: "Perform a summarization of the following user text. ONLY return the summary, and no annotations or labels."
+          field: ".Payload.After.message"
+          model: "gpt-4.1"
+      
+      # Rename field for Slack compatibility
+      - id: frename
+        plugin: "field.rename"
+        settings:
+          mapping: ".Payload.After.message:text"
+      
+      # Format the Slack notification
+      - id: fset
+        plugin: "field.set"
+        settings:
+          field: ".Payload.After.text"
+          value: "*NEW TICKET FROM USER {{.Payload.After.id}}*\n{{.Payload.After.text}}"
+      
+      # Clean up unnecessary fields
+      - id: fexclude
+        plugin: "field.exclude"
+        settings:
+          fields: ".Payload.After.id"
+```
+
+Now you can run Conduit:
+
+```shell
+./conduit run
+```
+
+## Step 10: Test the pipeline
+
+Now let's test our AI-powered pipeline by inserting a new support ticket:
+
+```sql
+INSERT INTO tickets (message) VALUES 
+('My application keeps crashing when I try to upload large files. The error message says "memory allocation failed" and it happens every time I select files larger than 50MB. This is blocking my work and I need help urgently.');
+```
+
+Within seconds, your Slack channel should receive a notification like:
+
+```
+*NEW TICKET FROM USER 1*
+User experiencing application crashes when uploading files larger than 50MB due to memory allocation errors, requiring urgent assistance.
+```
+
+Congratulations on building your first AI-powered data pipeline! You now have an intelligent system that automatically summarizes support tickets and notifies your team in real-time.
+
+## Next Steps
+
+You may want to learn more about:
+- [Pipeline configuration files](/docs/using/pipelines/configuration-file) for advanced customization
+- [OpenAI processors](/docs/using/processors/builtin/openai.textgen) for different AI capabilities
+- [Other features](/docs/using/other-features) of Conduit for building more complex workflows
+
+## Customization Ideas
+
+- **Add sentiment analysis**: Include another OpenAI processor to detect ticket urgency
+- **Multi-language support**: Add translation processors for international support
+- **Priority routing**: Use different Slack channels based on ticket characteristics
+- **Database logging**: Store AI summaries back to PostgreSQL for analytics
