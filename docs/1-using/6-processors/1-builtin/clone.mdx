@@ -1,8 +1,8 @@
 ---
 IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
 
-title: 'filter'
-sidebar_position: 14
+title: 'clone'
+sidebar_position: 4
 ---
 
 import ReactDiffViewer from 'react-diff-viewer';
@@ -11,18 +11,22 @@ import Box from "@mui/system/Box";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# `filter`
+# `clone`
 
-Acknowledges all records that get passed to the filter.
+Clone records.
 
 ## Description
 
-Acknowledges all records that get passed to the filter, so
-the records will be filtered out if the condition provided to the processor is
-evaluated to `true`.
+Clone all records N times. All cloned records will have
+the same data as the original record, except for the metadata field
+`clone.index`, which will be set to the index of the clone (0-based).
 
-**Important:** Make sure to add a [condition](https://conduit.io/docs/using/processors/conditions)
-to this processor, otherwise all records will be filtered out.
+**Important:** Add a [condition](https://conduit.io/docs/using/processors/conditions)
+to this processor if you only want to clone some records.
+
+**Important:** This processor currently only works using the pipeline architecture
+v2, which can be enabled using the flag `--preview.pipeline-arch-v2`.
+Using it without the flag will result in an error.
 
 ## Configuration parameters
 
@@ -37,24 +41,28 @@ pipelines:
       # define source and destination ...
     processors:
       - id: example
-        plugin: "filter"
+        plugin: "clone"
         settings:
+          # The number of records after cloning (e.g. if count is 3, the
+          # processor will output 3 records for every input record).
+          # Type: int
+          count: ""
           # Whether to decode the record key using its corresponding schema from
           # the schema registry.
           # Type: bool
-          sdk.schema.decode.key.enabled: "false"
+          sdk.schema.decode.key.enabled: "true"
           # Whether to decode the record payload using its corresponding schema
           # from the schema registry.
           # Type: bool
-          sdk.schema.decode.payload.enabled: "false"
+          sdk.schema.decode.payload.enabled: "true"
           # Whether to encode the record key using its corresponding schema from
           # the schema registry.
           # Type: bool
-          sdk.schema.encode.key.enabled: "false"
+          sdk.schema.encode.key.enabled: "true"
           # Whether to encode the record payload using its corresponding schema
           # from the schema registry.
           # Type: bool
-          sdk.schema.encode.payload.enabled: "false"
+          sdk.schema.encode.payload.enabled: "true"
 ```
   </TabItem>
   <TabItem value="table" label="Table">
@@ -66,9 +74,18 @@ pipelines:
         <th>Description</th>
       </tr>
       <tr>
+        <td>`count`</td>
+        <td>int</td>
+        <td><Chip label="null" /></td>
+        <td>
+  The number of records after cloning (e.g. if count is 3, the processor
+will output 3 records for every input record).
+        </td>
+      </tr>
+      <tr>
         <td>`sdk.schema.decode.key.enabled`</td>
         <td>bool</td>
-        <td>`false`</td>
+        <td>`true`</td>
         <td>
   Whether to decode the record key using its corresponding schema from the schema registry.
         </td>
@@ -76,7 +93,7 @@ pipelines:
       <tr>
         <td>`sdk.schema.decode.payload.enabled`</td>
         <td>bool</td>
-        <td>`false`</td>
+        <td>`true`</td>
         <td>
   Whether to decode the record payload using its corresponding schema from the schema registry.
         </td>
@@ -84,7 +101,7 @@ pipelines:
       <tr>
         <td>`sdk.schema.encode.key.enabled`</td>
         <td>bool</td>
-        <td>`false`</td>
+        <td>`true`</td>
         <td>
   Whether to encode the record key using its corresponding schema from the schema registry.
         </td>
@@ -92,7 +109,7 @@ pipelines:
       <tr>
         <td>`sdk.schema.encode.payload.enabled`</td>
         <td>bool</td>
-        <td>`false`</td>
+        <td>`true`</td>
         <td>
   Whether to encode the record payload using its corresponding schema from the schema registry.
         </td>
@@ -103,9 +120,9 @@ pipelines:
 
 ## Examples
 
-### Filter out the record
+### Clone record into multiple records
 
-
+This example takes a record and clones it into 2 records, each containing the same data, except for the metadata field `clone.index`.
 
 #### Configuration parameters
 
@@ -120,12 +137,22 @@ pipelines:
       # define source and destination ...
     processors:
       - id: example
-        plugin: "filter"
-        
+        plugin: "clone"
+        settings:
+          count: "2"
 ```
   </TabItem>
   <TabItem value="table" label="Table">
-  No configuration parameters.
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>`count`</td>
+        <td>`2`</td>
+      </tr>
+    </table>
   </TabItem>
 </Tabs>
 
@@ -142,8 +169,8 @@ pipelines:
     }}
     leftTitle={'Before'}
     rightTitle={'After'}
-    oldValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"key1\": \"val1\"\n  },\n  \"key\": null,\n  \"payload\": {\n    \"before\": {\n      \"bar\": \"baz\"\n    },\n    \"after\": {\n      \"foo\": \"bar\"\n    }\n  }\n}"}
-    newValue={""}
+    oldValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"foo\": \"bar\"\n  },\n  \"key\": {\n    \"id\": 123\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"age\": 30,\n      \"name\": \"Alice\"\n    }\n  }\n}"}
+    newValue={"{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"clone.index\": \"0\",\n    \"foo\": \"bar\"\n  },\n  \"key\": {\n    \"id\": 123\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"age\": 30,\n      \"name\": \"Alice\"\n    }\n  }\n}\n{\n  \"position\": null,\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"clone.index\": \"1\",\n    \"foo\": \"bar\"\n  },\n  \"key\": {\n    \"id\": 123\n  },\n  \"payload\": {\n    \"before\": null,\n    \"after\": {\n      \"age\": 30,\n      \"name\": \"Alice\"\n    }\n  }\n}"}
     hideLineNumbers={false}
     showDiffOnly={false}
     splitView={true}

@@ -2,7 +2,7 @@
 IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
 
 title: 'cohere.embed'
-sidebar_position: 5
+sidebar_position: 6
 ---
 
 import ReactDiffViewer from 'react-diff-viewer';
@@ -17,7 +17,7 @@ Conduit processor for Cohere's embed model.
 
 ## Description
 
-Conduit processor for Cohere's embed model.
+The Cohere embed processor extracts text from the configured inputField, generates embeddings using Cohere's embedding model, and stores the result in the configured outputField. The embeddings are compressed using the zstd algorithm for efficient storage and transmission.
 
 ## Configuration parameters
 
@@ -65,6 +65,10 @@ pipelines:
           # Model is one of the Cohere embed models.
           # Type: string
           model: "embed-english-v2.0"
+          # OutputField specifies which field will the response body be saved
+          # at.
+          # Type: string
+          outputField: ".Payload.After"
           # Whether to decode the record key using its corresponding schema from
           # the schema registry.
           # Type: bool
@@ -165,6 +169,14 @@ Allowed values: search_document, search_query, classification, clustering, image
         </td>
       </tr>
       <tr>
+        <td>`outputField`</td>
+        <td>string</td>
+        <td>`.Payload.After`</td>
+        <td>
+  OutputField specifies which field will the response body be saved at.
+        </td>
+      </tr>
+      <tr>
         <td>`sdk.schema.decode.key.enabled`</td>
         <td>bool</td>
         <td>`true`</td>
@@ -206,12 +218,11 @@ Allowed values: search_document, search_query, classification, clustering, image
 
 
 This example demonstrates how to use the Cohere embedding processor to generate embeddings for a record.
-The processor extracts text from the specified input field (default: ".Payload.After"), sends it to the Cohere API,
-and stores the resulting embeddings in the record's ".Payload.After" field as compressed data using the zstd algorithm.
+The processor extracts text from the configured "inputField" (default: ".Payload.After"), sends it to the Cohere API,
+and stores the resulting embeddings in the configured "outputField" as compressed data using the zstd algorithm.
 
 In this example, the processor is configured with a mock client and an API key. The input record's metadata is updated
-to include the embedding model used ("embed-english-v2.0"). Note that the compressed embeddings cannot be directly compared
-in this test, so the focus is on verifying the metadata update.
+to include the embedding model used ("embed-english-v2.0").
 
 #### Configuration parameters
 
@@ -236,6 +247,7 @@ pipelines:
           inputField: ".Payload.After"
           maxTextsPerRequest: "96"
           model: "embed-english-v2.0"
+          outputField: ".Payload.After"
 ```
   </TabItem>
   <TabItem value="table" label="Table">
@@ -276,6 +288,10 @@ pipelines:
         <td>`model`</td>
         <td>`embed-english-v2.0`</td>
       </tr>
+      <tr>
+        <td>`outputField`</td>
+        <td>`.Payload.After`</td>
+      </tr>
     </table>
   </TabItem>
 </Tabs>
@@ -293,8 +309,8 @@ pipelines:
     }}
     leftTitle={'Before'}
     rightTitle={'After'}
-    oldValue={"{\n  \"position\": \"cG9zLTE=\",\n  \"operation\": \"create\",\n  \"metadata\": {},\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": null\n  }\n}"}
-    newValue={"{\n  \"position\": \"cG9zLTE=\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"cohere.embed.model\": \"embed-english-v2.0\"\n  },\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": null\n  }\n}"}
+    oldValue={"{\n  \"position\": \"cG9zLTE=\",\n  \"operation\": \"create\",\n  \"metadata\": {},\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": \"test input\"\n  }\n}"}
+    newValue={"{\n  \"position\": \"cG9zLTE=\",\n  \"operation\": \"create\",\n  \"metadata\": {\n    \"cohere.embed.model\": \"embed-english-v2.0\"\n  },\n  \"key\": null,\n  \"payload\": {\n    \"before\": null,\n    \"after\": \"(�/�\\u0004\\u0000i\\u0000\\u0000[0.1,0.2,0.3]�^xH\"\n  }\n}"}
     hideLineNumbers={false}
     showDiffOnly={false}
     splitView={true}
