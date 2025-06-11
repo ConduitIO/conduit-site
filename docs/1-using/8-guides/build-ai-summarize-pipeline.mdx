@@ -1,18 +1,21 @@
 ---
 title: "How to build an AI ticket summarizer pipeline"
+toc_max_heading_level: 4
 ---
 
 In this guide, we'll learn how to build an AI-powered pipeline that automatically summarizes customer support tickets and posts notifications to Slack. The pipeline will use:
 
-- A PostgreSQL source connector that monitors your support tickets table using Change Data Capture (CDC)
+- A [PostgreSQL source connector](/docs/using/connectors/list/postgres) that monitors your support tickets table using Change Data Capture (CDC)
 - OpenAI's GPT models to generate concise summaries
-- An HTTP destination connector to send formatted notifications to Slack
+- An [HTTP destination connector](/docs/using/connectors/list/http) to send formatted notifications to Slack
 
 As you'll see, building this intelligent automation requires only a [pipeline configuration file](/docs/using/pipelines/configuration-file) and a few environment variables!
 
-The steps below will guide you through setting up your database, configuring the AI processing, and running the complete pipeline. If you're in a hurry, you can skip ahead and [run the pipeline](#step-7-run-the-pipeline) immediately.
+:::tip
+The steps below will guide you through setting up your database, configuring the AI processing, and running the complete pipeline. If you're in a hurry, you can skip ahead and [run the pipeline](/docs/using/guides/build-ai-summarize-pipeline#step-9-run-the-pipeline) immediately.
+:::
 
-## Step 1: Install Conduit
+## Step 1: [Install Conduit](/docs/installing-and-running)
 
 Download the [latest Conduit release](https://github.com/ConduitIO/conduit/releases/latest) to a directory of your choice. In this guide, the directory will be `~/conduit-ai-demo`.
 
@@ -113,10 +116,11 @@ The magic happens in the processors section. Add the following processors to tra
 ```
 
 These processors work together to:
-1. **Generate summaries**: OpenAI analyzes each ticket message and creates a concise summary
-2. **Rename fields**: Prepares the data format for Slack
-3. **Format messages**: Creates an attractive Slack notification with ticket context
-4. **Clean data**: Removes fields that aren't needed in the final notification
+
+1. **Generate summaries**: OpenAI analyzes each ticket message and creates a concise summary (using [`openai.textgen`](/docs/using/processors/builtin/openai.textgen))
+2. **Rename fields**: Prepares the data format for Slack (using [`field.rename` processor](/docs/using/processors/builtin/field.rename))
+3. **Format messages**: Creates an attractive Slack notification with ticket context (using [`field.set` processor](/docs/using/processors/builtin/field.set))
+4. **Clean data**: Removes fields that aren't needed in the final notification (using [`field.exclude` processor](/docs/using/processors/builtin/field.exclude))
 
 ## Step 7: Add the Slack destination
 
@@ -221,7 +225,7 @@ pipelines:
 Now you can run Conduit:
 
 ```shell
-./conduit run
+conduit run
 ```
 
 ## Step 10: Test the pipeline
