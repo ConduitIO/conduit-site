@@ -57,27 +57,30 @@ install any additional connector nor to change Conduit's default configuration.
 
 ## Build a pipeline
 
-Next, we can use the Conduit CLI to build the example pipeline:
+Next, we can use the Conduit CLI to build a demo pipeline:
 
 ```shell
 $ conduit pipelines init
 ```
 
-`conduit pipelines init` builds an example that generates flight information
-from an imaginary airport every second. Use `conduit pipelines init --help` to
-learn how to customize the pipeline.
+`conduit pipelines init` builds a demo pipeline that generates flight information
+from an imaginary airport every second.
 
 If the `pipelines` directory, you'll notice a new file,
-`pipeline-generator-to-log.yaml` that contains our pipeline's configuration:
+`demo-pipeline.yaml` that contains our pipeline's configuration:
 
 ```yaml
 version: "2.2"
 pipelines:
-  - id: example-pipeline
+  - id: "demo-pipeline"
+    description: "This pipeline was initialized using the `conduit pipelines init` command.
+It is a demo pipeline that connects a source connector (generator) to a destination connector (log).
+The next step is to simply run `conduit run` in your terminal and you should see a new record being logged every second.
+Check out https://conduit.io/docs/using/pipelines/configuration-file to learn about how this file is structured."
     status: running
-    name: "generator-to-log"
+    name: "demo-pipeline"
     connectors:
-      - id: example-source
+      - id: "generator-source"
         type: source
         plugin: "generator"
         settings:
@@ -98,7 +101,7 @@ pipelines:
           # Type: float
           # Optional
           rate: '1'
-      - id: example-destination
+      - id: "log-destination"
         type: destination
         plugin: "log"
 ```
@@ -175,6 +178,13 @@ press `Ctrl + C` (on a Linux OS, or the equivalent on other operating systems). 
 trigger a graceful shutdown that stops reads from source connectors and waits
 for records that are still in the pipeline to be acknowledged. The next time
 Conduit starts, it will start reading data from where it stopped.
+
+
+:::tip
+Run `conduit pipelines init --help` to see how you can customize the pipeline
+configuration file that's being generated.
+:::
+
 
 ## What's next?
 
