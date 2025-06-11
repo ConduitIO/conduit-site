@@ -202,36 +202,58 @@ func formatParameterValueYAML(value string) string {
 }
 
 // formatRecord formats a record as an escaped string.
-func formatRecord(rec map[string]any) string {
-	var input any
+func formatRecord(rec any) (string, error) {
+	var out string
 
-	switch {
-	case len(rec) == 0:
-		return ""
-	case rec["error"] != nil:
-		input = rec
-	default:
-		// store the record in a struct so we control the order of the fields in JSON
-		input = record{
-			Position:  rec["position"],
-			Operation: rec["operation"],
-			Metadata:  rec["metadata"],
-			Key:       rec["key"],
-			Payload: struct {
-				Before any `json:"before"`
-				After  any `json:"after"`
-			}{
-				Before: rec["payload"].(map[string]any)["before"],
-				After:  rec["payload"].(map[string]any)["after"],
-			},
+	switch rec := rec.(type) {
+	case map[string]any:
+		switch {
+		case len(rec) == 0:
+			out = ""
+		case rec["error"] != nil:
+			out = mustJSONMarshal(rec)
+		default:
+			// map the record to a struct so we control the order of the fields in JSON
+			out = mustJSONMarshal(mapToRecord(rec))
 		}
+	case []any:
+		// multi-record
+		recs := make([]string, len(rec))
+		for i, r := range rec {
+			recs[i] = mustJSONMarshal(mapToRecord(r.(map[string]any)))
+		}
+		out = strings.Join(recs, "\n")
+	case nil:
+		out = ""
+	default:
+		return "", fmt.Errorf("unexpected record type %T", rec)
 	}
 
-	b, err := json.MarshalIndent(input, "", "  ")
-	if err != nil {
-		return fmt.Sprintf("failed to marshal record: %v", err)
+	return strings.Trim(fmt.Sprintf("%#v", out), "\""), nil
+}
+
+func mapToRecord(rec map[string]any) record {
+	return record{
+		Position:  rec["position"],
+		Operation: rec["operation"],
+		Metadata:  rec["metadata"],
+		Key:       rec["key"],
+		Payload: struct {
+			Before any `json:"before"`
+			After  any `json:"after"`
+		}{
+			Before: rec["payload"].(map[string]any)["before"],
+			After:  rec["payload"].(map[string]any)["after"],
+		},
 	}
-	return strings.Trim(fmt.Sprintf("%#v", string(b)), "\"")
+}
+
+func mustJSONMarshal(v any) string {
+	b, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		panic(fmt.Errorf("failed to marshal value: %w", err))
+	}
+	return string(b)
 }
 
 type record struct {

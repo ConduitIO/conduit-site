@@ -2,7 +2,7 @@
 IMPORTANT: This file was generated using src/processorgen/main.go. DO NOT EDIT.
 
 title: 'cohere.command'
-sidebar_position: 4
+sidebar_position: 5
 ---
 
 import ReactDiffViewer from 'react-diff-viewer';
@@ -203,7 +203,7 @@ pipelines:
 
 
 This example demonstrates how to use the Cohere command processor to generate responses for a record's `.Payload.After` field.
-The processor sends the input text to the Cohere API and replaces it with the model's response.
+The processor sends the input text from the configured "request.body" to the Cohere API and stores the model's response into the configured "response.body"
 
 #### Configuration parameters
 
