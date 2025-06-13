@@ -3,7 +3,7 @@ module github.com/conduitio/connectors-list
 go 1.24.3
 
 require (
-	github.com/conduitio/conduit-connector-sdk v0.14.0
+	github.com/conduitio/conduit-connector-sdk v0.14.1
 	github.com/conduitio/yaml/v3 v3.3.0
 	github.com/gofri/go-github-ratelimit v1.1.1
 	github.com/google/go-github/v67 v67.0.0
@@ -17,7 +17,7 @@ require (
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/semver/v3 v3.3.1 // indirect
 	github.com/Masterminds/sprig/v3 v3.3.0 // indirect
-	github.com/conduitio/conduit-commons v0.5.4 // indirect
+	github.com/conduitio/conduit-commons v0.6.0 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
