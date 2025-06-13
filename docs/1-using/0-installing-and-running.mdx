@@ -15,6 +15,36 @@ import TabItem from '@theme/TabItem';
 curl https://conduit.io/install.sh | bash
 ```
 
+:::info
+This script contains the logic to detect your OS and architecture, download the latest Conduit release, and install it using your system's package manager (like `brew`, `dpkg`, or `rpm`). It also handles errors gracefully and provides feedback on the installation process.
+:::
+
+Alternatively, you can install Conduit directly using your system's package manager:
+
+#### For MacOS (using Homebrew)
+
+```
+brew install conduit
+```
+
+#### For Debian/Ubuntu (using dpkg)
+
+```
+TAG=$(curl -sL https://github.com/ConduitIO/conduit/releases/latest | grep -oE "[^"]+tag/[^"]+" | grep -oE "v[0-9.]+$"); \
+  ARCH=$(dpkg --print-architecture); \
+  curl -L -o conduit.deb "https://conduit.gateway.scarf.sh/conduit/download/$TAG/conduit_${TAG#v}_Linux_${ARCH}.deb"; \
+  sudo dpkg -i conduit.deb; rm conduit.deb
+```
+
+#### For RedHat/Fedora (using rpm)
+
+```
+TAG=$(curl -sL https://github.com/ConduitIO/conduit/releases/latest | grep -oE "[^"]+tag/[^"]+" | grep -oE "v[0-9.]+$"); \
+  ARCH=$(uname -m); \
+  curl -L -o conduit.rpm "https://conduit.gateway.scarf.sh/conduit/download/$TAG/conduit_${TAG#v}_Linux_${ARCH}.rpm"; \
+  sudo rpm -i conduit.rpm; rm conduit.rpm
+```
+
 ### Run
 
 Once installed, you can start Conduit by running:
@@ -33,12 +63,12 @@ First, download
 the [latest Conduit release](https://github.com/ConduitIO/conduit/releases/latest)
 for your platform.
 
-Let's say you downloaded `conduit_0.13.6_Windows_x86_64.zip`.
+Let's say you downloaded `conduit_0.14.0_Windows_x86_64.zip`.
 
 ### Unzip the archive
 
 ```shell
-tar -xf conduit_0.13.6_Windows_x86_64.zip
+tar -xf conduit_0.14.0_Windows_x86_64.zip
 ```
 
 ### Run
@@ -92,7 +122,7 @@ Before you can build Conduit from source, you need to have the latest version of
 1. Start by downloading the source code from the latest stable release on the Conduit [Releases Page](https://github.com/ConduitIO/conduit/releases/latest). Alternatively, you can run this command to automatically download the latest stable source to your current directory:
 
 ```shell
-$ TAG=v0.13.6; curl -o conduit.tar.gz -L https://github.com/ConduitIO/conduit/archive/refs/tags/$TAG.tar.gz
+$ TAG=v0.14.0; curl -o conduit.tar.gz -L https://github.com/ConduitIO/conduit/archive/refs/tags/$TAG.tar.gz
 ```
 
 A file called `conduit.tgz` will be in your current directory. The next step is to expand the source:
@@ -106,7 +136,7 @@ name might be different between releases since it's tied to the latest git sha
 for the commit.
 
 ```shell
-$ cd conduit-0.13.6
+$ cd conduit-0.14.0
 ```
 
 Now build the project:
@@ -136,7 +166,7 @@ on port 8080:
  `::::::::          ::::::::‘
       `::::        ::::‘
        `:::::....:::::‘
-         `::::::::::‘        Conduit v0.13.6 linux/amd64
+         `::::::::::‘        Conduit v0.14.0 linux/amd64
              ‘‘‘‘
 2025-01-10T09:40:07+00:00 INF All 0 tables opened in 0s component=badger.DB
 2025-01-10T09:40:07+00:00 INF Discard stats nextEmptySlot: 0 component=badger.DB
