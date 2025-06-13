@@ -1,0 +1,31 @@
+---
+slug: '2025-06-03-postgres-connector-0-13-0'
+title: Conduit Postgres Connector v0.13.0
+draft: false
+toc_max_heading_level: 4
+tags: [conduit, connector, postgres, release, connector-release]
+---
+
+Postgres
+Conduit connector [v0.13.0](https://github.com/ConduitIO/conduit-connector-postgres/releases/tag/v0.13.0)
+is out! It brings 14% more throughout in our benchmarks, and it also improves
+support for `NUMERIC`/`DECIMAL` types.
+
+<!--truncate-->
+
+### Key Highlights
+
+- We refactored how we move logical replication messages in the connector and
+  achieved a 14% boost in performance (verified through our benchmarks). Here's
+  the relevant
+  PR: [#284](https://github.com/ConduitIO/conduit-connector-postgres/pull/284).
+- We also improved support for the `NUMERIC`/`DECIMAL` type in Postgres. So far,
+  we were reading it only if it can fit into an `int64` or `float64`. Now, the
+  connector reads them as `big.Rat` values. For the curious ones, here's the
+  PR: [#290](https://github.com/ConduitIO/conduit-connector-postgres/pull/290).
+
+---
+
+Have questions or feedback? Join us on [Discord](https://discord.meroxa.com/).
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)
