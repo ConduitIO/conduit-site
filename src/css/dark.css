@@ -160,5 +160,10 @@ html[data-theme="dark"] {
           color: #c53030;
         }
     }
+
+    [class$="-empty-line"], [class$="-empty-line"] pre {
+      background-color: var(--color-background-darker);
+
+    }
   }
 }
