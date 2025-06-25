@@ -2,6 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
+import Link from '@docusaurus/Link';
 import Head from '@docusaurus/Head';
 
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
@@ -86,14 +87,7 @@ function DeploymentSection() {
               Alternatively, pull the Docker container image, or use our Kubernetes operator
               for Conduit to install it into your cluster.
             </p>
-            <a href="/docs/installing-and-running">
-              <button
-                type="button"
-                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-bold text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-indigo-500"
-              >
-                View More
-              </button>
-            </a>
+            
           </div>
 
           {/* Right side (40%) with image */}
@@ -113,7 +107,6 @@ function DeploymentSection() {
   );
 }
 
-
 function ConnectorsSection() {
   return (
     <div className="bg-[#0B525D] text-white">
@@ -132,7 +125,11 @@ function ConnectorsSection() {
           <div className="pl-6">
             <h2 className="font-bold text-4xl mb-6">Well Connected</h2>
             <p className="text-lg md:text-xl leading-relaxed">
-              Our ecosystem supports more than 70 systems that you can stream data from or write data into.
+              Our ecosystem supports more than{' '}
+              <Link to="/docs/using/connectors/list/" className="text-blue-600 underline hover:text-blue-800">
+                70 systems
+              </Link>{' '}
+              that you can stream data from or write data into.
               New connectors are being added all the time. You can also bring a Kafka Connect connector into Conduit.
               All of our connectors are Apache-2 licensed.
             </p>
@@ -155,9 +152,20 @@ function ProcessorsSection() {
           <div className="pr-6">
             <h2 className="font-bold text-4xl mb-6">Processors</h2>
             <p className="text-lg md:text-xl leading-relaxed">
-              Conduit features built-in processors that let you apply common data transformations.
-              You can also use JavaScript and HTTP APIs, write a processor in any language using WASM,
-              or scroll down to check out the AI/LLM processors.
+              Conduit features{' '}
+              <Link to="/docs/using/processors/builtin/" className="text-blue-600 underline hover:text-blue-800">
+                built-in processors
+              </Link>{' '}
+              that let you apply common data transformations.
+              You can also use{' '}
+              <Link to="/docs/using/processors/builtin/custom.javascript" className="text-blue-600 underline hover:text-blue-800">
+                JavaScript
+              </Link>{' '}
+              and HTTP APIs, write a processor in any language using{' '}
+              <Link to="http://localhost:3000/docs/developing/processors/how-it-works" className="text-blue-600 underline hover:text-blue-800">
+                WASM
+              </Link>
+              , or scroll down to check out the AI/LLM processors.
             </p>
           </div>
 
@@ -194,11 +202,27 @@ function AIToolingSection() {
           {/* Right: Text */}
           <div className="pl-6">
             <h2 className="font-bold text-4xl mb-6">AI tooling for pipelines</h2>
-            <p className="text-lg md:text-xl leading-relaxed">
-              Your AI assistants and LLM models are most powerful when using the latest data, and that's what Conduit can provide. 
-              Read from and write data into stores such as Weaviate, Pinecone or OpenAI vector store. 
-              Use any other supported data source and generate embeddings, text, or apply a Cohere model.
-            </p>
+              <p className="text-lg md:text-xl leading-relaxed">
+                Your AI assistants and LLM models are most powerful when using the latest data — and that’s exactly what Conduit provides.
+                Read from and write to vector stores such as{' '}
+                <Link to="https://github.com/conduitio-labs/conduit-connector-weaviate" className="text-blue-600 underline hover:text-blue-800">
+                  Weaviate
+                </Link>
+                ,{' '}
+                <Link to="https://github.com/conduitio-labs/conduit-connector-pinecone/" className="text-blue-600 underline hover:text-blue-800">
+                  Pinecone
+                </Link>
+                , or the{' '}
+                <Link to="https://github.com/conduitio-labs/conduit-connector-openai-vectorstore" className="text-blue-600 underline hover:text-blue-800">
+                  OpenAI vector store
+                </Link>
+                . You can use any supported data source to generate embeddings, create text, or apply a Cohere model with the help of the{' '}
+                <Link to="/docs/using/processors/builtin/" className="text-blue-600 underline hover:text-blue-800">
+                  built-in processors
+                </Link>
+                .
+              </p>
+
           </div>
         </SplitPair>
       </Wrapper>
@@ -215,9 +239,13 @@ function CLISection() {
           <div className="pr-6">
             <h2 className="font-bold text-4xl mb-6">CLI</h2>
             <p className="text-lg md:text-xl leading-relaxed">
-              The Conduit CLI offers an efficient way to initialize and configure Conduit,
-              as well as manage, run and observe pipelines, connectors, processors, etc.
+              The{' '}
+              <Link to="/docs/cli" className="text-blue-600 underline hover:text-blue-800">
+                Conduit CLI
+              </Link>{' '}
+              offers an efficient way to initialize and configure Conduit, as well as manage, run, and observe pipelines, connectors, processors, and more.
             </p>
+
           </div>
           <div className="flex justify-center items-center">
             <img
@@ -247,12 +275,19 @@ function DeveloperExperienceSection() {
           </div>
           <div className="pr-6">
             <h2 className="font-bold text-4xl mb-6">Developer experience</h2>
-            <p className="text-lg md:text-xl leading-relaxed">
-              Only minimal knowledge about Conduit is needed to develop a new connector or processor
-              with our SDKs and GitHub repository templates. Conduit and the standalone connectors
-              communicate via gRPC. The Protobuf service definition is open-source; hence a connector
-              can be written in any language.
-            </p>
+              <p className="text-lg md:text-xl leading-relaxed">
+                Only minimal knowledge about Conduit is needed to develop a new{' '}
+                <Link to="/docs/developing/connectors/" className="text-blue-600 underline hover:text-blue-800">
+                  connector
+                </Link>{' '}
+                or{' '}
+                <Link to="/docs/developing/processors/" className="text-blue-600 underline hover:text-blue-800">
+                  processor
+                </Link>{' '}
+                using our SDKs and GitHub repository templates. Conduit and the standalone connectors
+                communicate via gRPC. The Protobuf service definition is open-source, so a connector
+                can be written in any language.
+              </p>
           </div>
         </SplitPair>
       </Wrapper>
@@ -275,11 +310,15 @@ function SchemaSupportSection() {
           </div>
           <div className="pl-6">
             <h2 className="font-bold text-4xl mb-6">Schema support</h2>
-            <p className="text-lg md:text-xl leading-relaxed">
-              To preserve exact information about data types, Conduit lets connectors provide a schema
-              or generate a schema on its own. It can manage the schema using its internal schema service
-              or Confluent's Schema Registry.
-            </p>
+              <p className="text-lg md:text-xl leading-relaxed">
+                To preserve precise information about data types, Conduit supports schema handling either through
+                connector-provided definitions or by generating them automatically. It can manage schemas using its
+                internal schema service or integrate with Confluent's Schema Registry. Learn more in the{' '}
+                <Link to="/docs/using/other-features/schema-support" className="text-blue-600 underline hover:text-blue-800">
+                  schema support documentation
+                </Link>
+                .
+              </p>
           </div>
         </SplitPair>
       </Wrapper>
@@ -295,16 +334,20 @@ function InspectDataSection() {
         <SplitPair data-skewed="60:40">
           <div className="pr-6">
             <h2 className="font-bold text-4xl mb-6">Inspect the data</h2>
-            <p className="text-lg md:text-xl leading-relaxed">
-              Troubleshooting isn't a trouble if you can view the data as it’s read from a source,
-              processed by a processor, or written into a destination.
-            </p>
+              <p className="text-lg md:text-xl leading-relaxed">
+                Troubleshooting isn’t a problem when you can see the data as it’s read from a source,
+                processed by a processor, or written into a destination. Our{' '}
+                <Link to="/docs/using/other-features/stream-inspector" className="text-blue-600 underline hover:text-blue-800">
+                  stream inspector
+                </Link>{' '}
+                makes it easy to debug your pipeline.
+              </p>
           </div>
           <div className="flex justify-center items-center">
             <img
               src="/img/inspect-data.svg"
               alt="Inspect data illustration"
-              className="w-[60%] max-w-sm md:max-w-md"
+              className="scale-[60%] max-w-sm md:max-w-md"
             />
           </div>
         </SplitPair>
@@ -328,10 +371,15 @@ function ObservabilitySection() {
           </div>
           <div className="pl-6">
             <h2 className="font-bold text-4xl mb-6">Observability</h2>
-            <p className="text-lg md:text-xl leading-relaxed">
-              The HTTP API exposes a Prometheus-compatible metrics endpoint with high-level pipeline,
-              processor and connector metrics, but also Go runtime, gRPC and HTTP API metrics.
-            </p>
+              <p className="text-lg md:text-xl leading-relaxed">
+                The HTTP API exposes a Prometheus-compatible metrics endpoint with high-level pipeline,
+                processor and connector metrics, but also Go runtime, gRPC and HTTP API{' '}
+                <a href="/docs/using/other-features/metrics" className="text-blue-600 underline hover:text-blue-800">
+                  metrics
+                </a>
+                .
+              </p>
+
           </div>
         </SplitPair>
       </Wrapper>
