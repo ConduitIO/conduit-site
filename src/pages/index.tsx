@@ -75,7 +75,7 @@ function HeaderSection() {
 function DeploymentSection() {
   return (
     <div className="bg-white">
-      <Wrapper className="py-16 md:py-24">
+      <Wrapper className="py-2 md:py-4">
         <SplitPair data-skewed="60:40">
           {/* Left side (60%) with text */}
           <div className="text-lg md:text-xl leading-relaxed pr-6">
@@ -117,7 +117,7 @@ function DeploymentSection() {
 function ConnectorsSection() {
   return (
     <div className="bg-[#0B525D] text-white">
-      <Wrapper className="py-16 md:py-24">
+      <Wrapper className="py-2 md:py-4">
         <SplitPair data-skewed="60:40">
           {/* Left side (image) */}
           <div className="flex justify-center items-center">
@@ -149,7 +149,7 @@ function ConnectorsSection() {
 function ProcessorsSection() {
   return (
     <div className="bg-white text-black">
-      <Wrapper className="py-16 md:py-24">
+      <Wrapper className="py-2 md:py-4">
         <SplitPair data-skewed="60:40">
           {/* Left: Text */}
           <div className="pr-6">
@@ -180,7 +180,7 @@ function ProcessorsSection() {
 function AIToolingSection() {
   return (
     <div className="bg-[#0B525D] text-white">
-      <Wrapper className="py-16 md:py-24">
+      <Wrapper className="py-2 md:py-4">
         <SplitPair data-skewed="60:40">
           {/* Left: Image */}
           <div className="flex justify-center items-center">
@@ -210,7 +210,7 @@ function AIToolingSection() {
 function CLISection() {
   return (
     <div className="bg-white text-black">
-      <Wrapper className="py-16 md:py-24">
+      <Wrapper className="py-2 md:py-4">
         <SplitPair data-skewed="60:40">
           <div className="pr-6">
             <h2 className="font-bold text-4xl mb-6">CLI</h2>
@@ -236,7 +236,7 @@ function CLISection() {
 function DeveloperExperienceSection() {
   return (
     <div className="bg-[#0B525D] text-white">
-      <Wrapper className="py-16 md:py-24">
+      <Wrapper className="py-2 md:py-4">
         <SplitPair data-skewed="60:40">
           <div className="flex justify-center items-center">
             <img
@@ -264,7 +264,7 @@ function DeveloperExperienceSection() {
 function SchemaSupportSection() {
   return (
     <div className="bg-white text-black">
-      <Wrapper className="py-16 md:py-24">
+      <Wrapper className="py-2 md:py-4">
         <SplitPair data-skewed="60:40">
           <div className="flex justify-center items-center">
             <img
@@ -291,7 +291,7 @@ function SchemaSupportSection() {
 function InspectDataSection() {
   return (
     <div className="bg-[#0B525D] text-white">
-      <Wrapper className="py-16 md:py-24">
+      <Wrapper className="py-2 md:py-4">
         <SplitPair data-skewed="60:40">
           <div className="pr-6">
             <h2 className="font-bold text-4xl mb-6">Inspect the data</h2>
@@ -317,7 +317,7 @@ function InspectDataSection() {
 function ObservabilitySection() {
   return (
     <div className="bg-white text-black">
-      <Wrapper className="py-16 md:py-24">
+      <Wrapper className="py-2 md:py-4">
         <SplitPair data-skewed="60:40">
           <div className="flex justify-center items-center">
             <img
