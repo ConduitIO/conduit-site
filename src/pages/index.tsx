@@ -21,27 +21,13 @@ function HeaderSection() {
     <>
       <div className="max-w-full page__header header">
         <Wrapper className="py-12">
-          <SplitPair data-skewed="60:40">
-            {/* Video on the left */}
-            <Stack>
-              <div className="relative mb-8 rounded-lg overflow-hidden shadow-lg">
-                <iframe
-                  src="https://www.loom.com/embed/0df6511a4c9c4e3a98dc43ada9e109df?hideEmbedTopBar=true&hide_title=true&hide_owner=true&hide_share=true&hide_speed=true"
-                  allowFullScreen
-                  className="h-full"
-                  style={{
-                    border: 'none',
-                  }}
-                ></iframe>
-            </div>
-            </Stack>
-
-            {/* Text on the right */}
-            <Stack>
-              <h1 className="font-bold text-5xl lg:text-5xl md:text-5xl text-white">
+          <SplitPair className="flex flex-col md:flex-row">
+            {/* Text section - Text appears on bottom/top depending on screen size */}
+            <Stack className="flex-1 p-8">
+              <h1 className="font-bold text-5xl text-white">
                 Fast, lightweight, and versatile data streaming.
               </h1>
-
+              
               <p className="mt-10 text-white">{siteConfig.tagline}</p>
 
               <div className="mt-6">
@@ -63,7 +49,21 @@ function HeaderSection() {
                 </a>
               </div>
             </Stack>
+
+            {/* Video section - video appears on top in small screens, left in larger screens */}
+            <Stack className="flex-1">
+              <div className="relative mb-8 rounded-lg overflow-hidden h-[30vh] md:h-full">
+                <iframe
+                  src="https://www.loom.com/embed/0df6511a4c9c4e3a98dc43ada9e109df?hideEmbedTopBar=true&hide_title=true&hide_owner=true&hide_share=true&hide_speed=true"
+                  allowFullScreen
+                  className="w-full h-full border-0 block"
+                ></iframe>
+              </div>
+            </Stack>
           </SplitPair>
+
+
+
         </Wrapper>
 
         <DiagonalDivider className="text-white" lightBgColor="white" darkBgColor="#0B525D" />
