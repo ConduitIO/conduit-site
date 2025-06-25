@@ -15,83 +15,329 @@ import DiagonalDivider from '@site/src/components/DiagonalDivider';
 import styles from './index.module.css';
 
 function HeaderSection() {
-  const {siteConfig} = useDocusaurusContext();
+  const { siteConfig } = useDocusaurusContext();
+
   return (
     <>
       <div className="max-w-full page__header header">
-        <Wrapper className='py-12'>
-          <SplitPair data-reversed data-skewed="60:40">
-            <Stack className="basis-3/5">
+        <Wrapper className="py-12">
+          <SplitPair data-skewed="60:40">
+            {/* Video on the left */}
+            <Stack>
+              <div className="relative mb-8 rounded-lg overflow-hidden shadow-lg">
+                <iframe
+                  src="https://www.loom.com/embed/0df6511a4c9c4e3a98dc43ada9e109df?hideEmbedTopBar=true&hide_title=true&hide_owner=true&hide_share=true&hide_speed=true"
+                  allowFullScreen
+                  className="h-full"
+                  style={{
+                    border: 'none',
+                  }}
+                ></iframe>
+            </div>
+            </Stack>
+
+            {/* Text on the right */}
+            <Stack>
               <h1 className="font-bold text-5xl lg:text-5xl md:text-5xl text-white">
-                Data Integration for Production Data Stores
+                Fast, lightweight, and versatile data streaming.
               </h1>
 
-              <p className='mt-10 text-white'>
-                {siteConfig.tagline}
-              </p>
+              <p className="mt-10 text-white">{siteConfig.tagline}</p>
 
-              <div className='mt-6'>
-                <a href="/docs/installing-and-running"
-                   className="download inline-flex items-center mb-5 px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-700 mr-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              <div className="mt-6">
+                <a
+                  href="/docs/installing-and-running"
+                  className="download inline-flex items-center mb-5 px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-700 mr-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
-                  <span>Download</span>
+                  <span>Install</span>
                 </a>
 
-                <a href="/docs"
-                   className={clsx(styles['bg-transparent-200'], "docs inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500")}
+                <a
+                  href="/docs"
+                  className={clsx(
+                    styles['bg-transparent-200'],
+                    'docs inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+                  )}
                 >
                   <span>Documentation</span>
                 </a>
               </div>
             </Stack>
-            <div className="basis-2/5">
-              <img className="w-full h-46 md:h-96 mx-auto" src="/img/conduit/server-illustration.svg" alt="Data Transformation Visual" />
-            </div>
           </SplitPair>
         </Wrapper>
-        <DiagonalDivider className="text-white" lightBgColor="white" darkBgColor="#282D39" />
+
+        <DiagonalDivider className="text-white" lightBgColor="white" darkBgColor="#0B525D" />
       </div>
     </>
   );
 }
 
-function FeaturesSection() {
+function DeploymentSection() {
   return (
-    <>
-      <Wrapper className="py-12">
-        <HomepageFeatures />
-      </Wrapper>
-      <DiagonalDivider className="text-slate-100" lightBgColor="#101827" darkBgColor="#101827" />
-    </>
-)
-}
-
-function ConnectorsSection() {
-  return (
-    <section className="bg-slate-100 pt-10 connectors" >
-      <Wrapper className='py-10'>
-        <div className="md:flex md:items-center md:justify-between">
-          <div className="flex-1 min-w-0">
-            <h2 className="text-4xl font-bold leading-7 text-canary-100 sm:text-4xl sm:truncate">Well Connected</h2>
-          </div>
-          <div className="mt-4 flex md:mt-0 md:ml-4">
-            <a href="/docs/using/connectors/list">
+    <div className="bg-white">
+      <Wrapper className="py-16 md:py-24">
+        <SplitPair data-skewed="60:40">
+          {/* Left side (60%) with text */}
+          <div className="text-lg md:text-xl leading-relaxed pr-6">
+            <h2 className="font-bold text-4xl mb-6">Deploy anywhere</h2>
+            <p className="mb-6">
+              Conduit is installed as a single binary and requires zero external dependencies –
+              you can stream your data without any intermediaries (such as Apache Kafka) in between.
+              Alternatively, pull the Docker container image, or use our Kubernetes operator
+              for Conduit to install it into your cluster.
+            </p>
+            <a href="/docs/installing-and-running">
               <button
                 type="button"
-                className="inline-flex items-center  px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-bold text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-indigo-500"
+                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-bold text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-indigo-500"
               >
                 View More
               </button>
             </a>
           </div>
-        </div>
-        <HomepageConnectors />
+
+          {/* Right side (40%) with image */}
+          <div className="flex justify-center items-center">
+            <img
+              src="/img/logos-windows-mac-linux-docker.png"
+              alt="Supported OSes"
+              className="w-full max-w-sm md:max-w-md"
+            />
+          </div>
+        </SplitPair>
       </Wrapper>
 
+      {/* Diagonal divider with inverted color (white above, dark below) */}
+      <DiagonalDivider className="text-white" lightBgColor="#0B525D" darkBgColor="white" />
+    </div>
+  );
+}
 
-      <DiagonalDivider className="text-orange-700" lightBgColor="#C2420D" darkBgColor="#282D39" />
-    </section>
-  )
+
+function ConnectorsSection() {
+  return (
+    <div className="bg-[#0B525D] text-white">
+      <Wrapper className="py-16 md:py-24">
+        <SplitPair data-skewed="60:40">
+          {/* Left side (image) */}
+          <div className="flex justify-center items-center">
+            <img
+              src="/img/connectors.png"
+              alt="Supported connectors"
+              className="w-full max-w-sm md:max-w-md"
+            />
+          </div>
+
+          {/* Right side (text) */}
+          <div className="pl-6">
+            <h2 className="font-bold text-4xl mb-6">Well Connected</h2>
+            <p className="text-lg md:text-xl leading-relaxed">
+              Our ecosystem supports more than 70 systems that you can stream data from or write data into.
+              New connectors are being added all the time. You can also bring a Kafka Connect connector into Conduit.
+              All of our connectors are Apache-2 licensed.
+            </p>
+          </div>
+        </SplitPair>
+      </Wrapper>
+
+      {/* Diagonal divider: white below, dark above (same as header) */}
+      <DiagonalDivider className="text-white" lightBgColor="white" darkBgColor="#0B525D" />
+    </div>
+  );
+}
+
+function ProcessorsSection() {
+  return (
+    <div className="bg-white text-black">
+      <Wrapper className="py-16 md:py-24">
+        <SplitPair data-skewed="60:40">
+          {/* Left: Text */}
+          <div className="pr-6">
+            <h2 className="font-bold text-4xl mb-6">Processors</h2>
+            <p className="text-lg md:text-xl leading-relaxed">
+              Conduit features built-in processors that let you apply common data transformations.
+              You can also use JavaScript and HTTP APIs, write a processor in any language using WASM,
+              or scroll down to check out the AI/LLM processors.
+            </p>
+          </div>
+
+          {/* Right: Image */}
+          <div className="flex justify-center items-center">
+            <img
+              src="/img/processors.png"
+              alt="Data processors illustration"
+              className="w-full max-w-sm md:max-w-md"
+            />
+          </div>
+        </SplitPair>
+      </Wrapper>
+      <DiagonalDivider className="text-white" lightBgColor="#0B525D" darkBgColor="white" />
+    </div>
+  );
+}
+
+
+function AIToolingSection() {
+  return (
+    <div className="bg-[#0B525D] text-white">
+      <Wrapper className="py-16 md:py-24">
+        <SplitPair data-skewed="60:40">
+          {/* Left: Image */}
+          <div className="flex justify-center items-center">
+            <img
+              src="/img/ai-tooling.png"
+              alt="AI tooling for pipelines illustration"
+              className="w-full max-w-sm md:max-w-md"
+            />
+          </div>
+
+          {/* Right: Text */}
+          <div className="pl-6">
+            <h2 className="font-bold text-4xl mb-6">AI tooling for pipelines</h2>
+            <p className="text-lg md:text-xl leading-relaxed">
+              Your AI assistants and LLM models are most powerful when using the latest data, and that's what Conduit can provide. 
+              Read from and write data into stores such as Weaviate, Pinecone or OpenAI vector store. 
+              Use any other supported data source and generate embeddings, text, or apply a Cohere model.
+            </p>
+          </div>
+        </SplitPair>
+      </Wrapper>
+      <DiagonalDivider className="text-white" lightBgColor="white" darkBgColor="#0B525D" />
+    </div>
+  );
+}
+
+function CLISection() {
+  return (
+    <div className="bg-white text-black">
+      <Wrapper className="py-16 md:py-24">
+        <SplitPair data-skewed="60:40">
+          <div className="pr-6">
+            <h2 className="font-bold text-4xl mb-6">CLI</h2>
+            <p className="text-lg md:text-xl leading-relaxed">
+              The Conduit CLI offers an efficient way to initialize and configure Conduit,
+              as well as manage, run and observe pipelines, connectors, processors, etc.
+            </p>
+          </div>
+          <div className="flex justify-center items-center">
+            <img
+              src="/img/cli.png"
+              alt="CLI illustration"
+              className="w-full max-w-sm md:max-w-md"
+            />
+          </div>
+        </SplitPair>
+      </Wrapper>
+      <DiagonalDivider className="text-white" lightBgColor="#0B525D" darkBgColor="white" />
+    </div>
+  );
+}
+
+function DeveloperExperienceSection() {
+  return (
+    <div className="bg-[#0B525D] text-white">
+      <Wrapper className="py-16 md:py-24">
+        <SplitPair data-skewed="60:40">
+          <div className="flex justify-center items-center">
+            <img
+              src="/img/developer-experience.png"
+              alt="Developer experience illustration"
+              className="w-full max-w-sm md:max-w-md"
+            />
+          </div>
+          <div className="pr-6">
+            <h2 className="font-bold text-4xl mb-6">Developer experience</h2>
+            <p className="text-lg md:text-xl leading-relaxed">
+              Only minimal knowledge about Conduit is needed to develop a new connector or processor
+              with our SDKs and GitHub repository templates. Conduit and the standalone connectors
+              communicate via gRPC. The Protobuf service definition is open-source; hence a connector
+              can be written in any language.
+            </p>
+          </div>
+        </SplitPair>
+      </Wrapper>
+      <DiagonalDivider className="text-white" lightBgColor="white" darkBgColor="#0B525D" />
+    </div>
+  );
+}
+
+function SchemaSupportSection() {
+  return (
+    <div className="bg-white text-black">
+      <Wrapper className="py-16 md:py-24">
+        <SplitPair data-skewed="60:40">
+          <div className="flex justify-center items-center">
+            <img
+              src="/img/apache-avro-logo.svg"
+              alt="Schema support illustration"
+              className="w-full max-w-sm md:max-w-md"
+            />
+          </div>
+          <div className="pl-6">
+            <h2 className="font-bold text-4xl mb-6">Schema support</h2>
+            <p className="text-lg md:text-xl leading-relaxed">
+              To preserve exact information about data types, Conduit lets connectors provide a schema
+              or generate a schema on its own. It can manage the schema using its internal schema service
+              or Confluent's Schema Registry.
+            </p>
+          </div>
+        </SplitPair>
+      </Wrapper>
+      <DiagonalDivider className="text-white" lightBgColor="#0B525D" darkBgColor="white" />
+    </div>
+  );
+}
+
+function InspectDataSection() {
+  return (
+    <div className="bg-[#0B525D] text-white">
+      <Wrapper className="py-16 md:py-24">
+        <SplitPair data-skewed="60:40">
+          <div className="pr-6">
+            <h2 className="font-bold text-4xl mb-6">Inspect the data</h2>
+            <p className="text-lg md:text-xl leading-relaxed">
+              Troubleshooting isn't a trouble if you can view the data as it’s read from a source,
+              processed by a processor, or written into a destination.
+            </p>
+          </div>
+          <div className="flex justify-center items-center">
+            <img
+              src="/img/inspect-data.svg"
+              alt="Inspect data illustration"
+              className="w-[60%] max-w-sm md:max-w-md"
+            />
+          </div>
+        </SplitPair>
+      </Wrapper>
+      <DiagonalDivider className="text-white" lightBgColor="white" darkBgColor="#0B525D" />
+    </div>
+  );
+}
+
+function ObservabilitySection() {
+  return (
+    <div className="bg-white text-black">
+      <Wrapper className="py-16 md:py-24">
+        <SplitPair data-skewed="60:40">
+          <div className="flex justify-center items-center">
+            <img
+              src="/img/observability.png"
+              alt="Observability illustration"
+              className="w-full max-w-sm md:max-w-md"
+            />
+          </div>
+          <div className="pl-6">
+            <h2 className="font-bold text-4xl mb-6">Observability</h2>
+            <p className="text-lg md:text-xl leading-relaxed">
+              The HTTP API exposes a Prometheus-compatible metrics endpoint with high-level pipeline,
+              processor and connector metrics, but also Go runtime, gRPC and HTTP API metrics.
+            </p>
+          </div>
+        </SplitPair>
+      </Wrapper>
+      <DiagonalDivider className="text-white" lightBgColor="#c2410c" darkBgColor="white" />
+    </div>
+  );
 }
 
 function CommunitySection() {
@@ -155,6 +401,9 @@ function CommunitySection() {
   )
 }
 
+
+
+
 export default function Home(): React.ReactElement {
   const {siteConfig} = useDocusaurusContext();
   return (
@@ -166,8 +415,25 @@ export default function Home(): React.ReactElement {
       </Head>
 
       <HeaderSection />
-      <FeaturesSection />
+
+      <DeploymentSection />
+
       <ConnectorsSection />
+
+      <ProcessorsSection />
+
+      <AIToolingSection />     
+
+      <CLISection />
+
+      <DeveloperExperienceSection />
+
+      <SchemaSupportSection />
+
+      <InspectDataSection />
+
+      <ObservabilitySection /> 
+      
       <CommunitySection />
 
       <HomepageFooter />
