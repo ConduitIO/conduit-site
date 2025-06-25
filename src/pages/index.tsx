@@ -19,11 +19,11 @@ function HeaderSection() {
 
   return (
     <>
-      <div className="max-w-full page__header header">
+      <div className="max-w-full page__header header md:pt-10 pt-0">
         <Wrapper className="py-12">
           <SplitPair className="flex flex-col md:flex-row">
             {/* Text section - Text appears on bottom/top depending on screen size */}
-            <Stack className="flex-1 p-8">
+            <Stack className="flex-1 pt-5 mb-5 md:pt-8 md:mb-0">
               <h1 className="font-bold text-5xl text-white">
                 Fast, lightweight, and versatile data streaming.
               </h1>
