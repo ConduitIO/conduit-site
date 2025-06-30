@@ -1,0 +1,484 @@
+---
+title: "How to Build a Real-Time AI RAG Pipeline"
+---
+
+In this guide, we will build a complete, end-to-end Retrieval-Augmented
+Generation (RAG) system using Conduit. This powerful pipeline will automatically
+ingest new documents, process them into a queryable format, and make them
+available to a chatbot UI, ensuring your knowledge base is always up-to-date.
+
+:::info
+You can find the complete code and all configuration files for this guide in
+the [Conduit AI Pipelines repository on GitHub](https://github.com/ConduitIO/conduit-ai-pipelines/tree/main/examples/rag-ollama).
+:::
+
+-----
+
+## Part 1: Introduction and Architecture
+
+This first part introduces the problem we aim to solve and gives a high-level
+overview of the solution's architecture.
+
+<div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', maxWidth: '100%' }}>
+  <iframe
+    src="https://www.loom.com/embed/855eeea8cf2e439c81650dcb5c16277e?sid=6974e996-8e73-4fa0-b2fc-1084062627a3?hideEmbedTopBar=true&hide_title=true&hide_owner=true&hide_share=true&hide_speed=true"
+    webkitallowfullscreen
+    frameborder="0"
+    mozallowfullscreen
+    allowFullScreen
+    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+  ></iframe>
+</div>
+
+### The Problem
+
+The number of new research papers published on topics like Artificial
+Intelligence is overwhelming, making it difficult to keep current with the
+latest information. Our goal is to build an automated system that ingests these
+papers (in PDF format) and allows a user to ask questions about them using a
+natural language interface, like a chatbot.
+
+This system should be fully automated; as new papers are published, they should
+be processed and integrated into the knowledge base without manual intervention,
+ensuring the chatbot's answers always use the latest information available.
+
+### The Solution
+
+The final application consists of an open-source chatbot UI that interacts with
+a custom assistant. This assistant has access to the knowledge base created and
+maintained by our Conduit pipeline. When a user asks a question, the chatbot
+provides an answer and cites the source documents used to generate the response.
+
+A key feature of the system is its ability to update in real-time. The Conduit
+pipeline runs continuously in the background, detecting and processing new
+documents as they are added to the source.
+
+### The Architecture
+
+The entire system is orchestrated by Conduit, which connects various components
+to create a seamless data flow.
+
+![Architecture Diagram](/img/guide-rag-ollama-architecture-part1.png)
+
+1. **[ArXiv](https://arxiv.org)**: Research papers are originally published on
+   sites like ArXiv. A script will be used to fetch these papers and upload the
+   PDFs to an Amazon S3 bucket, which will act as the primary source for our
+   pipeline.
+
+2. **[Amazon S3](https://aws.amazon.com/s3/)**: We will use an S3 bucket to
+   store the PDF files. This bucket will be monitored by our Conduit pipeline
+   for new documents.
+
+3. **Conduit Pipeline**: This is the core of the system.
+
+   * **Source ([S3](/docs/using/connectors/list/s3))**: Conduit has a built-in
+     S3 source connector that we'll use to detect new PDFs using Change Data
+     Capture (CDC).
+   * **Processors**: A chain of processors will transform the raw PDF data. This
+     involves two key external services:
+     * **[Unstructured.io](https://unstructured.io)**: A Python library used for
+       extracting text from the PDFs and partitioning it into smaller,
+       manageable chunks. We will interact with it via a custom HTTP server.
+     * **[Ollama](https://ollama.com)**: A tool that runs Large Language Models
+       (LLMs) locally. We will use it to generate vector embeddings for each
+       text chunk using the `all-minilm:l6-v2` model.
+   * **Destination ([Postgres](/docs/using/connectors/list/postgres))**: Since
+     Supabase is essentially a Postgres database under the hood, we will use the
+     built-in Postgres destination connector to load the final, processed data
+     into a Supabase database.
+
+4. **[Supabase](https://supabase.com)**: The processed data, including the text
+   chunks and their embeddings, is stored in a Supabase database used by Chatbot
+   UI.
+
+5. **[Chatbot UI](https://www.chatbotui.com)**: The chatbot interface queries
+   the Supabase database to retrieve the relevant information needed to answer
+   user questions.
+
+-----
+
+## Part 2: Reading from Amazon S3
+
+In this section, we will build the first version of our pipeline. It will use
+the [S3 source connector](/docs/using/connectors/list/s3) to read documents and
+a [log destination connector](/docs/using/connectors/list/log) to inspect the
+raw data.
+
+![Architecture Diagram](/img/guide-rag-ollama-architecture-part2.png)
+
+<div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', maxWidth: '100%' }}>
+  <iframe
+    src="https://www.loom.com/embed/d213d448ebc349ff8e5a22d7884c2f30?sid=1855d6ef-7cea-4525-a7eb-d151f198750c?hideEmbedTopBar=true&hide_title=true&hide_owner=true&hide_share=true&hide_speed=true"
+    webkitallowfullscreen
+    frameborder="0"
+    mozallowfullscreen
+    allowFullScreen
+    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+  ></iframe>
+</div>
+
+### 1: Prerequisites
+
+Start by installing Conduit on your machine. The easiest way to do this is
+using this command:
+
+```bash
+curl https://conduit.io/install.sh | bash
+```
+
+For more information and other methods, refer to the
+[Installing and running](/docs/installing-and-running) page.
+
+You will also need an Amazon S3 bucket to store the PDF files. You can create
+one using the AWS Management Console or the AWS CLI. See the
+[official documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/create-bucket-overview.html)
+for more information. Make sure you note the access key, secret key, region and
+bucket name, as you will need these credentials to configure the pipeline.
+
+### 2: Initialize Your Conduit Project
+
+First, create a dedicated directory for your project and initialize it using the
+Conduit CLI.
+
+```bash
+mkdir ai-showcase
+cd ai-showcase
+conduit init
+```
+
+This command creates the necessary directory structure for a Conduit project,
+including a `pipelines` directory.
+
+### 3: Create the Pipeline Configuration
+
+Next, initialize a pipeline that connects an
+[`s3` source](/docs/using/connectors/list/s3) to a
+[`log` destination](/docs/using/connectors/list/log). We'll give the pipeline
+the name `ai-showcase` for easy reference. This command will create a file named
+`ai-showcase.yaml` in the `pipelines` directory with the basic structure of a
+Conduit pipeline.
+
+```bash
+conduit pipelines init ai-showcase --source s3 --destination log
+```
+
+At this point your directory structure should look like this:
+
+```console
+ai-showcase/
+├── conduit.yaml
+├── connectors/
+├── pipelines/
+│   └── ai-showcase.yaml
+└── processors/
+```
+
+:::tip
+Alternatively, you can use the [`file`](/docs/using/connectors/list/log)
+destination connector instead of the
+[`log` connector](/docs/using/connectors/list/log). This will write the raw
+records to a file, which can be easier to inspect. If you choose this option,
+update the `pipelines/ai-showcase.yaml` file to replace the `log` destination
+with a `file` destination:
+
+```yaml
+- id: file-destination
+  type: destination
+  plugin: file
+  settings:
+    path: "records.json" # This will create a file in your project directory
+```
+:::
+
+### 4: Configure Connectors and Environment Variables
+
+The pipeline needs to be configured to connect to your S3 bucket. Conduit
+requires credentials like an access key and secret key. To avoid hardcoding
+these secrets, we will use
+[environment variables](/docs/using/pipelines/provisioning#environment-variables).
+
+1. **Update the pipeline YAML** file located at `pipelines/ai-showcase.yaml` and
+   modify the `s3-source` connector settings to use environment variables.
+
+```yaml
+version: "2.2"
+pipelines:
+  - id: ai-showcase
+    status: running
+    name: ai-showcase
+    connectors:
+      - id: s3-source
+        type: source
+        plugin: s3
+        settings:
+          aws.access_key_id: ${AWS_ACCESS_KEY_ID}
+          aws.secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+          aws.region: ${AWS_REGION}
+          aws.bucket: ${AWS_BUCKET}
+      - id: log-destination
+        type: destination
+        plugin: log
+        settings:
+          level: info
+```
+
+2. **Create a `.env` file** in your project directory to store your credentials.
+
+```bash
+export AWS_ACCESS_KEY_ID="YOUR_AWS_ACCESS_KEY"
+export AWS_SECRET_ACCESS_KEY="YOUR_AWS_SECRET_KEY"
+export AWS_REGION="us-east-1"
+export AWS_BUCKET="your-s3-bucket-name"
+```
+
+3. **Source the environment variables** into your shell session so Conduit can
+   access them.
+
+```bash
+source .env
+```
+
+### 5: Run and Test the Pipeline
+
+Now, run the pipeline:
+
+  ```bash
+  conduit run
+```
+
+Conduit is now monitoring your S3 bucket for changes. To test it, upload a file
+to the bucket. As soon as the file is uploaded, you will see a long string
+appear in the Conduit logs. This is the raw content of the PDF file, printed as
+a base64 encoded string, confirming that the pipeline is successfully reading
+from S3.
+
+In the next part, we'll add processors to transform this raw data into a
+structured format.
+
+-----
+
+## Part 3: Chunking Documents with Processors
+
+The raw data from S3 is unstructured. In this part, we'll add a series of
+processors to partition the PDF content into smaller chunks using the
+[unstructured.io](https://unstructured.io) library.
+
+![Architecture Diagram](/img/guide-rag-ollama-architecture-part3.png)
+
+<div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', maxWidth: '100%' }}>
+  <iframe
+    src="https://www.loom.com/embed/7065a048cbde4a43925c6528f6dec1a9?sid=1dd3b5f4-a5d2-47e5-8401-b1670a2a4977?hideEmbedTopBar=true&hide_title=true&hide_owner=true&hide_share=true&hide_speed=true"
+    webkitallowfullscreen
+    frameborder="0"
+    mozallowfullscreen
+    allowFullScreen
+    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+  ></iframe>
+</div>
+
+### 1: Set Up the Unstructured.io Service
+
+Since the official Unstructured Docker image provides the Python library but not
+an HTTP server, we've created a simple server to bridge this gap. This server
+exposes a `POST /unstructured/partition` endpoint that allows Conduit to send
+PDF data and receive structured chunks in return.
+
+You can inspect and run this service using the Docker image provided in the
+project's [GitHub repository](https://github.com/ConduitIO/conduit-ai-pipelines/blob/cc5e261e2d5be138ed5ef8aef206b78053ca2876/examples/rag-ollama/unstructured/main.py).
+
+:::info
+The custom server expects the incoming data to be base64-encoded, which is why
+our processor chain will include an encoding step.
+:::
+
+Once the server is running, add its address to your `.env` file:
+
+```bash
+export UNSTRUCTURED_ADDRESS="127.0.0.1:8089" # Use the correct host and port
+```
+
+Remember to source the file again with `source .env`.
+
+### 2: Add Processors for Chunking
+
+We will now add a chain of processors to our pipeline to handle the chunking
+process. Add the following `processors` section to your
+`pipelines/ai-showcase.yaml`:
+
+```yaml
+    processors:
+      # Encode the raw PDF data to base64
+      - id: base64
+        plugin: "base64.encode"
+        settings:
+          field: ".Payload.After"
+
+      # Send the data to the Unstructured service
+      - id: unstructured-partition-request
+        plugin: "webhook.http"
+        settings:
+          headers.content-type: "application/json"
+          request.body: '{"data":{{ printf "%s" .Payload.After | toJson }}}'
+          request.method: "POST"
+          request.url: "http://${UNSTRUCTURED_ADDRESS}/unstructured/partition"
+          # Reponse will contain {"chunks": ["text-chunk1","text-chunk2",...]}
+          response.body: ".Payload.After"
+
+      # Decode the JSON response from the service
+      - id: unstructured-partition-decode-json
+        plugin: "json.decode"
+        settings:
+          field: ".Payload.After"
+```
+
+This chain works as follows:
+
+1. **`base64.encode`**: Takes the raw data from `.Payload.After` and encodes it.
+2. **`webhook.http`**: Sends the encoded data to our custom Unstructured server.
+   The response from the server, which contains the chunks, overwrites the
+   content of `.Payload.After`.
+3. **`json.decode`**: Parses the JSON response, transforming it into a
+   structured object that Conduit can work with.
+
+### 3: Run and Verify the Chunks
+
+Run the pipeline again with `conduit run` and upload a PDF to your S3 bucket.
+Now, inspect the destination record. You will see that the `.Payload.After`
+field contains a structured object with a `chunks` key, which holds an array of
+text extracted from the PDF.
+
+-----
+
+## Part 4: Creating Vector Embeddings
+
+With our documents chunked, the next step is to generate vector embeddings for
+each chunk. This will allow our LLM to understand the semantic meaning of the
+text.
+
+![Architecture Diagram](/img/guide-rag-ollama-architecture-part4.png)
+
+[TODO: VIDEO PLACEHOLDER FOR PART 4]
+
+### 1: Set Up Ollama
+
+For this guide, we use Ollama to run an LLM locally and generate embeddings.
+
+1. **Install Ollama**: Follow the instructions on
+   the [official Ollama website](https://ollama.com/download).
+
+2. **Pull the necessary models**: We need one model for generating embeddings (
+   `all-minilm:l6-v2`) and another for the final chat functionality (
+   `deepseek-r1:8b`).
+
+   ```bash
+   ollama pull all-minilm:l6-v2
+   ollama pull deepseek-r1:8b
+   ```
+
+   You can verify the installation with `ollama list`.
+
+3. **Run the Ollama server**: Start the server with `ollama serve`. By default,
+   it runs on `http://localhost:11434`.
+
+4. **Set the environment variable**: Add the Ollama server address to your
+   `.env` file and source it.
+
+   ```bash
+   export OLLAMA_ADDRESS="127.0.0.1:11434"
+   ```
+
+   ```bash
+   source .env
+   ```
+
+### 2: Add Processors for Generating Embeddings
+
+We'll add two more processors to our pipeline to call the Ollama API and handle
+its response.
+
+```yaml
+      # ... add to the end of the processors list
+      # Send chunks to Ollama to get embeddings
+      - id: ollama-embed-request
+        plugin: "webhook.http"
+        settings:
+          request.body: '{"input": {{toJson .Payload.After.chunks}}, "model":"all-minilm:l6-v2"}'
+          request.url: "http://${OLLAMA_ADDRESS}/api/embed"
+          request.method: "POST"
+          # Response will contain {"embeddings": [[0.1, 0.2, ...], [0.3, 0.4, ...], ...]}
+          response.body: ".Payload.After.embeddings"
+
+      # Decode the embeddings from the response
+      - id: ollama-embed-decode-json
+        plugin: "json.decode"
+        settings:
+          field: ".Payload.After.embeddings"
+```
+
+After running this, the record's payload will have two separate keys: `chunks`
+and `embeddings`.
+
+### 3: Merge Chunks and Embeddings
+
+The final processing step is to merge the text chunks with their corresponding
+embedding vectors into a single, structured array. We'll use a
+`custom.javascript` processor for this.
+
+```yaml
+      # ... add to the end of the processors list
+      - id: merge-chunks-and-embeddings
+        plugin: "custom.javascript"
+        settings:
+          script: |
+            function process(rec) {
+              // rec.Payload.After currently contains:
+              // {
+              //   "chunks": ["text-chunk1", "text-chunk2", ...],
+              //   "embeddings": {
+              //     "embeddings": [[0.1, 0.2, ...], [0.3, 0.4, ...], ...]
+              //   }
+              // }
+
+              // We want to transform it to:
+              // {
+              //   "items": [
+              //     {"text": "text-chunk1", "embedding": [0.1, 0.2, ...]},
+              //     {"text": "text-chunk2", "embedding": [0.3, 0.4, ...]},
+              //     ...
+              //   ]
+              // }
+
+              const chunks = rec.Payload.After.chunks;
+              const embeddings = rec.Payload.After.embeddings.embeddings;
+
+              const formatted = chunks.map((text, i) => ({
+                text,
+                embedding: embeddings[i]
+              }));
+
+              // StructuredData() essentially creates a map
+              rec.Payload.After = StructuredData();
+              rec.Payload.After["items"] = formatted;
+
+              return rec;
+            }
+```
+
+### 4: Run and Verify the Final Structure
+
+Run the pipeline and upload another file. Check the destination record. The
+payload should now contain a single `items` key. This key holds an array of
+objects, where each object contains a `text` field and its corresponding
+`embedding` vector, ready to be loaded into our database.
+
+-----
+
+## Part 5: Storing Data in Supabase
+
+In this final part, we will replace the `log` destination with a `postgres`
+connector to load our processed data into Supabase. This will make the data
+available to our chatbot UI.
+
+[TODO: VIDEO PLACEHOLDER FOR PART 5]
+
+TODO: text
