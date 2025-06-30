@@ -4,7 +4,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'Conduit | Data Integration for Production Data Stores',
-  tagline: 'Sync data between your production systems using an extensible, event-first experience with minimal dependencies that fit within your existing workflow for free.',
+  tagline: 'Stream and process data with a single binary, zero dependencies, and an ultra-low footprint. Get started with Conduit in under 4 minutes.',
   favicon: 'img/favicon.ico',
   
   // Set the production url of your site here
