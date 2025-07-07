@@ -36,6 +36,15 @@
     "releases": null
   },
   {
+    "name_with_owner": "ConduitIO/conduitio.github.io",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/ConduitIO/conduitio.github.io",
+    "stargazer_count": 0,
+    "fork_count": 0,
+    "releases": null
+  },
+  {
     "name_with_owner": "ConduitIO/streaming-benchmarks",
     "description": "",
     "created_at": "",
@@ -252,10 +261,10 @@
     "releases": null
   },
   {
-    "name_with_owner": "maha-hajja/conduit-connector-slack",
+    "name_with_owner": "maha-mstfa/conduit-connector-slack",
     "description": "",
     "created_at": "",
-    "url": "https://github.com/maha-hajja/conduit-connector-slack",
+    "url": "https://github.com/maha-mstfa/conduit-connector-slack",
     "stargazer_count": 0,
     "fork_count": 0,
     "releases": null
