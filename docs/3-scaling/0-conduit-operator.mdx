@@ -15,7 +15,7 @@ as a distinct Conduit instance with its own lifecycle.
 The Conduit custom resource definition format is very similar to that of [pipeline configurations](/docs/using/pipelines/configuration-file):
 
 ```yaml
-apiVersion: operator.conduit.io/v1alpha
+apiVersion: operator.conduitdata.io/v1alpha
 kind: Conduit
 metadata:
   name: conduit-generator
@@ -74,7 +74,7 @@ Plugin version can optionally be specified or the latest will be used.
 Here's a full example using [`conduitio/conduit-connector-generator`](https://github.com/conduitio/conduit-connector-generator) as `plugin` and `v0.8.0` as `pluginVersion`:
 
 ```yaml
-apiVersion: operator.conduit.io/v1alpha
+apiVersion: operator.conduitdata.io/v1alpha
 kind: Conduit
 metadata:
   name: conduit-generator
@@ -118,7 +118,7 @@ Details are provided directly via the Conduit resource. `basicAuthUser` and `bas
 #### Example
 
 ```yaml
-apiVersion: operator.conduit.io/v1alpha
+apiVersion: operator.conduitdata.io/v1alpha
 kind: Conduit
 metadata:
   name: conduit-generator-schema-registry

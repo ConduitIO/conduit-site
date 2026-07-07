@@ -14,7 +14,7 @@ specification:
     from the configured tables as record snapshots.
 
     In snapshot mode, the record payload consists of
-    [opencdc.StructuredData](https://conduit.io/docs/using/opencdc-record#structured-data),
+    [opencdc.StructuredData](https://conduitdata.io/docs/using/opencdc-record#structured-data),
     with each key being a column and each value being that column's value.
 
     ### Change Data Capture mode
@@ -267,7 +267,7 @@ specification:
       - name: sdk.record.format
         description: |-
           The format of the output record. See the Conduit documentation for a full
-          list of supported formats (https://conduit.io/docs/using/connectors/configuration-parameters/output-format).
+          list of supported formats (https://conduitdata.io/docs/using/connectors/configuration-parameters/output-format).
         type: string
         default: opencdc/json
         validations: []

@@ -14,7 +14,7 @@ specification:
     from the configured tables as record snapshots.
 
     In snapshot mode, the record payload consists of
-    [opencdc.StructuredData](https://conduit.io/docs/using/opencdc-record#structured-data),
+    [opencdc.StructuredData](https://conduitdata.io/docs/using/opencdc-record#structured-data),
     with each key being a column and each value being that column's value.
 
     ### Change Data Capture mode
@@ -69,7 +69,7 @@ specification:
 
     ### Record structure
 
-    Records produced by the MySQL source connector contain the following [opencdc record structure](https://conduit.io/docs/using/opencdc-record):
+    Records produced by the MySQL source connector contain the following [opencdc record structure](https://conduitdata.io/docs/using/opencdc-record):
 
     *   **Operation**: Indicates the type of change (`create`, `update`, `delete`, `snapshot`).
     *   **Payload**:
@@ -79,7 +79,7 @@ specification:
     *   **Position**: Represents the point in the data stream. It's a JSON object containing *either* a `snapshot_position` field *or* a `cdc_position` field, structured as described below.
     *   **Metadata**: Contains standard OpenCDC fields plus:
         *   `mysql.server.id`: (CDC only) The originating MySQL server ID from the replication event header.
-        *   [Key](https://conduit.io/docs/using/opencdc-record/#opencdckeyschema) and [payload](https://conduit.io/docs/using/opencdc-record/#opencdcpayloadschema) schema registry data.
+        *   [Key](https://conduitdata.io/docs/using/opencdc-record/#opencdckeyschema) and [payload](https://conduitdata.io/docs/using/opencdc-record/#opencdcpayloadschema) schema registry data.
 
     #### Snapshot Records
 
@@ -296,7 +296,7 @@ specification:
       - name: sdk.record.format
         description: |-
           The format of the output record. See the Conduit documentation for a full
-          list of supported formats (https://conduit.io/docs/using/connectors/configuration-parameters/output-format).
+          list of supported formats (https://conduitdata.io/docs/using/connectors/configuration-parameters/output-format).
         type: string
         default: opencdc/json
         validations: []

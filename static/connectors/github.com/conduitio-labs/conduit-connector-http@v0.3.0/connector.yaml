@@ -123,7 +123,7 @@ specification:
       - name: url
         description: |-
           URL is a Go template expression for the URL used in the HTTP request, using Go [templates](https://pkg.go.dev/text/template).
-          The value provided to the template is [opencdc.Record](https://conduit.io/docs/using/opencdc-record),
+          The value provided to the template is [opencdc.Record](https://conduitdata.io/docs/using/opencdc-record),
           so the template has access to all its fields (e.g. .Position, .Key, .Metadata, and so on). We also inject all template functions provided by [sprig](https://masterminds.github.io/sprig/)
           to make it easier to write templates.
         type: string
@@ -181,7 +181,7 @@ specification:
       - name: sdk.record.format
         description: |-
           The format of the output record. See the Conduit documentation for a full
-          list of supported formats (https://conduit.io/docs/using/connectors/configuration-parameters/output-format).
+          list of supported formats (https://conduitdata.io/docs/using/connectors/configuration-parameters/output-format).
         type: string
         default: opencdc/json
         validations: []
