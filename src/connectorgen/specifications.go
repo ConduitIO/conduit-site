@@ -122,7 +122,7 @@ func (cmd *CommandSpecifications) Execute(ctx context.Context) error {
 			// Write connector.yaml
 			if yamlContent != nil {
 				connectorYamlPath := filepath.Join(folderPath, "connector.yaml")
-				if err := os.WriteFile(connectorYamlPath, yamlContent, 0644); err != nil {
+				if err := os.WriteFile(connectorYamlPath, rewriteDomain(yamlContent), 0644); err != nil {
 					return fmt.Errorf("failed to write connector.yaml for %s@%s: %w",
 						repo.NameWithOwner, release.TagName, err)
 				}
