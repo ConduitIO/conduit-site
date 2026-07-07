@@ -1,0 +1,22 @@
+---
+slug: '2026-07-07-conduit-0-16-1-release'
+title: Conduit v0.16.1 release
+draft: false
+tags: [conduit, release, conduit-release]
+---
+
+[Conduit v0.16.1](https://github.com/ConduitIO/conduit/releases/tag/v0.16.1) hardens the operational surface introduced in v0.16.0: deterministic exit codes, secret redaction in logs, and a build-time guarantee that user-facing errors carry a stable code.
+
+<!--truncate-->
+
+### Key Highlights
+
+- **Deterministic CLI exit codes.** Every command now exits with a predictable code so scripts and CI can branch on the failure class: `0` success, `1` runtime error, `2` config/validation, `3` environment (server unreachable, address in use, database unreachable). See [Exit codes](/docs/using/other-features/exit-codes).
+- **Secrets redacted in logs.** Connector configuration values are redacted in Conduit's own log output, so a database URL or credential in a connector's settings no longer lands in your logs.
+- **Error-code coverage guard.** A CI guard fails the build if a user-facing API error is emitted without a stable [`ConduitError`](/docs/using/other-features/structured-errors) code, and the API boundary now always attaches an error code — so agents and scripts can rely on error identity instead of parsing message text.
+
+:::caution
+Exit codes are a breaking change if you script against them. A forced double-`Ctrl-C` of `conduit run` now exits `130`/`143` (the POSIX `128 + signal` convention) instead of `2`, and command failures that used to all return `1` now return `2` (config) or `3` (environment) where applicable.
+:::
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)
