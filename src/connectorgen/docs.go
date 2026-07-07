@@ -15,6 +15,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	_ "embed"
 	"encoding/json"
@@ -169,15 +170,24 @@ func (cmd *CommandDocs) generateDocPage(
 	defer f.Close()
 
 	fmt.Printf("  💾 Writing %s ...\n", path)
-	return readmegen.Generate(readmegen.GenerateOptions{
+	// Generate into a buffer so we can rewrite legacy conduit.io links (sourced
+	// from upstream connector READMEs) to the current site domain before writing.
+	var buf bytes.Buffer
+	if err := readmegen.Generate(readmegen.GenerateOptions{
 		Data: data{
 			Repository:     repo,
 			Specifications: specifications,
 		},
 		ReadmePath: "./connector-docs-mdx.tmpl",
-		Out:        f,
+		Out:        &buf,
 		FuncMap:    funcMap,
-	})
+	}); err != nil {
+		return err
+	}
+	if _, err := f.Write(rewriteDomain(buf.Bytes())); err != nil {
+		return fmt.Errorf("could not write %s: %w", path, err)
+	}
+	return nil
 }
 
 var funcMap = template.FuncMap{
