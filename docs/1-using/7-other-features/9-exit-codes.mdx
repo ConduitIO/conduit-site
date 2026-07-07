@@ -1,0 +1,93 @@
+---
+title: 'Exit codes'
+slug: '/using/other-features/exit-codes'
+---
+
+:::note
+Deterministic exit codes were introduced in **Conduit v0.16.1**.
+:::
+
+Every `conduit` invocation — one-shot commands (`conduit pipelines list`, …) and
+the long-running `conduit run` — exits with one of a small set of deterministic
+codes. This lets scripts and agents branch on the **kind** of failure without
+parsing error text.
+
+## The codes
+
+| Code  | Meaning       | When you see it                                                                                       |
+|-------|---------------|-------------------------------------------------------------------------------------------------------|
+| `0`   | Success       | The command succeeded, or `conduit run` shut down gracefully on a single `SIGINT`/`SIGTERM` (`Ctrl+C`). |
+| `1`   | Runtime error | An internal or unclassified error — a bug or an unexpected failure.                                    |
+| `2`   | Validation    | The request or config was rejected: invalid argument, not found, already exists, or a failed precondition. |
+| `3`   | Environment   | A required external dependency is unreachable: the server, the database, a rate limit, or an already-bound listen address. |
+
+A few examples:
+
+- `conduit pipelines describe does-not-exist` → **`2`** (not found).
+- A client command run while no `conduit run` server is up → **`3`** (server
+  unreachable).
+- `conduit run` with a listen address already in use → **`3`** (bind-in-use).
+- `conduit run` shut down cleanly with a single `Ctrl+C` → **`0`**.
+
+:::note
+`FailedPrecondition` and `NotFound` are classified as **validation** (`2`), not
+runtime: they mean the request was rejected because of the state of the world the
+caller controls (a pipeline is already running, a referenced instance doesn't
+exist) — a validation-shaped failure from the caller's point of view, not an
+internal bug.
+:::
+
+## Forced shutdown: `128 + signum`
+
+`conduit run` treats a **second** `SIGINT`/`SIGTERM` — received after the first
+one has already started a graceful shutdown — as a forced kill, and exits with
+the POSIX `128 + signum` convention instead of a classified code:
+
+| Signal            | Exit code |
+|-------------------|-----------|
+| `SIGINT` (`Ctrl+C`) | `130`   |
+| `SIGTERM`         | `143`     |
+
+This is the same value a shell reports for a process killed by that signal, so a
+forced kill is distinguishable from an ordinary classified exit. (Press `Ctrl+C`
+once to drain in-flight records and exit `0`; press it a second time to stop
+waiting.)
+
+:::caution
+This is a **breaking change** from earlier versions, where a forced second-signal
+kill exited with `2`. If a supervisor (systemd, a Docker healthcheck, a CI job)
+specifically checked for exit code `2` on a forced Conduit kill, update it to
+expect `130`/`143`. Exit codes `0` (success) and `1` (default failure) are
+unchanged for every case that produced them before.
+:::
+
+## Scripting on exit codes
+
+Because the codes are stable, a script can react to the failure kind directly:
+
+```shell
+conduit pipelines describe "$PIPELINE_ID"
+case $? in
+  0) echo "ok" ;;
+  2) echo "no such pipeline (or invalid request)" ;;
+  3) echo "conduit server or its dependency is unreachable" ;;
+  *) echo "runtime error" ;;
+esac
+```
+
+For the structured detail behind a failure (a stable error code, the failing
+config path, a suggested fix), see
+[Structured errors & JSON output](/docs/using/other-features/structured-errors).
+
+## Coverage today
+
+The environment bucket (`3`) is intentionally under-covered for now: only the
+highest-value cases are tagged as environment failures — a server that's
+unreachable, a database that can't be opened, and an already-bound listen
+address. An environment-class failure outside those cases still exits `1` (the
+catch-all) rather than `3`. This is a deliberate, documented starting point, not
+a regression — `1` was the exit code for every `conduit run` failure before
+deterministic exit codes existed. Coverage grows as more boundaries adopt Conduit's
+[structured error](/docs/using/other-features/structured-errors) model.
+
+![scarf pixel conduit-site-docs-using-other-features](https://static.scarf.sh/a.png?x-pxid=8c8ff6d5-2756-41a3-b4ca-3ca2be381842)

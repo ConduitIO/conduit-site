@@ -1,0 +1,23 @@
+---
+slug: '2026-07-04-conduit-0-15-0-release'
+title: Conduit v0.15.0 release
+draft: false
+tags: [conduit, release, conduit-release]
+---
+
+[Conduit v0.15.0](https://github.com/ConduitIO/conduit/releases/tag/v0.15.0) is out — the first stable release since the project came back from about 15 months dormant. This cut stabilizes the nightly build train we've been running since restarting, and clears out a handful of provisioning and compatibility bugs that had piled up.
+
+:::tip
+Curious what's coming next? The [roadmap](/docs/future/roadmap) tracks the phases we're executing against.
+:::
+
+<!--truncate-->
+
+### Key Highlights
+
+- Fixed a backwards-compatibility regression that crashed pipelines using connectors built against the pre-lifecycle connector protocol (for example, an older Elasticsearch destination) — Conduit now falls back correctly instead of failing on `Open`.
+- Three [provisioning](/docs/using/pipelines/provisioning) fixes: pipelines created by an embedding application are no longer deleted on restart, a pipeline marked `status: stopped` in a config file now stays stopped after a restart, and one invalid document in a multi-document pipeline YAML file no longer takes the rest of the file down with it.
+- Record size estimation for metrics no longer runs a full JSON marshal per record — a plain traversal instead, cutting a meaningful chunk of metrics overhead off the hot path.
+- Toolchain bumped to Go 1.25.
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)

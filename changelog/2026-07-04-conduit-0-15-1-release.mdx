@@ -1,0 +1,20 @@
+---
+slug: '2026-07-04-conduit-0-15-1-release'
+title: Conduit v0.15.1 release
+draft: false
+tags: [conduit, release, conduit-release]
+---
+
+[Conduit v0.15.1](https://github.com/ConduitIO/conduit/releases/tag/v0.15.1) is a same-day patch for a shutdown bug: Conduit only registered `SIGINT`, so `SIGTERM` — the signal `docker stop`, `kubectl delete pod`, and `systemctl stop` all send — bypassed graceful shutdown and killed the process immediately.
+
+:::tip
+This wasn't silent data loss on its own — at-least-once delivery and crash-safe positions still recover an abrupt kill — but it meant every container or pod recycle skipped draining in-flight records and checkpointing, causing duplicate-delivery storms and unclean checkpoints on restart.
+:::
+
+<!--truncate-->
+
+### Key Highlights
+
+- `SIGTERM` now drives the same [graceful shutdown](/docs/installing-and-running) path as `SIGINT`: in-flight records drain and pipelines checkpoint before exit, with a second signal still forcing an immediate stop.
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)

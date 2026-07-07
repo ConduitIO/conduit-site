@@ -1,0 +1,97 @@
+---
+title: 'Health & Readiness'
+slug: '/using/other-features/health-and-readiness'
+---
+
+Conduit exposes two distinct HTTP probes, following the standard
+liveness/readiness split used by orchestrators such as Kubernetes:
+
+- **`/healthz` (liveness)** — is the Conduit process alive and able to reach its
+  state store? Use it to decide whether to **restart** the process.
+- **`/readyz` (readiness)** — is the engine finished starting up and able to
+  serve? Use it to decide whether to **route traffic**.
+
+Both are served on the HTTP API address (`:8080` by default; see
+[Configuration](/docs/configuration)).
+
+## Liveness — `/healthz`
+
+The liveness check verifies that Conduit can successfully connect to the database
+it was configured with (BadgerDB, PostgreSQL, SQLite, or the in-memory one). It's
+available at the `/healthz` path:
+
+```shell
+$ curl "http://localhost:8080/healthz"
+{"status":"SERVING"}
+```
+
+You can also check an individual service within Conduit. The following example
+checks whether the `PipelineService` is running:
+
+```shell
+$ curl "http://localhost:8080/healthz?service=PipelineService"
+{"status":"SERVING"}
+```
+
+The services that can be checked for health are `PipelineService`,
+`ConnectorService`, `ProcessorService`, and `PluginService`.
+
+## Readiness — `/readyz`
+
+The readiness check reports whether the engine can serve requests. It returns:
+
+- **`503 Service Unavailable`** with `{"status":"starting"}` while the engine is
+  still starting up (services initializing, pipelines provisioning, API coming
+  online).
+- **`503 Service Unavailable`** with `{"status":"unavailable","reason":"…"}` if
+  the engine has started but its state store is unreachable.
+- **`200 OK`** with `{"status":"ready", …}` once the engine can serve.
+
+```shell
+$ curl "http://localhost:8080/readyz"
+{
+  "status": "ready",
+  "pipelines": {
+    "total": 3,
+    "running": 2,
+    "degraded": 1,
+    "degradedPipelines": [
+      {"id": "pg-to-kafka", "status": "degraded", "error": "source connector error"}
+    ]
+  }
+}
+```
+
+:::note
+A **degraded pipeline does not make Conduit "not ready."** The engine can still
+serve requests, so degraded pipelines are reported in the response body rather
+than flipping the probe to `503`. Watch them through the `pipelines` block above
+(and through [metrics](/docs/using/other-features/metrics)); use `/readyz` only
+to decide whether the engine itself can accept traffic.
+:::
+
+## Using the probes with Kubernetes
+
+Map the probes directly onto the Kubernetes probe types:
+
+```yaml
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: 8080
+readinessProbe:
+  httpGet:
+    path: /readyz
+    port: 8080
+```
+
+`/healthz` decides restarts; `/readyz` decides whether traffic is routed to the
+pod. Because a degraded pipeline keeps `/readyz` at `200`, a single failing
+pipeline won't pull the whole instance out of service.
+
+## Metrics
+
+Prometheus metrics are exposed at `/metrics` on the same HTTP address. See
+[Metrics](/docs/using/other-features/metrics) for the full list.
+
+![scarf pixel conduit-site-docs-using-other-features](https://static.scarf.sh/a.png?x-pxid=8c8ff6d5-2756-41a3-b4ca-3ca2be381842)

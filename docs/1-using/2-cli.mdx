@@ -141,4 +141,49 @@ provides, with details about those parameters too.
 These same examples can be used for other commands, like `pipelines list`, `pipelines desc`, `connectors ls`,
 `connectors desc`, `processors list`, etc...
 
+## `quickstart`
+
+`conduit quickstart` is the fastest way to see Conduit working. It scaffolds an
+ephemeral demo pipeline — a built-in `generator` source streaming sample records
+to the built-in `log` destination — and runs it immediately, so records flow to
+your console within seconds:
+
+```shell
+$ conduit quickstart
+Starting a demo pipeline (generator → log). Records will flow below — press Ctrl-C to stop.
+```
+
+Unlike `conduit run`, `quickstart` needs no configuration and writes nothing to
+your working directory: the scaffolded config lives in a temporary directory that
+is removed on exit, and the state store is in-memory. Press `Ctrl + C` to stop.
+
+| Flag     | Description                                                       |
+|----------|-------------------------------------------------------------------|
+| `--json` | Emit the demo's logs and records as JSON instead of human text.   |
+
+It's meant for a quick "does this work" check. To build and run a pipeline of
+your own, see [Getting Started](/docs/getting-started) and
+[`pipelines init`](/docs/using/pipelines/configuration-file).
+
+## JSON output
+
+The read commands that talk to a running Conduit — `pipelines list`,
+`pipelines describe`, `connectors list`/`describe`, `processors list`/`describe`,
+`connector-plugins list`/`describe`, and `processor-plugins list`/`describe` —
+accept a `--json` flag. With `--json`, the command prints the result as JSON
+matching the [HTTP API](/docs/using/other-features/api) shape instead of the
+human-readable table:
+
+```shell
+$ conduit pipelines list --json
+```
+
+`--json` makes the CLI scriptable and agent-legible: the same structured data the
+API returns, without parsing table output. Errors are structured too — see
+[Structured errors & JSON output](/docs/using/other-features/structured-errors).
+
+Conduit's exit codes are also deterministic, so a script can branch on the kind
+of failure without reading the error text — see
+[Exit codes](/docs/using/other-features/exit-codes).
+
 ![scarf pixel conduit-site-docs-using](https://static.scarf.sh/a.png?x-pxid=76d5981f-cd63-422b-8cf7-eab9e99f0cd3)

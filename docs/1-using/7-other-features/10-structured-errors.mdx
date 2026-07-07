@@ -1,0 +1,114 @@
+---
+title: 'Structured errors & JSON output'
+slug: '/using/other-features/structured-errors'
+---
+
+:::note
+Conduit's structured error model and `--json` output shipped in **Conduit v0.16.0**;
+a CI guard enforcing error-code coverage followed in **v0.16.1**. The model is rolling
+out boundary by boundary, so not every error carries every field yet — see
+[Coverage today](#coverage-today).
+:::
+
+Conduit is built to be driven by scripts and agents as well as people. Two
+features make its output machine-actionable: **structured errors** that carry a
+stable code (plus, where available, the failing config path and a suggested fix),
+and **`--json`** output on the read commands.
+
+## Structured errors
+
+When Conduit rejects a request, the error isn't just a prose string. It carries a
+stable, machine-readable identity so a caller can react to _what_ went wrong
+without pattern-matching the message text. A structured error can include:
+
+- **`code`** — a stable, dotted identifier, e.g. `connector.plugin_not_found`.
+  The code never changes across versions, so it's safe to branch on.
+- **`message`** — a human-readable description (with any secret values redacted).
+- **`configPath`** — a JSON pointer into the offending pipeline config, e.g.
+  `/connectors/1/plugin`, when the error is tied to a specific field.
+- **`suggestion`** — a human-readable hint for fixing it, when available.
+- **`fix`** — a structured, machine-appliable change (a config path, an operation,
+  and a value) that a tool can apply directly, when available.
+
+Because the code is stable and explicit, an agent can self-correct (retry with a
+different plugin, add a missing setting) and a UI can render an actionable
+message instead of a raw string — the same information a human reads.
+
+## The API error shape
+
+Over the HTTP and gRPC APIs, structured errors are **additive**: the existing
+error shape is unchanged, and the structured fields ride along as an extra
+detail. Concretely, an error is a standard `google.rpc.Status` (top-level `code`
+and `message`, exactly as before) with a `google.rpc.ErrorInfo` detail carrying:
+
+- `reason` — the stable code (e.g. `connector.plugin_not_found`);
+- `domain` — always `conduit`;
+- `metadata` — the optional `configPath`, `suggestion`, `docsUrl`, and `fix`.
+
+An HTTP error body therefore looks like this:
+
+```json
+{
+  "code": 5,
+  "message": "connector plugin \"generatorr\" not found",
+  "details": [
+    {
+      "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+      "reason": "connector.plugin_not_found",
+      "domain": "conduit",
+      "metadata": {
+        "configPath": "/connectors/0/plugin",
+        "suggestion": "check the plugin name; run 'conduit connector-plugins list'"
+      }
+    }
+  ]
+}
+```
+
+Because the addition is a detail on the existing `Status`, consumers that only
+read `code`/`message` keep working unchanged, while agents and the UI can read
+the `ErrorInfo` for the stable reason and the structured fields.
+
+## `--json` on read commands
+
+The read commands that talk to a running Conduit accept a `--json` flag:
+
+```shell
+$ conduit pipelines list --json
+$ conduit pipelines describe my-pipeline --json
+$ conduit connectors list --json
+$ conduit connector-plugins describe builtin:postgres@latest --json
+```
+
+With `--json`, the command prints the result as JSON matching the HTTP API shape
+(the same structured data, without parsing a table). The commands that support it
+are `pipelines list`/`describe`, `connectors list`/`describe`,
+`processors list`/`describe`, `connector-plugins list`/`describe`, and
+`processor-plugins list`/`describe`. The [`quickstart`](/docs/cli#quickstart)
+command also takes `--json` to emit its demo records as JSON.
+
+## For agents
+
+Together these make Conduit legible to an agent without screen-scraping:
+
+- Read state with `--json` (or the [HTTP API](/docs/using/other-features/api))
+  and consume structured data.
+- On failure, branch on the stable error `code` and, when present, apply the
+  `fix` or act on the `configPath`/`suggestion`.
+- Branch on the process [exit code](/docs/using/other-features/exit-codes) to
+  distinguish a validation error (`2`) from an environment problem (`3`) without
+  reading any text.
+
+## Coverage today
+
+The structured error model is rolling out **boundary by boundary**, starting with
+the highest-value user-facing surfaces (config validation, pipeline provisioning,
+and Conduit-side connector/plugin errors). Errors that haven't been migrated yet
+still surface with a code, but fall back to a generic one (`internal.unknown`)
+and may not carry a `configPath`, `suggestion`, or `fix`. The `code` and
+`message` fields are always present; the richer fields are optional and populated
+as coverage grows. Errors raised by a running connector plugin about its own
+operation (bad credentials, a missing table) are a separate, later step that
+requires a connector-protocol change.
+
+![scarf pixel conduit-site-docs-using-other-features](https://static.scarf.sh/a.png?x-pxid=8c8ff6d5-2756-41a3-b4ca-3ca2be381842)

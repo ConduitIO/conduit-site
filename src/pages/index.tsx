@@ -23,7 +23,7 @@ function HeaderSection() {
           <SplitPair data-reversed data-skewed="60:40">
             <Stack className="basis-3/5">
               <h1 className="font-bold text-5xl lg:text-5xl md:text-5xl text-white">
-                Data Integration for Production Data Stores
+                The Open-Source Kafka Connect Replacement
               </h1>
 
               <p className='mt-10 text-white'>
