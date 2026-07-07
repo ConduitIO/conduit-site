@@ -97,7 +97,7 @@ the log level of the connector in order for the records to show up in the logs.
 
 ### Known issues
 
-- **Only when using as a [standalone connector](https://conduit.io/docs/core-concepts#standalone-connector)**: Messages larger than 64KB will not be logged when using `log.level` as `info`.
+- **Only when using as a [standalone connector](https://conduitdata.io/docs/core-concepts#standalone-connector)**: Messages larger than 64KB will not be logged when using `log.level` as `info`.
   This is a known issue caused by the default buffer value of `go-plugin`. More information can be found in [this comment](https://github.com/ConduitIO/conduit-connector-log/issues/81#issuecomment-2904224580).
 
 
@@ -144,7 +144,7 @@ pipelines:
           sdk.rate.perSecond: "0"
           # The format of the output record. See the Conduit documentation for a
           # full list of supported formats
-          # (https://conduit.io/docs/using/connectors/configuration-parameters/output-format).
+          # (https://conduitdata.io/docs/using/connectors/configuration-parameters/output-format).
           # Type: string
           sdk.record.format: "opencdc/json"
           # Options to configure the chosen output record format. Options are

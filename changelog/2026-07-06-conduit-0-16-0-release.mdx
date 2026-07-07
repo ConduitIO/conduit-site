@@ -1,0 +1,24 @@
+---
+slug: '2026-07-06-conduit-0-16-0-release'
+title: Conduit v0.16.0 release
+draft: false
+tags: [conduit, release, conduit-release]
+---
+
+[Conduit v0.16.0](https://github.com/ConduitIO/conduit/releases/tag/v0.16.0) is the first release built end-to-end against the Phase 1 execution plan: a real first-five-minutes experience, structured errors instead of opaque strings, and the deployment basics — readiness, liveness, metrics, full env-config — that make Conduit boring to run in a container or a pod.
+
+:::tip
+Deterministic CLI exit codes, connector-config redaction in logs, and a CI guard enforcing error-code coverage landed on `main` shortly after and ship in the upcoming v0.16.1.
+:::
+
+<!--truncate-->
+
+### Key Highlights
+
+- New [`conduit quickstart`](/docs/cli) command: one line scaffolds and runs a demo generator → log pipeline in-process — records flow to your console within seconds, no flags, nothing written to your working directory. It's the same generator-to-log combo from our [pipeline guide](/docs/using/guides/build-generator-to-log-pipeline), now zero-config.
+- [Structured errors](/docs/using/other-features/structured-errors) (`ConduitError`): user-facing errors are gaining a stable machine-actionable shape — code, the failing config path, and a suggested fix — surfaced over the gRPC/HTTP API so agents and the MCP server can act on an error instead of just printing it. Rollout is incremental across error sites.
+- `--json` now works on every read command (`list`/`describe`) across connectors, connector plugins, processors, processor plugins, and pipelines, not just `pipelines list`. See the [CLI reference](/docs/cli).
+- 12-factor essentials: a new [`/readyz` readiness endpoint](/docs/using/other-features/health-and-readiness) joins the existing `/healthz` liveness check and Prometheus [`/metrics`](/docs/using/other-features/metrics) — `/readyz` returns 503 while the engine is starting or its state store is unreachable, and reports degraded pipelines in the response body without flipping the process to not-ready. Every setting is [env-configurable](/docs/configuration) (`CONDUIT_*`, flag > env > file precedence), and `conduit run --pipelines <dir>` is now a shorthand for `--pipelines.path`.
+- Lifecycle correctness: a degraded pipeline now reports the source connector's actual error instead of a downstream `io.EOF` that masked it, and force-stop / `WaitPipeline` no longer risk a nil-pointer panic or a lost terminal error under race conditions during startup and shutdown.
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)

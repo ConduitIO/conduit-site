@@ -3,12 +3,12 @@ import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
-  title: 'Conduit | Data Integration for Production Data Stores',
-  tagline: 'Sync data between your production systems using an extensible, event-first experience with minimal dependencies that fit within your existing workflow for free.',
+  title: 'Conduit | The Open-Source Kafka Connect Replacement',
+  tagline: 'The open-source, broker-neutral replacement for Kafka Connect — any-language plugins, embeddable as a Go library, and built for agents and automation. Get a pipeline running in under a minute.',
   favicon: 'img/favicon.ico',
   
   // Set the production url of your site here
-  url: 'https://conduit.io',
+  url: 'https://conduitdata.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
@@ -163,8 +163,8 @@ const config: Config = {
       copyright: `Copyright © ${new Date().getFullYear()} Meroxa, Inc.`,
     },
     announcementBar: {
-      id: 'announcement-bar-14', // increment on change
-      content: `Conduit v0.14.0 is here! <a class='cta' href='/changelog/2025-06-13-conduit-0-14-0-release' target='_blank' rel='noreferrer noopener'>See what's new</a>.`,
+      id: 'announcement-bar-16', // increment on change
+      content: `Conduit v0.16.0 is here! <a class='cta' href='/changelog/2026-07-06-conduit-0-16-0-release' target='_blank' rel='noreferrer noopener'>See what's new</a>.`,
       isCloseable: true,
     },
     colorMode: {

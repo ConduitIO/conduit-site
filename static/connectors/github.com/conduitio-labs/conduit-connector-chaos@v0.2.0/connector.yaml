@@ -3,7 +3,7 @@ specification:
   name: chaos
   summary: A chaos destination connector
   description: |-
-    A [Conduit](https://conduit.io) connector that can be configured to behave in
+    A [Conduit](https://conduitdata.io) connector that can be configured to behave in
     unexpected ways to figure out how Conduit handles it.
 
     ## Modes
@@ -188,7 +188,7 @@ specification:
       - name: sdk.record.format
         description: |-
           The format of the output record. See the Conduit documentation for a full
-          list of supported formats (https://conduit.io/docs/using/connectors/configuration-parameters/output-format).
+          list of supported formats (https://conduitdata.io/docs/using/connectors/configuration-parameters/output-format).
         type: string
         default: opencdc/json
         validations: []

@@ -86,10 +86,37 @@ preview.pipeline-arch-v2-disable-metrics: false
 ## Environment variables
 
 **Environment variables** (lower priority) - an environment variable is only
-  used if no CLI flag is provided for the same option. Environment variables
-  have the prefix `CONDUIT` and contain underscores instead of dots and
-  hyphens (e.g. the flag `--db.postgres.connection-string` corresponds
-  to `CONDUIT_DB_POSTGRES_CONNECTION_STRING`).
+  used if no CLI flag is provided for the same option. **Every** setting is
+  configurable this way: there is no flag without a matching environment
+  variable. The name is derived from the flag path mechanically:
+
+  1. Take the flag path (e.g. `api.http.address`).
+  2. Upper-case it and replace every `.` and `-` with `_`.
+  3. Prefix it with `CONDUIT_`.
+
+  | Flag                              | Environment variable                     |
+  |-----------------------------------|------------------------------------------|
+  | `--api.http.address`              | `CONDUIT_API_HTTP_ADDRESS`               |
+  | `--api.enabled`                   | `CONDUIT_API_ENABLED`                    |
+  | `--db.type`                       | `CONDUIT_DB_TYPE`                         |
+  | `--db.postgres.connection-string` | `CONDUIT_DB_POSTGRES_CONNECTION_STRING`  |
+  | `--log.level`                     | `CONDUIT_LOG_LEVEL`                       |
+
+  For example, these two invocations are equivalent:
+
+  ```shell
+  $ conduit run --api.http.address=:9090
+  ```
+
+  ```shell
+  $ CONDUIT_API_HTTP_ADDRESS=:9090 conduit run
+  ```
+
+:::note
+Because a flag always wins over an environment variable, a flag on the command
+line overrides the same setting exported in your environment. See
+[precedence](#cli-flags) above.
+:::
 
 ## Configuration file
 
@@ -106,5 +133,35 @@ preview.pipeline-arch-v2-disable-metrics: false
     postgres:
       connection-string: postgres://localhost:5432/conduitdb # -db.postgres.connection-string or CONDUIT_DB_POSTGRES_CONNECTION_STRING
   ```
+
+## Pointing Conduit at a pipelines directory
+
+The path Conduit scans for pipeline configuration files is set by
+`--pipelines.path` (env `CONDUIT_PIPELINES_PATH`). For convenience — and to make
+GitOps-style setups read cleanly — `conduit run` also accepts `--pipelines` as a
+shorthand alias for `--pipelines.path`:
+
+```shell
+$ conduit run --pipelines ./my-pipelines
+```
+
+This is equivalent to `conduit run --pipelines.path ./my-pipelines`. The argument
+can be a directory of pipeline configuration files or a single pipeline
+configuration file.
+
+## Secrets in logs
+
+Connector settings routinely carry secrets: database URLs with embedded
+passwords, SASL credentials, access keys. Conduit **redacts connector
+configuration values in its own logs** — when it logs a connector's config (for
+example while configuring a connector), every value is replaced with `***` and
+only the parameter keys stay visible. Keys are not secret and are useful for
+debugging ("which parameter is set") without revealing the value it was set to.
+
+:::note
+This redaction applies to Conduit's own log output. It does not alter the values
+Conduit passes to the connector, and it is independent of any redaction a
+connector performs on its own logs.
+:::
 
 ![scarf pixel conduit-site-docs-using](https://static.scarf.sh/a.png?x-pxid=76d5981f-cd63-422b-8cf7-eab9e99f0cd3)

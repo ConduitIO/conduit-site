@@ -3,7 +3,7 @@ specification:
   name: activemq
   summary: An ActiveMQ Artemis source and destination plugin for Conduit, written in Go.
   description: |-
-    The ActiveMQ Classic connector is one of [Conduit](https://conduit.io) plugins. The connector provides both a source and a destination connector for [ActiveMQ Artemis](https://activemq.apache.org/components/artemis/).
+    The ActiveMQ Classic connector is one of [Conduit](https://conduitdata.io) plugins. The connector provides both a source and a destination connector for [ActiveMQ Artemis](https://activemq.apache.org/components/artemis/).
 
     It uses the [stomp protocol](https://stomp.github.io/) to connect to ActiveMQ.
 
@@ -278,7 +278,7 @@ specification:
       - name: sdk.record.format
         description: |-
           The format of the output record. See the Conduit documentation for a full
-          list of supported formats (https://conduit.io/docs/using/connectors/configuration-parameters/output-format).
+          list of supported formats (https://conduitdata.io/docs/using/connectors/configuration-parameters/output-format).
         type: string
         default: opencdc/json
         validations: []

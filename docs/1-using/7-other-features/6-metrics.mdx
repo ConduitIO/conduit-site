@@ -7,6 +7,12 @@ are exposed through an HTTP API and ready to be scraped by Prometheus. It's also
 possible to easily define new metrics with existing types, or just create a
 completely new metric type.
 
+:::tip
+Conduit also exposes liveness (`/healthz`) and readiness (`/readyz`) probes on
+the same HTTP address. See
+[Health & Readiness](/docs/using/other-features/health-and-readiness).
+:::
+
 ## Accessing metrics
 
 Metrics are exposed at `/metrics`. For example, if you're running Conduit

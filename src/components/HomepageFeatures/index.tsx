@@ -4,24 +4,24 @@ import styles from './styles.module.css';
 
 const FeatureList = [
   {
-    title: 'Simple',
+    title: '60-Second Start',
     img: require('@site/static/img/simple.png').default,
-    description: "Eliminate the multi-step process you go through today. Just download the binary and start building.",
+    description: "Download a single binary and run conduit quickstart to watch a demo pipeline stream records to your console in under a minute — zero configuration.",
   },
   {
-    title: 'Extensible',
+    title: 'Any Language',
     img: require('@site/static/img/scalable.png').default,
-    description: "Conduit connectors give you the ability to pull and push data to any production datastore you need. If a datastore is missing, the simple SDK allows you to extend Conduit where you need it.",
+    description: "Connectors and processors run over gRPC or compile to WASM, so you can write plugins in any language — not just the JVM.",
   },
   {
-    title: 'Real-Time',
+    title: 'Broker-Neutral',
     img: require('@site/static/img/realtime.png').default,
-    description: "Conduit pipelines listen for changes to a database, data warehouse, etc., and allows your data applications to act upon those changes in real-time.",
+    description: "Conduit isn't tied to Kafka. Move data between any source and destination — databases, warehouses, queues, and more — with the same pipeline model.",
   },
   {
-    title: 'Flexible',
+    title: 'Embeddable & Agent-Ready',
     img: require('@site/static/img/flexible.png').default,
-    description: "Run it in a way that works for you; use it as a standalone service or orchestrate it within your infrastructure.",
+    description: "Run it standalone or embed it as a Go library in your own service. Every command supports --json and returns structured, stable error codes, so agents and scripts can drive it directly.",
   },
 ];
 
@@ -41,7 +41,7 @@ const Feature = ({ img, title, description }) => (
 export default function HomepageFeatures() {
   return (
     <div className="pb-10 mt-10 features">
-      <h2 className='text-4xl font-bold pb-10 text-forest-100 text-center'> Deliver real-time event-based data in no time </h2>
+      <h2 className='text-4xl font-bold pb-10 text-forest-100 text-center'>Everything Kafka Connect does — without the JVM or the Kafka lock-in</h2>
       <ul className={clsx(styles['feature-grid'], "gap-3 grid grid-cols-1 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0")}>
         {FeatureList.map((feature) => (
           <Feature {...feature} />

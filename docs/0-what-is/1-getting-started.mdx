@@ -29,7 +29,7 @@ If you're using a macOS or Linux system, you can install Conduit with the
 following command:
 
 ```shell
-$ curl https://conduit.io/install.sh | bash
+$ curl https://conduitdata.io/install.sh | bash
 ```
 
 If you're not using macOS or Linux system, you can still install Conduit
@@ -40,6 +40,40 @@ in [our installation page](/docs/installing-and-running).
 The Conduit binary contains both, the Conduit service and the Conduit CLI, with
 which you can interact with Conduit.
 :::
+
+## The fastest way to start
+
+Once Conduit is installed, the quickest way to see it working is a single
+command:
+
+```shell
+$ conduit quickstart
+```
+
+`conduit quickstart` scaffolds an ephemeral demo pipeline — a built-in
+[`generator`](/docs/using/connectors/list/generator) source streaming sample
+records to the built-in [`log`](/docs/using/connectors/list/log) destination —
+and runs it immediately. Records start flowing to your console within seconds:
+
+```shell
+Starting a demo pipeline (generator → log). Records will flow below — press Ctrl-C to stop.
+
+2026-07-06T12:37:28+00:00 INF ... record={"key":...,"payload":{"after":{"airline":"elytrorrhagia","scheduledDeparture":"2026-07-06T10:37:27.540841Z"},...}}
+```
+
+Everything is in-memory and nothing is written to your working directory: the
+scaffolded config lives in a temporary directory that is removed on exit, and the
+state store is in-memory, so there is nothing to clean up. Press `Ctrl + C` to
+stop.
+
+:::tip
+Add `--json` to emit the demo's logs and records as JSON instead of
+human-readable text: `conduit quickstart --json`.
+:::
+
+`conduit quickstart` is the zero-setup way to confirm Conduit runs on your
+machine. It **complements** — it doesn't replace — the manual walkthrough below,
+which is how you build a real pipeline of your own from a configuration file.
 
 ## Initialize Conduit 
 
@@ -88,7 +122,7 @@ pipelines:
     description: "This pipeline was initialized using the `conduit pipelines init` command.
 It is a demo pipeline that connects a source connector (generator) to a destination connector (log).
 The next step is to simply run `conduit run` in your terminal and you should see a new record being logged every second.
-Check out https://conduit.io/docs/using/pipelines/configuration-file to learn about how this file is structured."
+Check out https://conduitdata.io/docs/using/pipelines/configuration-file to learn about how this file is structured."
     status: running
     name: "demo-pipeline"
     connectors:
@@ -205,6 +239,8 @@ covered, here are a few places to dive in deeper:
 - [Connectors](/docs/using/connectors/getting-started)
 - [Pipelines](/docs/using/pipelines/configuration-file)
 - [Processors](/docs/using/processors/getting-started)
+- [Health & Readiness](/docs/using/other-features/health-and-readiness) — probes for running Conduit in production
+- [Exit codes](/docs/using/other-features/exit-codes) — scriptable, deterministic process exit codes
 
 Or, if you want to experiment a bit more, check out the examples in
 our [GitHub repository](https://github.com/ConduitIO/conduit/tree/main/examples).

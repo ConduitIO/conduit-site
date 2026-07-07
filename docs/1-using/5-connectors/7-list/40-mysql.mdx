@@ -88,7 +88,7 @@ Snapshot mode is the first stage of the source sync process. It reads all rows
 from the configured tables as record snapshots.
 
 In snapshot mode, the record payload consists of
-[opencdc.StructuredData](https://conduit.io/docs/using/opencdc-record#structured-data),
+[opencdc.StructuredData](https://conduitdata.io/docs/using/opencdc-record#structured-data),
 with each key being a column and each value being that column's value.
 
 ### Change Data Capture mode
@@ -143,7 +143,7 @@ The source connector uses [avro](https://avro.apache.org/docs/1.11.1/specificati
 
 ### Record structure
 
-Records produced by the MySQL source connector contain the following [opencdc record structure](https://conduit.io/docs/using/opencdc-record):
+Records produced by the MySQL source connector contain the following [opencdc record structure](https://conduitdata.io/docs/using/opencdc-record):
 
 *   **Operation**: Indicates the type of change (`create`, `update`, `delete`, `snapshot`).
 *   **Payload**:
@@ -153,7 +153,7 @@ Records produced by the MySQL source connector contain the following [opencdc re
 *   **Position**: Represents the point in the data stream. It's a JSON object containing *either* a `snapshot_position` field *or* a `cdc_position` field, structured as described below.
 *   **Metadata**: Contains standard OpenCDC fields plus:
     *   `mysql.server.id`: (CDC only) The originating MySQL server ID from the replication event header.
-    *   [Key](https://conduit.io/docs/using/opencdc-record/#opencdckeyschema) and [payload](https://conduit.io/docs/using/opencdc-record/#opencdcpayloadschema) schema registry data.
+    *   [Key](https://conduitdata.io/docs/using/opencdc-record/#opencdckeyschema) and [payload](https://conduitdata.io/docs/using/opencdc-record/#opencdcpayloadschema) schema registry data.
 
 #### Snapshot Records
 
@@ -335,7 +335,7 @@ pipelines:
           sdk.rate.perSecond: "0"
           # The format of the output record. See the Conduit documentation for a
           # full list of supported formats
-          # (https://conduit.io/docs/using/connectors/configuration-parameters/output-format).
+          # (https://conduitdata.io/docs/using/connectors/configuration-parameters/output-format).
           # Type: string
           sdk.record.format: "opencdc/json"
           # Options to configure the chosen output record format. Options are

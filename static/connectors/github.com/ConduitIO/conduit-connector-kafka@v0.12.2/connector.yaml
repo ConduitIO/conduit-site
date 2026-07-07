@@ -26,7 +26,7 @@ specification:
     - `sdk.record.format`: used to choose the format
     - `sdk.record.format.options`: used to configure the specifics of the chosen format
 
-    See [this article](https://conduit.io/docs/connectors/output-formats) for more
+    See [this article](https://conduitdata.io/docs/connectors/output-formats) for more
     info on configuring the output format.
 
     ### Batching
@@ -326,7 +326,7 @@ specification:
       - name: sdk.record.format
         description: |-
           The format of the output record. See the Conduit documentation for a full
-          list of supported formats (https://conduit.io/docs/using/connectors/configuration-parameters/output-format).
+          list of supported formats (https://conduitdata.io/docs/using/connectors/configuration-parameters/output-format).
         type: string
         default: opencdc/json
         validations: []
