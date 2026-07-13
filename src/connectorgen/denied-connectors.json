@@ -4,8 +4,8 @@
     "description": "",
     "created_at": "",
     "url": "https://github.com/ConduitIO/conduit",
-    "stargazer_count": 533,
-    "fork_count": 54,
+    "stargazer_count": 603,
+    "fork_count": 59,
     "releases": null
   },
   {
@@ -22,7 +22,7 @@
     "description": "",
     "created_at": "",
     "url": "https://github.com/ConduitIO/conduit-operator",
-    "stargazer_count": 1,
+    "stargazer_count": 2,
     "fork_count": 1,
     "releases": null
   },
@@ -33,6 +33,15 @@
     "url": "https://github.com/ConduitIO/conduit-site",
     "stargazer_count": 1,
     "fork_count": 7,
+    "releases": null
+  },
+  {
+    "name_with_owner": "ConduitIO/conduitio.github.io",
+    "description": "",
+    "created_at": "",
+    "url": "https://github.com/ConduitIO/conduitio.github.io",
+    "stargazer_count": 0,
+    "fork_count": 0,
     "releases": null
   },
   {
@@ -117,15 +126,6 @@
     "releases": null
   },
   {
-    "name_with_owner": "alejandromav/conduit-connector-tinybird",
-    "description": "",
-    "created_at": "",
-    "url": "https://github.com/alejandromav/conduit-connector-tinybird",
-    "stargazer_count": 1,
-    "fork_count": 0,
-    "releases": null
-  },
-  {
     "name_with_owner": "brharrelldev/pulsar-connector",
     "description": "",
     "created_at": "",
@@ -171,33 +171,6 @@
     "releases": null
   },
   {
-    "name_with_owner": "gopherslab/conduit-connector-google-sheets",
-    "description": "",
-    "created_at": "",
-    "url": "https://github.com/gopherslab/conduit-connector-google-sheets",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": null
-  },
-  {
-    "name_with_owner": "gopherslab/conduit-connector-redis",
-    "description": "",
-    "created_at": "",
-    "url": "https://github.com/gopherslab/conduit-connector-redis",
-    "stargazer_count": 1,
-    "fork_count": 0,
-    "releases": null
-  },
-  {
-    "name_with_owner": "gopherslab/conduit-connector-zendesk",
-    "description": "",
-    "created_at": "",
-    "url": "https://github.com/gopherslab/conduit-connector-zendesk",
-    "stargazer_count": 1,
-    "fork_count": 1,
-    "releases": null
-  },
-  {
     "name_with_owner": "hariso/conduit-connector-foo",
     "description": "",
     "created_at": "",
@@ -240,24 +213,6 @@
     "url": "https://github.com/hariso/custom-conduit",
     "stargazer_count": 0,
     "fork_count": 1,
-    "releases": null
-  },
-  {
-    "name_with_owner": "joeblew999/pb-stack",
-    "description": "",
-    "created_at": "",
-    "url": "https://github.com/joeblew999/pb-stack",
-    "stargazer_count": 1,
-    "fork_count": 0,
-    "releases": null
-  },
-  {
-    "name_with_owner": "maha-hajja/conduit-connector-slack",
-    "description": "",
-    "created_at": "",
-    "url": "https://github.com/maha-hajja/conduit-connector-slack",
-    "stargazer_count": 0,
-    "fork_count": 0,
     "releases": null
   },
   {
@@ -324,15 +279,6 @@
     "releases": null
   },
   {
-    "name_with_owner": "neovintage/conduit-connector-redis",
-    "description": "",
-    "created_at": "",
-    "url": "https://github.com/neovintage/conduit-connector-redis",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": null
-  },
-  {
     "name_with_owner": "nickchomey/conduit-processor-benthos",
     "description": "",
     "created_at": "",
@@ -346,33 +292,6 @@
     "description": "",
     "created_at": "",
     "url": "https://github.com/nstehr/conduit-connector-mqtt",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": null
-  },
-  {
-    "name_with_owner": "raulb/conduit-connector-arxiv",
-    "description": "",
-    "created_at": "",
-    "url": "https://github.com/raulb/conduit-connector-arxiv",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": null
-  },
-  {
-    "name_with_owner": "raulb/conduit-pipelines",
-    "description": "",
-    "created_at": "",
-    "url": "https://github.com/raulb/conduit-pipelines",
-    "stargazer_count": 0,
-    "fork_count": 0,
-    "releases": null
-  },
-  {
-    "name_with_owner": "raulb/custom-conduit",
-    "description": "",
-    "created_at": "",
-    "url": "https://github.com/raulb/custom-conduit",
     "stargazer_count": 0,
     "fork_count": 0,
     "releases": null
