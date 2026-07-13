@@ -60,7 +60,7 @@ import Tooltip from '@mui/material/Tooltip';
   {/* Stars */}
   <Chip
     icon={<StarIcon sx={{ fontSize: '1rem' }} />}
-    label="1"
+    label="2"
     size="small"
     sx={{ height: 24 }}
   />
@@ -68,14 +68,14 @@ import Tooltip from '@mui/material/Tooltip';
 
 ## Latest release
 
-- [conduit-connector-dynamodb_0.4.0_Darwin_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.4.0/conduit-connector-dynamodb_0.4.0_Darwin_arm64.tar.gz)
-- [conduit-connector-dynamodb_0.4.0_Darwin_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.4.0/conduit-connector-dynamodb_0.4.0_Darwin_x86_64.tar.gz)
-- [conduit-connector-dynamodb_0.4.0_Linux_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.4.0/conduit-connector-dynamodb_0.4.0_Linux_arm64.tar.gz)
-- [conduit-connector-dynamodb_0.4.0_Linux_i386.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.4.0/conduit-connector-dynamodb_0.4.0_Linux_i386.tar.gz)
-- [conduit-connector-dynamodb_0.4.0_Linux_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.4.0/conduit-connector-dynamodb_0.4.0_Linux_x86_64.tar.gz)
-- [conduit-connector-dynamodb_0.4.0_Windows_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.4.0/conduit-connector-dynamodb_0.4.0_Windows_arm64.tar.gz)
-- [conduit-connector-dynamodb_0.4.0_Windows_i386.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.4.0/conduit-connector-dynamodb_0.4.0_Windows_i386.tar.gz)
-- [conduit-connector-dynamodb_0.4.0_Windows_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.4.0/conduit-connector-dynamodb_0.4.0_Windows_x86_64.tar.gz)
+- [conduit-connector-dynamodb_0.4.3_Darwin_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.4.3/conduit-connector-dynamodb_0.4.3_Darwin_arm64.tar.gz)
+- [conduit-connector-dynamodb_0.4.3_Darwin_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.4.3/conduit-connector-dynamodb_0.4.3_Darwin_x86_64.tar.gz)
+- [conduit-connector-dynamodb_0.4.3_Linux_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.4.3/conduit-connector-dynamodb_0.4.3_Linux_arm64.tar.gz)
+- [conduit-connector-dynamodb_0.4.3_Linux_i386.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.4.3/conduit-connector-dynamodb_0.4.3_Linux_i386.tar.gz)
+- [conduit-connector-dynamodb_0.4.3_Linux_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.4.3/conduit-connector-dynamodb_0.4.3_Linux_x86_64.tar.gz)
+- [conduit-connector-dynamodb_0.4.3_Windows_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.4.3/conduit-connector-dynamodb_0.4.3_Windows_arm64.tar.gz)
+- [conduit-connector-dynamodb_0.4.3_Windows_i386.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.4.3/conduit-connector-dynamodb_0.4.3_Windows_i386.tar.gz)
+- [conduit-connector-dynamodb_0.4.3_Windows_x86_64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/conduitio-labs/conduit-connector-dynamodb/releases/download/v0.4.3/conduit-connector-dynamodb_0.4.3_Windows_x86_64.tar.gz)
 
 ## Description
 
@@ -129,6 +129,10 @@ pipelines:
           # rather than static credentials.
           # Type: string
           aws.accessKeyId: ""
+          # AWS AssumeRoleChain. Optional - if not provided, the connector will
+          # use the default credential chain.
+          # Type: string
+          aws.assumeRoleArn: ""
           # AWS secret access key. Optional - if not provided, the connector
           # will use the default credential chain (environment variables, shared
           # credentials file, or IAM role). For production environments, it's
@@ -223,6 +227,10 @@ pipelines:
           # rather than static credentials.
           # Type: string
           aws.accessKeyId: ""
+          # AWS AssumeRoleChain. Optional - if not provided, the connector will
+          # use the default credential chain.
+          # Type: string
+          aws.assumeRoleArn: ""
           # AWS secret access key. Optional - if not provided, the connector
           # will use the default credential chain (environment variables, shared
           # credentials file, or IAM role). For production environments, it's
