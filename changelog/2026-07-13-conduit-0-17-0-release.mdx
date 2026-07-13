@@ -1,0 +1,19 @@
+---
+slug: '2026-07-13-conduit-0-17-0-release'
+title: Conduit v0.17.0 release
+draft: false
+tags: [conduit, release, conduit-release]
+---
+
+[Conduit v0.17.0](https://github.com/ConduitIO/conduit/releases/tag/v0.17.0) makes Conduit faster to build with and easier for an agent to drive: live config hot-reload while a pipeline runs, direct pipeline lifecycle control from the CLI, a repair command, and agent-legible docs served over MCP.
+
+<!--truncate-->
+
+### Key Highlights
+
+- **`conduit run --dev` — live hot-reload.** Point Conduit at a pipelines directory and edit the YAML while it runs. A processor-only change is swapped into the running pipeline in place — no restart, no position replay, no downtime; any other change applies through a graceful drain-and-restart. Each edit reports how it landed (`in_place` or `restart`), so you always know whether an edit blipped the pipeline. It's the tight edit-save-see loop for building a pipeline.
+- **Pipeline lifecycle from the CLI.** `conduit pipelines start` and `conduit pipelines stop` control a running instance's pipelines directly — no config editing, no server restart.
+- **`conduit pipelines repair`.** Diagnoses common pipeline misconfigurations and synthesizes fixes. Available both as a CLI command and an MCP tool, so an agent can repair a pipeline end to end.
+- **Agent-native docs and MCP over HTTP.** Conduit now generates [`llms.txt` and `llms-full.txt`](https://github.com/ConduitIO/conduit/blob/main/llms.txt) — a compact, accurate map of the product for agents, guarded against drift in CI — and the MCP server now speaks streamable HTTP in addition to stdio, so a remote agent can scaffold, validate, deploy, inspect, and repair pipelines against a live instance.
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)
