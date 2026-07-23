@@ -1,0 +1,308 @@
+---
+title: "Publishing to the Registry"
+---
+
+# Publish your connector to the registry
+
+Once your connector is written, tested, and releasing binaries on GitHub, you can publish it to the
+[Conduit connector registry](/docs/using/connectors/trust-model) so that anyone can install it with a single command:
+
+```shell
+conduit connectors install your-connector
+```
+
+Publishing is a supply-chain operation, not a metadata upload. When you publish, a GitHub Actions workflow in your own
+repository builds the connector for every supported platform, signs each artifact **keylessly** with Sigstore/cosign,
+generates **SLSA Build L3 provenance**, and opens a pull request against the registry index. Nothing is trusted on your
+say-so: the registry pins your repository's own publish workflow as the only identity allowed to sign your connector, and
+`conduit connectors install` re-verifies every signature and attestation before the connector is ever runnable.
+
+This page covers how to add the publish workflow to your connector repository. For what those signatures actually protect
+against — and why an installed connector can be trusted — see [The connector registry trust model](/docs/using/connectors/trust-model).
+
+## Prerequisites
+
+Before you publish:
+
+- **Your connector releases binaries on GitHub Releases.** The registry does not host artifacts; it records where they
+  live and how to verify them. Publishing signs the artifacts attached to a tagged release in your repo.
+- **Your `connector.yaml` version matches the release tag.** A tag of `v1.2.0` must correspond to a `connector.yaml`
+  declaring `1.2.0`. A mismatch is rejected — the registry will not record a version that disagrees with the connector's
+  own manifest.
+- **A `REGISTRY_INDEX_PR_TOKEN` repository secret.** The final job opens a pull request against
+  `ConduitIO/conduit-connector-registry`. Provide a token (a fine-grained PAT or a GitHub App token) with **contents:
+  write** and **pull-requests: write** scoped to the index repository. This is the only long-lived secret the flow needs
+  — there are no signing keys to custody, because signing is keyless (see below).
+
+:::note
+
+You do **not** create or store any cosign private key. Signing uses your workflow's GitHub OIDC identity through
+Sigstore's Fulcio CA — there is no key material to leak, rotate, or protect. The `REGISTRY_INDEX_PR_TOKEN` only authorizes
+opening the index PR; it plays no part in signing.
+
+:::
+
+## Add the publish workflow
+
+Copy the reference workflow into your connector repository at `.github/workflows/publish.yml`, then adjust the
+`build-command`, the `min-conduit-version` / `min-protocol-version`, the `connector-name`, and the `repository` for your
+connector. It triggers on a version-tag push and runs three jobs.
+
+### The three-job shape
+
+The flow is deliberately three jobs, in order, because each stage needs a different execution shape:
+
+1. **`build`** — for every `(os, arch)` pair, build the artifact and `cosign sign-blob` it keylessly via GitHub OIDC (no
+   stored keys). Upload the artifact and its `.sigstore.json` bundle to the GitHub Release. This job calls
+   `ConduitIO/connector-publish-action` as **composite steps inside your own job** — this is load-bearing (see [Why
+   composite, not reusable](#why-composite-not-reusable)).
+2. **`provenance`** — generate SLSA Build L3 provenance with `slsa-framework/slsa-github-generator`. This is a **separate,
+   isolated job that calls a reusable workflow**, fed the digests from `build`. SLSA L3 requires the provenance-generating
+   process to be isolated from the build so a compromised build job cannot forge its own provenance — which is the exact
+   opposite shape from job 1, and intentionally so.
+3. **`register`** — call `ConduitIO/connector-publish-action` again (composite, in your own job) to resolve your run's
+   identity, verify the current signed index with the *same* code `conduit connectors install` runs, and open or update a
+   PR against `ConduitIO/conduit-connector-registry`.
+
+### The reference workflow
+
+This is the canonical `docs/reference-publish-workflow.yml` from `ConduitIO/connector-publish-action`. Copy it verbatim
+and change only the marked values.
+
+```yaml
+# Reference publish workflow for a Conduit connector repo.
+#
+# Copy this into <your-connector-repo>/.github/workflows/publish.yml and
+# adjust build-command/min-*-version/repository. Triggered by a version
+# tag push (the workflow's OWN identity — owner/repo/this-file@this-tag —
+# is exactly what becomes the pinned publisher.expectedIdentityPattern on
+# first registration; see README.md "Why composite, not reusable").
+#
+# THREE jobs, in this order, because of the load-bearing constraint in
+# README.md §"Why composite, not reusable" + §"Why SLSA provenance needs
+# the opposite":
+#
+#   1. build   — conduitio/connector-publish-action in mode=build, running
+#                INSIDE this job (composite action: no `uses: .../workflows/
+#                *.yml@ref` job boundary), so the cosign-signing identity is
+#                THIS repo's own workflow_ref. Needs `id-token: write`
+#                (cosign OIDC) and `contents: write` (uploading release
+#                assets).
+#   2. provenance — slsa-framework/slsa-github-generator's REUSABLE
+#                workflow, `needs: build`, fed the build job's digest
+#                output. This MUST be a separate job calling a reusable
+#                workflow (the opposite shape from step 1) — SLSA L3
+#                requires the provenance-generating process to be isolated
+#                from the build process, so a compromised build job cannot
+#                forge its own provenance. Its identity becomes
+#                `builder.id` in the emitted attestation — a DIFFERENT
+#                identity from the cosign SAN above, checking a different
+#                thing (see README).
+#   3. register — conduitio/connector-publish-action again, mode=publish,
+#                `needs: [build, provenance]`, running INSIDE THIS repo's
+#                job again (composite, same identity as step 1 — the
+#                identity that gets pinned/checked is this job's, not the
+#                provenance job's). Takes the provenance bundle URL from
+#                job 2 and opens/updates the index-repo PR.
+
+name: publish
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+permissions:
+  contents: write   # upload release assets
+  id-token: write    # cosign keyless OIDC + SLSA provenance OIDC
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      artifacts: ${{ steps.publish.outputs.artifacts }}
+      resolved-identity: ${{ steps.publish.outputs.resolved-identity }}
+      hashes: ${{ steps.hash.outputs.hashes }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # The Action uploads signed assets with `gh release upload`, which does
+      # NOT create the release. If your repo also has a goreleaser release.yml
+      # on the same tag, the two race with no ordering — create the release
+      # here if absent (idempotent), and set goreleaser `release.mode:
+      # keep-existing` so neither workflow fails on, or deletes, the other's
+      # assets. Safe to keep even without goreleaser.
+      - name: Ensure the release exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --verify-tag \
+            --title "$TAG" --generate-notes \
+            || echo "release $TAG already exists — nothing to create"
+
+      - name: Build + cosign-sign the artifact matrix
+        id: publish
+        uses: ConduitIO/connector-publish-action@v1
+        with:
+          mode: build
+          connector-name: postgres
+          version: ${{ github.ref_name }}
+          # Runs once per (os, arch) cell with GOOS/GOARCH/OUTPUT_PATH set.
+          # Replace with your own build (goreleaser, make, a wrapper script
+          # — anything that honors these three env vars).
+          build-command: |
+            CGO_ENABLED=0 go build -o "$OUTPUT_PATH" ./cmd/connector
+
+      # slsa-github-generator's generic generator needs base64-encoded
+      # sha256 subject digests in ITS OWN input shape — derive that
+      # separately from this Action's artifacts output (a one-line jq,
+      # kept here rather than inside the Action so this repo's workflow
+      # stays the single place that knows the generator's exact input
+      # contract, which the Action does not need to depend on).
+      - name: Format subjects for the SLSA generator
+        id: hash
+        run: |
+          echo "hashes=$(echo '${{ steps.publish.outputs.artifacts }}' | \
+            jq -r '[.[] | "\(.sha256)  \(.url | split("/") | last)"] | join("\n")' | base64 -w0)" >> "$GITHUB_OUTPUT"
+
+  provenance:
+    needs: build
+    permissions:
+      actions: read     # required by the generator to read the build job's workflow run
+      id-token: write   # its own OIDC identity — THIS becomes builder.id
+      contents: write   # uploads the provenance attestation as a release asset
+    # Pin this to a specific, reviewed tag — this ref IS
+    # pkg/registry/trust.ExpectedBuilderID's expected value. Changing it is
+    # a breaking change for every already-registered connector identity;
+    # see connector-publish-action's own drift-guard test
+    # (test/canary/generator_ref_test.go) that fails loudly at PR time if
+    # this ref ever drifts from the conduit-pinned constant.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
+    with:
+      base64-subjects: ${{ needs.build.outputs.hashes }}
+      upload-assets: true
+
+  register:
+    needs: [build, provenance]
+    permissions:
+      contents: read
+      id-token: write   # this job's OWN cosign identity must resolve the same as `build`'s (composite action, same repo/workflow — only the ref differs if this is a separate workflow file, which it should not be)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Open/update the index-repo PR
+        uses: ConduitIO/connector-publish-action@v1
+        with:
+          mode: publish
+          connector-name: postgres
+          version: ${{ github.ref_name }}
+          # The build artifacts from job 1 — required because build and publish
+          # are separate jobs (a step output can't cross a job boundary).
+          artifacts-json: ${{ needs.build.outputs.artifacts }}
+          min-conduit-version: '0.15.0'
+          min-protocol-version: '0.9.0'
+          repository: https://github.com/ConduitIO/conduit-connector-postgres
+          # Only needed the FIRST time this connector is registered — a
+          # human-authored, tag-scoped fragment. Omit on every subsequent
+          # version bump (routing.Decide ignores it once the name exists).
+          first-registration-identity-ref-pattern: 'refs/tags/v[0-9]+\.[0-9]+\.[0-9]+'
+          provenance-bundle-url: ${{ needs.provenance.outputs.provenance-bundle-url }}
+          index-repo-token: ${{ secrets.REGISTRY_INDEX_PR_TOKEN }}
+```
+
+## Why composite, not reusable
+
+This is the single most important thing to get right, and getting it backwards silently breaks the entire trust model.
+
+`ConduitIO/connector-publish-action` is a **composite action**. You invoke it with `uses:` steps **inside your own job**
+(as `build` and `register` do above). You must **never** call it as a `workflow_call` reusable workflow.
+
+The reason is how GitHub OIDC identity works. When your workflow signs an artifact keylessly, the signing certificate's
+identity (its SAN) is your run's `job_workflow_ref` — for example
+`ConduitIO/conduit-connector-postgres/.github/workflows/publish.yml@refs/tags/v1.2.0`. That value is exactly what the
+registry pins, per connector name, as `publisher.expectedIdentityPattern`. It is the answer to "which repository and
+workflow is allowed to publish under this name."
+
+- With a **composite action**, its steps run inside *your* job. `job_workflow_ref` stays *your* repository's workflow
+  file and ref. The pinned identity is yours, and only your repository can produce a signature that matches it.
+- With a **reusable workflow** (`jobs.<id>.uses: org/repo/.github/workflows/x.yml@ref`), `job_workflow_ref` — and
+  therefore the certificate SAN — resolves to **the reusable workflow's own repo and ref**, not yours. Every connector
+  that called it would sign with the *identical* identity. Per-connector identity pinning would have nothing real to pin:
+  a legitimate publish and an attacker's fork would be cryptographically indistinguishable — "anyone who can call the
+  shared workflow is verified."
+
+That is why the signing steps are a composite action and only the SLSA provenance job is a reusable workflow. The
+provenance job wants the opposite property — an isolated builder identity that a compromised build job cannot impersonate
+— which is precisely what a reusable workflow provides. The two identities check two different things:
+
+| | Identity | Answers |
+| --- | --- | --- |
+| cosign SAN (composite, your repo) | your connector repo's own publish workflow | "is this repo/workflow authorized to publish under this name?" |
+| SLSA `builder.id` (reusable generator) | the pinned `slsa-github-generator` ref | "was this genuinely built by a non-forgeable, GitHub-hosted process?" |
+
+:::caution
+
+Do not restructure `publish.yml` to call the publish action as a reusable workflow, and do not move the signing steps into
+a shared workflow you `uses:` from multiple connectors. Either change repoints your signing identity away from your own
+repository and will make your legitimate publishes fail identity verification.
+
+:::
+
+## First registration vs. version bump
+
+The registry distinguishes two kinds of index PR, gated very differently. Your workflow is the same either way — the
+`register` job routes automatically based on whether your connector name already exists in the verified index.
+
+- **First registration of a name** (or any later change to its pinned identity — an org move, a workflow rename). This is
+  the actual root-of-trust decision: it records *which* identity may sign your connector forever after. It is **always
+  human-reviewed and never auto-merged**, first-party connectors included. This is when the
+  `first-registration-identity-ref-pattern` you supplied is used to build the pinned pattern. A maintainer confirms the
+  identity really belongs to your connector before merging.
+- **A version bump of an already-registered name**, signed by its already-pinned identity. This is low-touch: the
+  `register` job re-verifies the new artifacts against the identity *already committed* in the index (never one the same
+  PR is trying to introduce), and the PR is confined to adding new `versions[]` entries. It cannot register a new name or
+  repoint an existing name's identity — structurally, not by convention.
+
+Omit `first-registration-identity-ref-pattern` on version bumps; it is only consulted on the first registration.
+
+## What happens when you tag a release
+
+End to end, from your side and the registry's:
+
+1. **You push a version tag** (`git tag v1.2.0 && git push origin v1.2.0`). The `build` job compiles and keyless-signs
+   each platform artifact and uploads it plus its Sigstore bundle to the GitHub Release.
+2. **The `provenance` job** generates SLSA L3 provenance over those artifacts.
+3. **The `register` job** verifies the current signed index, resolves your run's identity, and opens (or updates) a PR
+   against `ConduitIO/conduit-connector-registry`.
+4. **A maintainer reviews the PR.** A first registration is reviewed as an identity decision; a version bump is a
+   mechanical re-verification. The registry never records an assertion it has not itself re-checked.
+5. **On merge, the index is re-signed** with the registry root key and served from
+   `https://registry.conduitdata.io/index.json`.
+6. **Users install it.** `conduit connectors install your-connector` fetches the signed index, verifies its signature,
+   verifies your artifact's signature and provenance against your pinned identity, and only then makes the connector
+   runnable.
+
+## Notes and troubleshooting
+
+- **The `build-command` receives `GOOS`, `GOARCH`, and `OUTPUT_PATH`.** Your build must honor all three and write the
+  binary to `OUTPUT_PATH`. Anything that does that works — `goreleaser`, `make`, a shell wrapper.
+- **If you also use goreleaser on the same tag**, keep the `Ensure the release exists` step and set goreleaser's
+  `release.mode: keep-existing` so the two workflows don't race to create or delete each other's release assets.
+- **Pin the SLSA generator to the exact reviewed tag** shown in the reference workflow. That ref is checked against a
+  constant compiled into Conduit; a drift makes every connector's provenance fail to verify.
+- **A fork cannot publish under your name.** If someone forks your repository and tags a release, their run's identity is
+  their fork's, which does not match your pinned `expectedIdentityPattern`. The `register` job's own preflight fails in
+  *their* CI before any index PR is opened; and even a hand-crafted PR is refused by index review and, ultimately, by
+  every user's install-time re-verification.
+
+:::note
+
+`ConduitIO/connector-publish-action` and the registry index repository are new supply-chain infrastructure and are still
+being finalized ahead of the v0.18 release. The workflow shape and identity model on this page are stable; the exact
+action version tag and the pinned SLSA generator ref may be confirmed as the bootstrap completes. Check the
+[connector-publish-action README](https://github.com/ConduitIO/connector-publish-action) for the current pinned versions
+before you copy the workflow.
+
+:::
