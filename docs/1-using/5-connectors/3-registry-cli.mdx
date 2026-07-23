@@ -1,0 +1,188 @@
+---
+title: "Registry CLI Reference"
+sidebar_label: "Registry CLI Reference"
+---
+
+Reference for the `conduit connectors` command group, which manages standalone connectors: the
+registry install/uninstall/audit/bundle lifecycle, plus listing, describing, and scaffolding new
+connectors. `connector` is an accepted alias for `connectors`.
+
+Every command supports `--json`, which emits the result as structured JSON (and structured errors)
+instead of the human-readable table. Commands fall into two groups:
+
+- **Offline commands** — `install`, `uninstall`, `audit`, `bundle`, `new` — operate on your
+  connectors directory on disk and do not require a running Conduit. (`uninstall` opportunistically
+  contacts a running engine for its in-use check but does not require one.)
+- **Engine commands** — `list`, `describe` — read from a running Conduit instance over the API.
+
+## Common flags
+
+| Flag | Commands | Description |
+|---|---|---|
+| `--connectors.path` | `install`, `uninstall`, `list`, `audit` | Connectors directory. Env: `CONDUIT_CONNECTORS_PATH`. Default `<basePath>/connectors`. |
+| `--config.path` | all | Path to the Conduit configuration file. |
+| `--json` | all | Emit structured JSON instead of a table. |
+
+## Exit codes
+
+The registry commands use Conduit's deterministic [exit codes](/docs/using/other-features/exit-codes):
+
+| Code | Category | Meaning |
+|---|---|---|
+| `0` | — | Success. |
+| `1` | Runtime | Internal error, or (for `audit`) an index-integrity/tampering failure. |
+| `2` | Validation | Not found, incompatible version, yanked/revoked, ambiguous request. |
+| `3` | Environment | Index unreachable, download/lock failure, or connector in use. |
+
+## `install`
+
+```text
+conduit connectors install <name>[@version] [flags]
+```
+
+Installs a connector from the registry into `--connectors.path`. Resolves the name exactly,
+selects the newest compatible version when `@version` is omitted, and verifies the index signature,
+the artifact's signature and SLSA provenance, and the `sha256` digest before writing anything.
+Verification is fail-closed. See [Installing Connectors](/docs/using/connectors/installing) for the
+full walkthrough.
+
+| Flag | Description |
+|---|---|
+| `--index-url` | Registry index URL. Default `https://registry.conduitdata.io/index.json`. |
+| `--index-file` | Read the index from a local file instead of `--index-url` (offline). |
+| `--lock-timeout` | Max time to wait for the per-connector install lock. Default `30s`. |
+| `--dry-run` | Resolve and select a platform artifact; report what would be installed without downloading or writing. |
+| `--bundle` | Install fully offline from a bundle tarball; ignores the positional `<name>[@version]`. See [Offline install](/docs/using/connectors/offline-install). |
+| `--allow-unsigned` | Skip signature/provenance verification (never the index or `sha256` checks). Requires interactive confirmation or `CONDUIT_ALLOW_UNSIGNED_INSTALL=I_UNDERSTAND`; disabled entirely by operator policy `install.allow-unsigned`. |
+| `--allow-stale-bundle` | With `--bundle`, tolerate a snapshot older than `--max-staleness`. Same gating as `--allow-unsigned`; env `CONDUIT_ALLOW_STALE_BUNDLE=I_UNDERSTAND`; operator policy `install.allow-stale-bundle`. |
+
+## `uninstall`
+
+```text
+conduit connectors uninstall <name>[@version] [flags]
+```
+
+Removes a connector artifact and its install-manifest entry. If more than one version of `<name>`
+is installed, an explicit `@version` is required — an ambiguous request refuses rather than guessing.
+
+Before removing anything, `uninstall` checks whether any pipeline references the exact
+`name@version`. It considers both pipelines on a reachable running engine and pipelines merely
+provisioned on disk (`--pipelines.path`); it falls back to the on-disk scan when no engine is
+reachable. By default an in-use connector refuses removal with the affected pipelines listed.
+
+| Flag | Description |
+|---|---|
+| `--force` | Remove the artifact even if a pipeline still references it. The affected pipelines are still named in the result as a warning. |
+
+## `list`
+
+```text
+conduit connectors list [flags]
+```
+
+Aliases: `ls`. By default, lists the connector **instances** registered in a running Conduit
+(requires the engine to be running), optionally filtered by pipeline.
+
+With `--installed`, it instead lists installed connector **plugin artifacts** from the local install
+manifest under `--connectors.path` — a different thing from pipeline instances, shown as a
+distinct table (`NAME`, `INSTALLED`, `SIGNED`, `INSTALLED_AT`, `LATEST_AVAILABLE`, `STATUS`).
+
+| Flag | Description |
+|---|---|
+| `--pipeline-id` | Filter connector instances by pipeline ID. Mutually exclusive with `--installed`. |
+| `--installed` | List installed plugin artifacts from the local manifest instead of pipeline instances. |
+| `--index-url` | Registry index URL, consulted **only with `--installed`** for a best-effort `LATEST_AVAILABLE` column. Default `https://registry.conduitdata.io/index.json`. |
+| `--index-file` | Read the index from a local file instead of `--index-url`; consulted **only with `--installed`**. |
+
+:::note
+`--installed` reads the local manifest, but this command still dials the engine first like every
+other `connectors list` invocation, so a reachable engine is currently required even in
+`--installed` mode. If the index is unreachable, the `LATEST_AVAILABLE`/`STATUS` columns are
+informational-only for that run.
+:::
+
+## `audit`
+
+```text
+conduit connectors audit [flags]
+```
+
+Re-verifies **every installed connector** against the current registry index — the protection for
+connectors installed before a version was yanked or a publisher was revoked. It re-fetches and
+re-verifies the signed index through the same pipeline `install` uses (there is no lower-trust
+audit-only fetch), then reports per connector:
+
+- `YANKED_VERSION`, `REVOKED_PUBLISHER` — registry-trust failures (**Fail**).
+- `DELISTED`, `UNKNOWN_VERSION` — registry-trust warnings (**Warn**).
+- `MISSING_ARTIFACT`, `DRIFTED` — local-integrity warnings (**Warn**).
+
+An index that cannot be fetched or cryptographically verified fails the **whole run** (never a
+per-connector finding) — an audit built on an unverified index cannot be trusted. Check the reported
+error code; this is distinct from "all clean".
+
+| Flag | Description |
+|---|---|
+| `--index-url` | Registry index URL. Default `https://registry.conduitdata.io/index.json`. |
+| `--index-file` | Read the index from a local file instead of `--index-url` (offline). |
+| `--max-staleness` | Maximum age of a verified index before it is considered stale. Defaults to `install.max-staleness` (7 days). |
+
+## `bundle`
+
+```text
+conduit connectors bundle <name>[@version] [flags]
+```
+
+Prepares a self-contained offline-install tarball on a networked machine, running the same full
+verification a normal `install` would before writing it. See
+[Air-gapped / offline install](/docs/using/connectors/offline-install).
+
+| Flag | Description |
+|---|---|
+| `--os` | Target operating system. Defaults to this host's. |
+| `--arch` | Target architecture. Defaults to this host's. |
+| `--output` | Output bundle path. Defaults to `<name>-<version>-<os>-<arch>.bundle.tar.gz`. |
+| `--index-url` | Registry index URL. Default `https://registry.conduitdata.io/index.json`. |
+| `--index-file` | Read the index from a local file instead of `--index-url`. |
+
+## `describe`
+
+```text
+conduit connectors describe CONNECTOR_ID [flags]
+```
+
+Aliases: `desc`. Shows the detail view of a connector **instance** in a running Conduit — its type,
+plugin, pipeline, configuration, and attached processors. Requires the engine to be running. List
+connector IDs with `conduit connectors list`.
+
+```shell
+conduit connectors describe connector:source
+```
+
+## `new`
+
+```text
+conduit connectors new [name] [flags]
+```
+
+Scaffolds a full Go connector repository from
+[ConduitIO/conduit-connector-template](https://github.com/ConduitIO/conduit-connector-template) —
+SDK wiring, tests, CI, release workflow, and the acceptance-test harness — ready to build. It
+renames the module path, installs the code-gen tool, runs generation, verifies `go build ./...`, and
+initializes git.
+
+| Flag | Description |
+|---|---|
+| `--module` | Go module path, e.g. `github.com/you/conduit-connector-<name>` (required). |
+| `--lang` | Target language. Only `go` is available today. |
+| `--path` | Destination directory. Default `./conduit-connector-<name>`. |
+| `--sdk-version` | Override the SDK version pinned in the embedded template. |
+| `--git` / `--no-git` | Initialize a git repository and first commit (`--git` is the default). |
+| `--skip-generate` | Skip the code-gen tool install and generation step (the template ships pre-generated output, so it still builds). |
+| `--yes`, `-y` | Confirm without prompting. |
+| `--force` | Overwrite the destination directory if it already exists. |
+
+```shell
+conduit connectors new s3 --module github.com/you/conduit-connector-s3
+```
+
+![scarf pixel conduit-site-docs-using-connectors](https://static.scarf.sh/a.png?x-pxid=53743422-c614-4e45-acaa-f1f9f604321e)

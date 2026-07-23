@@ -1,42 +1,135 @@
 ---
-title: "Installing Standalone Connectors"
+title: "Installing Connectors from the Registry"
+sidebar_label: "Installing Connectors"
 ---
 
-Beside the [built-in](/docs/core-concepts#built-in-connector) connectors shipped with Conduit there is a
-[list](/docs/using/connectors/list) of
-connectors that can be added to Conduit as plugins. These are called [standalone connectors](/docs/core-concepts#standalone-connector).
-
-To install a standalone connector you first need the compiled connector binary.
-A binary can normally be downloaded from the latest release in the connector's
-GitHub repository (this may vary in 3rd party connectors not developed by the
-Conduit team). Make sure to download the binary that matches your operating
-system and architecture.
-
-:::tip
-Alternatively you can build the binary yourself as if you were installing your own [custom standalone connector](/docs/developing/connectors/using-a-custom-connector).
-:::
-
-## Installing a Connector in Conduit
-
-Conduit loads standalone connectors at startup. The connector binaries need to
-be placed in the `connectors` directory relative to the Conduit binary so
-Conduit can find them. Alternatively, the path to the standalone connectors can
-be adjusted using the CLI flag `-connectors.path`, for example:
+Beside the [built-in](/docs/core-concepts#built-in-connector) connectors shipped with Conduit,
+[standalone connectors](/docs/core-concepts#standalone-connector) are distributed through the
+Conduit connector registry. You install them with a single command:
 
 ```shell
-./conduit run --connectors.path=/path/to/connectors/
+conduit connectors install postgres
 ```
 
-Names of the connector binaries are not important, since Conduit is getting the
-information about connectors from connectors themselves (using their gRPC API).
+`install` resolves the name against the signed registry index, downloads the artifact for your
+operating system and architecture, verifies it, and places it in your connectors directory. The
+connector is ready to [reference](/docs/using/connectors/referencing) in a pipeline the next time
+Conduit starts.
 
-Find out how to [reference your connector](/docs/using/connectors/referencing).
+:::note
+`conduit connectors install` runs offline against your connectors directory on disk — it does not
+need a running Conduit instance. The only network call it makes is to the registry.
+:::
 
+## Verified by default
 
-### Record Size Limitations
+Every install is verified before the connector is usable. Conduit checks, in order:
 
-When using standalone connectors, the maximum size of a record is limited by the
-**gRPC** go library [grpc/grpc-go](https://github.com/grpc/grpc-go/blob/master/server.go#L59). This means that the maximum size of a record is limited to **4 MB by default**. If you try to send a record larger than this limit, you will see an error like this in the logs:
+1. **The registry index signature.** Nothing about which artifact to fetch is trusted until the
+   index itself verifies against Conduit's built-in trust anchors. There is no flag, config value,
+   or environment variable that bypasses index verification.
+2. **The artifact's signature and SLSA provenance.** "Verified" means both — a validly signed
+   artifact with no provenance attestation is refused, not installed.
+3. **The artifact's `sha256` digest**, to catch corruption in transit. This check always runs, even
+   when signature verification is skipped (see [Installing an unsigned connector](#installing-an-unsigned-connector)).
+
+Verification is **fail-closed**: if any check cannot be completed — the index is unreachable,
+tampered, stale, or unsigned; the artifact's signature or provenance is missing or invalid — the
+install stops and nothing is written to disk. Conduit never installs an unverified connector as a
+side effect of a network or signature failure.
+
+Already-installed connectors keep being protected after the fact by
+[`conduit connectors audit`](/docs/using/connectors/registry-cli#audit), which re-checks them
+against the current index for later yanks and publisher revocations.
+
+## Selecting a version
+
+The argument is `<name>[@version]`:
+
+```shell
+conduit connectors install postgres           # newest compatible version
+conduit connectors install postgres@0.14.1    # an exact version
+```
+
+- The name is matched exactly against the index.
+- When `@version` is omitted, Conduit selects the **newest version compatible with this build**.
+  Compatibility is a gate, not a preference: a candidate must satisfy both the connector's minimum
+  Conduit version and its minimum [connector-protocol](/docs/core-concepts) version. Newer versions
+  that require a Conduit you are not running are skipped rather than installed and then failing at
+  runtime.
+- Installing a version that is already present is a no-op — the command reports it as already
+  installed. Deprecated versions install with a warning.
+
+## Where connectors are installed
+
+Artifacts are written to your connectors directory, resolved exactly like `conduit run` resolves it:
+
+| Source | Value |
+|---|---|
+| Flag | `--connectors.path` |
+| Environment variable | `CONDUIT_CONNECTORS_PATH` |
+| Default | `<basePath>/connectors` (the `connectors` directory relative to where you run Conduit) |
+
+```shell
+conduit connectors install postgres --connectors.path=/opt/conduit/connectors
+```
+
+Because `install` and `run` resolve this path the same way, a connector you install here is exactly
+the one Conduit loads at startup.
+
+## Preview without installing
+
+`--dry-run` resolves the name, selects the platform artifact, and reports what *would* be installed
+— without downloading or writing anything:
+
+```shell
+$ conduit connectors install postgres --dry-run
+Would install postgres@0.14.1 (darwin/arm64) from https://registry.conduitdata.io/...
+```
+
+## Installing an unsigned connector
+
+`--allow-unsigned` skips **only** the per-artifact signature and provenance check. It never skips
+index verification, and never skips the `sha256` corruption check. It is deliberately hard to
+trigger by accident — it is not enough on its own to install an unsigned artifact:
+
+- **Interactively** (a real terminal), Conduit prompts you to type the connector's name to confirm.
+  A `y`/`N`-style answer is treated as a decline; only an exact match proceeds.
+- **Non-interactively** (no TTY, `CI=true`, or an agent-driven call), the flag alone does nothing.
+  You must *also* set `CONDUIT_ALLOW_UNSIGNED_INSTALL=I_UNDERSTAND`. Two independent signals are
+  required so that neither a copy-pasted script line nor an agent's tool call can trigger it alone.
+- **Operators can disable it entirely.** If `install.allow-unsigned` is `false` in the Conduit
+  configuration (the default), no flag, TTY, or environment variable can turn it back on.
+
+```shell
+conduit connectors install my-connector --allow-unsigned
+```
+
+:::warning
+An unsigned connector has no verified cryptographic identity or build provenance. Only use
+`--allow-unsigned` for connectors you build yourself or otherwise trust out of band.
+:::
+
+## Other flags
+
+| Flag | Description |
+|---|---|
+| `--index-url` | Registry index URL. Default `https://registry.conduitdata.io/index.json`. |
+| `--index-file` | Read the index from a local file instead of `--index-url` (offline). |
+| `--lock-timeout` | Maximum time to wait for the per-connector install lock. Default `30s`. |
+| `--dry-run` | Report what would be installed without downloading or writing anything. |
+| `--bundle` | Install fully offline from a bundle tarball. See [Offline install](/docs/using/connectors/offline-install). |
+| `--json` | Emit the result as structured JSON. |
+
+For the complete `conduit connectors` command group, see the
+[Registry CLI reference](/docs/using/connectors/registry-cli). To install on a machine with no
+network access, see [Air-gapped / offline install](/docs/using/connectors/offline-install).
+
+### Record size limitations
+
+When using standalone connectors, the maximum size of a record is limited by the **gRPC** Go
+library [grpc/grpc-go](https://github.com/grpc/grpc-go/blob/master/server.go#L59) to **4 MB by
+default**. If you send a larger record you will see an error like this in the logs:
 
 ```bash
 2022-07-28T14:00:01+00:00 ERR node stopped 
@@ -44,17 +137,20 @@ When using standalone connectors, the maximum size of a record is limited by the
          error receiving ack: grpc: received message larger than max (5000117 vs. 4194304)"
 ```
 
-This limitation can be changed by setting the `--connectors.max-receive-record-size` flag when starting Conduit. For example, to set the maximum record size to 10 MB, you can run:
+Raise the limit with `--connectors.max-receive-record-size` when starting Conduit. For example, to
+set the maximum record size to 10 MB:
 
 ```bash
 conduit run --connectors.max-receive-record-size 10485760
 ```
 
-This option could be also be set in the [configuration file](/docs/configuration#configuration-file) or with the [environment variable](/docs/configuration#environment-variables) `CONDUIT_CONNECTORS_MAX_RECEIVE_RECORD_SIZE`. 
+This can also be set in the [configuration file](/docs/configuration#configuration-file) or with the
+[environment variable](/docs/configuration#environment-variables)
+`CONDUIT_CONNECTORS_MAX_RECEIVE_RECORD_SIZE`.
 
 :::warning
-For this configuration to take effect, your standalone connector must be using [conduit-connector-sdk](https://github.com/ConduitIO/conduit-connector-sdk) >= v0.14.0
+For this configuration to take effect, your standalone connector must be using
+[conduit-connector-sdk](https://github.com/ConduitIO/conduit-connector-sdk) >= v0.14.0
 :::
-
 
 ![scarf pixel conduit-site-docs-using-connectors](https://static.scarf.sh/a.png?x-pxid=53743422-c614-4e45-acaa-f1f9f604321e)
