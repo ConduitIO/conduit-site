@@ -1,0 +1,115 @@
+---
+title: 'llms.txt for agents'
+sidebar_label: 'llms.txt for agents'
+slug: '/using/llms-txt'
+---
+
+Conduit publishes two machine-readable files that describe its entire operable surface in a form an
+AI agent can read directly: `llms.txt` and `llms-full.txt`. Together with the
+[MCP server](/docs/using/mcp), they are what lets an agent go from **zero prior knowledge to a
+running pipeline** — reading the map, then driving the tools.
+
+## What `llms.txt` and `llms-full.txt` are
+
+[`llms.txt`](https://llmstxt.org) is an emerging convention: a single, concise, Markdown file at a
+project's root that gives a language model a curated index of the project instead of leaving it to
+scrape and guess. Conduit follows it, and adds a companion:
+
+- **`llms.txt`** — the concise index. One H1, a one-paragraph summary of what Conduit is, then
+  short sections listing the config schema, the built-in connectors, the error codes, and the MCP
+  tools, with pointers into the full file.
+- **`llms-full.txt`** — the same structure with **all the detail inlined**: every config field with
+  its exact YAML key and type, every built-in connector with its full source and destination
+  parameters (type, default, required, description, validations), every error code with its gRPC
+  status class, and every MCP tool with its read/write class and description.
+
+An agent that reads `llms-full.txt` knows the exact YAML keys a pipeline uses (down to
+`dead-letter-queue`, `window-size`, `window-nack-threshold`), which connectors are built in and how
+to configure them, which error codes it can get back and what each means, and which MCP tools exist —
+without any of that being hand-maintained prose that could be wrong.
+
+## Generated from source, drift-guarded in CI
+
+The single most important property of these files is that they are **not written by hand**. They are
+generated deterministically from Conduit's own source of truth, and CI fails if the committed files
+ever drift from it.
+
+The generator (`go generate ./...`) derives each section from the live declarations the engine
+itself uses:
+
+| Section | Derived from |
+| --- | --- |
+| Pipeline config schema | The `v2` config structs (reflected — a new field can't be added without appearing here) |
+| Built-in connectors | The built-in connector registry and each connector's own specification |
+| Error codes | The `ConduitError` code registry (every registered `code`, sorted) |
+| MCP tools | The MCP tool catalog (the same list the server registers from) |
+
+Because the same declaration feeds both the running engine and the generated file, the two cannot
+disagree. If someone adds a connector, registers an error code, renames an MCP tool, or adds a config
+field without regenerating, the CI drift-guard (`git diff --exit-code`) turns red. The output is also
+strictly deterministic — everything sourced from a map is sorted, there are no timestamps, paths, or
+host data — so a regeneration is byte-identical on every machine.
+
+:::note
+The upshot for anyone building on these files: `llms.txt` and `llms-full.txt` describe the Conduit
+version they ship with, exactly, with no lag. An agent grounded in them will not confidently
+fabricate a connector name or misread an error code, because a file that drifted from the source
+would have failed the build.
+:::
+
+## Where to find them
+
+Both files are committed at the **root of the [`ConduitIO/conduit`](https://github.com/ConduitIO/conduit)
+repository**, next to `go.mod`:
+
+- `llms.txt`
+- `llms-full.txt`
+
+Read them from the tag of the release you're running so the schema, connector list, and error codes
+match the binary you're actually driving — for example:
+
+```text
+https://raw.githubusercontent.com/ConduitIO/conduit/<tag>/llms.txt
+https://raw.githubusercontent.com/ConduitIO/conduit/<tag>/llms-full.txt
+```
+
+Both files carry a `Code generated ...; DO NOT EDIT.` header — a reminder that the source of truth
+is the engine, not the file.
+
+## Point an agent at them
+
+The files are plain Markdown/text, so any agent that can fetch a URL or read a file can consume them.
+Two common patterns:
+
+- **As grounding context** — fetch `llms-full.txt` and place it in the agent's context (or a
+  retrieval index) before asking it to author or troubleshoot a pipeline. The agent then has the
+  exact config schema and error-code catalog to work from.
+- **Alongside the MCP server** — give the agent `llms-full.txt` as reference and the
+  [MCP server](/docs/using/mcp) as the way to act. The file tells the agent *what Conduit is and how
+  it's shaped*; the tools let it *validate, deploy, inspect, and repair*. This pairing is the
+  intended zero-knowledge path: the agent reads the map, drafts a config, calls `validate`/`dry_run`
+  to check it against the same engine `conduit run` uses, fixes anything the structured `error`
+  reports, and — if the operator started the server with `--allow-mutations` — calls `deploy` then
+  `apply` to bring the pipeline up.
+
+## The north star, honestly scoped
+
+The goal these files serve is a scripted agent going **zero → running pipeline using only the MCP
+tools and `llms.txt`**, with no other documentation. The pieces are in place: the generator ships,
+the drift-guard is live in CI, the MCP tools call the real engines, and `apply` can reach a genuinely
+running pipeline when one is reachable.
+
+What that does **not** claim: a fully autonomous, unsupervised agent. The write path is gated by
+`--allow-mutations` (a human-set flag), commits are hash-bound, and the same data-integrity
+guarantees apply regardless of who triggers an operation. `llms.txt` makes Conduit legible enough
+that an agent *can* operate it from a standing start — it does not remove the operator from the loop.
+
+## See also
+
+- [Drive Conduit from an AI agent (MCP)](/docs/using/mcp) — the tools an agent uses to act on what
+  it reads here.
+- [Structured errors & JSON output](/docs/using/other-features/structured-errors) — the error-code
+  catalog `llms-full.txt` inlines.
+- [llmstxt.org](https://llmstxt.org) — the `llms.txt` convention Conduit follows.
+
+![scarf pixel conduit-site-docs-using](https://static.scarf.sh/a.png?x-pxid=76d5981f-cd63-422b-8cf7-eab9e99f0cd3)

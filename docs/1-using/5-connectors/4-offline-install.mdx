@@ -1,0 +1,91 @@
+---
+title: "Air-gapped / Offline Install"
+sidebar_label: "Offline Install"
+---
+
+Some environments have no network access to the registry at all. For those, Conduit splits the
+install into two steps: **bundle** a connector on a machine that *can* reach the registry, then
+**install from that bundle** on the machine that cannot.
+
+The bundle is a self-contained carrier for an already-verified installation. Nothing is trusted
+just because it is in the bundle — the offline install re-verifies everything from the bundle's own
+contents.
+
+## 1. Bundle on a connected machine
+
+Run `bundle` on a machine with network access:
+
+```shell
+conduit connectors bundle postgres@0.14.1 --os linux --arch amd64 --output postgres.bundle.tar.gz
+```
+
+`bundle` resolves `<name>[@version]` exactly like [`install`](/docs/using/connectors/installing) and
+runs the **same full verification** — index signature, artifact signature, and SLSA provenance —
+while it is still online. Only then does it package into a single `.bundle.tar.gz`:
+
+- the connector artifact for the target platform,
+- its signature and provenance bundles in cosign `--bundle` form (embedded certificate chain and
+  Rekor inclusion proof, so no live Sigstore query is needed later), and
+- the full signed registry index snapshot.
+
+Target a platform other than the build host with `--os` and `--arch`; both default to the current
+host. `--output` defaults to `<name>-<version>-<os>-<arch>.bundle.tar.gz`.
+
+| Flag | Description |
+|---|---|
+| `--os` | Target operating system. Defaults to this host's. |
+| `--arch` | Target architecture. Defaults to this host's. |
+| `--output` | Output bundle path. Defaults to `<name>-<version>-<os>-<arch>.bundle.tar.gz`. |
+| `--index-url` | Registry index URL. Default `https://registry.conduitdata.io/index.json`. |
+| `--index-file` | Read the index from a local file instead of `--index-url`. |
+| `--json` | Emit the result as structured JSON. |
+
+## 2. Transfer the bundle
+
+Copy the `.bundle.tar.gz` to the air-gapped machine by whatever means that environment allows
+(physical media, an internal artifact store, etc.). The bundle is the only thing that needs to
+cross the boundary.
+
+## 3. Install from the bundle
+
+On the air-gapped machine, install with `--bundle`:
+
+```shell
+conduit connectors install --bundle postgres.bundle.tar.gz
+```
+
+This makes **no network call of any kind**. Conduit re-verifies the artifact's signature and
+provenance and the index snapshot entirely from the bundle's contents before writing anything to
+`--connectors.path`. When `--bundle` is set, the positional `<name>[@version]` argument is ignored —
+the bundle already names its own connector and version.
+
+Everything else about the install behaves as described in
+[Installing Connectors](/docs/using/connectors/installing): the same connectors directory
+resolution, the same fail-closed verification, the same `sha256` corruption check.
+
+## Stale bundles
+
+The index snapshot inside a bundle has an age. If it is older than the configured maximum staleness
+(`install.max-staleness`, 7 days by default), the offline install refuses it — a stale snapshot may
+predate a version yank or a publisher revocation.
+
+`--allow-stale-bundle` tolerates an over-age snapshot, and is gated with exactly the same rigor as
+[`--allow-unsigned`](/docs/using/connectors/installing#installing-an-unsigned-connector):
+
+- **Interactively**, Conduit prompts you to type the bundle path to confirm. Only an exact match
+  proceeds.
+- **Non-interactively**, the flag alone does nothing — you must *also* set
+  `CONDUIT_ALLOW_STALE_BUNDLE=I_UNDERSTAND`.
+- **Operators can disable it entirely** by setting `install.allow-stale-bundle` to `false` (the
+  default), which no flag, TTY, or environment variable can override.
+
+```shell
+conduit connectors install --bundle postgres.bundle.tar.gz --allow-stale-bundle
+```
+
+:::tip
+Prefer re-bundling on the connected machine over `--allow-stale-bundle`. A fresh bundle carries a
+current index snapshot and needs no escape hatch.
+:::
+
+![scarf pixel conduit-site-docs-using-connectors](https://static.scarf.sh/a.png?x-pxid=53743422-c614-4e45-acaa-f1f9f604321e)

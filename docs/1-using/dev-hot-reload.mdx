@@ -1,0 +1,166 @@
+---
+title: 'Local dev with hot-reload'
+sidebar_position: 4.5
+---
+
+`conduit run --dev` runs Conduit and watches your pipelines directory, applying
+config changes to the running engine on save. Editing a pipeline becomes an
+edit-save-see loop instead of stop, edit, restart, wait.
+
+Where it can, the dev watcher applies a change **in place** — the pipeline keeps
+running, the source never restarts, and positions stay continuous. Where it
+can't do so safely, it falls back to a graceful drain-and-restart. Either way you
+never stop and start Conduit by hand.
+
+:::note
+
+The live in-place engine landed in Conduit v0.17. On older versions a config
+change to a running pipeline required a full restart. This page describes the
+current behavior: a processor edit is swapped into the running pipeline without a
+restart.
+
+:::
+
+## Start the dev watcher
+
+Point Conduit at a pipelines directory (or a single file) and add `--dev`:
+
+```shell
+conduit run --dev --pipelines.path ./pipelines
+```
+
+`--dev` is the short alias for `--dev.enabled`. With no `--pipelines.path` it
+watches the default `./pipelines` directory.
+
+There is also a thin alias that reads a little more naturally and takes the
+directory as a positional argument:
+
+```shell
+conduit pipelines dev ./pipelines
+```
+
+`conduit pipelines dev` runs exactly like `conduit run --dev`, with one
+dev-tuned default: exit-on-degraded is forced off, so one broken pipeline while
+you iterate doesn't take the whole dev server down. It carries no logic of its
+own.
+
+Startup is unchanged from `conduit run`: existing pipelines are provisioned and
+started normally, and only then does the watcher begin handling edits. An empty
+pipelines directory is fine — creating the first file live works.
+
+## What happens on each save
+
+1. **Debounce.** A save-storm (many rapid writes) coalesces into a single apply.
+2. **Parse and validate.** Every pipeline in the changed file goes through the
+   same enrich + validate the CLI uses. A syntax or validation error is printed
+   and the running pipeline is left untouched.
+3. **Diff and apply.** For each pipeline, the watcher computes the change and
+   applies it either in place or via a graceful restart (see below).
+4. **Ensure running.** After a successful apply, a pipeline the config wants
+   running but that is stopped — a brand-new file, or one left stopped by a
+   prior failed apply — is started. A pipeline the config declares `stopped` is
+   left stopped.
+
+Each apply prints whether it was in-place or a restart, the diff, the outcome,
+and timing. Add `--dev.json` to emit the same information as structured JSON
+event lines instead of human-readable text.
+
+## What reloads live vs. what forces a restart
+
+The split is drawn along a data-safety line, not a convenience one. A processor
+node holds no source position, no ack/durability state, and no external
+connection, so it can be swapped at a clean record boundary without risk. A
+source, destination, or DLQ owns position, ack, and connection state whose live
+mutation is genuinely dangerous — those changes drain and restart the pipeline
+instead.
+
+| Change | How it applies |
+| --- | --- |
+| A **processor's** config (settings, ordering within a processor) | **In place** — no restart |
+| A pipeline's **name** or **description** | **In place** — no restart |
+| A **source** or **destination** connector setting | Graceful drain-and-restart |
+| **DLQ** configuration | Graceful drain-and-restart |
+| **Topology** — add/remove a connector or processor, change a plugin, delete a pipeline | Graceful drain-and-restart |
+
+A single save that touches both a processor and a connector restarts the whole
+pipeline: the connector change needs a restart anyway, so the apply is
+all-or-nothing rather than half-swapped.
+
+### In-place processor swap: the guarantees
+
+When a processor edit applies in place, the engine builds and opens the **new**
+processor before tearing down the old one, and switches only at a record
+boundary between loop iterations:
+
+- **No records are lost or reordered.** Records already forwarded went through
+  the old config; records pulled after the switch go through the new one.
+  Ordering within a partition key is preserved.
+- **The source never rewinds.** A processor swap never touches the source
+  position. During the swap, backpressure pauses the source; it resumes exactly
+  where it paused.
+- **A bad edit never drops the pipeline.** If the new processor config fails to
+  open (bad settings, a broken WASM processor), the old processor keeps running,
+  the new one is discarded, and the error is printed.
+
+The one exposure is a `kill -9` mid-swap: in-flight records since the last
+checkpoint are reprocessed on restart (the at-least-once floor) — possible
+duplicates, never drops. The stored config is the source of truth, so a restart
+always rebuilds from either the old or new config, never a torn half.
+
+:::note
+
+In-place swap is currently limited to the non-buffering processor model Conduit
+ships today (one batch in, results out, nothing held across calls). A future
+batching or windowing processor that retains records internally would be
+restart-class until it grows a flush-before-teardown step.
+
+:::
+
+## Authorization
+
+Applying a change to a running pipeline normally requires the process-level
+`--api.allow-live-restart-apply` gate. `--dev` authorizes the applies **its own
+watcher drives from local file edits** — you ran `--dev`, you're watching the
+terminal, and you see every diff scroll by. That is the operator authorization
+the gate exists to require.
+
+`--dev` does **not** set `--api.allow-live-restart-apply`. A remote agent still
+can't apply changes to a running pipeline over the API or MCP unless that
+separate flag is set. This is the same trust boundary as startup provisioning:
+whoever can edit the watched files and run `--dev` on this box can already
+restart these pipelines.
+
+## Failure modes
+
+- **Syntax or validation error on save** — the error is printed with its code
+  and config path; the running pipeline keeps its last-good config. Fix and save
+  again.
+- **A new config fails at open or start** (e.g. an unreachable source) — the
+  pipeline is left stopped with the error; the next good save recovers it.
+- **A watched file is deleted** — the pipeline is left **running** and a message
+  is logged. `--dev` never deletes a running pipeline because a file vanished
+  (a `git stash`, say). Stop it explicitly if that was the intent.
+- **`Ctrl-C`** — the watcher is cancelled as part of graceful shutdown;
+  in-flight records drain and checkpoint before exit.
+
+## Notes
+
+- **Not a production deploy mechanism.** `--dev` is a foreground, single-author,
+  local convenience. For unattended or remote apply, use the API/MCP `apply`
+  path with its own operator gate.
+- **`--dev.json`** emits one JSON object per apply (mode, diff, outcome, timing)
+  for tooling; logs still go to stderr.
+- To get a repaired or edited config file into a running engine without `--dev`,
+  use [`conduit pipelines deploy` / `apply`](/docs/using/pipelines/provisioning),
+  which keep their own plan-hash and running-pipeline guards.
+
+## Related
+
+- [Provisioning](/docs/using/pipelines/provisioning) — how Conduit loads
+  pipeline files at startup (the non-dev default: no watching).
+- [Repairing a pipeline config](/docs/using/pipelines/repair) — clear
+  machine-appliable validation findings before you deploy.
+- [Pipeline statuses](/docs/using/pipelines/statuses) — running, degraded, and
+  the rest.
+
+![scarf pixel conduit-site-docs-using-dev-hot-reload](https://static.scarf.sh/a.png?x-pxid=4f41012a-be75-4b82-8112-86a7cb40f98a)
