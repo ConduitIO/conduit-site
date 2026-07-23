@@ -4,186 +4,657 @@ sidebar_label: 'Conduit CLI'
 slug: '/cli'
 ---
 
-Conduit CLI is a powerful tool designed to simplify the way users interact with Conduit,
-offering an efficient way to configure, manage, run and observe its components (connector,
-processor, pipelines, etc...). Developed using our open-source library [Ecdysis](https://github.com/ConduitIO/ecdysis)
-that helps with building CLI tools in Go.
+Conduit CLI is how you configure, run, and operate Conduit — pipelines, connectors,
+processors, and the engine itself. It's built on [Ecdysis](https://github.com/ConduitIO/ecdysis),
+Conduit's own Go CLI framework.
 
-## CLI commands
-To list all the commands provided by the Conduit CLI, run `conduit --help`:
-```text
-Conduit CLI is a command-line that helps you interact with and manage Conduit.
+This page is the exhaustive command reference. For narrower how-tos, see:
 
-Usage:
-  conduit [flags]
-  conduit [command]
+- [Deploy and apply pipelines to a running server](/docs/using/pipelines/deploy-apply)
+- [Structured errors & JSON output](/docs/using/other-features/structured-errors)
+- [Exit codes](/docs/using/other-features/exit-codes)
+- [Configuration](/docs/configuration) — every `conduit run` flag, env var, and config file field
 
-Available Commands:
-  config            Shows the configuration to be used when running Conduit.
-  connector-plugins Manage Connector Plugins
-  connectors        Manage Conduit Connectors
-  help              Help about any command
-  init              Initialize Conduit with a configuration file and directories.
-  open              Open in a web browser
-  pipelines         Initialize and manage pipelines
-  processor-plugins Manage Processor Plugins
-  processors        Manage Processors
-  run               Run Conduit
-  version           Show the current version of Conduit.
+## Conventions that apply to every command
 
-Flags:
-      --api.grpc.address string   address where Conduit is running
-      --config.path string        path to the configuration file
-  -h, --help                      help for conduit
-  -v, --version                   show the current Conduit version
+- **`--json`** — every command supports it. Output is a single JSON object to
+  stdout: `{"command": "...", "ok": true|false, "summary": {...}, "result": {...}, "error": null}`.
+  `ok`/`error` are always present; `error` is only set on a hard command failure
+  (bad input, unreachable dependency), never for domain findings (a validation
+  run that finds problems is `ok:false`, `error:null`, with the problems under
+  `result`). See [Structured errors & JSON output](/docs/using/other-features/structured-errors).
+- **Exit codes are deterministic**: `0` success · `1` runtime/internal error ·
+  `2` validation (bad input, not found, failed precondition) · `3` environment
+  (server/database/index unreachable). Some commands (`doctor`, `connectors audit`)
+  reduce multiple findings to one exit code by taking the worst. See
+  [Exit codes](/docs/using/other-features/exit-codes).
+- **`--quiet` / `-q`** — suppress passing/OK lines and progress chrome; print only
+  warnings, failures, and the summary. Doesn't change the exit code.
+- **`--no-color`** — disable colored/glyph output even on a color-capable
+  terminal (glyphs also fall back to ASCII automatically when not a TTY, or
+  when `NO_COLOR` is set).
+- **`--yes` / `-y`** — skip an interactive confirmation prompt on a mutating
+  command.
+- Global persistent flags on every command: **`--api.grpc.address`** (address
+  where a running Conduit is reachable) and **`--config.path`** (path to
+  `conduit.yaml`).
 
-Use "conduit [command] --help" for more information about a command.
-```
-:::note
-Most of these commands require conduit to be already running, so it could have access to
-the components used by conduit when running, or available to be used by it.
-To run conduit: `conduit run`
-:::
+## Quick reference
 
-For more details into the commands and how to use them, let's take for example the `connector-plugins` command, to get more
-information about its options, run `conduit connector-plugins --help`, which will show that you have two available commands:
-1. `list`, `ls`
-This command will show all the connector plugins available to be used by conduit, including the builtin connectors
-and the ones under the `connectors` directory.
-```text
-$ ./conduit connector-plugins list
-+----------------------------------------------+---------------------------------------------------------------------------------+
-|                     NAME                     |                                     SUMMARY                                     |
-+----------------------------------------------+---------------------------------------------------------------------------------+
-| builtin:file@v0.9.0                          | A file source and destination plugin for Conduit.                               |
-| builtin:generator@v0.9.1                     | Generator plugin                                                                |
-| builtin:kafka@v0.11.1                        | A Kafka source and destination plugin for Conduit, written in Go.               |
-| builtin:log@v0.6.0                           | A destination connector that logs all incoming records.                         |
-| builtin:postgres@v0.10.1                     | A PostgreSQL source and destination plugin for Conduit.                         |
-| builtin:s3@v0.8.1                            | An S3 source and destination plugin for Conduit, written in Go.                 |
-| standalone:cassandra@v0.0.1                  | A Cassandra Destination Connector.                                              |
-| standalone:dynamodb@f9aeeee-dirty            | A DynamoDB source plugin for Conduit                                            |
-| standalone:grpc-client@v0.1.0                | A gRPC Source & Destination Clients.                                            |
-| standalone:grpc-server@v0.1.0                | A gRPC Source Server.                                                           |
-| standalone:postgres@v0.5.0-18-g7b9be7e-dirty | A PostgreSQL source and destination plugin for Conduit.                         |
-+----------------------------------------------+---------------------------------------------------------------------------------+
-```
+| Command | Aliases | Needs a running server? | Summary |
+|---|---|---|---|
+| `conduit run` | | — | Start the Conduit server and run configured pipelines |
+| `conduit init` | | offline | Scaffold a workspace (`conduit.yaml` + directories) |
+| `conduit quickstart` | | — | Run an ephemeral demo pipeline, no config needed |
+| `conduit doctor` | | offline (optional) | Preflight checks: would `conduit run` succeed here? |
+| `conduit mcp` | | — | Run Conduit's MCP server for AI agents |
+| `conduit open docs` | `docs` | offline | Open conduit.io docs in a browser |
+| `conduit config` | | offline | Show the resolved configuration |
+| `conduit version` | | offline | Print the Conduit version |
+| `conduit pipelines list` | `ls` | yes | List registered pipelines |
+| `conduit pipelines describe` | `desc` | yes | Full static config of one pipeline |
+| `conduit pipelines init` | | offline | Scaffold a pipeline config file |
+| `conduit pipelines validate` | | offline | Parse/validate one or more pipeline configs |
+| `conduit pipelines lint` | | offline | Validate + advisory warnings |
+| `conduit pipelines dry-run` | | offline | Validate + show the enriched graph `run` would load |
+| `conduit pipelines inspect` | | yes | Live status + per-stage state of one pipeline |
+| `conduit pipelines deploy` | | prefers live, falls back offline | Preview (and optionally apply) a pipeline's changes |
+| `conduit pipelines apply` | | prefers live, falls back offline | Apply a previously-previewed plan |
+| `conduit pipelines repair` | | offline | Preview/apply machine-fixable config fixes |
+| `conduit pipelines start` | | yes | Start a stopped pipeline |
+| `conduit pipelines stop` | | yes | Stop a running pipeline |
+| `conduit pipelines dev` | | — | `run --dev` sugar: hot-reload watcher |
+| `conduit connectors list` | `ls` | yes (see `--installed`) | List pipeline connector instances, or installed plugin artifacts |
+| `conduit connectors describe` | `desc` | yes | Detail of one connector instance |
+| `conduit connectors new` | | offline | Scaffold a new Go connector repository |
+| `conduit connectors install` | | offline | Install a standalone connector from the registry |
+| `conduit connectors uninstall` | | offline | Remove an installed standalone connector |
+| `conduit connectors audit` | | offline | Re-verify installed connectors against the registry |
+| `conduit connectors bundle` | | offline | Prepare an offline install bundle |
+| `conduit connector-plugins list` | `ls` | yes | List connector plugins available to pipelines |
+| `conduit connector-plugins describe` | `desc` | yes | Detail of one connector plugin |
+| `conduit processors list` | `ls` | yes | List registered processor instances |
+| `conduit processors describe` | `desc` | yes | Detail of one processor instance |
+| `conduit processors new` | | offline | Scaffold a new Go processor repository |
+| `conduit processor-plugins list` | `ls` | yes | List processor plugins available to pipelines |
+| `conduit processor-plugins describe` | `desc` | yes | Detail of one processor plugin |
 
-2. `describe`, `desc`
-This command shows the detailed description of a specific connector plugin, take the `builtin:postgres@v0.10.1` from the
-output above for example, to show more details about it, run `conduit connector-plugins desc builtin:postgres@v0.10.1`:
-```text
-$ ./conduit connector-plugins desc builtin:postgres@v0.10.1
-Name: builtin:postgres@v0.10.1
-Summary: A PostgreSQL source and destination plugin for Conduit.
-Author: Meroxa, Inc.
-Version: v0.10.1
+"Needs a running server" means the command dials the API of a `conduit run`
+process. "offline" commands never do. `deploy`/`apply` are hybrid: they dial a
+live server if one is reachable at `--api.grpc.address` and fall back to
+opening the local store directly (see
+[Deploy and apply](/docs/using/pipelines/deploy-apply)).
 
-Source Parameters:
-+------------------------------------+----------+------------------------------------------------------------------------------------------------------+-------------+---------------------------+
-|                NAME                |   TYPE   |                                             DESCRIPTION                                              |   DEFAULT   |        VALIDATIONS        |
-+------------------------------------+----------+------------------------------------------------------------------------------------------------------+-------------+---------------------------+
-| url                                | string   | URL is the connection string for the Postgres database.                                              |             | [required]                |
-| tables                             | string   | Tables is a List of table names to read from, separated by a comma, e.g.:"table1,table2". Use "*" if |             |                           |
-|                                    |          | you'd like to listen to all tables.                                                                  |             |                           |
-| logrepl.publicationName            | string   | LogreplPublicationName determines the publication name in case the connector uses logical            | conduitpub  |                           |
-|                                    |          | replication to listen to changes (see CDCMode).                                                      |             |                           |
-| snapshotMode                       | string   | SnapshotMode is whether the plugin will take a snapshot of the entire table before starting cdc      | initial     | [inclusion=initial,never] |
-|                                    |          | mode.                                                                                                |             |                           |
-| logrepl.autoCleanup                | bool     | LogreplAutoCleanup determines if the replication slot and publication should be removed when the     | true        |                           |
-|                                    |          | connector is deleted.                                                                                |             |                           |
-| logrepl.slotName                   | string   | LogreplSlotName determines the replication slot name in case the connector uses logical replication  | conduitslot |                           |
-|                                    |          | to listen to changes (see CDCMode).                                                                  |             |                           |
-| logrepl.withAvroSchema             | bool     | WithAvroSchema determines whether the connector should attach an avro schema on each                 | false       |                           |
-|                                    |          | record.                                                                                              |             |                           |
-| cdcMode                            | string   | CDCMode determines how the connector should listen to changes.                                       | auto        | [inclusion=auto,logrepl]  |
-| snapshot.fetchSize                 | int      | Snapshot fetcher size determines the number of rows to retrieve at a time.                           | 50000       |                           |
-| table                              | string   | Deprecated: use `tables` instead.                                                                    |             |                           |
-| sdk.schema.context.name            | string   | Schema context name to be used. Used as a prefix for all schema subject names. Defaults to the       |             |                           |
-|                                    |          | connector ID.                                                                                        |             |                           |
-| sdk.schema.extract.payload.subject | string   | The subject of the payload schema. If the record metadata contains the field "opencdc.collection" it | payload     |                           |
-|                                    |          | is prepended to the subject name and separated with a dot.                                           |             |                           |
-| sdk.schema.extract.payload.enabled | bool     | Whether to extract and encode the record payload with a schema.                                      | false       |                           |
-| sdk.schema.extract.type            | string   | The type of the payload schema.                                                                      | avro        | [inclusion=avro]          |
-| sdk.batch.size                     | int      | Maximum size of batch before it gets read from the source.                                           | 0           |                           |
-| sdk.schema.extract.key.enabled     | bool     | Whether to extract and encode the record key with a schema.                                          | false       |                           |
-| sdk.schema.context.enabled         | bool     | Specifies whether to use a schema context name. If set to false, no schema context name will be      | true        |                           |
-|                                    |          | used, and schemas will be saved with the subject name specified in the connector (not safe because   |             |                           |
-|                                    |          | of name conflicts).                                                                                  |             |                           |
-| sdk.schema.extract.key.subject     | string   | The subject of the key schema. If the record metadata contains the field "opencdc.collection" it is  | key         |                           |
-|                                    |          | prepended to the subject name and separated with a dot.                                              |             |                           |
-| sdk.batch.delay                    | duration | Maximum delay before an incomplete batch is read from the source.                                    | 0s          |                           |
-+------------------------------------+----------+------------------------------------------------------------------------------------------------------+-------------+---------------------------+
+---
 
-Destination Parameters:
-+------------------------------------+-------------+----------------------------------------------------------------------------------------------------+--------------------------------------------+-------------------------------------------------+
-|                NAME                |    TYPE     |                                            DESCRIPTION                                             |                  DEFAULT                   |                   VALIDATIONS                   |
-+------------------------------------+-------------+----------------------------------------------------------------------------------------------------+--------------------------------------------+-------------------------------------------------+
-| url                                | string      | URL is the connection string for the Postgres database.                                            |                                            | [required]                                      |
-| table                              | string      | Table is used as the target table into which records are inserted.                                 | {{ index .Metadata "opencdc.collection" }} |                                                 |
-| key                                | string      | Key represents the column name for the key used to identify and update existing rows.              |                                            |                                                 |
-| sdk.batch.size                     | int         | Maximum size of batch before it gets written to the destination.                                   | 0                                          |                                                 |
-| sdk.batch.delay                    | duration    | Maximum delay before an incomplete batch is written to the destination.                            | 0s                                         |                                                 |
-| sdk.schema.extract.key.enabled     | bool        | Whether to extract and decode the record key with a schema.                                        | true                                       |                                                 |
-| sdk.record.format                  | string      | The format of the output record.                                                                   | opencdc/json                               | [inclusion=debezium/json,opencdc/json,template] |
-| sdk.record.format.options          | string      | Options to configure the chosen output record format. Options are key=value pairs separated with   |                                            |                                                 |
-|                                    |             | comma (e.g. opt1=val2,opt2=val2).                                                                  |                                            |                                                 |
-| sdk.rate.perSecond                 | float       | Maximum number of records written per second (0 means no rate limit).                              | 0                                          |                                                 |
-| sdk.rate.burst                     | int         | Allow bursts of at most X records (0 or less means that bursts are not limited). Only takes effect | 0                                          |                                                 |
-|                                    |             | if a rate limit per second is set. Note that if `sdk.batch.size` is bigger than `sdk.rate.burst`,  |                                            |                                                 |
-|                                    |             | the effective batch size will be equal to `sdk.rate.burst`.                                        |                                            |                                                 |
-| sdk.schema.extract.payload.enabled | bool        | Whether to extract and decode the record payload with a schema.                                    | true                                       |                                                 |
-+------------------------------------+-------------+----------------------------------------------------------------------------------------------------+--------------------------------------------+-------------------------------------------------+
-```
-The output shows detailed description about the connector itself, and all the Source and/or Destination parameters that it 
-provides, with details about those parameters too.
+## Top-level commands
 
-These same examples can be used for other commands, like `pipelines list`, `pipelines desc`, `connectors ls`,
-`connectors desc`, `processors list`, etc...
+### `conduit run`
 
-## `quickstart`
+Starts the Conduit server and runs the pipelines under `--pipelines.path`.
+Blocks until shutdown. See [Configuration](/docs/configuration) for the full
+flag/env/config-file reference — highlights relevant here:
 
-`conduit quickstart` is the fastest way to see Conduit working. It scaffolds an
-ephemeral demo pipeline — a built-in `generator` source streaming sample records
-to the built-in `log` destination — and runs it immediately, so records flow to
-your console within seconds:
+| Flag | Description |
+|---|---|
+| `--dev` | Alias for `--dev.enabled`: watch `--pipelines.path` and hot-reload changes into the running engine as you save. A processor-only edit applies in place (no restart); a source/destination/topology edit applies via a labeled graceful restart; a bad edit is reported and never touches the running pipeline. |
+| `--pipelines <path>` | Alias for `--pipelines.path`. |
+| `--api.allow-live-restart-apply` | Authorize `pipelines apply`/MCP `apply` (from any client) to drain-and-restart a **running** pipeline. Off by default. See [Deploy and apply](/docs/using/pipelines/deploy-apply). |
+| `--config.path` | Path to `conduit.yaml`. |
+
+`--dev` is self-authorizing (running `--dev` and watching the output **is** the
+authorization) — it does not set `--api.allow-live-restart-apply`, which stays
+independently gated for the gRPC/HTTP/MCP surface.
 
 ```shell
-$ conduit quickstart
-Starting a demo pipeline (generator → log). Records will flow below — press Ctrl-C to stop.
+conduit run
+conduit run --dev
+conduit run --dev --pipelines.path ./pipelines --dev.json
 ```
 
-Unlike `conduit run`, `quickstart` needs no configuration and writes nothing to
-your working directory: the scaffolded config lives in a temporary directory that
-is removed on exit, and the state store is in-memory. Press `Ctrl + C` to stop.
+Exit codes: `0` on a graceful single `SIGINT`/`SIGTERM`; `130`/`143` on a
+forced second signal (`128 + signum`). See [Exit codes](/docs/using/other-features/exit-codes).
 
-| Flag     | Description                                                       |
-|----------|-------------------------------------------------------------------|
-| `--json` | Emit the demo's logs and records as JSON instead of human text.   |
+### `conduit init`
 
-It's meant for a quick "does this work" check. To build and run a pipeline of
-your own, see [Getting Started](/docs/getting-started) and
-[`pipelines init`](/docs/using/pipelines/configuration-file).
+Sets up a Conduit **workspace** in the current directory: writes `conduit.yaml`
+and creates the `pipelines`, `connectors`, and `processors` directories. Does
+**not** create a pipeline — that's `conduit pipelines init`.
+
+| Flag | Description |
+|---|---|
+| `--path <dir>` | Where to initialize the workspace. Default: current directory. |
+
+```shell
+conduit init
+conduit init --path ./my-workspace
+```
+
+### `conduit quickstart`
+
+The fastest way to see Conduit working: scaffolds an ephemeral demo pipeline
+(built-in `generator` → built-in `log`) and runs it immediately, in a temp
+directory removed on exit, with in-memory state. Press `Ctrl+C` to stop.
+
+| Flag | Description |
+|---|---|
+| `--json` | Emit the demo's logs and records as JSON instead of human-readable text. |
+
+```shell
+conduit quickstart
+```
+
+### `conduit doctor`
+
+Offline, non-destructive preflight: "would `conduit run` succeed here?" Checks
+config resolution/validation, database reachability, API address availability,
+plugin directories, and (optionally) whether a running engine is reachable. It
+does **not** start a Runtime — distinct from the running server's `/readyz`
+and `/healthz` endpoints.
+
+| Flag | Description |
+|---|---|
+| `--deep` | Also run `plugins.standalone_compat`, which dispenses standalone connector plugin binaries in an isolated subprocess. |
+| `--require-server` | Fail (instead of warn) if the API server isn't reachable. |
+| `--check <name>` | Run only the named check(s); repeatable. `--help` lists all check names. |
+| `--quiet` / `-q` | Suppress passing checks. |
+| `--no-color` | Disable colored output. |
+
+```shell
+conduit doctor
+conduit doctor --deep --json
+conduit doctor --check db --check plugins.builtin
+```
+
+Exit codes: `0` every check passed (warnings never fail) · `2` invalid
+configuration · `3` a required dependency (database, network address, or —
+with `--require-server` — the API server) is unreachable.
+
+### `conduit mcp`
+
+Runs Conduit's MCP server, registering pipeline operations as MCP tools that
+are 1:1 with the CLI verbs and call the exact same engines: `validate`/`lint`/
+`dry_run`/`deploy`/`doctor`/`inspect` are always available (`deploy` only
+computes a diff + hash, never mutates); `apply`/`start`/`stop`/
+`scaffold_connector`/`scaffold_processor` are additionally registered only
+with `--allow-mutations`.
+
+| Flag | Description |
+|---|---|
+| `--allow-mutations` | Register the write tools. An operator/process-level switch — never agent-settable. |
+| `--http <addr>` | Serve the streamable-HTTP transport on this address **instead of** stdio (EXPERIMENTAL). Requires `--token-file` and `--tls-cert`/`--tls-key`. |
+| `--token-file <path>` | Bearer token file for `--http` (compared constant-time). |
+| `--tls-cert <path>` / `--tls-key <path>` | TLS cert/key for `--http`. |
+| `--api-address <addr>` | gRPC address of a running Conduit, dialed by the `inspect`/`start`/`stop` tools. |
+
+Serves stdio by default (no auth needed — the agent owns the process).
+`--http` is a network-daemon mode (systemd/container) and serves HTTP **only**
+(never stdio simultaneously); it refuses to start unless both a bearer token
+and TLS are configured — no plaintext, no unauthenticated HTTP.
+
+```shell
+conduit mcp
+conduit mcp --allow-mutations --api-address localhost:8084
+conduit mcp --http :8443 --token-file token.txt --tls-cert cert.pem --tls-key key.pem
+```
+
+See `docs/operations/mcp-server.md` in the conduit repo for the full transport
+and hardening reference.
+
+### `conduit open docs` (alias: `conduit docs`)
+
+Opens the conduit.io documentation in your default web browser.
+
+```shell
+conduit open docs
+conduit docs
+```
+
+:::note
+`conduit docs` at the top level is a hidden alias (it works, but doesn't show
+in `conduit --help`) for `conduit open docs`.
+:::
+
+### `conduit config`
+
+Prints the fully-resolved configuration Conduit would run with — flags, env
+vars, and config file merged — using the same flags as `conduit run`.
+
+```shell
+conduit config
+```
+
+### `conduit version`
+
+Prints the current Conduit version.
+
+```shell
+conduit version
+```
+
+---
+
+## `conduit pipelines` (alias: `conduit pipeline`)
+
+Initialize and manage pipelines.
+
+### `list` (alias `ls`)
+
+Lists pipelines registered by a running Conduit. Requires a running server.
+
+```shell
+conduit pipelines list
+conduit pipelines ls --json
+```
+
+### `describe PIPELINE_ID` (alias `desc`)
+
+Full static configuration detail of one pipeline: config, connectors (with
+their processors), pipeline-level processors, and DLQ config. Requires a
+running server.
+
+```shell
+conduit pipelines describe orders
+conduit pipeline desc orders --json
+```
+
+### `init [PIPELINE_NAME]`
+
+Scaffolds a pipeline configuration **file** (offline — no running server
+needed). With no flags, produces a runnable demo pipeline (`generator` →
+`log`). `--source`/`--destination` select any built-in connector instead.
+
+| Flag | Description |
+|---|---|
+| `--source <name>` | Source connector (any built-in). Default: `generator` (demo). |
+| `--destination <name>` | Destination connector (any built-in). Default: `log` (demo). |
+| `--pipelines.path <dir>` | Where to save the file. Default: `./pipelines`. |
+
+```shell
+conduit pipelines init
+conduit pipelines init --source generator --destination s3
+conduit pipelines init file-to-pg --source file --destination postgres --pipelines.path ./my-pipelines
+```
+
+### `validate <path>`
+
+Offline, errors-only check: runs the same parse, enrich, and validate steps
+`conduit run` uses to load a pipeline config, without starting Conduit or
+dialing its API. `<path>` is a single `.yml`/`.yaml` file, or a directory of
+them (not recursed). Every problem in every file is reported — one bad file
+never stops the rest from being checked.
+
+| Flag | Description |
+|---|---|
+| `--quiet` / `-q` | Suppress passing/OK lines. |
+| `--no-color` | Disable colored/glyph output. |
+
+```shell
+conduit pipelines validate pipelines/orders.yaml
+conduit pipelines validate ./pipelines --json
+```
+
+Exit `0` if every pipeline is valid, `2` otherwise. See also `lint` (adds
+advisory warnings) and `dry-run` (adds the enriched graph).
+
+### `lint <path>`
+
+Everything `validate` checks, plus the parser's **advisory warnings**
+(deprecated/renamed fields, unrecognized fields, config version fallback),
+located by line and column. Offline, like `validate`.
+
+| Flag | Description |
+|---|---|
+| `--strict` | Escalate warnings to failures (exit 2). Validation errors always fail regardless. |
+| `--quiet` / `-q` | Suppress passing/OK lines. |
+| `--no-color` | Disable colored/glyph output. |
+
+```shell
+conduit pipelines lint pipelines/orders.yaml
+conduit pipelines lint ./pipelines --strict --json
+```
+
+### `dry-run <path>`
+
+Everything `validate` checks, then reports the **fully-enriched pipeline
+graph** `conduit run` would actually load: final connector/processor IDs,
+injected DLQ defaults, and worker counts. Offline, no side effects.
+
+| Flag | Description |
+|---|---|
+| `--resolve-plugins` | Check that referenced **builtin** plugins exist (default: `true`). An unknown builtin fails (exit 2). Standalone plugin references stay advisory — not statically verifiable offline. |
+| `--quiet` / `-q` | Suppress passing/OK lines. |
+| `--no-color` | Disable colored/glyph output. |
+
+```shell
+conduit pipelines dry-run pipelines/orders.yaml
+conduit pipelines dry-run ./pipelines --resolve-plugins=false --json
+```
+
+### `inspect PIPELINE_ID`
+
+The **online**, status-forward operational view of a running pipeline: live
+status (running/stopped/degraded/recovering), any error, and a per-stage
+summary of sources, destinations, and the DLQ. Unlike `validate`/`lint`/
+`dry-run`, this dials the API. Use `list` to find pipeline IDs, `describe` for
+full static config.
+
+```shell
+conduit pipelines inspect orders
+conduit pipelines inspect orders --json
+```
+
+### `deploy <file>`
+
+Computes the diff between `<file>` and the pipeline's current state — one
+`create`/`update`/`delete` per pipeline/connector/processor, each classified
+`in_place` (safe on a running pipeline) or `restart` — **without applying
+anything**. Emits a plan hash. Prefers a live server (if reachable at
+`--api.grpc.address`); falls back to opening the local store directly if not.
+See [Deploy and apply](/docs/using/pipelines/deploy-apply) for the full
+workflow and the in-place/restart distinction.
+
+| Flag | Description |
+|---|---|
+| `--apply` | Compute the plan and apply it in one call (prompts for confirmation unless `--yes`). |
+| `--yes` / `-y` | With `--apply`, skip the confirmation prompt. |
+| `--quiet` / `-q` | Suppress per-change lines; print only the summary. |
+| `--no-color` | Disable colored/glyph output. |
+
+```shell
+conduit pipelines deploy orders.yaml
+conduit pipelines deploy orders.yaml --json
+conduit pipelines deploy orders.yaml --apply --yes
+```
+
+`deploy` never mutates on its own — only `--apply` (or `apply` itself) does.
+
+### `apply <file>`
+
+Recomputes the plan for `<file>` and executes it, but **only if `--plan-hash`
+matches the freshly recomputed plan's hash exactly** — a mismatch (the file or
+the live pipeline changed since `deploy` computed that hash) refuses with
+`provisioning.plan_stale` (exit 2), never partially applied.
+
+| Flag | Description |
+|---|---|
+| `--plan-hash <hash>` | The hash from `conduit pipelines deploy`. Required unless `--yes`. |
+| `--yes` / `-y` | Apply the freshly recomputed plan directly, without a hash. |
+| `--no-color` | Disable colored/glyph output. |
+
+```shell
+conduit pipelines apply orders.yaml --plan-hash 9f3a2c...
+conduit pipelines apply orders.yaml --yes --json
+```
+
+Idempotent — applying an already-applied config computes an empty plan and
+does nothing (exit 0). Against a **running** pipeline reached via a live
+server, applying requires operator authorization
+(`--api.allow-live-restart-apply` on the server) unless the change is entirely
+live-swappable and taken via the in-place path — see
+[Deploy and apply](/docs/using/pipelines/deploy-apply).
+
+### `repair <file>`
+
+Collects every finding `validate`/`lint` can find a structured, machine-appliable
+fix for (a deprecated/renamed field, an unambiguous invalid `/status` value, a
+negative processor `/workers`, an over-long `/description`) and shows the
+proposed edit as a diff with a plan hash. Mutates nothing by default — edits the
+config **file** only, never the pipeline store or a running pipeline.
+
+| Flag | Description |
+|---|---|
+| `--apply` | Apply the plan instead of only previewing it (safe fixes only, unless `--fix` selects others). |
+| `--plan-hash <hash>` | The hash from a prior `repair` read. Required with `--apply` unless `--yes`. |
+| `--yes` / `-y` | With `--apply`, apply the freshly recomputed plan directly. |
+| `--fix <configPath>` | Apply only the fix(es) at this configPath; repeatable. |
+| `--escalate` | Permit applying an explicitly `--fix`-selected data-path-adjacent fix (ack/position/checkpoint-adjacent config). Human-only — never available via MCP. |
+| `--no-color` | Disable colored/glyph output. |
+
+```shell
+conduit pipelines repair orders.yaml
+conduit pipelines repair orders.yaml --apply --plan-hash 9f3a2c...
+conduit pipelines repair orders.yaml --apply --yes --fix /processors/0/workers
+```
+
+Restart-class and data-path-adjacent fixes are never applied by default —
+select one explicitly with `--fix`; a data-path-adjacent fix additionally
+requires `--escalate`. Getting a repaired file into a running engine is still
+`deploy`/`apply`.
+
+### `start PIPELINE_ID`
+
+Transitions a **stopped** pipeline to Running against a live Conduit server.
+Requires a reachable server — there is deliberately no offline fallback
+(a started pipeline's goroutines only stay alive inside a long-running
+process).
+
+```shell
+conduit pipelines start orders
+conduit pipelines start orders --json
+```
+
+Starting an already-running pipeline is refused with `pipeline.running`
+(exit 2); nothing is mutated.
+
+### `stop PIPELINE_ID`
+
+Transitions a **running** pipeline to `UserStopped` against a live server:
+gracefully by default (drains in-flight records before returning), or
+immediately with `--force`.
+
+| Flag | Description |
+|---|---|
+| `--force` | Skip the graceful drain and stop immediately. Positions are crash-safe and delivery is at-least-once, so this behaves like a crash on restart, not data loss. |
+
+```shell
+conduit pipelines stop orders
+conduit pipelines stop orders --force --json
+```
+
+This command does not wait for the drain to fully settle before returning —
+it reports the pipeline's status immediately after the transition RPC
+returns, which may still be transitional. Stopping an already-stopped
+pipeline is refused with `pipeline.not_running` (exit 2).
+
+### `dev [dir]`
+
+Sugar for `conduit run --dev [--pipelines.path dir]`: starts a full Conduit
+server with the hot-reload watcher enabled and `pipelines.exit-on-degraded`
+forced off (so one intentionally-broken pipeline mid-edit doesn't take the
+whole dev server down). Carries no watcher logic of its own — it's a thin
+alias over `run --dev`.
+
+```shell
+conduit pipelines dev
+conduit pipelines dev ./pipelines
+conduit pipelines dev --dev.json
+```
+
+---
+
+## `conduit connectors` (alias: `conduit connector`)
+
+### `list` (alias `ls`)
+
+Lists **connector instances** in pipelines registered by a running Conduit.
+
+| Flag | Description |
+|---|---|
+| `--pipeline-id <id>` | Filter connectors by pipeline ID. |
+| `--installed` | List installed connector **plugin artifacts** from the local install manifest instead — a completely different thing from a pipeline connector instance. Mutually exclusive with `--pipeline-id`. |
+| `--index-url` / `--index-file` | Registry index source, only consulted with `--installed` (for a best-effort "latest available" column). |
+
+```shell
+conduit connectors list
+conduit connectors list --installed
+```
+
+### `describe CONNECTOR_ID` (alias `desc`)
+
+Detail of one connector instance and its attached processors.
+
+```shell
+conduit connectors describe connector:source
+```
+
+### `new [name]`
+
+Scaffolds a full connector repository from `ConduitIO/conduit-connector-template`
+— SDK wiring, tests, CI, release workflow, acceptance test harness — ready to
+build with no edits. Only `--lang go` is available today.
+
+| Flag | Description |
+|---|---|
+| `--module <path>` | Go module path, e.g. `github.com/you/conduit-connector-<name>` (required). |
+| `--path <dir>` | Destination directory. Default: `./conduit-connector-<name>`. |
+| `--git` / `--no-git` | Initialize a git repository and first commit (default: on). |
+| `--force` | Overwrite the destination directory if it already exists. |
+
+```shell
+conduit connectors new s3 --module github.com/you/conduit-connector-s3
+conduit connector new s3 --yes --json
+```
+
+### `install <name>[@version]`, `uninstall <name>[@version]`, `audit`, `bundle <name>[@version]`
+
+Registry connector-lifecycle commands — install/remove standalone connector
+plugin artifacts, re-verify installed connectors against the registry index,
+and prepare an offline install bundle. All are offline (they never dial the
+running Conduit API; they operate directly on `--connectors.path` and the
+registry index).
+
+| Command | One-line summary |
+|---|---|
+| `install` | Resolve, download, verify (signature + SLSA provenance), and install a connector artifact for this host's platform. |
+| `uninstall` | Remove an installed artifact and its manifest entry; refuses if a pipeline still references it, unless `--force`. |
+| `audit` | Re-verify every already-installed connector against the current signed registry index (catches a version yanked or publisher revoked after install). |
+| `bundle` | Package a fully-verified artifact + its signatures/provenance + the signed index snapshot into a tarball for fully offline installation elsewhere. |
+
+```shell
+conduit connectors install postgres@0.14.1
+conduit connectors uninstall postgres --force
+conduit connectors audit --json
+conduit connectors bundle postgres@0.14.1 --os linux --arch amd64
+```
+
+See the connector registry guide (`/docs/using/connectors/installing`) for the
+full flag reference, trust model, and offline-bundle workflow for these four
+commands.
+
+---
+
+## `conduit connector-plugins`
+
+Aliases: `connector-plugin`, `connectorplugins`, `connectorplugin`,
+`connectorsplugins`.
+
+### `list` (alias `ls`)
+
+Lists connector plugins available to add to a pipeline — built-in and
+standalone (installed under `--connectors.path`). Requires a running server.
+
+| Flag | Description |
+|---|---|
+| `--name <substr>` | Filter by name (substring match). |
+
+```shell
+conduit connector-plugins list
+```
+
+### `describe CONNECTOR_PLUGIN_ID` (alias `desc`)
+
+Full spec of one connector plugin: summary, author, version, and every source
+and destination config parameter (type, default, validations).
+
+```shell
+conduit connector-plugins describe builtin:postgres@v0.10.1
+```
+
+---
+
+## `conduit processors` (alias: `conduit processor`)
+
+### `list` (alias `ls`)
+
+Lists **processor instances** registered by a running Conduit.
+
+```shell
+conduit processors list
+```
+
+### `describe PROCESSOR_ID` (alias `desc`)
+
+Detail of one processor instance: plugin, parent (pipeline or connector),
+condition, config settings, worker count.
+
+```shell
+conduit processors describe pipeline-processor
+```
+
+### `new [name]`
+
+Scaffolds a full processor repository from `ConduitIO/conduit-processor-template`
+— SDK wiring, tests, CI, release workflow — ready to build with no edits. Same
+flags as `connectors new` (`--module`, `--path`, `--git`/`--no-git`, `--force`).
+Only `--lang go` is available today.
+
+```shell
+conduit processors new uppercase --module github.com/you/conduit-processor-uppercase
+```
+
+---
+
+## `conduit processor-plugins`
+
+Aliases: `processor-plugin`, `processorplugins`, `processorplugin`,
+`processorsplugins`.
+
+### `list` (alias `ls`)
+
+Lists processor plugins available to add to a pipeline. Requires a running
+server.
+
+| Flag | Description |
+|---|---|
+| `--name <substr>` | Filter by name (substring match). |
+
+```shell
+conduit processor-plugins list
+```
+
+### `describe PROCESSOR_PLUGIN_ID` (alias `desc`)
+
+Full spec of one processor plugin: summary, author, version, and every config
+parameter.
+
+```shell
+conduit processor-plugins describe builtin:base64.decode@v0.1.0
+```
+
+---
 
 ## JSON output
 
-The read commands that talk to a running Conduit — `pipelines list`,
-`pipelines describe`, `connectors list`/`describe`, `processors list`/`describe`,
-`connector-plugins list`/`describe`, and `processor-plugins list`/`describe` —
-accept a `--json` flag. With `--json`, the command prints the result as JSON
-matching the [HTTP API](/docs/using/other-features/api) shape instead of the
-human-readable table:
+Every command in this reference accepts `--json`. Read commands that talk to
+a running Conduit (`pipelines list`/`describe`/`inspect`, `connectors list`/
+`describe`, `processors list`/`describe`, `connector-plugins list`/`describe`,
+`processor-plugins list`/`describe`) emit the same shape as the
+[HTTP API](/docs/using/other-features/api). Newer (v0.17+) commands
+(`validate`, `lint`, `dry-run`, `doctor`, `deploy`, `apply`, `repair`,
+`install`/`uninstall`/`audit`/`bundle`, `connectors new`/`processors new`)
+emit the shared `{command, ok, summary, result, error}` envelope described
+above.
 
 ```shell
-$ conduit pipelines list --json
+conduit pipelines list --json
 ```
 
-`--json` makes the CLI scriptable and agent-legible: the same structured data the
-API returns, without parsing table output. Errors are structured too — see
+`--json` makes the CLI scriptable and agent-legible: the same structured data,
+without parsing table output. Errors are structured too — see
 [Structured errors & JSON output](/docs/using/other-features/structured-errors).
-
-Conduit's exit codes are also deterministic, so a script can branch on the kind
-of failure without reading the error text — see
+Exit codes are deterministic, so a script can branch on the kind of failure
+without reading the error text — see
 [Exit codes](/docs/using/other-features/exit-codes).
 
 ![scarf pixel conduit-site-docs-using](https://static.scarf.sh/a.png?x-pxid=76d5981f-cd63-422b-8cf7-eab9e99f0cd3)

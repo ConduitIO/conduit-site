@@ -1,0 +1,221 @@
+---
+title: 'Deploy and apply pipelines to a running server'
+sidebar_label: 'Deploy and apply'
+slug: '/using/pipelines/deploy-apply'
+---
+
+`conduit pipelines deploy` and `conduit pipelines apply` are how you get a
+pipeline config file — one you're iterating on locally, or one coming out of
+CI/GitOps — into Conduit, safely. `deploy` always shows you the change first;
+`apply` is the only thing that executes it, and only the exact plan you (or
+your pipeline) already reviewed.
+
+This page is a workflow guide. For the full flag reference, see
+[`pipelines deploy`](/docs/cli#deploy-file) and
+[`pipelines apply`](/docs/cli#apply-file) in the [CLI reference](/docs/cli).
+
+## The mental model: plan, then apply
+
+`deploy` and `apply` are two halves of one **plan → apply-by-hash** workflow:
+
+1. **`deploy <file>`** parses, enriches, and validates the file, then computes
+   a **diff** against the pipeline's current state — one `create`/`update`/
+   `delete` per pipeline/connector/processor, each labeled `in_place` or
+   `restart`. It **never mutates anything**. It prints the diff and a **plan
+   hash**.
+2. **`apply <file> --plan-hash <hash>`** recomputes the diff and checks that
+   the hash you're presenting matches the freshly-computed one **exactly**. If
+   it does, it executes. If the file or the live pipeline changed since
+   `deploy` computed that hash, apply refuses with `provisioning.plan_stale`
+   (exit 2) — nothing is partially applied.
+
+```shell
+$ conduit pipelines deploy orders.yaml
+Plan for pipeline "orders" (hash 9f3a2c1b):
+  ~ update  connector  pg-source        in place   settings.table: users → orders_v2
+  + create  connector  s3-sink          restart    (new destination)
+  ~ update  pipeline   orders           restart     connectors changed
+
+2 to update, 1 to create. Applying will RESTART pipeline "orders".
+Run:  conduit pipelines apply orders.yaml --plan-hash 9f3a2c1b
+
+$ conduit pipelines apply orders.yaml --plan-hash 9f3a2c1b
+```
+
+The hash exists so that what got **approved** (by a human reading the diff, or
+an agent that showed it to one) is provably what got **executed** — an agent
+that approved hash `9f3a2c1b` cannot silently apply a different plan, even if
+the underlying file changed a second later.
+
+Two shortcuts, both still going through the same hash check internally:
+
+- **`deploy <file> --apply`** computes the plan and applies it in one call
+  (prompts for confirmation unless `--yes`) — the convenient path for a human
+  at a terminal.
+- **`apply <file> --yes`** (no `--plan-hash`) applies whatever the freshly
+  recomputed plan is — the convenient path when you trust the file and don't
+  need a review step (e.g. a CI job that already reviewed the file via `git
+  diff` and just wants to reconcile the server).
+
+Both `deploy` and `apply` are **idempotent**: applying a config that already
+matches the pipeline's current state computes an empty plan and does nothing
+(exit 0).
+
+## Where the change actually goes: live server vs. local store
+
+`deploy`/`apply` need somewhere to read "the pipeline's current state" from and
+(for `apply`) write the new state to. They resolve that automatically, in this
+order:
+
+1. **A running Conduit server**, if one is reachable at `--api.grpc.address`
+   (default `:8084`, or whatever `conduit run` is using). The diff is computed
+   against the live pipeline and, on `apply`, executed through the server's
+   `PlanPipeline`/`ApplyPipeline` API — the same engine the MCP `deploy`/`apply`
+   tools use.
+2. **The local store directly** (BadgerDB/SQLite/Postgres, whichever
+   `--db.*`/`conduit.yaml` points at), if no server is reachable. This is the
+   offline path: it's how `deploy`/`apply` work against a pipeline that isn't
+   running yet, or in a GitOps job with no live Conduit to talk to.
+
+Both paths produce the same `Diff`/hash shape and the same `--json` result —
+only the transport differs. You don't choose which one runs; it's decided by
+whether a server answers at the configured address.
+
+## In-place vs. restart: what each classification means
+
+Every changed resource in the diff is labeled with an **effect**:
+
+- **`in_place`** — the change can be applied without disrupting the pipeline's
+  own resources (e.g. a connector settings tweak). This label describes the
+  *kind* of change, not necessarily "no restart happens" — see the next
+  section for the distinction that actually matters operationally.
+- **`restart`** — the change requires recreating something with a live
+  identity: a connector's `type`/`plugin`, the pipeline's topology (adding or
+  removing a connector or processor), or the DLQ config.
+
+### Against a stopped pipeline (or no server reachable)
+
+There's nothing running to disrupt. `apply` writes the new config directly —
+`in_place` and `restart` changes are applied identically. This is the common
+case for a pipeline you're building before its first `start`, or the offline
+GitOps path.
+
+### Against a running pipeline, via a live server
+
+This is where the distinction has real operational weight, and where a
+**second**, narrower classification — whether Conduit can apply the change
+**without stopping the pipeline at all** — comes in:
+
+- A **live-swappable** diff (every change in it is a processor config update,
+  or a pipeline `name`/`description`-only update — never a `workers` count
+  change, never anything touching a connector) is applied **in place**: the
+  affected processor node is swapped live, with no availability blip, no
+  position replay, and no record loss. This is the payoff of true in-place
+  hot-reload (the same mechanism `conduit run --dev`/`conduit pipelines dev`
+  uses to apply a processor edit as you save).
+- Anything else — a connector create/update/delete, a topology change, a DLQ
+  change, a processor's `workers` count, or a diff that mixes a live-swappable
+  change with a non-swappable one (the whole diff takes the more conservative
+  path) — goes through a **graceful drain-and-restart**: Conduit stops the
+  pipeline (`StopAndWait` — waits for in-flight records to finish, for the
+  destination to ack, and for positions to durably flush), applies the change,
+  and restarts it, resuming from the last checkpointed position
+  (at-least-once, invariant 2). This is a real, if brief, availability gap —
+  never data loss.
+
+`apply`'s `--json` result reports which path actually ran (`provisioned` for a
+not-yet-running pipeline, `in_place`, or `restart`) — this is the ground truth,
+not a prediction: a diff that looks live-swappable can still fall back to a
+restart (e.g. the processor can't be swapped while parallelized), and the
+report reflects what actually happened, not what was hoped for.
+
+:::note
+The `in_place`/`restart` label on each `Change` in the diff and the
+**live-swappable / drain-and-restart** decision for a *running* pipeline are
+related but distinct: `restart`-effect changes are always drain-and-restart
+against a running pipeline; `in_place`-effect changes are live-swappable only
+for the narrower processor/name/description set described above — a
+connector settings change is `in_place` in the diff's effect sense (it
+doesn't recreate anything) but still requires a drain-and-restart against a
+running pipeline today, because a connector owns source position and an open
+connection that no live-swap path touches yet.
+:::
+
+## Applying to a running pipeline requires authorization
+
+Because *any* non-empty change to a running pipeline currently means either a
+live in-place swap or a graceful drain-and-restart, and a drain-and-restart is
+a real (if brief) disruption to live infrastructure, `apply` against a
+**running** pipeline reached through a live server is gated:
+
+```text
+code: provisioning.live_apply_unauthorized
+message: pipeline "orders" is running; applying any change to it restarts it
+         (a graceful, no-loss drain-and-restart), which requires operator
+         authorization
+suggestion: have an operator restart the Conduit server with
+            --api.allow-live-restart-apply ... or stop the pipeline first and
+            apply while it's stopped
+```
+
+Pick one:
+
+**1. Authorize it at the server.** Restart Conduit with the flag (or the
+config/env equivalent), then re-run apply:
+
+```shell
+conduit run --api.allow-live-restart-apply
+```
+
+This is a **process-level** flag read once at server startup — there is no
+field on the API request or an MCP tool argument that can set or override it.
+An agent driving `apply` over the API or MCP has no lever for this gate at
+all; only an operator restarting the process changes the answer. The flag
+authorizes *every* apply against *any* running pipeline on that server for its
+whole lifetime — if you only want to authorize one change, prefer option 2.
+
+**2. Stop the pipeline first**, apply while it's stopped (no gate — a stopped
+pipeline has nothing running to protect), then restart it:
+
+```shell
+conduit pipelines stop orders
+conduit pipelines apply orders.yaml --plan-hash <hash>
+conduit pipelines start orders
+```
+
+:::note
+`conduit run --dev` / `conduit pipelines dev` never hit this gate: running
+`--dev` and watching its output **is** the authorization (you're present,
+watching every apply happen). `--dev` does not set
+`--api.allow-live-restart-apply` — the API/MCP surface stays independently
+gated for every other client. See [`conduit pipelines dev`](/docs/cli#dev-dir).
+:::
+
+The gate is deliberately coarse: it keys on "the pipeline is running and the
+diff is non-empty," not on whether the diff happens to be live-swappable —
+every apply against a running pipeline restarts or live-swaps it, and both are
+real changes to running infrastructure that deserve an explicit decision. Only
+an empty (no-op) diff is exempt, because it changes nothing.
+
+## Failure handling
+
+- **Stale hash** — `provisioning.plan_stale`, exit 2, nothing applied. Re-run
+  `deploy` to get a fresh hash.
+- **Partial-apply failure** (an action fails mid-sequence) — the executed
+  prefix is rolled back in reverse; the pipeline is left in its pre-apply
+  state (or, for a running-pipeline apply that had already stopped it, left
+  **stopped** with a clear error — never auto-restarted into a half-applied
+  state). A crash between stop and restart is recoverable the same way: the
+  store write is transactional (all-or-nothing), and restarting resumes from
+  the last durable checkpoint.
+- **Applying to a running pipeline without authorization** —
+  `provisioning.live_apply_unauthorized`, exit 2, nothing applied. See above.
+
+## See also
+
+- [CLI reference: `pipelines deploy`/`apply`/`repair`](/docs/cli)
+- [Pipeline statuses](/docs/using/pipelines/statuses)
+- [Structured errors & JSON output](/docs/using/other-features/structured-errors)
+- [Exit codes](/docs/using/other-features/exit-codes)
+
+![scarf pixel conduit-site-docs-using-pipelines](https://static.scarf.sh/a.png?x-pxid=4f41012a-be75-4b82-8112-86a7cb40f98a)
