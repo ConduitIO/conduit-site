@@ -299,9 +299,9 @@ End to end, from your side and the registry's:
 
 :::note
 
-`ConduitIO/connector-publish-action` and the registry index repository are new supply-chain infrastructure and are still
-being finalized ahead of the v0.18 release. The workflow shape and identity model on this page are stable; the exact
-action version tag and the pinned SLSA generator ref may be confirmed as the bootstrap completes. Check the
+`ConduitIO/connector-publish-action` is available and pinned at `@v1`; the reference workflow pins the
+`slsa-github-generator` ref that Conduit's trust core is compiled to require. Pin the action to `@v1` (or an exact
+`@v1.x.y`) rather than a branch. Always check the
 [connector-publish-action README](https://github.com/ConduitIO/connector-publish-action) for the current pinned versions
 before you copy the workflow.
 

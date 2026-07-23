@@ -176,9 +176,12 @@ The verification pipeline described here is implemented and wired into `conduit 
 connectors audit`: index-signature verification, freshness/rollback checks, identity-pinned artifact-signature
 verification, and SLSA provenance binding all run, and installs fail closed by default.
 
-The registry's production key material and the live index are established by a one-time bootstrap ceremony that is being
-finalized ahead of the v0.18 release. Until that completes, an install against a real index fails closed with
-`registry.trust_anchor_expired` — the correct, intended pre-bootstrap behavior (fail closed, never fail open), not a bug.
-The independent index-CI re-verification on the registry repository, and the exact pinned SLSA builder identity, are being
-confirmed alongside the [connector-publish-action](https://github.com/ConduitIO/connector-publish-action) as the bootstrap
-lands.
+The bootstrap ceremony is complete: the production root and freshness anchors are compiled into released builds, and the
+registry serves a signed index at `https://registry.conduitdata.io/index.json` that a released build verifies against
+those anchors (a build with no embedded anchors still fails closed with `registry.trust_anchor_expired`, never fail
+open). Connectors are published to it through the
+[connector-publish-action](https://github.com/ConduitIO/connector-publish-action).
+
+One safeguard is still landing: an independent index-CI re-verification on the registry repository — a second, automated
+re-check of every registration PR, distinct from the client-side verification above — is planned but not yet in place, so
+registrations are human-reviewed in the meantime.
