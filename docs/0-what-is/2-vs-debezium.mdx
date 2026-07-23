@@ -1,0 +1,244 @@
+---
+title: "Conduit vs Debezium"
+sidebar_label: "Conduit vs Debezium"
+description: "An honest comparison of Conduit's change data capture coverage, mechanism, and maturity against Debezium — including where Debezium still wins today."
+---
+
+# Conduit vs Debezium
+
+This page states our CDC story honestly, cell by cell, against Debezium. Every claim below links
+to the connector source/README that backs it or to a named, currently-passing CI test — not to a
+description of a description. Where Debezium is still the better choice, we say so, at the same
+weight as everywhere we think Conduit is ahead.
+
+:::note Where this comes from
+This page publishes the coverage/mechanism/maturity audit from Conduit's internal
+[CDC parity roadmap](https://github.com/ConduitIO/conduit/blob/main/docs/design-documents/20260722-debezium-compete-roadmap.md),
+verified by reading each connector's actual CDC implementation rather than its description. It
+doesn't re-derive that audit — it's the same matrix, made public.
+:::
+
+## Where Conduit already wins: embeddability
+
+Debezium Server and Debezium Engine exist for one reason: to let you run CDC without standing up a
+Kafka Connect cluster, either as a standalone process or embedded directly in your own JVM
+application. Conduit already covers that exact use case, today, with no new engineering:
+
+- **`conduit run`** ships CDC pipelines as a single Go binary — no JVM, no cluster.
+- **The `conduit` Go package** ([`doc.go`](https://github.com/ConduitIO/conduit/blob/main/doc.go)) is
+  Conduit's frozen, semver-committed embedding API — a Go application constructs an `Engine`,
+  starts it with `Run`, and manages its lifecycle in-process, without touching `os.Exit`, a global
+  logger, or the process-wide Prometheus registry. That's the same "run CDC inside my own process"
+  job Debezium Engine does for JVM applications.
+
+**The caveat, stated plainly, not left open:** this subsumes the *standalone-process* use case —
+not Debezium Server's specific Kafka-Connect-compatible REST management API, and not a claim of a
+multi-language embedding surface. Conduit's embedding API is Go-native today; a C-ABI /
+language-binding layer (the fuller `libconduit` surface other languages would call) is later,
+scoped work, tracked in the
+[embed-libconduit-v1 design doc](https://github.com/ConduitIO/conduit/blob/main/docs/design-documents/20260722-embed-libconduit-v1.md).
+If your use case depends on Debezium Server's REST API verbatim, or on embedding from a
+non-Go/non-JVM language today, Debezium (or waiting for Conduit's later embedding milestones) is
+the better fit right now.
+
+## CDC coverage, mechanism, and maturity
+
+The distinction that matters more than a database checklist is **log-based CDC** (binlog / oplog /
+logical replication / LogMiner — what Debezium does) versus **trigger/polling-based CDC** (a
+tracking table populated by triggers, then polled). Trigger-based CDC works, but it adds write
+amplification on the source database, can't reconstruct history from before the trigger was
+installed, and needs manual tracking-table schema sync when the source schema changes.
+
+<table>
+  <caption>
+    CDC coverage by database: connector, mechanism, whether it's log-based (Debezium-class), and
+    current maturity. "Yes" / "No" always appears with the mechanism name — never as a color-only
+    indicator.
+  </caption>
+  <thead>
+    <tr>
+      <th scope="col">Database</th>
+      <th scope="col">Conduit connector</th>
+      <th scope="col">Mechanism</th>
+      <th scope="col">Log-based (Debezium-class)?</th>
+      <th scope="col">Maturity</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">PostgreSQL</th>
+      <td><a href="https://github.com/ConduitIO/conduit-connector-postgres">conduit-connector-postgres</a> v0.14</td>
+      <td>Logical replication (slot + publication)</td>
+      <td>✅ Yes — log-based</td>
+      <td>Most mature</td>
+    </tr>
+    <tr>
+      <th scope="row">MySQL</th>
+      <td><a href="https://github.com/conduitio-labs/conduit-connector-mysql">conduit-connector-mysql</a> v0.2</td>
+      <td>Row-based binlog</td>
+      <td>✅ Yes — log-based</td>
+      <td>Early</td>
+    </tr>
+    <tr>
+      <th scope="row">MongoDB</th>
+      <td><a href="https://github.com/conduitio-labs/conduit-connector-mongo">conduit-connector-mongo</a> v0.2</td>
+      <td>Change streams</td>
+      <td>✅ Yes — log-based</td>
+      <td>Early</td>
+    </tr>
+    <tr>
+      <th scope="row">Vitess</th>
+      <td><a href="https://github.com/conduitio-labs/conduit-connector-vitess">conduit-connector-vitess</a> v0.1</td>
+      <td>VStream</td>
+      <td>✅ Yes — log-based</td>
+      <td>Alpha</td>
+    </tr>
+    <tr>
+      <th scope="row">SQL Server</th>
+      <td><a href="https://github.com/conduitio-labs/conduit-connector-sql-server">conduit-connector-sql-server</a> v0.1</td>
+      <td>Triggers + tracking table + polling</td>
+      <td>⚠️ No — trigger-based</td>
+      <td>Early</td>
+    </tr>
+    <tr>
+      <th scope="row">Oracle</th>
+      <td><a href="https://github.com/conduitio-labs/conduit-connector-oracle">conduit-connector-oracle</a></td>
+      <td>Triggers + tracking table + polling</td>
+      <td>⚠️ No — trigger-based</td>
+      <td>Very early</td>
+    </tr>
+    <tr>
+      <th scope="row">Db2</th>
+      <td><a href="https://github.com/conduitio-labs/conduit-connector-db2">conduit-connector-db2</a></td>
+      <td>Triggers + tracking table + polling</td>
+      <td>⚠️ No — trigger-based</td>
+      <td>Pre-release</td>
+    </tr>
+    <tr>
+      <th scope="row">Spanner</th>
+      <td><a href="https://github.com/conduitio-labs/conduit-connector-spanner">conduit-connector-spanner</a></td>
+      <td>CDC planned — snapshot only today</td>
+      <td>⚠️ No — snapshot only</td>
+      <td>Pre-release</td>
+    </tr>
+    <tr>
+      <th scope="row">Cassandra</th>
+      <td><a href="https://github.com/conduitio-labs/conduit-connector-cassandra">conduit-connector-cassandra</a></td>
+      <td>Sink-only, no CDC source</td>
+      <td>⚠️ No — no CDC source</td>
+      <td>v0.1</td>
+    </tr>
+  </tbody>
+</table>
+
+<small>
+  <strong>SQL Server citation note:</strong> the SQL Server connector's README had a copy-paste bug
+  that mislabeled its CDC section as "DB2" — a fix is filed as{" "}
+  <a href="https://github.com/conduitio-labs/conduit-connector-sql-server/pull/169">PR #169</a>, pending
+  merge. The mechanism claim above (trigger-based, tracking table) is drawn from the connector's
+  actual behavior, not the README's prose, and isn't blocked on that PR merging — but we're not
+  linking the specific README section as evidence until it's fixed.
+</small>
+
+**Coverage is roughly at parity** — 9+ of Debezium's ~10 supported databases have a Conduit
+connector. **Mechanism is at parity only on Postgres, MySQL, MongoDB, and Vitess** — the four
+connectors that are genuinely log-based. The rest work, but not the way Debezium works.
+
+## Choose Debezium if…
+
+This is not a footnote. If any of the following matter to you today, Debezium is the better choice,
+full stop — these are real, current gaps, not "coming soon" hand-waves:
+
+- **You need native SQL Server, Oracle, or Db2 CDC that isn't trigger-based.** Conduit's connectors
+  for these three databases use triggers and a polling tracking table (see the table above), not
+  log-based capture. Debezium's native connectors for all three are log-based.
+- **You rely on schema/DDL evolution.** No Conduit CDC connector auto-handles DDL changes today;
+  several require stopping the pipeline and hand-editing a tracking table. Debezium has a schema
+  history store and DDL parsing built in. This is the single largest gap versus Debezium, and it's
+  universal — it doesn't just affect the trigger-based connectors.
+- **You need incremental (signal-based) snapshots.** Some Conduit connectors (MySQL, MongoDB) can
+  resume a snapshot; none has Debezium's ad-hoc incremental re-snapshot — re-snapshotting a table
+  without stopping the stream.
+- **You depend on heartbeats.** Not surfaced by any Conduit CDC connector today. On a low-traffic
+  Postgres source in particular, the lack of heartbeats bloats the WAL / replication slot — a real
+  production footgun Debezium solved years ago.
+- **You need transaction metadata or boundaries.** Absent in Conduit today. Debezium emits
+  begin/end transaction boundary markers; Conduit doesn't yet.
+- **You use the outbox pattern.** Debezium's `EventRouter` owns the microservices-CDC outbox use
+  case. Conduit has no equivalent processor yet.
+- **You need production-hardened maturity across the board.** Most of Conduit's log-based
+  connectors are v0.1–v0.2 — edge-case hardening (failover, TOAST columns, replica identity, large
+  transactions, connection recovery) is still in progress, tracked as ongoing work in the
+  [CDC parity roadmap](https://github.com/ConduitIO/conduit/blob/main/docs/design-documents/20260722-debezium-compete-roadmap.md).
+
+## The Kafka Connect wrapper: what's proven, what isn't
+
+[`conduit-kafka-connect-wrapper`](https://github.com/ConduitIO/conduit-kafka-connect-wrapper) lets
+Conduit run real Kafka Connect connectors — including Debezium's — as a single sidecar process per
+connector, without a Kafka Connect worker cluster. That's real, but it proves different things for
+different databases, and conflating them would overclaim:
+
+<table>
+  <caption>
+    Kafka Connect wrapper confidence tiers — what's actually CI-tested today versus what's still
+    unwired engineering.
+  </caption>
+  <thead>
+    <tr>
+      <th scope="col">Tier</th>
+      <th scope="col">Databases</th>
+      <th scope="col">Status</th>
+      <th scope="col">What's actually verified</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">Proven</th>
+      <td>Debezium-Postgres via the wrapper</td>
+      <td>✅ CI-tested today</td>
+      <td>
+        <a href="https://github.com/ConduitIO/conduit-kafka-connect-wrapper/blob/main/src/test/java/io/conduit/DebeziumPgSourceIT.java"><code>DebeziumPgSourceIT</code></a>{" "}
+        runs Debezium's real Postgres connector against a dockerized Postgres on every PR, in the{" "}
+        <a href="https://github.com/ConduitIO/conduit-kafka-connect-wrapper/blob/main/.github/workflows/build.yml"><code>integration-tests</code></a>{" "}
+        CI job — envelope translation, ack ordering, and the offset↔position bridge, on the one
+        database where a native log-based connector already covers us.
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">Unproven</th>
+      <td>Debezium-{"{"}MySQL, Oracle, SQL Server, Db2{"}"} via the wrapper</td>
+      <td>⚠️ Not wired, not tested</td>
+      <td>
+        Debezium's MySQL/Oracle/SQL Server/Db2 connectors all require a durable schema-history
+        store to interpret historical binlog/redo entries — that store isn't wired up or tested
+        anywhere in the wrapper today. "Instant coverage via the wrapper" for these four databases
+        is scoped, real engineering work, not a checkbox we've already earned.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+## Crash-safety: verification in progress
+
+The wrapper's ack/offset bridge is *designed* correctly, by source inspection: the wrapper only
+calls Debezium's `commitRecord()`/`commit()` after Conduit acks the record, upholding the
+never-ack-before-durable invariant. That's a design read, not a chaos test. We are not claiming
+it's been verified under a `kill -9` yet — that verification is scoped as its own workstream
+(chaos + FIFO-ack-ordering validation) and is tracked in
+[issue #2672](https://github.com/ConduitIO/conduit/issues/2672) and the
+[CDC parity roadmap](https://github.com/ConduitIO/conduit/blob/main/docs/design-documents/20260722-debezium-compete-roadmap.md).
+This page will be updated with one link to that result once it lands — not before.
+
+## The honest read
+
+Broad coverage, log-based like Debezium on Postgres/MySQL/Mongo — not yet at parity on depth or
+maturity. Claiming parity to an Oracle or SQL Server shop would burn credibility we're trying to
+rebuild, not spend.
+
+## Related reading
+
+- [Kafka Connect connectors with Conduit](/docs/using/connectors/kafka-connect-connector) — how the wrapper works today
+- [Conduit roadmap](/docs/future/roadmap) — where native CDC depth (schema evolution, heartbeats, transaction metadata, outbox) is headed
+- [Connector list](/docs/using/connectors/list) — every connector Conduit ships, including the ones in the matrix above
+
+![scarf pixel conduit-site-docs-vs-debezium](https://static.scarf.sh/a.png?x-pxid=01346572-0d57-4df3-8399-1425db913a0b)
