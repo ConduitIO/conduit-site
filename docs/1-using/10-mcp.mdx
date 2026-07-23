@@ -1,0 +1,274 @@
+---
+title: 'Drive Conduit from an AI agent (MCP)'
+sidebar_label: 'MCP server'
+slug: '/using/mcp'
+---
+
+Conduit ships an [MCP](https://modelcontextprotocol.io) (Model Context Protocol) server as a
+first-class command: `conduit mcp`. It exposes Conduit's pipeline operations to an AI agent as
+MCP tools, so a Claude (or any MCP-compatible) client can validate, deploy, inspect, and repair
+pipelines directly — without you shelling out to the CLI by hand.
+
+The design principle is deliberately narrow: **every MCP tool is a thin wrapper over the exact same
+engine the matching CLI verb calls.** There is no separate agent code path that could behave
+differently from what you'd get on the command line. If `conduit pipelines validate` accepts a
+config, so does the `validate` tool, and they return the same verdict.
+
+:::note
+The MCP server is invoked as `conduit mcp` directly. There is no `conduit mcp server`
+subcommand — the top-level command _is_ the server.
+:::
+
+## Quick start
+
+Start the server on stdio (the default):
+
+```console
+conduit mcp
+```
+
+That's the whole invocation for the common case: an agent that spawns Conduit as a subprocess and
+talks to it over stdin/stdout. No network, no ports, no authentication — the agent that launched the
+process already owns it.
+
+To let the agent inspect or control a **running** Conduit, point it at that server's gRPC address:
+
+```console
+conduit mcp --api-address localhost:8084
+```
+
+## What the server exposes
+
+The tool catalog mirrors the CLI verbs one-to-one. Tools split into two classes:
+
+- **Read tools** are always registered. They never mutate the pipeline store, a running pipeline,
+  or the filesystem.
+- **Write tools** are registered **only** when the server is started with `--allow-mutations` (see
+  [below](#--allow-mutations-the-write-tool-gate)).
+
+| Tool | Class | Mutates | Same engine as |
+| --- | --- | --- | --- |
+| `validate` | read | no | `conduit pipelines validate` |
+| `lint` | read | no | `conduit pipelines lint` |
+| `dry_run` | read | no | `conduit pipelines dry-run` |
+| `doctor` | read | no | `conduit doctor` |
+| `deploy` | read | no (computes a diff + plan hash only) | `conduit pipelines deploy` |
+| `inspect` | read | no — requires `--api-address` | `conduit pipelines inspect` |
+| `repair` | read | no (computes a fix plan + hash only) | `conduit pipelines repair` |
+| `apply` | write | yes — the pipeline store or a running pipeline | `conduit pipelines apply` |
+| `start` | write | yes (running pipeline) — requires `--api-address` | `conduit pipelines start` |
+| `stop` | write | yes (running pipeline) — requires `--api-address` | `conduit pipelines stop` |
+| `scaffold_connector` | write | yes (filesystem) | `conduit connector new` |
+| `scaffold_processor` | write | yes (filesystem) | `conduit processor new` |
+| `repair_apply` | write | yes — the config content only, never the store | `conduit pipelines repair --apply` |
+
+Tools that take a pipeline configuration — `validate`, `lint`, `dry_run`, `deploy`, `apply`,
+`repair`, `repair_apply` — accept it as an **inline `config` string** (YAML content), never a
+server-side file path. An agent naturally has content, not a path on the machine `conduit mcp` runs
+on, and accepting a path would let an agent read arbitrary files on that host.
+
+### Structured results with stable error codes
+
+Every tool returns the same structured envelope, the MCP analog of the CLI's `--json` output:
+
+```json
+{
+  "ok": true,
+  "summary": { "...": "the wrapped engine's own report/diff summary" },
+  "result": { "...": "the full result payload" },
+  "error": null
+}
+```
+
+On a domain failure, `ok` is `false` and `error` carries machine-actionable remediation — the same
+fields the CLI's `--json` output and error registry expose:
+
+```json
+{
+  "ok": false,
+  "error": {
+    "code": "provisioning.plan_stale",
+    "message": "the plan hash no longer matches the current pipeline state",
+    "suggestion": "call deploy again to recompute the plan, then apply with the new hash",
+    "configPath": "",
+    "fix": null
+  }
+}
+```
+
+Because the error `code` is stable and documented (see
+[Structured errors & JSON output](/docs/using/other-features/structured-errors)), an agent can
+branch on the failure kind rather than parsing prose.
+
+### `deploy` → `apply`: diff-first, hash-bound
+
+`deploy` never mutates. It computes the diff (create/update/delete per pipeline, connector, and
+processor) needed to reach the desired config, plus a **plan hash**. To actually apply, an agent
+calls `apply` with that exact hash. If the underlying state changed in between — a stale or
+mismatched hash — `apply` is refused (`provisioning.plan_stale`) with nothing mutated. This gives an
+agent a safe propose-then-commit loop instead of a blind write.
+
+### `repair` / `repair_apply`
+
+`repair` scans a config for findings that carry a structured, machine-appliable fix (a
+deprecated/renamed field, an unambiguous invalid `status` value, a negative processor `workers`
+count, an over-long `description`), classifies each fix's safety as `safe` / `restart` /
+`data_path`, and returns a plan hash. It mutates nothing — not even the config content.
+
+`repair_apply` applies that plan (safe fixes only by default, or a named subset) if the hash still
+matches. It **never applies a `data_path` fix**, even one named explicitly — that fix comes back as a
+skipped entry (`repair.data_path_fix_refused`). The data-path override exists only behind the CLI's
+human-only `conduit pipelines repair --apply --escalate` flag, never as a tool argument. Both repair
+tools are content-in/content-out: `repair_apply` returns the repaired YAML in its result and never
+writes it anywhere. Getting a repaired config into an engine is still `deploy`/`apply`'s job.
+
+## `--allow-mutations`: the write-tool gate
+
+Write tools are **absent from the catalog** — not present-and-erroring — unless the operator starts
+the server with `--allow-mutations`:
+
+```console
+conduit mcp --allow-mutations
+```
+
+This is a startup / process-level flag. There is deliberately **no corresponding tool argument**: an
+agent cannot enable mutations by passing a parameter. Only the human who launched `conduit mcp`
+decides whether the write tools exist at all. This is the primary safety posture — you choose the
+blast radius when you start the server, and an agent operates strictly within it.
+
+:::note
+`start` and `stop` transition a pipeline against a running Conduit's gRPC API — they have no offline
+fallback and refuse with `common.unavailable` unless `--api-address` was set at startup, exactly like
+`inspect`. `stop`'s `force` argument skips the graceful drain (immediate stop), but is not a
+data-loss escape hatch: positions are crash-safe and delivery is at-least-once, so a forced stop
+behaves like a recoverable crash, not silent loss.
+:::
+
+## Flags
+
+| Flag | Purpose |
+| --- | --- |
+| `--api-address` | gRPC address of a running Conduit, dialed by the `inspect`/`start`/`stop` tools. |
+| `--allow-mutations` | Register the write tools. Operator-only; never agent-settable. |
+| `--http <addr>` | Serve the streamable-HTTP transport **instead of** stdio (experimental — see below). |
+| `--token-file <path>` | File containing the bearer token `--http` requires (compared constant-time). |
+| `--tls-cert <path>` / `--tls-key <path>` | TLS certificate/key pair `--http` requires. |
+
+`conduit mcp` also accepts the standard Conduit configuration flags (`--db.type`,
+`--pipelines.path`, `--connectors.path`, `--log.level`, and so on), so the tools that touch the
+local store or filesystem read the same configuration `conduit run` and `conduit pipelines deploy`
+would. See the [Conduit CLI](/docs/cli) and
+[configuration](/docs/configuration) pages.
+
+## Connect an MCP client
+
+Most MCP clients (Claude Desktop, Claude Code, and others) launch each server as a subprocess and
+speak stdio to it. Point the client at the `conduit` binary with a `command`/`args` entry. For
+Claude Desktop, add this to `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "conduit": {
+      "command": "conduit",
+      "args": ["mcp", "--api-address", "localhost:8084"]
+    }
+  }
+}
+```
+
+For Claude Code, register the same server from the CLI:
+
+```console
+claude mcp add conduit -- conduit mcp --api-address localhost:8084
+```
+
+Add `--allow-mutations` to the `args` only when you want the agent to be able to write — deploy
+pipelines, scaffold plugins, start/stop running pipelines. Start read-only; widen deliberately.
+
+Once connected, the client lists Conduit's tools and the agent can call them. A typical read-only
+flow: the agent calls `validate` (or `lint`/`dry_run`) on a config it drafted, reads the structured
+verdict, fixes any error the `error` envelope reports, and — if `--allow-mutations` is set — calls
+`deploy` to get a plan hash and `apply` to commit it.
+
+## HTTP transport (experimental)
+
+For a remote agent or a shared Conduit instance that several agents reach over the network, `--http`
+serves the streamable-HTTP transport:
+
+```console
+conduit mcp --http :8443 \
+    --token-file /etc/conduit/mcp-token \
+    --tls-cert /etc/conduit/tls/cert.pem \
+    --tls-key /etc/conduit/tls/key.pem
+```
+
+:::warning
+`--http` serves the network transport **instead of** stdio, not in addition to it. It is a
+network-daemon mode (systemd, container) with no attached stdin. The transport is **experimental** —
+the fail-closed / auth / TLS fundamentals below are solid, but it is a single shared token with no
+rotation short of a restart, no per-agent identity, and no rate limiting. Do not expose it beyond a
+trusted network yet.
+:::
+
+The server is **fail-closed**: `--http` refuses to start without **both** of the following, so there
+is no unauthenticated and no plaintext path.
+
+- **`--token-file <path>`** — a file containing a bearer token. Every request's
+  `Authorization: Bearer <token>` header is compared against it in constant time
+  (`crypto/subtle.ConstantTimeCompare`). The token is supplied as a **file path**, never an inline
+  flag value, so it never lands in `ps`/argv or shell history. An empty (or whitespace-only) token
+  file is refused at startup.
+- **`--tls-cert` / `--tls-key`** — a TLS certificate/key pair. HTTP is only ever served over TLS
+  (minimum TLS 1.2); there is no plaintext option.
+
+A request with a missing or incorrect bearer token is rejected with `401 Unauthorized` **before** it
+reaches the MCP protocol handler — including `tools/list`, so an unauthenticated caller learns
+nothing about the catalog, not even whether `--allow-mutations` is on.
+
+### Operational behavior
+
+- **Startup log line** — on success, a structured `info` line names the bound address and auth mode
+  (`serving MCP over streamable HTTP`).
+- **Non-loopback bind warning** — if `--http` resolves to an address that is not restricted to
+  loopback (`:8443`, `0.0.0.0:8443`, or a public hostname), a `warn` line calls out the exposure at
+  startup. TLS and the bearer token already make this safe; the warning exists so an operator who
+  meant `--http localhost:8443` notices if they typed (or defaulted to) something wider.
+- **Auth-failure logging** — every rejected request logs `method`, `path`, `remote_addr`, and
+  `outcome=unauthorized` at `warn` level, so probing against the token is observable. The token
+  itself, and whatever credential the caller presented, are **never logged** — only request metadata.
+- **Timeouts** — `ReadHeaderTimeout: 10s` (Slowloris guard) and `IdleTimeout: 120s` (bounds an idle
+  keep-alive connection). There is no blanket write timeout, since streamable HTTP can legitimately
+  hold a response open while streaming a tool result.
+- **Body cap** — requests are capped at 4 MiB; an oversized body fails the read instead of being
+  buffered in full.
+- **Graceful shutdown** — on `SIGTERM` or context cancellation, in-flight requests drain within a 5s
+  window before the process exits.
+
+### Not yet built
+
+The following are known gaps in the HTTP transport. Rotating the shared token today means restarting
+`conduit mcp` with a new `--token-file`.
+
+- Rate limiting / lockout on repeated auth failures.
+- Per-agent tokens with revocation; optional mTLS (client-certificate) auth.
+- Token hot-reload / rotation without a restart.
+
+## A note on autonomy
+
+The MCP server makes Conduit **legible and drivable** by an agent; it does not make the agent
+autonomous. Read tools are always available, but every write is gated by a flag only a human sets
+(`--allow-mutations`), commits are hash-bound (`deploy` → `apply`), data-path repairs are refused
+outright, and the data-integrity invariants that protect the record path apply identically whether a
+tool or a person triggered the operation. The agent proposes and drives; the operator decides how far
+it can reach.
+
+## See also
+
+- [llms.txt for agents](/docs/using/llms-txt) — the machine-readable map that lets an agent operate
+  Conduit with zero prior knowledge.
+- [Conduit CLI](/docs/cli) — the verbs the MCP tools mirror.
+- [Structured errors & JSON output](/docs/using/other-features/structured-errors) — the error-code
+  model the tool envelope carries.
+
+![scarf pixel conduit-site-docs-using](https://static.scarf.sh/a.png?x-pxid=76d5981f-cd63-422b-8cf7-eab9e99f0cd3)

@@ -1,0 +1,257 @@
+---
+title: 'Validate, lint & dry-run'
+sidebar_label: 'Validate, lint & dry-run'
+slug: '/using/pipelines/validate-lint-dry-run'
+---
+
+Before you deploy a pipeline, you can check its configuration without starting
+Conduit. Three offline commands run the same parse, enrich, and validate steps
+that `conduit run` uses at startup, and a fourth command inspects a pipeline that
+is already running:
+
+| Command | Checks | Needs a running Conduit? |
+|---------|--------|--------------------------|
+| `conduit pipelines validate <path>` | Schema and structural correctness (errors only) | No |
+| `conduit pipelines lint <path>` | Everything `validate` does, plus advisory warnings | No |
+| `conduit pipelines dry-run <path>` | Everything `validate` does, plus the enriched graph and plugin resolution | No |
+| `conduit pipelines inspect <PIPELINE_ID>` | Live status and per-stage state of a running pipeline | Yes |
+
+`validate`, `lint`, and `dry-run` are fully offline: they never contact — or
+require — a running Conduit instance. Only `inspect` dials the API.
+
+:::note
+`pipeline` is an alias for `pipelines`, so `conduit pipeline validate ...` and
+`conduit pipelines validate ...` are equivalent.
+:::
+
+## The safety loop
+
+A natural pre-deploy workflow moves from cheapest and strictest to richest:
+
+```shell
+conduit pipelines validate pipelines/orders.yaml   # is it structurally correct?
+conduit pipelines lint     pipelines/orders.yaml   # any advisory warnings?
+conduit pipelines dry-run  pipelines/orders.yaml   # what would run actually load?
+conduit pipelines deploy   pipelines/orders.yaml   # ship it
+```
+
+`<path>` is a single `.yml`/`.yaml` file, or a directory of them (not recursed
+into subdirectories). When you point at a directory, every problem in every file
+is reported — a bad file, or a bad pipeline within a file, never stops the rest
+from being checked.
+
+Every command supports `--json` and exits with a
+[deterministic exit code](/docs/using/other-features/exit-codes): `0` on success,
+`2` on a validation failure.
+
+## `validate` — structural correctness
+
+`validate` runs the offline parse, enrich, and validate steps and reports every
+error it finds. It is errors-only: there are no advisory warnings, so there is
+nothing for a `--strict` flag to escalate (use `lint` for warnings).
+
+```shell
+conduit pipelines validate pipelines/orders.yaml
+```
+
+Each finding is reported with a stable error code, the failing config path, and a
+suggested fix:
+
+```text
+✗ pipelines/orders.yaml
+  config.field_required   /connectors/0/plugin
+    connector "pg-source": "plugin" is mandatory
+    → set connectors[0].plugin (e.g. "builtin:postgres")
+
+Summary: 1 files · 0 passed · 1 failed · 1 problems
+Fix the ✗ items above, then re-run.
+```
+
+A valid file prints a `✓` line per file and exits `0`.
+
+### Flags
+
+| Flag | Effect |
+|------|--------|
+| `--json` | Emit the machine-readable result envelope instead of the rendered report. |
+| `-q`, `--quiet` | Suppress passing/OK lines and progress chrome; print only failures and the summary. |
+| `--no-color` | Disable colored/glyph output even on a color-capable terminal. |
+
+### Exit codes
+
+- `0` — every pipeline is valid.
+- `2` — at least one pipeline is invalid, or the path could not be resolved.
+
+## `lint` — advisory warnings
+
+`lint` runs everything `validate` checks, and additionally reports the parser's
+advisory warnings — deprecated or renamed fields, unrecognized fields, and
+pipeline config version fallbacks — each located by line and column.
+
+```shell
+conduit pipelines lint pipelines/orders.yaml
+```
+
+Warnings are advisory. A file with only warnings still exits `0`:
+
+```text
+⚠ pipelines/orders.yaml
+  ⚠ deprecated field (line 12:3)
+    "settings.foo" is deprecated
+    → use "settings.bar" instead
+
+Summary: 1 files · 0 passed · 1 warned · 0 failed · 0 errors · 1 warnings
+```
+
+Validation errors always fail (exit `2`). When a file has both an error and a
+warning, the error dominates and the run exits `2`, but both are rendered.
+
+### Flags
+
+| Flag | Effect |
+|------|--------|
+| `--strict` | Treat advisory warnings as failures (exit `2`). |
+| `--json` | Emit the machine-readable result envelope. |
+| `-q`, `--quiet` | Print only warnings, failures, and the summary. |
+| `--no-color` | Disable colored/glyph output. |
+
+Use `--strict` in CI when you want a warning-free config to be a hard gate:
+
+```shell
+conduit pipelines lint ./pipelines --strict
+```
+
+### Exit codes
+
+- `0` — no errors (warnings are allowed).
+- `2` — any validation error, or (with `--strict`) any warning.
+
+## `dry-run` — the enriched graph
+
+`dry-run` runs everything `validate` checks, then reports the fully-enriched
+pipeline graph that `conduit run` would actually load: final connector and
+processor IDs, injected dead-letter-queue defaults, and worker counts. This is
+what makes visible the parts of a config that Conduit fills in for you.
+
+```shell
+conduit pipelines dry-run pipelines/orders.yaml
+```
+
+```text
+✓ pipelines/orders.yaml
+  pipeline orders
+    source      orders:pg-source         builtin:postgres
+    destination orders:s3-sink           builtin:s3
+    DLQ         builtin:file
+
+Summary: 1 files · 1 passed · 0 failed · 0 problems
+```
+
+### Plugin resolution
+
+With `--resolve-plugins` (on by default), `dry-run` also checks that every
+referenced **builtin** plugin exists. An unknown builtin plugin fails with
+`connector.plugin_not_found` and exits `2`.
+
+Standalone (non-builtin) plugin references are left **advisory** — they are not
+statically verifiable because the plugin binary isn't loaded during an offline
+dry-run, so a standalone reference is never a false failure. Turn resolution off
+with `--resolve-plugins=false`:
+
+```shell
+conduit pipelines dry-run ./pipelines --resolve-plugins=false
+```
+
+### Flags
+
+| Flag | Effect |
+|------|--------|
+| `--resolve-plugins` | Check that referenced builtin plugins exist (default `true`; standalone plugins stay advisory). |
+| `--json` | Emit the machine-readable result envelope. |
+| `-q`, `--quiet` | Print only problems and the summary. |
+| `--no-color` | Disable colored/glyph output. |
+
+### Exit codes
+
+- `0` — the config is valid and all builtin plugin references resolve.
+- `2` — a validation error or an unknown builtin plugin reference.
+
+## `inspect` — a running pipeline
+
+`inspect` is the one online command in this group. It reports the live
+operational state of a pipeline registered in a running Conduit: its current
+[status](/docs/using/pipelines/statuses) (running, stopped, degraded,
+recovering), any error, and a per-stage summary of its sources, destinations, and
+dead-letter queue. It is the CLI peer of the MCP `inspect_pipeline` tool.
+
+```shell
+conduit pipelines inspect orders
+```
+
+```text
+Pipeline orders  [running]
+  name: orders
+  source       pg-source                builtin:postgres
+  destination  s3-sink                  builtin:s3
+  DLQ          builtin:file
+```
+
+Unlike `validate`, `lint`, and `dry-run`, this command requires a running Conduit
+and dials its API, so it accepts the standard API-address flags. Use
+[`conduit pipelines list`](/docs/cli) to see pipeline IDs, and
+`conduit pipelines describe` for the full static configuration.
+
+### Flags
+
+`inspect` takes the standard API-connection flags and `--json`. It has no
+positional flags of its own beyond the pipeline ID argument.
+
+### Exit codes
+
+- `0` — the pipeline was found and inspected.
+- `2` — the pipeline does not exist (`not_found`).
+- `3` — no running Conduit was reachable.
+
+## JSON output
+
+Every command supports `--json`, emitting the shared result envelope so scripts
+and agents can branch without parsing rendered text:
+
+```json
+{
+  "command": "pipelines.validate",
+  "ok": false,
+  "summary": { "files": 1, "pipelines": 0, "errors": 1, "warnings": 0 },
+  "result": {
+    "files": [
+      {
+        "path": "pipelines/orders.yaml",
+        "ok": false,
+        "pipelines": [],
+        "findings": [
+          {
+            "severity": "error",
+            "code": "config.field_required",
+            "message": "connector \"pg-source\": \"plugin\" is mandatory",
+            "configPath": "/connectors/0/plugin",
+            "suggestion": "set connectors[0].plugin (e.g. \"builtin:postgres\")"
+          }
+        ]
+      }
+    ]
+  },
+  "error": null
+}
+```
+
+- `lint` findings carry `severity: "warning"` and, for warnings, `line` and
+  `column`.
+- `dry-run` adds an `enriched` array to each file report describing the graph
+  `conduit run` would load.
+- `inspect` returns a `result` object with the live `pipeline`, its `connectors`,
+  and its `dlq`.
+
+See [Structured errors & JSON output](/docs/using/other-features/structured-errors)
+for the full envelope contract.
+
+![scarf pixel conduit-site-docs-using-pipelines](https://static.scarf.sh/a.png?x-pxid=4f41012a-be75-4b82-8112-86a7cb40f98a)

@@ -1,0 +1,188 @@
+---
+title: "Scaffold a New Connector or Processor"
+---
+
+`conduit connector new` and `conduit processor new` generate a ready-to-build
+connector or processor repository from a single command — module rename, SDK
+wiring, generated boilerplate, a verified `go build`, and an initial git commit,
+in one step. This page covers what the commands generate, how the flag-driven
+flow works today, and how they relate to the
+[Conduit Connector Template](/docs/developing/connectors/conduit-connector-template)
+repository.
+
+:::info
+Scaffolding targets **Go only** today. `--lang python` is accepted on the command
+line but always fails with an explicit "not supported yet" error — there is no
+Python connector SDK yet for the generated code to build against. See
+[Kafka Connect migration](/docs/using/connectors/kafka-connect-connector) and the
+roadmap for when other languages land.
+:::
+
+## `new` vs. the template repository
+
+Both commands and the
+[template repository](/docs/developing/connectors/conduit-connector-template) start
+from the same source: `conduit connector new` doesn't reimplement the template's
+boilerplate, it **drives** [`ConduitIO/conduit-connector-template`](https://github.com/ConduitIO/conduit-connector-template)
+(or [`conduit-processor-template`](https://github.com/ConduitIO/conduit-processor-template)
+for processors) through the same rename-and-generate recipe the template's own
+`setup.sh` encodes, from a version pinned and embedded into the `conduit` binary.
+They differ in where you do the work:
+
+| | `conduit connector new` | Use this template |
+| --- | --- | --- |
+| Starting point | One CLI command, no browser | GitHub "Use this template" |
+| Module/package rename | Automatic | Manual `./setup.sh <module>` |
+| Code generation | Runs automatically (`conn-sdk-cli` / `paramgen`) | Runs via `make generate` |
+| Verified build | `go build ./...` runs before the command reports success | You run it yourself |
+| Git init | Automatic (`--no-git` to skip) | You run `git init` yourself |
+| Repository creation, CI, CODEOWNERS | Not handled — still a manual GitHub step | Same manual steps either way |
+
+Use `conduit connector new`/`conduit processor new` as the fast path to a
+building, git-initialized local directory. Use the template repository directly
+when you want to start from GitHub's "Use this template" button, need finer
+control over the initial commit, or are following the
+[template page's](/docs/developing/connectors/conduit-connector-template) manual
+steps (defining `CODEOWNERS`, etc.). The generated output is the same either
+way — there is no divergent or "lesser" scaffold produced by the CLI path.
+
+## What it generates
+
+Running `conduit connector new <name> --module <module>` performs these steps,
+each reported as a pass/fail line:
+
+1. **Toolchain preflight** — Go on `PATH` at the minimum version the template's
+   `go.mod` requires, `git` on `PATH`, `$GOPATH/bin` writable. Runs *before* any
+   file is written; a failure here exits non-zero with no partial directory left
+   behind.
+2. **Extract template** — unpacks the embedded, version-pinned template snapshot
+   into a staging directory.
+3. **Rewrite module** — rewrites the module path and package name throughout the
+   tree (a Go port of the template's `setup.sh`, not a shelled-out script — this
+   is why it works identically on Windows).
+4. **Set SDK version** *(if `--sdk-version` given)* — overrides the pinned SDK
+   version via `go get` in the staged tree.
+5. **Install code-gen tool + generate** *(skipped by `--skip-generate`)* —
+   connectors and processors are **not symmetric** here:
+   - **Connector:** installs `conn-sdk-cli`, then runs `conn-sdk-cli specgen`
+     (regenerates `connector.yaml` from your config structs) and
+     `conn-sdk-cli readmegen -w` (fills in the README's parameter tables).
+   - **Processor:** installs `paramgen`, then runs `go generate ./...`, which
+     produces `paramgen_proc.go`. There is no README-generation step for
+     processors.
+6. **Verified build** — runs `go build ./...` against the staged tree. This is
+   the command's central promise: the result compiles with no manual edits.
+   Runs even when `--skip-generate` was passed, since both templates ship their
+   generated output pre-committed.
+7. **Git init** *(default; `--no-git` to skip)* — `git init`, `git add -A`,
+   and a first commit. Best-effort: a git failure here is reported as a failed
+   step, not a command failure — a scaffold that builds but lacks git history is
+   still usable.
+
+Only after every step (including the verified build) succeeds does the staged
+directory get moved into place at the destination path — a failed run never
+leaves a broken half-written directory where you asked for one.
+
+## Interactive vs. flag-driven
+
+Today the command is **flag-driven only**. There is no TTY prompting flow yet —
+a missing required flag (most commonly `--module`) fails with a specific,
+actionable error rather than a guided prompt. `--yes`/`-y` is accepted on the
+command line for forward compatibility with the CLI's output conventions, but it
+is currently a no-op: there is no confirmation step to skip yet.
+
+```shell
+conduit connector new s3 --module github.com/you/conduit-connector-s3
+conduit processor new uppercase --module github.com/you/conduit-processor-uppercase
+```
+
+### Flags
+
+| Flag | Description |
+| --- | --- |
+| `--lang` | Target language. Only `go` produces a scaffold; any other value (including `python`) fails with an explicit "not supported yet" error. Default: `go`. |
+| `--module` | Go module path, e.g. `github.com/<you>/conduit-connector-<name>`. **Required.** Must end in `conduit-connector-<name>` (or `conduit-processor-<name>`), matching the positional name argument. |
+| `--path` | Destination directory. Default: `./conduit-connector-<name>` (or `./conduit-processor-<name>`). |
+| `--sdk-version` | Overrides the SDK version pinned in the embedded template snapshot. |
+| `--git` / `--no-git` | Initialize a git repository and create the first commit. Default: `--git` (on). |
+| `--skip-generate` | Skip installing the code-gen tool and running code generation. The result still builds, since both templates ship pre-generated output. Use this when there's no network access to install `conn-sdk-cli`/`paramgen`. |
+| `--force` | Overwrite the destination directory if it already exists. Without it, an existing destination is a hard error. |
+| `--yes` / `-y` | Accepted for forward compatibility with the CLI's mutating-command conventions. Currently a no-op — there is no interactive confirmation step yet to skip. |
+| `--json` | Structured output (see below). |
+
+The connector/processor name itself is a positional argument (`conduit connector
+new <name>`), not a flag. It must be a valid Go identifier (letters, digits,
+underscores — no hyphens), since it becomes the scaffolded Go package name.
+
+## `--json` output
+
+Every scaffold run supports `--json`, per Conduit's CLI conventions. On success:
+
+```json
+{
+  "ok": true,
+  "result": {
+    "kind": "connector",
+    "language": "go",
+    "name": "s3",
+    "module": "github.com/you/conduit-connector-s3",
+    "path": "./conduit-connector-s3",
+    "templateRef": "<pinned template git ref>",
+    "sdkVersion": "v0.14.1",
+    "steps": [
+      { "name": "toolchain", "ok": true, "durationMs": 120 },
+      { "name": "extract_template", "ok": true, "durationMs": 8 },
+      { "name": "rewrite_module", "ok": true, "durationMs": 4 },
+      { "name": "install_tools", "ok": true, "durationMs": 3400 },
+      { "name": "generate", "ok": true, "durationMs": 900 },
+      { "name": "build", "ok": true, "durationMs": 12100 },
+      { "name": "git_init", "ok": true, "durationMs": 60 }
+    ],
+    "elapsedMs": 16600,
+    "nextSteps": [
+      "cd conduit-connector-s3",
+      "make test     # unit + SDK acceptance suite",
+      "make build    # standalone plugin binary",
+      "conduit run   # wired into a pipeline"
+    ]
+  }
+}
+```
+
+`steps[].name` is one of `toolchain`, `extract_template`, `rewrite_module`,
+`sdk_version` (only present when `--sdk-version` was given), `install_tools`,
+`generate`, `build`, `git_init`. A failed step (most commonly `git_init`, which
+is best-effort) sets `"ok": false` and a `message` field, without necessarily
+failing the whole command.
+
+On failure, the command returns Conduit's standard error envelope
+(`{"error": {"code": ..., "message": ..., "suggestion": ...}}`) with a stable,
+`scaffold.`-prefixed error code — for example `scaffold.invalid_module`,
+`scaffold.unsupported_language`, `scaffold.destination_exists`,
+`scaffold.toolchain_unavailable`, `scaffold.generate_failed`,
+`scaffold.build_failed`. Every one of these carries an actionable suggestion,
+not just a bare message.
+
+## After scaffolding
+
+The printed `nextSteps` are the same regardless of `--json`:
+
+```shell
+cd conduit-connector-s3
+make test     # unit + SDK acceptance suite
+make build    # standalone plugin binary
+conduit run   # wired into a pipeline
+```
+
+From here, continue with:
+
+- [Connector Specification](/docs/developing/connectors/connector-specification) —
+  what `connector.yaml` contains and how it's used.
+- [Developing a Source Connector](/docs/developing/connectors/developing-source-connectors)
+  / [Developing a Destination Connector](/docs/developing/connectors/developing-destination-connectors).
+- [Using a Custom Connector](/docs/developing/connectors/using-a-custom-connector)
+  to run your standalone build against a real pipeline.
+
+For processors, continue with [Building a Processor](/docs/developing/processors/building).
+
+![scarf pixel conduit-site-docs-developing-connectors](https://static.scarf.sh/a.png?x-pxid=3ada0949-fa61-40d6-a44a-76447ea4e39f)

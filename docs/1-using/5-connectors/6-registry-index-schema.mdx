@@ -1,0 +1,375 @@
+---
+title: "Registry Index Schema"
+---
+
+This is a field-by-field reference for the connector registry's **index
+document** — the signed manifest `conduit connectors install`, `list`,
+`audit`, and `bundle` fetch to resolve a connector name/version into a
+verified, downloadable artifact.
+
+It's written for people who don't just run `conduit connectors install
+postgres` and move on: self-hosted operators pointing `--index-url`/
+`--index-file` at their own index, anyone building tooling against the index
+format, and anyone auditing what a signed index actually asserts. If you just
+want to install a connector, see [Installing Standalone Connectors](/docs/using/connectors/installing)
+instead.
+
+:::info
+This schema is `schemaVersion: 1`, the only version that exists today. The full
+trust-model rationale (why each field is shaped the way it is, what attacks
+each check closes) lives in the design doc:
+[`20260714-connector-registry-index-schema.md`](https://github.com/ConduitIO/conduit/blob/main/docs/design-documents/20260714-connector-registry-index-schema.md),
+with a companion [JSON Schema](https://github.com/ConduitIO/conduit/blob/main/docs/design-documents/registry-index/index-schema.json)
+(Draft 2020-12) this page is grounded against. This page documents the shape and
+the client-facing behavior; read the design doc for the *why*.
+:::
+
+## Document shape
+
+The served index is one JSON document with exactly two top-level members:
+
+```json
+{
+  "payload": { "...": "the signed content, see below" },
+  "signatures": [ { "role": "root", "keyId": "...", "algorithm": "...", "signature": "..." } ]
+}
+```
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `payload` | object | yes | The signed content. Every field a client makes a trust decision from lives here — nothing relevant to trust exists outside it. |
+| `signatures` | array of [Signature](#signature) | yes, ≥1 item | Detached signature(s) over the [JCS-canonicalized](https://www.rfc-editor.org/rfc/rfc8785) (RFC 8785) bytes of `payload`. |
+
+**Nothing is unsigned.** There is no convenience unsigned mirror field (e.g. an
+unsigned "latest version" hint) anywhere in the envelope — every value a
+client could act on is inside `payload` and therefore covered by the
+signature.
+
+### Verification order matters
+
+A client must verify before it interprets:
+
+1. Parse the outer document **generically** — extract `payload` as a raw JSON
+   value and `signatures` as an array, without unmarshaling `payload` into any
+   typed struct yet. Reject the document if any object at any nesting level
+   contains a duplicate key (a parser/verifier differential is a
+   signature-bypass primitive, independent of and prior to canonicalization).
+2. Canonicalize the extracted `payload` value with JCS.
+3. Verify a `signatures[]` entry's `signature` against the canonical bytes,
+   using this build's compiled-in trust anchors (see [Trust anchors](#trust-anchors-and-signature-roles)
+   below).
+4. **Only after verification succeeds**, unmarshal `payload` into the typed
+   struct selected by the now-trusted `payload.schemaVersion`.
+
+`schemaVersion` lives *inside* the signed payload, not as a sibling of it,
+specifically so a compromised origin/CDN can't rewrite it to point a client at
+an older, laxer parser for otherwise-legitimately-signed bytes (a
+schema-confusion downgrade). Signature verification happens on the generic
+parse, before `schemaVersion` — or anything else — is trusted for anything.
+
+## `payload`
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `schemaVersion` | integer, ≥1 | yes | Payload schema version. A client refuses (`registry.schema_too_new`) any value greater than the highest it was built to understand (currently `1`). A breaking change bumps this integer and follows the standard announce → warn → remove deprecation policy. |
+| `index` | [IndexMeta](#indexmeta) | yes | Freeze/rollback-protection metadata. |
+| `connectors` | array of [Connector](#connector) | yes | One entry per registered connector name. Names are unique within the index (enforced by index-CI, not expressible in JSON Schema alone). |
+
+### `IndexMeta`
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `version` | integer, ≥1 | yes | Monotonically increasing counter, bumped on every signed rebuild — a content change **or** a heartbeat re-sign. A client refuses (`registry.index_rollback`) any fetched index whose `version` is lower than the highest it has previously verified. |
+| `timestamp` | string (RFC 3339) | yes | UTC time of this signed build. A client refuses (`registry.index_stale`) an index older than `now - maxStaleness`. Default `maxStaleness` is **7 days**, operator-overridable — it is a client-side policy value, not a field the index declares about itself. |
+
+Both checks are required together, not either/or: rollback protection alone
+doesn't stop a frozen-but-never-rolled-back index (the newest an attacker has
+ever legitimately served, just old); staleness alone doesn't stop a rollback to
+an older-but-still-recent-enough index. See [Trust anchors](#trust-anchors-and-signature-roles)
+for why the nightly re-sign that keeps `timestamp` fresh can't also forge
+`version`/`connectors[]` changes.
+
+### `Signature`
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `role` | string enum: `root`, `freshness` | yes | The signing authority — see [Trust anchors](#trust-anchors-and-signature-roles). |
+| `keyId` | string | yes | Stable public-key identifier: `sha256:<hex fingerprint of the SPKI-encoded public key>`. |
+| `algorithm` | string | yes | Signature algorithm. `ed25519` in production; `ecdsa-p256-sha256` is schema-permitted as an HSM-compatibility fallback. |
+| `signature` | string (base64) | yes | Signature bytes over the JCS-canonicalized UTF-8 bytes of the sibling `payload`. |
+
+### `Connector`
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `name` | string, pattern `^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$` | yes | Unique registry name, e.g. `postgres`. Resolution is exact-match only — no fuzzy matching. |
+| `displayName` | string | no | Human-friendly name for UI display. Not a trust input. |
+| `description` | string | no | Short description for UI/`list`. Not a trust input. |
+| `repository` | string (URI) | no | Source repository URL, for human review context. Not itself a trust input — the trust input is `publisher.expectedIdentityPattern`, which independently pins the repo + workflow path. |
+| `publisher` | [Publisher](#publisher) | yes | Per-name identity pinning — the actual root-of-trust decision for this name. |
+| `versions` | array of [ConnectorVersion](#connectorversion) | yes | Published releases, conventionally newest-first (not schema-enforced). **Append-only**: index-CI rejects a PR that mutates any field of an already-published version other than `deprecated` or `yanked`. |
+
+### `Publisher`
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `expectedOIDCIssuer` | string (URI) | yes | OIDC issuer a valid signing identity must present, e.g. `https://token.actions.githubusercontent.com` for GitHub Actions keyless signing. Maps to `cosign verify --certificate-oidc-issuer`. |
+| `expectedIdentityPattern` | string, fully anchored `^...$` regex | yes | Matches the certificate SAN / workflow identity (repo + workflow path + ref/tag pattern). Maps to `cosign verify --certificate-identity-regexp`. **Must** be `^`/`$`-anchored — schema-enforced — specifically to close a partial-match impersonation bypass; an unanchored `^.*$`-style pattern would let an attacker identity that merely *contains* the pinned substring pass. |
+| `revoked` | [Revocation](#revocation) | no | If present, **every** version under this name is revoked, regardless of individual `yanked` status — the compromise is at the identity level. `conduit connectors audit` flags every installed version of this name. |
+
+Changing `expectedOIDCIssuer` or `expectedIdentityPattern` for an
+already-registered name goes through the same human-reviewed path as first
+registration — it is never an auto-mergeable version-bump-shaped PR.
+
+### `Revocation`
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `reason` | string | yes | Human-readable reason, surfaced verbatim by `install` (on refusal) and `audit` (on flag). |
+| `revokedAt` | string (RFC 3339) | no | When the revocation was recorded. |
+| `revokedBy` | string | no | Chain-of-custody: the reviewer/identity that recorded the revocation. |
+
+### `ConnectorVersion`
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `version` | string (semver) | yes | e.g. `0.14.0`. Immutable once published. |
+| `releasedAt` | string (RFC 3339) | no | When this version was published to the index. UI/audit context only, not a trust input. |
+| `minConduitVersion` | string (semver) | yes | Minimum Conduit engine version required. `install` refuses selecting an incompatible version; unpinned resolution always prefers a compatible one. |
+| `minProtocolVersion` | string (semver) | yes | Minimum `conduit-connector-protocol` version required. |
+| `artifacts` | array of [Artifact](#artifact), ≥1 item | yes | One entry per `(os, arch)` build for this version. |
+| `slsaProvenance` | [ProvenanceRef](#provenanceref) | no | Version-level SLSA provenance, if the publish pipeline emits one multi-subject attestation covering every artifact rather than one per artifact. Schema permits either shape (this field or `artifacts[].slsaProvenance`) — see [Per-artifact vs. per-version signing](#per-artifact-vs-per-version-signing). |
+| `deprecated` | boolean | yes, defaults to `false` | Soft signal: still installable, but flagged (superseded, unmaintained). Always serialized explicitly, never omitted, even when `false`. |
+| `yanked` | [YankReason](#yankreason) | no | If present, this specific version is yanked (bad build, discovered vulnerability, accidental publish). `install` refuses selecting a yanked version by explicit `@version` pin; unpinned "latest compatible" resolution skips it silently. Does not affect sibling versions. |
+
+### `YankReason`
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `reason` | string | yes | Human-readable reason, surfaced verbatim by `install` (on refusal) and `audit` (on flag). |
+| `yankedAt` | string (RFC 3339) | no | When the version was yanked. |
+| `yankedBy` | string | no | Chain-of-custody: the reviewer/identity that recorded the yank. |
+
+### `Artifact`
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `os` | string enum: `linux`, `darwin`, `windows` | yes | `GOOS` value — reflects Conduit's actual supported build targets. |
+| `arch` | string enum: `amd64`, `arm64` | yes | `GOARCH` value. |
+| `kind` | string enum: `standalone`, `wasm` | yes | `standalone` is the only kind `install` handles today. `wasm` is reserved for the WASM-connector distribution work; a schema-valid-but-unrecognized future `kind` must be refused gracefully, not crash. |
+| `url` | string (URI) | yes | Scarf-gatewayed download URL. Inside the signed payload (a compromised index can't redirect it) — but not itself sufficient for trust: the digest is always recomputed from the actually-received bytes, so a misbehaving gateway can only cause a failed verification, never a successful wrong-artifact install. |
+| `sha256` | string, pattern `^[a-f0-9]{64}$` | yes | Expected SHA-256 of the artifact bytes. This is **corruption** detection (a bad download), not the trust boundary — the trust boundary is `signature`, checked against the connector's pinned identity. Once the index signature itself is verified, this field is trustworthy too; the sha256 check and the signature check converge on the same fact by design (belt-and-suspenders). |
+| `size` | integer, ≥1 | yes | Expected artifact size in bytes. |
+| `signature` | [SignatureRef](#signatureref) | yes | The cosign signature bundle covering this artifact's own digest. Required on every published artifact — an actually-unsigned artifact is handled client-side via `--allow-unsigned`, never by omitting this field in the index. |
+| `slsaProvenance` | [ProvenanceRef](#provenanceref) | no | Per-artifact SLSA provenance, used only if the publish pipeline emits one attestation per artifact rather than one per version. |
+
+### `SignatureRef`
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `bundleURL` | string (URI) | yes | URL to the Sigstore bundle (cosign `.sigstore`/`.bundle` JSON) — certificate chain, signature, and Rekor inclusion proof, sufficient for **offline** verification (no live Fulcio/Rekor query at install time). |
+| `rekorLogIndex` | integer, ≥0 | no | Rekor transparency-log index, for human cross-reference. Not required for verification if the bundle embeds its own inclusion proof. |
+
+### `ProvenanceRef`
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `bundleURL` | string (URI) | yes | URL to the SLSA provenance attestation bundle (in-toto statement + Sigstore bundle), verifiable offline the same way as `SignatureRef.bundleURL`. |
+| `predicateType` | string (URI) | yes | in-toto predicate type, e.g. `https://slsa.dev/provenance/v1`. A client must reject a predicate type it doesn't recognize rather than skip the check. |
+
+### Per-artifact vs. per-version signing
+
+`signature` is per-artifact, never per-version: a cosign blob signature is
+inherently over one specific digest, so a single version-level signature
+couldn't cover multiple different `(os, arch)` artifacts. `slsaProvenance` is
+allowed at *either* level (a single multi-subject provenance per version is
+the common goreleaser/slsa-github-generator shape; a per-artifact attestation
+is equally valid) — a client or index-CI must accept either shape.
+
+## Trust anchors and signature roles
+
+A released `conduit` binary has the registry's root and freshness public keys
+**compiled in at build time**. They are never updated at runtime — there is no
+runtime-fetched "rotation statement" a client applies, since that would let a
+compromised old key forge a rotation to an attacker key. During an actual key
+rotation, the index carries **both** the old and new root signatures
+(`signatures[]` has two `role: "root"` entries) for a retention window, so
+already-deployed older binaries keep verifying until they upgrade.
+
+Two signing roles exist so the root key is never used unattended:
+
+- **`root`** — the reviewer-gated key that authorizes content: adding a
+  connector, changing a `publisher.*` field, adding/removing `revoked`,
+  publishing a version.
+- **`freshness`** — a separate, narrowly-scoped key a nightly job uses
+  unattended. It may **only** extend `index.timestamp`/bump `index.version` on
+  a payload whose `connectors[]` is byte-identical to the last root-signed
+  content. A client accepts a `freshness`-only signature *only* when
+  `connectors[]` matches what it last verified under a `root` signature —
+  otherwise it requires `root`.
+
+If no `keyId` in `signatures[]` matches any of a build's compiled-in anchors at
+all, the client fails closed with `registry.trust_anchor_expired` ("upgrade
+Conduit") — it never falls back to a stale cache. If a recognized `keyId`'s
+cryptographic verification itself fails, that's `registry.index_integrity`
+(tampering/corruption) instead — a distinct code from the "unrecognized key"
+case.
+
+:::caution Self-hosting your own index
+`conduit connectors install/list/audit/bundle` accept `--index-url`/
+`--index-file` to fetch or read an index document from somewhere other than
+the default `https://registry.conduitdata.io/index.json`. That lets you serve
+your own index document — but a stock `conduit` build only trusts the
+**official** registry's compiled-in root/freshness keys. Serving your own
+index signed with your own keys will fail closed with
+`registry.trust_anchor_expired` against a stock binary, by design: trust
+anchors are not a runtime-configurable value. A private index today is only
+usable end-to-end with `--allow-unsigned` (itself gated by interactive
+confirmation, an explicit non-interactive environment variable, and an
+operator policy switch that can disable it outright) or with a custom
+`conduit` build compiled against your own anchors. There is no supported
+"add my own trust anchor to a stock build" flag.
+:::
+
+## Error codes
+
+Every registry/index error is a stable, dotted code, not a bare message —
+consistent with the rest of Conduit's `--json` error envelope.
+
+| Code | Meaning |
+| --- | --- |
+| `registry.schema_too_new` | `payload.schemaVersion` exceeds the highest this build understands. |
+| `registry.index_unreachable` | Fetching the index failed at the network/HTTP layer. |
+| `registry.index_too_large` | The fetched index exceeds the client's size cap. |
+| `registry.index_nesting_too_deep` | The duplicate-key/structure walker's recursion cap was hit — refused, never a stack overflow. |
+| `registry.index_integrity` | A recognized `keyId`'s cryptographic verification failed (tampering/corruption), or parse-time duplicate-key rejection fired. |
+| `registry.trust_anchor_expired` | No `keyId` in `signatures[]` matches any of this build's compiled-in trust anchors — "upgrade Conduit." |
+| `registry.index_stale` | `index.timestamp` is older than `maxStaleness` (default 7 days). |
+| `registry.index_rollback` | `index.version` is lower than the highest version this client has previously verified. |
+| `registry.version_yanked` | A resolved/pinned version carries `yanked`. |
+
+## Full example
+
+A minimal but complete `schemaVersion: 1` index — one connector (`postgres`)
+with a yanked older version and a current one, and one connector
+(`example-vector-sink`) with a revoked publisher:
+
+```json
+{
+  "payload": {
+    "schemaVersion": 1,
+    "index": {
+      "version": 42,
+      "timestamp": "2026-07-14T09:00:00Z"
+    },
+    "connectors": [
+      {
+        "name": "postgres",
+        "displayName": "PostgreSQL",
+        "description": "CDC source and batch/upsert destination for PostgreSQL.",
+        "repository": "https://github.com/ConduitIO/conduit-connector-postgres",
+        "publisher": {
+          "expectedOIDCIssuer": "https://token.actions.githubusercontent.com",
+          "expectedIdentityPattern": "^https://github\\.com/ConduitIO/conduit-connector-postgres/\\.github/workflows/publish\\.yml@refs/tags/v[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "versions": [
+          {
+            "version": "0.14.0",
+            "releasedAt": "2026-05-01T10:00:00Z",
+            "minConduitVersion": "0.14.0",
+            "minProtocolVersion": "0.14.0",
+            "artifacts": [
+              {
+                "os": "linux",
+                "arch": "amd64",
+                "kind": "standalone",
+                "url": "https://conduit.gateway.scarf.sh/.../conduit-connector-postgres_0.14.0_linux_amd64.tar.gz",
+                "sha256": "ebcbe0806724edc36fdfcc6ec50163d9afa674e0dae166b3bcab499cdfd30bc",
+                "size": 14328912,
+                "signature": {
+                  "bundleURL": "https://conduit.gateway.scarf.sh/.../conduit-connector-postgres_0.14.0_linux_amd64.tar.gz.sigstore.json",
+                  "rekorLogIndex": 118442017
+                }
+              }
+            ],
+            "slsaProvenance": {
+              "bundleURL": "https://conduit.gateway.scarf.sh/.../multiple.intoto.jsonl",
+              "predicateType": "https://slsa.dev/provenance/v1"
+            },
+            "deprecated": false,
+            "yanked": {
+              "reason": "0.14.0 drops the WAL replication slot on graceful shutdown, causing position loss on restart. Fixed in 0.14.1. See ConduitIO/conduit-connector-postgres#412.",
+              "yankedAt": "2026-05-03T16:20:00Z"
+            }
+          },
+          {
+            "version": "0.14.1",
+            "releasedAt": "2026-05-03T18:00:00Z",
+            "minConduitVersion": "0.14.0",
+            "minProtocolVersion": "0.14.0",
+            "artifacts": [
+              {
+                "os": "linux",
+                "arch": "amd64",
+                "kind": "standalone",
+                "url": "https://conduit.gateway.scarf.sh/.../conduit-connector-postgres_0.14.1_linux_amd64.tar.gz",
+                "sha256": "588ae325bdef8543e5ad8c30b8da83a714aceedf4d9b07478eaa22f2fd70113",
+                "size": 14331500,
+                "signature": {
+                  "bundleURL": "https://conduit.gateway.scarf.sh/.../conduit-connector-postgres_0.14.1_linux_amd64.tar.gz.sigstore.json",
+                  "rekorLogIndex": 118501273
+                }
+              }
+            ],
+            "deprecated": false
+          }
+        ]
+      },
+      {
+        "name": "example-vector-sink",
+        "displayName": "Example Vector Sink",
+        "repository": "https://github.com/example-org/conduit-connector-example-vector-sink",
+        "publisher": {
+          "expectedOIDCIssuer": "https://token.actions.githubusercontent.com",
+          "expectedIdentityPattern": "^https://github\\.com/example-org/conduit-connector-example-vector-sink/\\.github/workflows/publish\\.yml@refs/tags/v[0-9]+\\.[0-9]+\\.[0-9]+$",
+          "revoked": {
+            "reason": "OIDC trust relationship compromised via a leaked GITHUB_TOKEN with workflow-write scope. All versions revoked pending re-registration under a rotated identity.",
+            "revokedAt": "2026-06-21T04:00:00Z"
+          }
+        },
+        "versions": [
+          {
+            "version": "0.3.0",
+            "minConduitVersion": "0.13.0",
+            "minProtocolVersion": "0.13.0",
+            "artifacts": [
+              {
+                "os": "linux",
+                "arch": "amd64",
+                "kind": "standalone",
+                "url": "https://conduit.gateway.scarf.sh/.../conduit-connector-example-vector-sink_0.3.0_linux_amd64.tar.gz",
+                "sha256": "151479c591ee074d28ff7b9bd020d6264eceaaa0541fc093806c925d5f6e7b2",
+                "size": 9821440,
+                "signature": {
+                  "bundleURL": "https://conduit.gateway.scarf.sh/.../conduit-connector-example-vector-sink_0.3.0_linux_amd64.tar.gz.sigstore.json"
+                }
+              }
+            ],
+            "deprecated": false
+          }
+        ]
+      }
+    ]
+  },
+  "signatures": [
+    {
+      "role": "root",
+      "keyId": "sha256:6a1c1f0e9d3b5a7c9e1f3d5b7a9c1e3f5d7b9a1c3e5f7d9b1a3c5e7f9d1b3a5c",
+      "algorithm": "ed25519",
+      "signature": "MEUCIQDN...AAAA=="
+    }
+  ]
+}
+```
+
+![scarf pixel conduit-site-docs-using-connectors](https://static.scarf.sh/a.png?x-pxid=53743422-c614-4e45-acaa-f1f9f604321e)

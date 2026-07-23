@@ -1,0 +1,166 @@
+---
+title: 'conduit doctor'
+sidebar_label: 'conduit doctor'
+slug: '/using/other-features/doctor'
+---
+
+`conduit doctor` runs a set of offline, non-destructive checks against your
+Conduit configuration and environment and answers one question: **would
+`conduit run` succeed here?** It factors out the exact primitives the runtime
+uses at startup — config validation, database open and ping, address binding,
+plugin directory scan — and runs each as an isolated probe. It never boots a
+Runtime and leaves no files behind.
+
+This is distinct from the running server's
+[`/healthz` and `/readyz` probes](/docs/using/other-features/health-and-readiness),
+which answer "is the running engine serving?". `doctor` is a pre-flight; the
+probes are for a process that is already up.
+
+```shell
+conduit doctor
+```
+
+```text
+Config
+  ✓ config.resolve      conduit.yaml found at ./conduit.yaml
+  ✓ config.validate     configuration is valid
+Store
+  ✗ store.reachable     cannot open badger store at ./conduit.db
+                        └ db.badger.path
+                        → Check the directory exists and is writable, or set db.badger.path.
+Network
+  ✗ network.grpc        address :8084 is already in use
+                        └ api.grpc.address
+                        → Stop the process holding it, or set api.grpc.address to a free port.
+Plugins
+  ⚠ plugins.connectors_dir  ./connectors not found — built-ins still available
+  ✓ plugins.builtin         built-in connectors and processors available
+
+Summary: 4 passed · 1 warnings · 2 failed
+✗ items failed. Fix them, then re-run `conduit doctor`.
+```
+
+`doctor` accepts the same config-affecting flags as `conduit run` (`--db.badger.path`,
+`--api.grpc.address`, `--connectors.path`, and so on), so it checks exactly the
+configuration `run` would use. Results are grouped by category — Config, Store,
+Network, Plugins, Engine — and each `✗` carries the failing config path (`└`) and
+a suggested fix (`→`). Glyphs fall back to `[OK]`/`[!]`/`[X]` when the output is
+not a TTY or `--no-color` is set.
+
+## What it checks
+
+| Check | Question it answers | Verdict on trouble |
+|-------|--------------------|--------------------|
+| `config.resolve` | Was a config file found and parsed? | `warn` if defaults were used |
+| `config.validate` | Is the resolved configuration valid? | `fail` on a bad field (exit `2`) |
+| `store.reachable` | Can the configured database be opened and pinged? | `warn` for in-memory; `fail` if it can't open (exit `3`) |
+| `network.grpc` | Is the gRPC API address free to bind? | `fail` on `EADDRINUSE` (exit `3`) |
+| `network.http` | Is the HTTP API address free to bind? | `fail` on `EADDRINUSE` (exit `3`) |
+| `plugins.connectors_dir` | Is the standalone connectors directory readable? | `warn` if missing (built-ins still work) |
+| `plugins.processors_dir` | Is the standalone processors directory readable? | `warn` if missing |
+| `plugins.builtin` | Is the built-in plugin registry populated? | `fail` if empty |
+| `engine.reachable` | Is a running Conduit API reachable? | `warn` by default; `fail` with `--require-server` |
+| `plugins.standalone_compat` | Do standalone plugin binaries dispense correctly? | `--deep` only; runs each in an isolated subprocess |
+
+A missing plugin directory is deliberately a **warning**, not a failure: built-in
+connectors and processors are always available, so a CI machine without a
+`./connectors` directory is not a broken environment. `engine.reachable` is a
+warning by default because `doctor` is an offline preflight — you usually run it
+*before* there is a server to reach.
+
+Every check is wrapped so that a check which errors, panics, or hangs becomes a
+`fail` (with an `internal.error` code) rather than crashing or blocking the run.
+
+## Flags
+
+| Flag | Effect |
+|------|--------|
+| `--json` | Emit the machine-readable result envelope instead of the rendered report. |
+| `--check <name>` | Run only the named check. Repeatable. See the check names in the table above (or `conduit doctor --help`). |
+| `--deep` | Also run `plugins.standalone_compat`, which dispenses standalone connector plugin binaries in an isolated subprocess. |
+| `--require-server` | Fail (instead of warn) if the Conduit API server isn't reachable. |
+| `-q`, `--quiet` | Suppress passing checks; print only warnings, failures, and the summary. |
+| `--no-color` | Disable colored output. |
+
+Plus the config-affecting flags shared with `conduit run` (`--db.badger.path`,
+`--api.grpc.address`, `--connectors.path`, …).
+
+Passing an unknown `--check` name fails the command and lists the valid names.
+Selecting `--check plugins.standalone_compat` without `--deep` is likewise
+rejected — that check only runs under `--deep`.
+
+## Exit codes
+
+`doctor` uses the standard
+[deterministic exit codes](/docs/using/other-features/exit-codes). Warnings never
+fail the process; only a `✗` does, and the exit code is the worst failing check's
+classification:
+
+| Exit code | Meaning |
+|-----------|---------|
+| `0` | Every check passed (warnings are allowed). |
+| `2` | A check found invalid configuration. |
+| `3` | A required dependency — the database, a network address, or (with `--require-server`) the API server — is unreachable. |
+
+Precedence is environment (`3`) over validation (`2`) over runtime (`1`), so a run
+with both a bad config field and a port already in use exits `3`.
+
+## JSON output
+
+`--json` emits the shared result envelope. The `result` object carries the full
+list of check results; the `summary` counts them:
+
+```json
+{
+  "command": "doctor",
+  "ok": false,
+  "summary": { "total": 7, "passed": 4, "warned": 1, "failed": 2 },
+  "result": {
+    "checks": [
+      {
+        "name": "store.reachable",
+        "status": "fail",
+        "message": "cannot open badger store at ./conduit.db",
+        "suggestion": "Check the directory exists and is writable, or set db.badger.path.",
+        "code": "common.unavailable",
+        "configPath": "db.badger.path",
+        "category": "store"
+      }
+    ]
+  },
+  "error": null
+}
+```
+
+Each check result carries a `status` of `pass`, `warn`, or `fail`, and failures
+carry a stable `code`, the failing `configPath`, and a `suggestion` — the same
+fields the [structured error model](/docs/using/other-features/structured-errors)
+uses everywhere. This is the same check set the MCP `doctor` tool wraps, so an
+agent and the CLI see identical results.
+
+## Using it in scripts and CI
+
+Because the exit codes are stable, `doctor` slots into a startup gate or a
+container entrypoint:
+
+```shell
+if ! conduit doctor --require-server=false --quiet; then
+  echo "environment not ready for conduit run" >&2
+  exit 1
+fi
+conduit run
+```
+
+Or branch on the failure kind, mirroring
+[exit-code scripting](/docs/using/other-features/exit-codes):
+
+```shell
+conduit doctor --json > doctor.json
+case $? in
+  0) echo "ready" ;;
+  2) echo "fix your configuration" ;;
+  3) echo "a dependency is unreachable" ;;
+esac
+```
+
+![scarf pixel conduit-site-docs-using-other-features](https://static.scarf.sh/a.png?x-pxid=8c8ff6d5-2756-41a3-b4ca-3ca2be381842)

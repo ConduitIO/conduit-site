@@ -1,0 +1,137 @@
+---
+title: 'Built-in UI'
+sidebar_label: 'Built-in UI'
+slug: '/ui'
+keywords: ['ui', 'web ui', 'dashboard', 'observe', 'operate']
+---
+
+Starting with v0.18, Conduit ships with a built-in web UI. It's a single-page
+React application ([`ConduitIO/conduit-ui`](https://github.com/ConduitIO/conduit-ui))
+embedded directly into the `conduit` binary and served by `conduit run` at `/`.
+The UI's TypeScript client is generated from Conduit's served OpenAPI schema, so
+everything it does is a call to a documented HTTP API — there's no private
+back-channel between the UI and the engine.
+
+## What the UI is for
+
+The UI's scope is deliberately narrow: **observe and operate**. It is **not** an
+authoring surface.
+
+### Observe
+
+- **Live record flow.** Watch records move through a running pipeline over the
+  existing stream inspector RPCs, with a **freeze** toggle so you can stop the
+  view on a busy pipeline and inspect a single record without dropping the stream.
+- **Per-stage before/after diffs.** For a record's position, see it at each stage
+  (source → each processor's input/output → destination) as a field-level diff —
+  exactly which fields a processor added, changed, or removed.
+- **Pipeline graph.** A topology view of one pipeline's
+  source → processors → destination, with per-node status and live throughput.
+- **Throughput, latency, and health**, surfaced at the node so a genuinely idle
+  pipeline reads differently from a stalled one.
+
+### Operate
+
+- **Start and stop** an existing pipeline. These map directly to the
+  `StartPipeline` and `StopPipeline` RPCs (the same verbs behind
+  `conduit pipelines start` / `stop`). Stopping asks for a confirming second
+  action; starting does not.
+
+That's the whole operate surface for v0.18. Start/stop is all the UI mutates.
+
+:::info Config-as-code stays the single source of truth
+The UI does **not** create, edit, or delete pipelines, connectors, or processors.
+There is no drag-and-drop DAG editor and no config form. Pipelines are authored as
+configuration — YAML applied with
+[`conduit pipelines deploy` / `apply`](/docs/using/pipelines/configuration-file),
+the MCP server, or the library — and that configuration remains the single source
+of truth. Keeping authoring out of the UI is what keeps Conduit
+config-as-code and agent-native, rather than introducing a second, drifting source
+of truth.
+:::
+
+### Not in v0.18
+
+The following are **not** UI features yet. Each depends on server-side work that
+has not shipped, so the UI deliberately does not expose them:
+
+- **Pause** — pause is a data-path decision (it must quiesce and checkpoint
+  without losing in-flight records) and needs its own design before there's a verb
+  to call.
+- **Pipeline-scoped repair** — today `repair` operates on YAML config text, not on
+  a running pipeline, so there's no running-pipeline repair action to surface.
+- **Dead-letter-queue record inspection** — DLQ connectors aren't listable, so
+  there's no record set for the UI to read.
+
+If and when the server prerequisites land, the matching UI slices follow. Until
+then, they're out of scope, not hidden.
+
+## Accessing the UI
+
+The UI is served on the same address as the HTTP API (`:8080` by default). Start
+Conduit:
+
+```shell
+conduit run
+```
+
+Then open [`http://localhost:8080/`](http://localhost:8080/) in a browser.
+
+The UI is embedded in the binary and enabled by default. You can turn the route
+off with `api.http.ui.enabled` — the assets stay compiled into the binary, so
+disabling removes the surface, not the binary size:
+
+```shell
+conduit run --api.http.ui.enabled=false
+```
+
+:::note No authentication
+Conduit's HTTP API has no built-in authentication — the recommended posture is to
+bind to localhost or front the port with an authenticating proxy. Because the UI
+can start and stop pipelines, anyone who can reach the port can operate them. Don't
+expose the port on an untrusted network without a proxy in front of it.
+:::
+
+## Running against a separate UI dev server (CORS)
+
+Conduit denies cross-origin browser requests by default. If you're developing
+against the UI from a separate dev server (for example a Vite server on
+`http://localhost:5173`), allow that origin explicitly with
+`api.http.cors.allowed-origins`:
+
+```shell
+conduit run --api.http.cors.allowed-origins=http://localhost:5173
+```
+
+The flag is repeatable and each value must be an exact `scheme://host[:port]` with
+no trailing slash and no path. `*` allows any origin but is refused on a
+non-loopback bind — for network deployments, list exact origins instead.
+
+## Pipeline status in the UI
+
+Over the wire, a pipeline reports one of four statuses (the engine's internal
+states collapse to these on the API):
+
+| Status | Meaning |
+| --- | --- |
+| `running` | The pipeline is processing records. |
+| `stopped` | The pipeline is not running — either an operator stopped it or the engine stopped it pending resume. |
+| `degraded` | The pipeline hit an unrecoverable error; its latest error is shown inline. |
+| `recovering` | The engine is automatically attempting to recover the pipeline. |
+
+A stopped pipeline additionally carries a stopped-reason that distinguishes an
+operator stop from an engine stop, so the fleet view can tell "someone stopped
+this on purpose" from "this is waiting to be resumed."
+
+## How it fits together
+
+The UI consumes only Conduit's documented HTTP surface — the same
+[HTTP API](/docs/using/other-features/api) you can call directly, the
+[stream inspector](/docs/using/other-features/stream-inspector) websocket streams,
+and the [metrics](/docs/using/other-features/metrics) and
+[health/readiness](/docs/using/other-features/health-and-readiness) endpoints. Its
+route is registered so that `/v1/*`, `/openapi/*`, `/healthz`, `/readyz`, and the
+metrics endpoint continue to match first; the SPA only handles paths none of those
+claim.
+
+![scarf pixel conduit-site-docs-using](https://static.scarf.sh/a.png?x-pxid=76d5981f-cd63-422b-8cf7-eab9e99f0cd3)

@@ -1,0 +1,187 @@
+---
+title: "The Registry Trust Model"
+---
+
+# The connector registry trust model
+
+When you run `conduit connectors install postgres`, Conduit does not simply download a binary and run it. It verifies —
+cryptographically, before the connector is ever runnable — that the artifact was built and signed by the exact identity
+the registry has pinned for the name `postgres`, that it carries non-forgeable build provenance, and that the registry
+index vouching for all of this is itself authentic and fresh. If any check fails, the install is refused. Nothing is
+trusted on assertion.
+
+This page explains why you can trust an installed connector, and what each layer of verification actually protects
+against. If you are publishing a connector, see [Publishing to the registry](/docs/developing/connectors/publishing) for
+the authoring side.
+
+## The short version
+
+An installed connector is trustworthy because four independent things are all checked before it runs:
+
+1. **The index is authentic.** The registry index is signed with a key compiled into your Conduit binary. Conduit verifies
+   that signature before trusting a single field in the index.
+2. **The connector's signer is the one the registry pinned.** Each connector name pins the specific GitHub workflow
+   identity allowed to sign it. A valid signature by *any other* identity is refused.
+3. **The build is provable.** Each artifact carries SLSA Build L3 provenance binding it to a non-forgeable,
+   GitHub-hosted build process.
+4. **It fails closed.** If the trust anchors or the index are missing, expired, or unverifiable, install refuses — it
+   never falls back to installing something unverified.
+
+## The trust anchors
+
+Two public keys are compiled into every Conduit binary at build time. They are the root of everything else.
+
+- **`root`** — the registry root public key. It authorizes *content*: which connectors exist, which identities may sign
+  them, which versions are published, and which are yanked or revoked.
+- **`freshness`** — a separate, narrowly-scoped key. It may *only* extend the index's `timestamp` and bump its `version`
+  over a byte-identical set of connectors. It exists so an unattended nightly job can keep the index provably fresh
+  without ever touching content. **A freshness signature never authorizes content on its own.**
+
+Both are **ed25519** keys, stored as SPKI PEM. Each is identified by a `keyId` of the form `sha256:<hex(SHA256(SPKI-DER))>`
+— the SHA-256 fingerprint of the DER-encoded public key. Conduit and the registry's signing tooling derive `keyId`
+through the same shared function, so a client and the index can never disagree about which key is which.
+
+Critically, **trust anchors are fixed at build time and are never updated at runtime.** There is no "rotation statement"
+that a running Conduit fetches and applies — such a mechanism would let a compromised old key forge a rotation to an
+attacker's key. A new root key reaches you only when you upgrade to a Conduit build compiled with it.
+
+## The signed index
+
+The registry is a single signed JSON document served from `https://registry.conduitdata.io/index.json`. There is no
+hosted service, no login, no click-through. The index records, per connector: its versions, each version's per-platform
+artifacts (URL, `sha256`, size), minimum Conduit and protocol versions, the publisher's pinned identity, and any yanks
+or revocations.
+
+The document is an envelope of `payload` plus a `signatures[]` array. **Everything a client trusts lives inside the
+signed `payload`** — names, pinned identities, artifact digests, revocations, even the schema version. The only bytes
+outside the signature are the signatures themselves. When Conduit verifies the index it:
+
+1. Rejects any duplicate JSON key at any nesting level (a duplicate-key parser differential is a signature-bypass
+   primitive, so it is refused before anything else).
+2. Canonicalizes the `payload` with JCS (RFC 8785) and checks each signature against the compiled-in anchors.
+3. **Accepts on a valid `root` signature.** Accepts a `freshness`-only signature *only* when the payload's connectors are
+   byte-identical to the last content this machine verified under a `root` signature.
+4. Only *after* the signature verifies does it interpret any field — so a client never has to trust `schemaVersion` (or
+   anything else) to decide *how* to check the signature. Verification is the same regardless of payload shape.
+
+On top of authenticity, Conduit checks **freshness and rollback**: it refuses an index whose timestamp is older than the
+max-staleness window (default 7 days), and refuses one whose version is below the highest it has already verified on this
+machine. These defeat a compromised CDN that replays a stale index still listing a since-yanked version as good.
+
+## Per-connector identity pinning
+
+This is the decision the whole model hangs on. Keyless signing proves *who* signed an artifact — an OIDC issuer plus a
+workflow identity. It does **not**, by itself, prove that *who* is the entity allowed to publish the name `postgres`.
+Without pinning, anyone who forks the publish workflow into their own repository could produce a perfectly valid,
+transparency-logged signature for a connector named `postgres` and earn a green "verified" badge.
+
+So the index records, per connector name, the publisher's `expectedOIDCIssuer` and `expectedIdentityPattern` — a
+fully-anchored regular expression pinning that connector's own publish workflow (its repository, workflow file, and ref
+pattern). At install time, Conduit verifies the artifact's signature with the certificate identity constrained to that
+pinned pattern. **A valid signature by any other identity is refused** with `registry.identity_mismatch` — a distinct
+outcome from "no signature at all" (`registry.unsigned`).
+
+The pattern must be tight. Conduit defensively re-validates it before ever using it to accept a signature: an
+un-anchored or overly-broad pattern (for example `^.*$`, which would collapse pinning to "any signature at all") is
+refused as `registry.identity_pattern_too_loose`, independent of whether index review caught it. "Verified" is always
+*derived* from a signature by the pinned identity plus valid provenance — it is never a hand-set field.
+
+## Keyless signing and SLSA provenance
+
+Connector artifacts are signed with **cosign keyless signing** through Sigstore's Fulcio CA, using the publishing
+workflow's GitHub OIDC identity. There are no long-lived private keys anywhere — nothing to custody, leak, or rotate. The
+identity that signed is exactly the CI workflow that ran, recorded in a public transparency log.
+
+Each artifact also carries **SLSA Build L3 provenance**, generated by `slsa-framework/slsa-github-generator` running as
+an isolated build process a compromised build job cannot impersonate. Beyond checking the attestation's signature,
+Conduit confirms:
+
+- the provenance's `subject` digest matches the exact bytes it just downloaded (not merely that *some* valid provenance
+  exists for the version), and
+- the attestation's `builder.id` matches the single expected SLSA generator identity Conduit is compiled to require —
+  proving the artifact was built by the pinned, non-forgeable, GitHub-hosted generator, not unrelated build infra.
+
+A signature-only artifact with no provenance is refused: production installs require both.
+
+## What `install` verifies, and in what order
+
+`conduit connectors install <name>` runs the same verification code (`pkg/registry/index.Verify` and the identity-pinned
+trust core) that the registry's own index CI runs — there is no divergent "lighter" client path. In order:
+
+1. **Fetch and verify the signed index** (signature against the compiled-in anchors), then check it is fresh and not
+   rolled back — before trusting any field.
+2. **Resolve `<name>[@version]` by exact match.** A typo is a hard `registry.connector_not_found`, never a fuzzy
+   nearest-match install. If the publisher is revoked, refuse; if a pinned version is yanked, refuse.
+3. **Select the artifact for your OS/arch**, or refuse listing the platforms that are available.
+4. **Download to a private staging directory** and compute the digest from the *actually received* bytes. A mismatch
+   against the index (`registry.corrupt_download`) is corruption detection — integrity against a bad download, not the
+   trust boundary.
+5. **Run the authorization gate:** verify the artifact signature and the SLSA attestation against the name's *pinned*
+   identity, and bind the provenance to the downloaded digest and the expected builder. Any failure deletes the staging
+   directory and refuses.
+6. **Only on full success** is the verified artifact atomically moved into your connectors directory and made runnable.
+
+The verification in step 5 is the authorization gate — not the `sha256`. A checksum proves the bytes match what the index
+claims; it does not prove those bytes are safe. Provenance and an identity-pinned signature are what establish trust.
+
+## Fail-closed by design
+
+The registry never fails open. If the situation is ambiguous, install refuses rather than guess:
+
+- If the fetched index carries **no signature matching any anchor compiled into your build**, install refuses with
+  `registry.trust_anchor_expired` ("upgrade Conduit") and never falls back to a stale cache.
+- If a build is missing its embedded anchors entirely (a defective build), install refuses up front with
+  `registry.trust_anchors_unavailable` ("reinstall Conduit") rather than a confusing generic error.
+- A recognized key whose signature does not actually verify is `registry.index_integrity` — tampering or corruption,
+  refused loudly.
+
+There is exactly one escape hatch, `--allow-unsigned`, and it is a gated control, not a bare flag. It requires interactive
+confirmation (retyping the connector name), hard-refuses in non-interactive, `CI`, or agent (MCP) contexts unless a
+separate, harder-to-reach environment escape hatch is also set, and can be disabled entirely by operator policy. An agent
+or script cannot flip it on with a flag alone, and every unsigned install emits a durable audit event.
+
+## Key rotation
+
+Root and freshness keys can be rotated without stranding already-deployed Conduit binaries. During a rotation window the
+embedded anchor PEM file holds **multiple concatenated `PUBLIC KEY` blocks** — the outgoing and incoming keys both
+trusted — and the index is signed by both keys simultaneously. Every already-deployed binary keeps verifying against the
+key it shipped with until it upgrades; a binary compiled with the new key accepts both. The outgoing key is removed only
+after the retention window, which tracks Conduit's supported-version policy. Because rotation happens by upgrading the
+binary — never through a runtime-fetched statement — a compromised old key can never forge a rotation to an attacker's
+key.
+
+## Error codes
+
+Every refusal is a machine-actionable error code. The security-relevant ones:
+
+| Code | Meaning |
+| --- | --- |
+| `registry.unsigned` | No valid signature for the pinned identity at all. |
+| `registry.identity_mismatch` | A signature verified, but for a different certificate identity than the one pinned. |
+| `registry.identity_pattern_too_loose` | The pinned identity pattern failed tightness validation — refused before use. |
+| `registry.identity_revoked` | The connector's publisher identity has been revoked; every version is refused. |
+| `registry.version_yanked` | The requested version was yanked. |
+| `registry.provenance_invalid` | SLSA provenance failed subject-digest or builder binding. |
+| `registry.index_integrity` | A recognized key's signature failed to verify — tampering or corruption. |
+| `registry.trust_anchor_expired` | No index signature matches any anchor in this build — upgrade Conduit. |
+| `registry.trust_anchors_unavailable` | This build has no usable embedded anchors — reinstall Conduit. |
+| `registry.index_stale` | The index is older than the max-staleness window. |
+| `registry.index_rollback` | The index version is below the highest already verified on this machine. |
+| `registry.corrupt_download` | The downloaded bytes did not match the index's `sha256` (corruption, not trust). |
+| `registry.schema_too_new` | The index schema is newer than this build understands — upgrade Conduit. |
+
+## Current status
+
+The verification pipeline described here is implemented and wired into `conduit connectors install` and `conduit
+connectors audit`: index-signature verification, freshness/rollback checks, identity-pinned artifact-signature
+verification, and SLSA provenance binding all run, and installs fail closed by default.
+
+The bootstrap ceremony is complete: the production root and freshness anchors are compiled into released builds, and the
+registry serves a signed index at `https://registry.conduitdata.io/index.json` that a released build verifies against
+those anchors (a build with no embedded anchors still fails closed with `registry.trust_anchor_expired`, never fail
+open). Connectors are published to it through the
+[connector-publish-action](https://github.com/ConduitIO/connector-publish-action).
+
+One safeguard is still landing: an independent index-CI re-verification on the registry repository — a second, automated
+re-check of every registration PR, distinct from the client-side verification above — is planned but not yet in place, so
+registrations are human-reviewed in the meantime.

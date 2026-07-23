@@ -1,0 +1,183 @@
+---
+title: 'Repairing a pipeline config'
+---
+
+`conduit pipelines repair` reads a pipeline configuration file, collects the
+validation findings that have a known machine-appliable fix, and — with
+`--apply` — writes those fixes back to the file. It is the applier half of
+Conduit's "errors are actionable" promise: the same structured fix a human sees
+in a diff is the one an agent applies over MCP.
+
+:::warning
+
+`repair` edits a **config file**. It never touches the pipeline store, a running
+pipeline, positions, checkpoints, or the DLQ. Getting a repaired file into a
+running engine is still
+[`deploy` / `apply`](/docs/using/pipelines/provisioning)'s job, with its own
+plan-hash and running-pipeline guards. If your problem is a **degraded running
+pipeline**, repairing a file won't restart it — fix the cause in config, then
+re-`apply` or restart the pipeline. See the note at the end of this page.
+
+:::
+
+## Preview the fixes
+
+Run `repair` with just a file to see what it would change. This mutates nothing:
+
+```shell
+conduit pipelines repair orders.yaml
+```
+
+Output lists each proposed fix — the finding it clears, the config path it
+touches, a before/after snippet, and a safety class — followed by a plan hash:
+
+```text
+Proposed fixes for "orders.yaml" (hash 9f3a2c...):
+
+  [safe]    /pipelines/0/status
+            - status: Running
+            + status: running
+
+  [restart] /pipelines/0/connectors/1/processors/0/workers
+            - workers: -1
+            + workers: 1
+
+Run:  conduit pipelines repair orders.yaml --apply --plan-hash 9f3a2c...
+```
+
+Add `--json` to get one structured object instead, for tooling.
+
+## Apply the fixes
+
+`--apply` writes the fixes to the file. It requires either the `--plan-hash`
+from the preview (so you apply exactly what you saw) or `--yes` to bind to a
+freshly recomputed plan:
+
+```shell
+conduit pipelines repair orders.yaml --apply --plan-hash 9f3a2c...
+# or, skip the preview and apply the current safe fixes directly:
+conduit pipelines repair orders.yaml --apply --yes
+```
+
+By default `--apply` writes **only the safe fixes**. Restart-class and
+data-path-adjacent fixes are never applied unless you select them explicitly:
+
+```shell
+# apply one specific fix by its config path
+conduit pipelines repair orders.yaml --apply --yes --fix /pipelines/0/connectors/1/processors/0/workers
+```
+
+The write is atomic (temp file + rename), so a crash mid-apply leaves the
+original file intact — never a half-written config. Comments and unrelated
+formatting are preserved; the applier edits the YAML nodes it targets and nothing
+else. After applying, `repair` re-validates the result: a fix that fails to clear
+its finding, or introduces a new one, fails the run rather than leaving the file
+worse.
+
+## Fix classes and the Tier-1 gate
+
+Every proposed fix is classified before it's offered, and the class controls
+whether it can be applied automatically:
+
+| Class | Meaning | Applied by default |
+| --- | --- | --- |
+| `safe` | Pipeline/processor metadata with no data-path effect | Yes |
+| `restart` | Would restart a running pipeline if deployed, but is not position/ack-adjacent | No — select with `--fix` |
+| `data_path` | Ack/position/checkpoint-adjacent config (connector settings, a connector's own plugin/type, DLQ, any `id`) | No — requires `--escalate` |
+
+Classification is default-deny: an unclassifiable config path is treated as
+`data_path` and refused, never assumed safe.
+
+A `data_path` fix requires the human-only `--escalate` flag **and** an explicit
+`--fix` selection:
+
+```shell
+conduit pipelines repair orders.yaml --apply --yes --fix /pipelines/0/connectors/0/settings/table --escalate
+```
+
+There is deliberately no equivalent of `--escalate` for agents over MCP (see
+[MCP](#repairing-over-mcp)) — that is what keeps the data-path Tier-1 sign-off
+real rather than theater.
+
+## What gets a fix (and what doesn't)
+
+A finding ships a fix only when its value is **deterministic** — no human
+judgement, no guessed name — and its config path is not data-path-adjacent. That
+rule keeps the set small and honest.
+
+Fixes available today:
+
+| Finding | Fix | Class |
+| --- | --- | --- |
+| Deprecated / renamed field | Rename the old key to its canonical name (semantics-preserving) | `safe` |
+| Invalid `/status` value that unambiguously maps (e.g. `Running` → `running`) | Set the canonical enum value | `safe` |
+| Negative processor `/workers` | Set to `1` (the ordering-preserving default) | `restart` |
+| `/description` over the length limit | Truncate to the limit (shown in the diff, never silent) | `safe` |
+
+Findings that **don't** get a fix keep their human `Suggestion` and report "no
+machine-appliable fix" — honest, not broken. These include:
+
+- **Unknown connector plugin** — the correct name isn't mechanically knowable;
+  `repair` never fabricates a plugin name.
+- **Invalid connector `/type`** (source vs. destination) — a semantic choice, not
+  derivable from the file.
+- **Missing required `/plugin`, `/id`, or `/type`** — no deterministic value to
+  supply.
+- **Duplicate `id`** — a rename rekeys a connector's stored position, so it's
+  data-path-adjacent, not a safe auto-fix.
+- **Anything under connector `settings`** — data-path by construction.
+
+## Error codes
+
+`repair` uses stable codes so the failure is machine-actionable. All map to exit
+code `2`:
+
+| Code | Raised when |
+| --- | --- |
+| `repair.plan_stale` | `--plan-hash` no longer matches (the file changed since the preview); nothing is written |
+| `repair.fix_no_longer_applies` | A selected fix's target was already changed by hand |
+| `repair.data_path_fix_refused` | A `data_path` fix was selected without `--escalate` (or at all via MCP) |
+| `repair.ambiguous_fix` | Two candidate fixes target the same path and none was `--fix`-selected |
+| `repair.no_fixes_available` | `--apply` requested but the plan has no appliable fixes |
+
+Preview mode with no fixes is not an error — it exits `0` with an "already clean"
+summary.
+
+## Repairing over MCP
+
+`repair` mirrors the CLI over MCP so an agent works the same code path:
+
+- **`repair`** (always available, read-only) — takes config content, returns the
+  proposed fixes, classes, and hash. Mutates nothing.
+- **`repair_apply`** (registered only when the server runs with
+  `--allow-mutations`) — applies the **safe** fixes and returns the edited
+  content. It **never** applies a `data_path` fix (it's returned as `skipped`
+  with `repair.data_path_fix_refused`), and there is no field an agent can set to
+  force one. Data-path escalation is the human CLI's `--escalate`, only.
+
+## Note: repairing a config vs. recovering a degraded pipeline
+
+"Repair" means two different things that are worth separating:
+
+- **Repairing a config file** — this command. It clears validation findings in a
+  YAML file so it deploys cleanly. Safe by construction: the worst it can do is
+  write a config that `deploy` then refuses.
+- **Recovering a degraded running pipeline** — a pipeline that stopped with a
+  fatal error. There is no store-mutating "repair" for this: you fix the cause in
+  config and restart the pipeline (which resumes from its last committed
+  position). Conduit deliberately has no casual position-reset or state-clear
+  button, because those are the mutations where data loss lives. If the cause is
+  unfixable by restart (for example, a source position that's no longer servable
+  after retention expired), recovery means recreating the pipeline.
+
+## Related
+
+- [Provisioning](/docs/using/pipelines/provisioning) — deploying a repaired file
+  into the engine.
+- [Local dev with hot-reload](/docs/using/dev-hot-reload) — iterate on a pipeline
+  with live reload instead of editing and redeploying.
+- [Pipeline statuses](/docs/using/pipelines/statuses) — including `degraded`.
+- [Structured errors](/docs/using/other-features/structured-errors) — the
+  `code` / `configPath` / `suggestion` / `fix` shape `repair` consumes.
+
+![scarf pixel conduit-site-docs-using-pipelines-repair](https://static.scarf.sh/a.png?x-pxid=4f41012a-be75-4b82-8112-86a7cb40f98a)
