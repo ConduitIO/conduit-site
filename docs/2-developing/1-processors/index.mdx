@@ -8,6 +8,11 @@ These are processors you'd write yourself in cases the [Built-in](/docs/using/pr
 
 Thanks to our [Web Assembly (Wasm) processor](/docs/developing/processors/how-it-works) you can start writing processors in any language that can be compiled to Web Assembly. As a start, Conduit already provides a [conduit-processor-sdk](https://github.com/ConduitIO/conduit-processor-sdk) that will let you [write a processor](/docs/developing/processors/building) in Go.
 
+Run [`conduit processor new <name>`](/docs/developing/connectors/scaffold-new) to
+scaffold a building, git-initialized Go processor project in one command, or
+start from the [Conduit processor template](/docs/developing/processors/conduit-processor-template)
+directly.
+
 ### Where to put them
 
 By default, standalone processors are expected to be found in a folder named `processors` alongside of your pipelines or [standalone connectors](/docs/using/connectors/getting-started):
