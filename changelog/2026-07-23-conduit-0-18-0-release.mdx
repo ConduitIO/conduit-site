@@ -1,0 +1,21 @@
+---
+slug: '2026-07-23-conduit-0-18-0-release'
+title: Conduit v0.18.0 release
+draft: false
+tags: [conduit, release, conduit-release]
+---
+
+[Conduit v0.18.0](https://github.com/ConduitIO/conduit/releases/tag/v0.18.0) is the "trust your connectors, see your pipelines" release: a signed connector registry you can install from the CLI with signatures and SLSA provenance verified before anything runs, and a built-in UI served by `conduit run` for watching and operating your pipelines.
+
+<!--truncate-->
+
+### Key Highlights
+
+- **Signed connector registry.** `conduit connectors install <name>` fetches a connector from the registry, verifies its signature **and** its SLSA provenance, and refuses anything it can't verify — no manual downloads, no unsigned binaries. Every connector is cosign-signed keyless (there are no private keys to leak) with SLSA Level 3 build provenance, pinned to the publisher's own release workflow, so you know a connector was built by who it claims, from the source it claims. Verification is fail-closed by design.
+- **Manage what's installed.** `conduit connectors uninstall`, `list --installed`, `audit` (re-verify every installed connector against the current index), and `bundle` (package a connector for air-gapped installs) round out the lifecycle.
+- **Publish your own connector.** Drop the [connector-publish-action](https://github.com/ConduitIO/connector-publish-action) workflow into your connector repo and a tagged release is signed, provenance-attested, and proposed to the registry automatically.
+- **Built-in UI.** `conduit run` now serves a UI at `/` — nothing extra to install. Watch the live record flow with per-stage before/after diffs, see pipeline topology, throughput, latency, and health at a glance, and start or stop pipelines from the browser. Authoring stays config-as-code; the UI is for observing and operating.
+
+The registry launches with signed seed connectors for [Postgres](https://github.com/ConduitIO/conduit-connector-postgres), [Kafka](https://github.com/ConduitIO/conduit-connector-kafka), [file](https://github.com/ConduitIO/conduit-connector-file), [generator](https://github.com/ConduitIO/conduit-connector-generator), and [log](https://github.com/ConduitIO/conduit-connector-log) — with [S3](https://github.com/ConduitIO/conduit-connector-s3) and more to follow.
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)
