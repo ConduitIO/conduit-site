@@ -1,0 +1,250 @@
+---
+title: "Embedding Conduit (Go)"
+sidebar_label: "Embedding (Go)"
+toc_max_heading_level: 4
+---
+
+Conduit ships an embeddable Go API: the root package
+[`github.com/conduitio/conduit`](https://github.com/ConduitIO/conduit). You run a
+full Conduit engine _in-process_, inside your own Go application, and drive its
+lifecycle with ordinary function calls — no subprocess, no socket, no `os.Exit`.
+
+## Why embed
+
+- **One deployable.** Your service and its data pipelines compile into a single
+  binary. There is no second process to package, supervise, or keep version-locked
+  with your app.
+- **In-process lifecycle control.** You decide when the engine starts, when it
+  drains, and when it releases its resources — bounded by a `context.Context` you
+  own, returning errors you handle, writing through the logger you already have.
+- **The engine that runs the CLI is the engine you embed.** The embed package wraps
+  the same `pkg/conduit` runtime that `conduit run` uses. Provisioning, the
+  connector runtime, ack/position/checkpoint handling, and graceful drain are
+  byte-for-byte the code the CLI exercises — the package only swaps the CLI's
+  process-oriented defaults (splash to stdout, `os.Exit` on error, the global
+  Prometheus registry) for library-friendly seams.
+
+If instead you want to drive a Conduit that runs as its own process, use the
+[HTTP/gRPC API](/docs/using/other-features/api) — embedding is for running the
+engine _inside_ your Go program.
+
+## Quickstart
+
+```sh
+go get github.com/conduitio/conduit
+```
+
+Construct an engine, run it, define a pipeline in code, and stop — the full
+lifecycle in one `main`:
+
+```go
+package main
+
+import (
+	"context"
+	"log"
+
+	conduit "github.com/conduitio/conduit"
+)
+
+func main() {
+	ctx := context.Background()
+
+	e, err := conduit.New(ctx, conduit.Options{
+		DB: conduit.DBOptions{Type: "badger", Badger: struct{ Path string }{Path: "./conduit.db"}},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	h, err := e.Run(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer h.Stop(ctx) // Invariant: drains in-flight records and checkpoints before exit.
+
+	err = e.ImportPipeline(ctx, conduit.NewPipeline("hello").
+		WithConnector(
+			conduit.NewSourceConnector("src", "builtin:generator").
+				WithSetting("format.type", "raw").
+				WithSetting("recordCount", "5"),
+		).
+		WithConnector(conduit.NewDestinationConnector("dst", "builtin:log")))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := e.StartPipeline(ctx, "hello"); err != nil {
+		log.Fatal(err)
+	}
+
+	// ... your application runs; the pipeline runs alongside it.
+	select {}
+}
+```
+
+`NewPipeline(...).WithConnector(...)` is a pipelines-in-code builder that produces
+exactly the configuration a YAML pipeline document would — you never have to write
+or parse YAML to define a pipeline. `ImportPipeline` builds it and imports it in one
+call.
+
+:::note
+The example above sets `DB.Type: "badger"` with an on-disk path so pipeline state
+survives a restart. Leaving `DB` at its zero value gives an **in-memory** store,
+which is convenient for tests and examples but loses every pipeline the moment the
+engine stops. See [state considerations](#deployment-and-state) below.
+:::
+
+## Lifecycle
+
+The engine has five lifecycle calls. `New` validates and constructs but opens
+nothing; the database opens lazily on the first `Run` or `Import`.
+
+| Call | What it does |
+| --- | --- |
+| `conduit.New(ctx, Options) (*Engine, error)` | Validates `Options` and returns a not-yet-running engine. Opens no database, dials nothing. Every failure is a returned error — never `os.Exit`, never a panic. |
+| `engine.Run(ctx) (*Handle, error)` | Lazily opens the database, starts every service, optionally serves the API, and returns a `*Handle` once the engine is ready. Call it at most once per engine. |
+| `handle.Stop(ctx) error` | Drains in-flight records and checkpoints, then shuts the engine down. Idempotent. This is the graceful-shutdown path. |
+| `engine.Import(ctx, PipelineConfig) error` | Creates or updates a pipeline from a config value. May be called before `Run` — a pure Import-driven host never needs a `Handle`. |
+| `engine.ImportPipeline(ctx, *PipelineBuilder) error` | Builds a `PipelineBuilder` and imports the result in one call. The common case. |
+| `engine.Close(ctx) error` | Releases whatever `Run`/`Import` actually opened (the database). Idempotent, safe to call more than once, and a no-op if nothing was ever opened. |
+
+A few rules worth internalizing:
+
+- **`Run` at most once.** A second call returns a coded `InvalidArgument` error; a
+  failed `Run` permanently retires that engine.
+- **`Stop` is the drain.** Cancelling the `ctx` you passed to `Run` triggers the
+  same graceful drain `Stop` does — `Stop` is just an explicit trigger for it. If
+  `Stop`'s own `ctx` expires first, it returns a timeout error while the drain
+  continues in the background.
+- **`Close` after `Stop` is safe but usually unnecessary** — a successful
+  `Run` → `Stop` already released the database. You need `Close` when you built an
+  engine and then discarded it after `Run` failed, or ran `Import` without ever
+  calling `Run`.
+- **`New` then discard leaks nothing.** Because the database opens lazily, an engine
+  that never ran or imported holds no resources. (A GC-time finalizer logs a warning
+  if an engine that _did_ open resources is collected without `Close` — a safety
+  net, not a substitute for calling `Close`.)
+
+### Two shapes
+
+A long-running host that wants the engine serving pipelines for its lifetime uses
+`New → Run → (Import/Start) → Stop`, as in the quickstart. A batch or one-shot host
+that only needs to provision pipelines can skip `Run` entirely:
+`New → Import → Close`.
+
+Individual pipelines are controlled with `StartPipeline(ctx, id)` and
+`StopPipeline(ctx, id, force)`. Prefer `Handle.Stop` for shutdown — it always drains
+everything; `StopPipeline(force=true)` skips the graceful drain for a single
+pipeline.
+
+## Options
+
+```go
+type Options struct {
+	Logger            *slog.Logger           // nil → slog.Default() (never os.Stdout)
+	MetricsRegisterer prometheus.Registerer  // nil → metrics disabled (never the global registry)
+	DB                DBOptions
+	PipelinesDir      string                 // optional YAML provisioning; empty → in-code only
+	API               APIOptions             // optional HTTP/gRPC API; disabled by default
+}
+```
+
+### Logger injection
+
+Every log line the engine produces flows through your `*slog.Logger`, with levels
+and structured fields preserved. Pass `nil` for an explicit, documented fallback to
+`slog.Default()`. The engine never writes to `os.Stdout`/`os.Stderr` on this path,
+so two engines with distinct loggers never cross-talk in their logs.
+
+### Metrics injection
+
+Pass a `prometheus.Registerer` to receive Conduit's metric families into your own
+registry. A `nil` registerer **disables** metrics — it is never silently the
+process-global default registry. (Note the asymmetry with `Logger`: nil logger =
+safe default; nil registerer = off.)
+
+### Storage
+
+`DBOptions.Type` selects the backend: `"badger"` (on-disk local KV), `"postgres"`,
+`"sqlite"`, or `"inmemory"` (the default when `Type` is empty). Set a `Driver`
+directly to supply your own `database.DB` and bypass the type-specific fields.
+
+```go
+conduit.Options{
+	DB: conduit.DBOptions{
+		Type:     "postgres",
+		Postgres: struct{ ConnectionString, Table string }{ConnectionString: dsn, Table: "conduit"},
+	},
+}
+```
+
+### File-based provisioning
+
+Set `PipelinesDir` to a directory (or single file) of pipeline YAML that Conduit
+provisions on `Run`. Leave it empty to manage pipelines exclusively through `Import`
+— an embedder that never touches YAML pays no cost, and provisioning failures on a
+configured `PipelinesDir` are returned from `Run` as errors, not swallowed as logs.
+
+### API exposure
+
+The HTTP/gRPC API is off by default — an embed host that only orchestrates
+in-process is not forced to bind a socket. Set `API.Enabled` with `GRPCAddress` and
+`HTTPAddress` to turn it on.
+
+## Deployment and state
+
+- **Pick a durable backend for production.** The zero-value in-memory store is for
+  tests. A real deployment sets `DB.Type` to `"badger"`, `"postgres"`, or
+  `"sqlite"`. Positions, checkpoints, and pipeline configs live here — losing this
+  store means losing at-least-once resume guarantees across restarts.
+- **Own the state directory's lifecycle.** For Badger, `DB.Badger.Path` is an
+  on-disk directory holding a file lock; a single process may hold it at a time.
+  Point it at durable storage that survives your process (a mounted volume, not a
+  scratch tmpdir), and treat it as the pipeline's crash-recovery state.
+- **Drain on shutdown.** Wire `Handle.Stop` (or cancel `Run`'s context) into your
+  service's shutdown path so SIGTERM drains in-flight records and checkpoints before
+  exit. A `kill -9` at any instant remains recoverable from the durable store; a
+  graceful stop avoids the replay.
+- **Call `Close` on any engine you discard after opening resources** — after a
+  failed `Run`, or an `Import`-only host that never called `Run`.
+
+## Known limitations
+
+These are accepted, tracked limitations of the v1 embed surface — read them before
+relying on the affected behavior:
+
+- **The `/metrics` HTTP route serves the process default gatherer, not your injected
+  registerer** ([#2670](https://github.com/ConduitIO/conduit/issues/2670)). Metrics
+  you injected via `MetricsRegisterer` reach _your_ registry correctly; the built-in
+  HTTP `/metrics` endpoint, however, still reads the Prometheus default gatherer.
+  Scrape your own registry directly rather than relying on that route.
+- **Metric values cross-talk between two engines in one process.** Each engine gets
+  an isolated `Registerer`/`Registry` object, but `pkg/foundation/metrics` keeps
+  process-global metric _definitions_, so a metric's values fan out to every
+  registry in the process. Running two independent engines in one process with
+  cleanly separated metrics is not yet supported.
+- **A failed metrics registration during startup can leak a registry into that same
+  process-global bookkeeping**
+  ([#2669](https://github.com/ConduitIO/conduit/issues/2669)).
+
+## Stability and versioning
+
+The embed package's exported API — `Options`, `Engine`, `Handle`, `PipelineConfig`,
+`New`, and the `NewPipeline`/`PipelineBuilder` family — is a **public contract**,
+versioned like the connector protocol, pipeline config schema, and error codes. A
+breaking change is announced (CHANGELOG plus a `Deprecated:` godoc comment) in one
+monthly release, kept working with a warning for at least one more minor release,
+and removed no earlier than the third minor release after announcement. You can
+build against a stable import path and a documented deprecation policy.
+
+## Other languages
+
+The embed surface is Go-native today. Non-Go embedding — **Python first, Node
+next** — is on the roadmap as **gRPC client libraries** driving Conduit's
+control-plane API, not a C-ABI shared library (the data path never crosses the host
+boundary, so a C-ABI adds cost without benefit; see the
+[architecture decision record](https://github.com/ConduitIO/conduit/blob/main/docs/architecture-decision-records/20260724-embed-bindings-via-grpc.md)).
+The same client code targets a local subprocess or a remote, already-deployed
+Conduit. These libraries are not yet available — track the roadmap for the v0.20
+Python client.
