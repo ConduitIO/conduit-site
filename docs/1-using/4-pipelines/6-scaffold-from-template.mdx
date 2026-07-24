@@ -1,0 +1,111 @@
+---
+title: 'Scaffold a pipeline from a template'
+---
+
+From zero to a running pipeline in one command. `conduit pipelines init --template <name>`
+writes a complete, ready-to-run pipeline configuration file from a small, curated gallery of
+vendored templates — a known-good source, destination, and settings triple you edit and run,
+instead of assembling one connector setting at a time.
+
+```shell
+conduit pipelines init --template generator-log
+conduit run
+```
+
+That is a working pipeline logging synthetic records to stdout, with no external
+infrastructure and no editing required.
+
+## The templates
+
+Run `conduit pipelines init --template list` to enumerate the gallery (add `--json` for a
+machine-readable list an agent can consume). The current templates:
+
+| Template | What it does | External infrastructure |
+|---|---|---|
+| `generator-log` | Generates synthetic structured records and logs each one to stdout. | None |
+| `generator-file` | Generates synthetic structured records and appends each one as newline-delimited JSON to a local file. | None |
+| `postgres-s3` | Reads a Postgres table (initial snapshot, then ongoing CDC) and writes each record as a JSON object to an S3 bucket. | Postgres + S3 |
+| `postgres-cdc-kafka` | Streams Postgres change data capture (logical replication, no initial snapshot) to a Kafka topic. | Postgres + Kafka |
+
+The two `generator`-sourced templates run immediately after scaffolding. The two
+`postgres`-sourced templates land placeholder connection values you must replace before
+`conduit run` (the connection string, bucket, or Kafka servers/topic).
+
+## Scaffold, edit, run
+
+1. **Pick a template** and scaffold it. The file is written into `./pipelines` by default
+   (override with `--pipelines.path`), named after the template:
+
+   ```shell
+   conduit pipelines init --template postgres-s3
+   ```
+
+2. **Edit the placeholders.** For the `postgres`-backed templates, open the generated file and
+   replace the `url`, `aws.*` / `servers` / `topic` values with real ones. The `generator`
+   templates need no edits, though you can change the destination `path` or log `level`.
+
+3. **Run it:**
+
+   ```shell
+   conduit run
+   ```
+
+Conduit loads every pipeline in `./pipelines` and starts streaming.
+
+### Preview without writing
+
+`--dry-run` prints the exact configuration that would be written and touches nothing on disk —
+useful for inspecting a template, or piping the config elsewhere with `--json`:
+
+```shell
+conduit pipelines init --template postgres-cdc-kafka --dry-run --json
+```
+
+### Won't overwrite your edits
+
+`pipelines init` refuses to overwrite an existing pipeline file at the destination path,
+returning a structured error with a suggested fix rather than silently clobbering a
+hand-edited config. Pass `--force` to overwrite intentionally, or choose a different pipeline
+name or `--pipelines.path`.
+
+:::note
+
+`--template` is mutually exclusive with `--source`/`--destination`: a named template already
+determines the source, destination, and settings, so combining them is rejected as ambiguous.
+
+:::
+
+## MinIO and other S3-compatible stores
+
+The `postgres-s3` template targets AWS S3 by default. Against an S3-compatible store such as
+**MinIO** or Ceph, the current `s3` connector returns a `MalformedXML` 400 because of
+aws-sdk-go-v2's default request checksum. Until
+[conduit-connector-s3#963](https://github.com/ConduitIO/conduit-connector-s3/issues/963) is
+fixed, set the following in Conduit's environment before running:
+
+```shell
+export AWS_REQUEST_CHECKSUM_CALCULATION=when_required
+export AWS_RESPONSE_CHECKSUM_VALIDATION=when_required
+```
+
+Real AWS S3 is unaffected and needs neither variable.
+
+## Delivery semantics
+
+Every template is **at-least-once** ([Invariant 3](/docs/using/other-features/dead-letter-queue)):
+a record is acknowledged upstream only after the destination has durably handled it. The
+`postgres`-sourced templates are at-least-once, not exactly-once — a crash between "destination
+accepted the write" and "source position advanced" redelivers a record, never drops one, so
+downstream consumers should apply changes idempotently (for example, key on the primary key).
+Each template's generated directory README documents its per-connector settings and
+delivery-semantics notes.
+
+## Next steps
+
+- [Pipeline configuration file](/docs/using/pipelines/configuration-file) — the anatomy of the
+  file a template writes.
+- [Validate, lint, dry-run](/docs/using/pipelines/validate-lint-dry-run) — check an edited
+  config before running it.
+- [`conduit pipelines init` CLI reference](/docs/cli#init-pipeline_name) — every flag.
+
+![scarf pixel conduit-site-docs-using-pipelines-templates](https://static.scarf.sh/a.png?x-pxid=4f41012a-be75-4b82-8112-86a7cb40f98a)
