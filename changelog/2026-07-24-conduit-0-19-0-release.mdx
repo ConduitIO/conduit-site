@@ -1,0 +1,28 @@
+---
+slug: '2026-07-24-conduit-0-19-0-release'
+title: Conduit v0.19.0 release
+draft: false
+tags: [conduit, release, conduit-release]
+---
+
+[Conduit v0.19.0](https://github.com/ConduitIO/conduit/releases/tag/v0.19.0) is the "embed it, scaffold it, trust it" release: Conduit is now a library you can run in-process in a Go app, pipelines start from a one-command template, and the data path got a crash-safety fix that closes a real at-least-once gap.
+
+<!--truncate-->
+
+### Key highlights
+
+- **Embed Conduit in your Go app.** `conduit.New(...)` runs the engine in-process — the same engine the CLI runs, no separate deployment to operate. Define pipelines in code with a fluent builder (`conduit.NewPipeline("p").WithConnector(...)`) or import a `PipelineConfig`, inject your own logger and metrics registry, and control the lifecycle with `Run` / `Stop` / `Close`. See the [embedding guide](https://conduitdata.io/docs/developing/embedding-go).
+- **Scaffold a pipeline from a template.** `conduit pipelines init --template <name>` writes a ready-to-edit pipeline from a vendored, offline gallery — `generator→log`, `generator→file`, `postgres→s3`, and `postgres CDC → kafka`. `pipelines init` also stops silently overwriting files and gains `--force`, `--dry-run`, and `--json`.
+- **A crash-safety fix worth calling out.** Conduit's first chaos test found a latent gap: `Source.Ack` could advance a source's upstream commit (a Postgres replication slot's WAL) before Conduit durably persisted the position, so a `kill -9` in that window could lose records against a pruning upstream. v0.19 persists the position before the plugin ack — closing the gap — with a regression chaos test that fails without the fix. If you run Postgres CDC, this is the release to be on.
+
+### Also in this release
+
+- A cross-command `--json` contract test, so every command's machine-readable output stays one shape (agents consume it).
+- The groundwork for `conduit generate` (AI-assisted pipeline authoring): a committed benchmark corpus + scorer. The command itself lands in v0.20.
+- Architecture decisions on record: embed language bindings will be **gRPC client libraries** (Python and Node, coming v0.20), not a C ABI; a partition-claims protocol RFC; and an honest [vs-Debezium comparison](https://conduitdata.io/docs/what-is/vs-debezium).
+
+### Coming next (v0.20)
+
+A **Python client library** to define and run pipelines from Python (already prototyped over the control-plane API), `conduit generate`, and a GA of the pre-alpha [Python connector SDK](https://github.com/ConduitIO/conduit-connector-sdk-python).
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)
