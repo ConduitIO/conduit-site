@@ -20,41 +20,67 @@ hide_table_of_contents: true
 
 <br/>
 
-Conduit is a data streaming tool for software and data engineers, powered
-by [Meroxa](https://meroxa.io). Its purpose is to help you move data from A to
-B. You can use Conduit to send data from Kafka to Postgres, between files and
-APIs, between [supported connectors](/docs/using/connectors/list),
-and [any datastore you can build a plugin for](/docs/developing/connectors/).
+Conduit moves data between systems in real time — from sources to destinations,
+with processors in between. It ships as a single Go binary with no external
+dependencies, and it does not require Kafka. Here is what Conduit is today.
 
-It's written in [Go](https://go.dev/), compiles to a single binary, and is
-designed to be easy to use and [install](/docs/installing-and-running).
+## A Kafka Connect replacement
 
-Out of the box, Conduit comes with:
+Conduit covers the same job as Kafka Connect — connectors, transforms, and a
+pipeline runtime — without the JVM and without a Kafka cluster to stand up first.
+Pipelines move data between any source and destination; Kafka is one option among
+many, not a prerequisite. If you are coming from Kafka Connect, there is a
+migration path: the migration command produces a compatibility report rather than
+silently dropping config it cannot translate.
 
-- Built-in connectors 
-- Processors
-- Observability
-- Schema Support
+## Any-language connectors
 
-## Features
+Connectors talk to Conduit over a stable gRPC protocol, so a connector can be
+written in any language that speaks it. Go has a mature
+[SDK and connector template](/docs/developing/connectors/conduit-connector-template)
+today; a [Python connector SDK](/docs/developing/connectors/scaffold-new) is in
+progress and pre-alpha. Processors — the transforms that run between source and
+destination — are ordinary code
+[compiled to WASM](/docs/developing/processors/building), not a bespoke DSL you
+have to learn.
 
-Conduit comes with many powerful features such as:
+## Embeddable
 
-* **Simple deployments**: Conduit is distributed as a single binary and doesn't
-  require any external dependencies to run. We also provide a [Kubernetes
-  operator](/docs/scaling/conduit-operator).
-* **Real time by default**: Conduit pipelines continuously listen for changes to
-  a database, data warehouse, etc., and allows your data applications to act
-  upon those changes in real time.
-* **Easily extensible**: Conduit connectors are plugins that communicate with Conduit
-  via a gRPC interface. This means that plugins can be written in any language
-  as long as they conform to the required interface. Check out
-  our [connector docs](/docs/using/connectors/getting-started)!
+Conduit is a library as well as a server. Embed the engine in a Go service with
+`conduit.New(...)` and run pipelines in-process — no separate deployment to
+operate. Client libraries for Python and Node are coming (v0.20). For a worked
+example, see the
+[embedding guide](/docs/using/guides/build-ai-summarize-pipeline).
 
-For a detailed look at additional features, visit
-our [Features](/docs/using/other-features) page. Here, you'll find a selection
-of tools and functionalities that complement our main features.
+## Agent-legible
 
-Now let's [get started](/docs/getting-started) with our first pipeline!
+Conduit exposes an [MCP server](/docs/using/mcp), stable machine-actionable error
+codes, and an [`llms.txt`](/docs/using/llms-txt). Each error carries the failing
+config path and a suggested fix, so an agent can act on it without scraping prose.
+Agents scaffold, validate, deploy, and inspect pipelines through the same code
+paths the CLI uses — and every command supports `--json`.
+
+## A signed connector registry
+
+`conduit connectors install <name>` pulls a connector from the registry and
+verifies both its signature and its
+[SLSA provenance](/docs/using/connectors/installing) before installing.
+Verification is fail-closed: an unsigned artifact — or a signed one with no
+provenance attestation — is refused, not installed.
+
+## A data path you can trust
+
+Conduit is at-least-once by default. A record is acknowledged upstream only after
+it is durably handled downstream, positions are monotonic and crash-safe, and a
+restart resumes without skipping records. These
+[pipeline semantics](/docs/core-concepts/pipeline-semantics) are chaos-tested, not
+just asserted. For how the pieces fit together, see the
+[architecture overview](/docs/core-concepts/architecture).
+
+## Get started
+
+[Install Conduit](/docs/installing-and-running), then
+[build your first pipeline](/docs/getting-started).
 
 ![scarf pixel conduit-site-docs-what-is](https://static.scarf.sh/a.png?x-pxid=01346572-0d57-4df3-8399-1425db913a0a)
+</content>
