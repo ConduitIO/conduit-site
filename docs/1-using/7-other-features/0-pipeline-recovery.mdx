@@ -28,6 +28,29 @@ need to wait for the connector or processor to be updated. This implies that we
 need to have in Conduit an automatic mechanism for restarting pipelines that
 experienced an error.
 
+## Crash safety and at-least-once delivery
+
+Pipeline Recovery restarts a pipeline; crash safety is what guarantees that restart resumes
+without losing records. Conduit's floor is **at-least-once**: a source record is only
+acknowledged upstream after it has been durably handled downstream, and a source position is
+durably persisted **before** the corresponding upstream commit advances. That ordering was
+hardened in a recent fix (`Source.Ack` persist-before-ack): previously an ack could reach the
+source before its position write was flushed, so a `kill -9` in that window could leave a
+pipeline resuming from a position behind data an upstream had already pruned — for example, a
+Postgres logical-replication slot whose WAL is freed once the confirmed LSN advances.
+
+For operators, the practical guarantees are:
+
+- A hard crash (`kill -9`) at any instant is recoverable without losing records. On restart, the
+  pipeline resumes from the last durably-persisted position; worst case, a small number of
+  in-flight records are **redelivered**, never dropped.
+- Because delivery is at-least-once, downstream consumers should apply changes idempotently
+  (for example, key on the record's primary key).
+
+See the blameless postmortem
+[`20260723-source-ack-persist-ordering.md`](https://github.com/ConduitIO/conduit/blob/main/docs/postmortems/20260723-source-ack-persist-ordering.md)
+for the full analysis.
+
 ## What triggers pipeline recovery
 
 Any _non-fatal_ error can trigger pipeline recovery. In the context of

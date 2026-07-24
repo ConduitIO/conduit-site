@@ -262,18 +262,31 @@ conduit pipeline desc orders --json
 
 Scaffolds a pipeline configuration **file** (offline — no running server
 needed). With no flags, produces a runnable demo pipeline (`generator` →
-`log`). `--source`/`--destination` select any built-in connector instead.
+`log`). `--source`/`--destination` select any built-in connector instead, or
+`--template <name>` scaffolds a complete, ready-to-run pipeline from the
+[templates gallery](/docs/using/pipelines/scaffold-from-template).
 
 | Flag | Description |
 |---|---|
 | `--source <name>` | Source connector (any built-in). Default: `generator` (demo). |
 | `--destination <name>` | Destination connector (any built-in). Default: `log` (demo). |
+| `--template <name>` | Scaffold from a named vendored template. `--template list` enumerates the gallery. Mutually exclusive with `--source`/`--destination`. |
 | `--pipelines.path <dir>` | Where to save the file. Default: `./pipelines`. |
+| `--force` | Overwrite an existing pipeline file at the destination path. |
+| `--dry-run` | Print the configuration that would be written, without touching the filesystem. |
+| `--json` | Machine-readable output (the rendered config, resolved path, and — with `--template list` — the template list). |
+
+Refuses to overwrite an existing pipeline file at the destination path, returning
+a structured error with a suggested fix unless `--force` is set. `--dry-run` never
+writes, so it is exempt from that check.
 
 ```shell
 conduit pipelines init
 conduit pipelines init --source generator --destination s3
 conduit pipelines init file-to-pg --source file --destination postgres --pipelines.path ./my-pipelines
+conduit pipelines init --template list --json
+conduit pipelines init --template postgres-cdc-kafka
+conduit pipelines init --template generator-log --dry-run --json
 ```
 
 ### `validate <path>`
