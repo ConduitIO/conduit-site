@@ -1,0 +1,279 @@
+---
+title: "Write a Connector in Python"
+sidebar_position: 6.5
+---
+
+Conduit connectors speak a language-neutral gRPC protocol, so a connector does not have to be written in Go. The
+[`conduit-connector-sdk` for Python](https://github.com/ConduitIO/conduit-connector-sdk-python) lets you build a
+source or destination in Python and run it as a first-class Conduit plugin.
+
+:::warning Pre-alpha
+The Python SDK is **pre-alpha and under active development.** No release has shipped, it is **not yet on PyPI**, and
+the public API (`Source`, `Destination`, `Config`, `Record`) can change without a deprecation notice. Install it from
+the repository, pin a commit, and expect churn. It is documented here so you can try it and give feedback — not as a
+stable foundation to build production connectors on yet.
+:::
+
+## Why Python
+
+A Python connector is not a lesser connector. Conduit launches it exactly the way it launches a standalone Go
+connector: as a subprocess that serves the same `conduit-connector-protocol` over gRPC. Same handshake, same record
+model, same ack and position semantics, same lifecycle. Once built, it shows up in `conduit connector-plugins list`
+under the `standalone:` prefix alongside every other connector.
+
+What Python adds is its ecosystem. If the system you are integrating already has a mature Python client — a database
+driver, `boto3`, an HTTP client like `httpx`, a vector-store SDK, or an embedding provider's client — you can reach
+for it directly instead of reimplementing it. That makes Python a natural fit for the data- and AI-adjacent edges of a
+pipeline where the best (or only) client library is written in Python.
+
+The trade-offs are honest ones: the SDK is pre-alpha, and a standalone plugin runs as a subprocess, so this is not the
+path for a built-in, in-process connector on Conduit's hottest data path. For those, the
+[Go SDK](https://github.com/ConduitIO/conduit-connector-sdk) remains the recommended route (see the
+[connector guidelines](/docs/developing/connectors)).
+
+## Prerequisites
+
+- **Python 3.11+**
+- A **Conduit binary** to run your connector (see [Installing and running](/docs/installing-and-running)).
+- Optionally [`uv`](https://docs.astral.sh/uv/) for dependency management. Plain `pip` and a virtualenv work too.
+
+## Install the SDK
+
+The package is not on PyPI yet, so install it straight from the repository. Pin a commit for anything you want to be
+able to reproduce:
+
+```shell
+pip install "conduit-connector-sdk @ git+https://github.com/ConduitIO/conduit-connector-sdk-python.git"
+```
+
+Or, in a project managed with `uv`:
+
+```shell
+uv add "conduit-connector-sdk @ git+https://github.com/ConduitIO/conduit-connector-sdk-python.git"
+```
+
+The import package is `conduit`.
+
+## Hello world: a source connector
+
+A source is three things: a **config model**, a **`Source` subclass**, and a call to **`serve(...)`**. Here is a
+complete, working source that polls an HTTP endpoint for new rows — the SDK's own worked example, condensed. It
+expects an endpoint that accepts `?since=<cursor>` and returns a JSON array of rows (each with an `id`), oldest-first.
+
+```python title="main.py"
+from __future__ import annotations
+
+from datetime import UTC, datetime
+
+import httpx
+
+from conduit import BackoffRetry, Change, Metadata, Operation, Record, Source, serve
+from conduit.config import BaseConfig, Field, Specification
+
+
+class Config(BaseConfig):
+    """Configuration for the connector, validated by pydantic."""
+
+    url: str = Field(description="HTTP endpoint to poll, expects ?since=<cursor>.")
+    poll_interval_ms: int = Field(
+        default=1000, ge=100, description="Delay between empty polls (paced by the SDK itself)."
+    )
+
+
+class HTTPPollSource(Source[Config]):
+    """Polls config.url?since=<cursor> for new rows, oldest-first."""
+
+    async def open(self, position: bytes | None) -> None:
+        # Resume from the last emitted position, or start from the beginning.
+        self._client = httpx.AsyncClient()
+        self._since = position.decode() if position else "0"
+
+    async def read(self) -> Record:
+        resp = await self._client.get(self.config.url, params={"since": self._since})
+        rows = resp.json()
+        if not rows:
+            # Nothing new yet. Do NOT sleep here — raising BackoffRetry lets the
+            # SDK's read loop pace retries, so sleeping too would double the backoff.
+            raise BackoffRetry()
+
+        row = rows[0]
+        self._since = str(row["id"])
+        metadata: dict[str, str] = {}
+        Metadata.set_read_at(metadata, int(datetime.now(UTC).timestamp() * 1e9))
+        return Record(
+            position=self._since.encode(),
+            operation=Operation.CREATE,
+            key={"id": row["id"]},
+            payload=Change(after=row),
+            metadata=metadata,
+        )
+
+    async def teardown(self) -> None:
+        # open() may not have run if SIGTERM arrived early — guard the cleanup.
+        if getattr(self, "_client", None) is not None:
+            await self._client.aclose()
+
+
+if __name__ == "__main__":
+    serve(Specification(name="http-poll", version="0.1.0", author="you"), source=HTTPPollSource)
+```
+
+A few things to notice:
+
+- **`Config(BaseConfig)` is a pydantic model.** Field types, defaults, and constraints (`ge=100`, `description=...`)
+  are introspected into the connector's parameter specification automatically — no code generation step. A field with
+  no default becomes a required parameter. Invalid config is rejected at configure time with a per-field error.
+- **`Source[Config]` is generic over your config class.** Inside your methods, `self.config` is the validated
+  `Config` instance, so `self.config.url` is typed and checked.
+- **`read()` is the one method you must implement.** It returns the next `Record`, or raises `BackoffRetry` when
+  nothing is available right now. The SDK owns the retry pacing.
+- **`serve(...)` is the entry point.** Pass a `Specification` and exactly one of `source=` or `destination=`.
+
+### The lifecycle methods
+
+Every method except `read()` (source) / `write()` (destination) has a working default, so you override only what you
+need. Check the exact names against the SDK — this is the current surface:
+
+| Method | When it runs | Default |
+| --- | --- | --- |
+| `configure(config)` | After config is parsed and validated. | Stores `self.config`. |
+| `open(position)` *(source)* / `open()` *(destination)* | Before records flow — open clients/connections here. | No-op. |
+| `read()` *(source)* | Repeatedly, to produce the next record. | **Required** — you implement it. |
+| `write(records)` *(destination)* | Per incoming batch, to write records durably. | **Required** — you implement it. |
+| `ack(position)` *(source)* | After Conduit confirms a record was durably handled downstream. | No-op. |
+| `teardown()` | Once, after the record loop stops, before exit. | No-op. |
+
+`ack()` is **optional.** Conduit's own position tracking — via what `read()` returns and what `open(position)` resumes
+from — is enough for most sources. Override `ack()` only when you also need to acknowledge against the *source system*
+itself: commit a Kafka consumer offset, delete a queue message, mark a row processed upstream. The HTTP polling source
+above does not need it.
+
+## A destination, in brief
+
+A destination follows the same shape, but you implement `write()` instead of `read()`:
+
+```python title="destination.py"
+from __future__ import annotations
+
+from conduit import Destination, Record, serve
+from conduit.config import BaseConfig, Field, Specification
+
+
+class Config(BaseConfig):
+    path: str = Field(description="File to append records to.")
+
+
+class FileDestination(Destination[Config]):
+    async def open(self) -> None:
+        self._file = open(self.config.path, "ab")
+
+    async def write(self, records: list[Record]) -> None:
+        # Returning without raising means the whole batch was durably written,
+        # and Conduit acks every record in it. For a partial failure, raise
+        # conduit.errors.BatchWriteError with a per-record accounting instead.
+        for record in records:
+            self._file.write(repr(record.payload.after).encode() + b"\n")
+        self._file.flush()
+
+    async def teardown(self) -> None:
+        if getattr(self, "_file", None) is not None:
+            self._file.close()
+
+
+if __name__ == "__main__":
+    serve(Specification(name="file-out", version="0.1.0", author="you"), destination=FileDestination)
+```
+
+For `write()`, "returns without raising" means the entire batch was durably written and every record is acked. A
+partial-batch failure is expressed by raising `conduit.errors.BatchWriteError` with an exhaustive per-index
+accounting; any other exception nacks the whole batch. The SDK never assumes an unaccounted record succeeded — that
+would violate Conduit's at-least-once guarantee.
+
+## Package it: the build step you can't skip
+
+You cannot hand Conduit a `.py` file, a `pip install`-ed script, or a shebang like `#!/usr/bin/env python3`. Conduit
+launches a standalone connector as a subprocess with a **clean environment and no inherited `PATH`**, so there is
+nothing for `env` to search for an interpreter, and no active virtualenv. The SDK ships a `build` command that closes
+this gap:
+
+```shell
+conduit-connector-sdk build . -o http-poll-source
+```
+
+This produces **one self-contained, directly executable file**. It carries an *absolute* interpreter path resolved at
+build time (never looked up via `PATH`) and bundles every third-party dependency your connector needs — including
+compiled-extension packages like `grpcio` and `pydantic-core` that a plain `zipapp` can't load in place. On first run
+it extracts itself to a per-build cache directory, then runs your connector; later launches reuse the cache.
+
+:::info Build from an environment where your deps are installed
+`build` vendors from what's already resolved in the current environment — it does not run a fresh `pip install`. Run
+it from a virtualenv (or `uv` project) where your connector's own dependencies (`httpx`, a DB driver, etc.) are
+already installed.
+:::
+
+The result is directly runnable — no `python` prefix, no venv activation:
+
+```shell
+./http-poll-source
+```
+
+## Run it in a pipeline
+
+Move the built artifact into the `connectors` directory next to your Conduit binary (the same place Go standalone
+connectors go):
+
+```shell
+mv http-poll-source /path/to/conduit/connectors/
+```
+
+Start Conduit and confirm it was discovered — standalone connectors are prefixed `standalone:`, and the name and
+version come from your `Specification`:
+
+```shell
+./conduit connector-plugins list | grep http-poll
+# standalone:http-poll@0.1.0   ...
+```
+
+Reference it from a [pipeline configuration file](/docs/using/pipelines/configuration-file) by that plugin name:
+
+```yaml title="pipeline.yaml"
+version: 2.2
+pipelines:
+  - id: python-http-poll
+    connectors:
+      - id: source
+        type: source
+        plugin: "standalone:http-poll@0.1.0"
+        settings:
+          url: "http://localhost:9000/rows"
+      - id: destination
+        type: destination
+        plugin: "builtin:log"
+```
+
+See [Using a Custom Connector](/docs/developing/connectors/using-a-custom-connector) for the full discovery and
+pipeline flow, which is identical to the Go standalone path.
+
+## Where this stands
+
+Being honest about the current state so you can calibrate:
+
+- **Pre-alpha, not on PyPI.** Install from the repo, pin a commit, expect API changes.
+- **Behavioral parity with the Go SDK is the goal; API-shape parity is not.** Methods are `async def`; a plain `def`
+  override runs in a thread pool, so a sync-only client library still works.
+- **Deliberately deferred for now:** author-side batching (`read_batch`), schema/Avro middleware, the full acceptance
+  test corpus, PyPI release automation, and any performance claim versus the Go SDK.
+
+For the authoritative, moving surface, read the SDK's
+[README and design doc](https://github.com/ConduitIO/conduit-connector-sdk-python).
+
+## Next steps
+
+- [Connector Specification](/docs/developing/connectors/connector-specification) — the specification every connector
+  returns, and how Conduit uses it.
+- [Using a Custom Connector](/docs/developing/connectors/using-a-custom-connector) — running a standalone build in a
+  real pipeline.
+- [Connector Lifecycle](/docs/developing/connectors/connector-lifecycle) — the full lifecycle the methods above hook
+  into.
+
+![scarf pixel conduit-site-docs-developing-connectors-python](https://static.scarf.sh/a.png?x-pxid=3ada0949-fa61-40d6-a44a-76447ea4e39f)

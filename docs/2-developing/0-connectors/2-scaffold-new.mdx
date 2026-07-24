@@ -12,10 +12,11 @@ repository.
 
 :::info
 Scaffolding targets **Go only** today. `--lang python` is accepted on the command
-line but always fails with an explicit "not supported yet" error — there is no
-Python connector SDK yet for the generated code to build against. See
-[Kafka Connect migration](/docs/using/connectors/kafka-connect-connector) and the
-roadmap for when other languages land.
+line but currently fails with an explicit "not supported yet" error — the CLI does
+not generate a Python project yet. A Python connector SDK *does* now exist
+([`conduit-connector-sdk-python`](https://github.com/ConduitIO/conduit-connector-sdk-python),
+**pre-alpha**); until scaffolding wires it in, start a Python connector by hand — see
+[Write a Connector in Python](/docs/developing/connectors/writing-a-connector-in-python).
 :::
 
 ## `new` vs. the template repository
@@ -100,7 +101,7 @@ conduit processor new uppercase --module github.com/you/conduit-processor-upperc
 
 | Flag | Description |
 | --- | --- |
-| `--lang` | Target language. Only `go` produces a scaffold; any other value (including `python`) fails with an explicit "not supported yet" error. Default: `go`. |
+| `--lang` | Target language. Only `go` produces a scaffold; any other value (including `python`) fails with an explicit "not supported yet" error. A Python SDK exists ([pre-alpha](/docs/developing/connectors/writing-a-connector-in-python)); the scaffolder just doesn't generate for it yet. Default: `go`. |
 | `--module` | Go module path, e.g. `github.com/<you>/conduit-connector-<name>`. **Required.** Must end in `conduit-connector-<name>` (or `conduit-processor-<name>`), matching the positional name argument. |
 | `--path` | Destination directory. Default: `./conduit-connector-<name>` (or `./conduit-processor-<name>`). |
 | `--sdk-version` | Overrides the SDK version pinned in the embedded template snapshot. |

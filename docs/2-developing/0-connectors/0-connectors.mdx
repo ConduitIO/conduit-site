@@ -12,8 +12,15 @@ knowledge about how Conduit works.
 Conduit connectors can be built in any programming language that supports gRPC.
 To make it easier to write connectors we provide
 a [Connector SDK](https://github.com/ConduitIO/conduit-connector-sdk) written in
-Go. Using the SDK is the recommended way of writing a Conduit connector. If you
-are implementing a connector in a different language you should refer to
+Go. Using the Go SDK is the recommended way of writing a Conduit connector.
+
+There is also a [Python SDK](https://github.com/ConduitIO/conduit-connector-sdk-python)
+(**pre-alpha**) — a Python connector speaks the same gRPC protocol and runs as a
+first-class standalone plugin, which is handy when the system you're integrating
+has a mature Python client. See
+[Write a Connector in Python](/docs/developing/connectors/writing-a-connector-in-python).
+
+If you are implementing a connector in another language you should refer to
 the [Connector Protocol](https://github.com/ConduitIO/conduit-connector-protocol).
 
 
