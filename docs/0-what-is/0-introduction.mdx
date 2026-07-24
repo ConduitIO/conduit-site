@@ -38,8 +38,8 @@ silently dropping config it cannot translate.
 Connectors talk to Conduit over a stable gRPC protocol, so a connector can be
 written in any language that speaks it. Go has a mature
 [SDK and connector template](/docs/developing/connectors/conduit-connector-template)
-today; a [Python connector SDK](/docs/developing/connectors/scaffold-new) is in
-progress and pre-alpha. Processors — the transforms that run between source and
+today; [writing a connector in Python](/docs/developing/connectors/writing-a-connector-in-python)
+is in progress and pre-alpha. Processors — the transforms that run between source and
 destination — are ordinary code
 [compiled to WASM](/docs/developing/processors/building), not a bespoke DSL you
 have to learn.
@@ -48,9 +48,8 @@ have to learn.
 
 Conduit is a library as well as a server. Embed the engine in a Go service with
 `conduit.New(...)` and run pipelines in-process — no separate deployment to
-operate. Client libraries for Python and Node are coming (v0.20). For a worked
-example, see the
-[embedding guide](/docs/using/guides/build-ai-summarize-pipeline).
+operate — see the [embedding guide](/docs/developing/embedding-go). Client
+libraries for Python and Node are coming (v0.20).
 
 ## Agent-legible
 
@@ -80,6 +79,7 @@ just asserted. For how the pieces fit together, see the
 ## Get started
 
 [Install Conduit](/docs/installing-and-running), then
-[build your first pipeline](/docs/getting-started).
+[build your first pipeline](/docs/getting-started) — or
+[scaffold one from a template](/docs/using/pipelines/scaffold-from-template).
 
 ![scarf pixel conduit-site-docs-what-is](https://static.scarf.sh/a.png?x-pxid=01346572-0d57-4df3-8399-1425db913a0a)
