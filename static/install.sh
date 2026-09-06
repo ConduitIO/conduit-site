@@ -89,7 +89,10 @@ getLatestTag() {
     latest_url=$(curl -sL -o /dev/null -w "%{url_effective}" "$url")
   elif [[ "$DOWNLOAD_TOOL" == "wget" ]]; then
     # Use wget to get the redirected link
-    latest_url=$(wget --spider --server-response --max-redirect=2 "$url" 2>&1 | grep "Location" | tail -1)
+    # -S rather than --server-response, and no --max-redirect: BusyBox wget (the
+    # only download tool on a stock Alpine) accepts the short flag and neither
+    # long one. GNU wget also prints a "[following]" line, hence the trim below.
+    latest_url=$(wget -S --spider "$url" 2>&1 | grep "Location" | tail -1)
     # The line looks like "  Location: <url> [following]".
     latest_url="${latest_url#*Location: }"
     latest_url="${latest_url%% *}"
@@ -98,14 +101,16 @@ getLatestTag() {
   fi
 
   # Extract the tag from the redirected URL (everything after the last "/")
-  TAG=$(echo "$latest_url" | grep -oE "[^/]+$")
+  # || true, or set -e kills the script on grep's empty-input exit 1 and the
+  # check below never runs.
+  TAG=$(echo "$latest_url" | grep -oE "[^/]+$" || true)
   if [ -z "$TAG" ]; then
     fail "Error: could not determine the latest Conduit release from $url"
   fi
 }
 
 # lastHTTPStatus prints the status code of the last HTTP response recorded in a
-# wget --server-response log. Deliberately implemented with shell builtins only:
+# wget -S log. Deliberately implemented with shell builtins only:
 # some minimal Linux images (openSUSE Tumbleweed's base container, for one) ship
 # without awk, and this script must not need it.
 lastHTTPStatus() {
@@ -132,7 +137,7 @@ get() {
   elif [ "$DOWNLOAD_TOOL" = "wget" ]; then
     local tmpFile
     tmpFile=$(mktemp)
-    body=$(wget --server-response --content-on-error -q -O - "$url" 2>"$tmpFile" || true)
+    body=$(wget -S -q -O - "$url" 2>"$tmpFile" || true)
     httpStatusCode=$(lastHTTPStatus "$tmpFile")
     rm -f "$tmpFile"
   fi
@@ -140,7 +145,10 @@ get() {
     echo "Request fail with http status code $httpStatusCode"
     fail "Body: $body"
   fi
-  eval "$1='$body'"
+  # printf -v, never eval: $body is an untrusted HTTP response, and eval would
+  # execute anything in it that closes the quoting. A single apostrophe in a
+  # release note is enough.
+  printf -v "$1" '%s' "$body"
 }
 
 getFile() {
@@ -152,7 +160,7 @@ getFile() {
   elif [ "$DOWNLOAD_TOOL" = "wget" ]; then
     local tmpFile
     tmpFile=$(mktemp)
-    wget --server-response --content-on-error -q -O "$filePath" "$url" 2>"$tmpFile" || true
+    wget -S -q -O "$filePath" "$url" 2>"$tmpFile" || true
     httpStatusCode=$(lastHTTPStatus "$tmpFile")
     rm -f "$tmpFile"
   fi
@@ -172,20 +180,30 @@ downloadFile() {
   CONDUIT_TMP_FILE="$CONDUIT_TMP_DIR/$CONDUIT_DIST"
   echo "Downloading $DOWNLOAD_URL"
   httpStatusCode=$(getFile "$DOWNLOAD_URL" "$CONDUIT_TMP_FILE")
-  if [ "$httpStatusCode" -ne 200 ]; then
+  # String compare with a default: an empty or non-numeric status makes -ne
+  # error out with status 2, which `if` reads as false — i.e. as success.
+  if [ "${httpStatusCode:-0}" != "200" ]; then
     echo "Did not find a release for your system: $OS $ARCH"
     echo "Trying to find a release on the github api."
     LATEST_RELEASE_URL="https://api.github.com/repos/conduitio/$PROJECT_NAME/releases/tags/$TAG"
     get LATEST_RELEASE_JSON "$LATEST_RELEASE_URL"
-    # || true forces this command to not catch error if grep does not find anything
-    DOWNLOAD_URL=$(echo "$LATEST_RELEASE_JSON" | grep 'browser_' | cut -d\" -f4 | grep "$CONDUIT_DIST") || true
+    # Exact match on the asset's basename. A substring match would also accept a
+    # future "<dist>.sig" or "<dist>.sbom" asset, and the unescaped dots in the
+    # name make it a pattern rather than a literal.
+    DOWNLOAD_URL=""
+    while read -r assetURL; do
+      if [ "${assetURL##*/}" = "$CONDUIT_DIST" ]; then
+        DOWNLOAD_URL="$assetURL"
+        break
+      fi
+    done <<<"$(echo "$LATEST_RELEASE_JSON" | grep 'browser_' | cut -d\" -f4)"
     if [ -z "$DOWNLOAD_URL" ]; then
       echo "Sorry, we dont have a dist for your system: $OS $ARCH"
       fail "You can ask one here: https://github.com/conduitio/$PROJECT_NAME/issues"
     else
       echo "Downloading $DOWNLOAD_URL"
       httpStatusCode=$(getFile "$DOWNLOAD_URL" "$CONDUIT_TMP_FILE")
-      if [ "$httpStatusCode" -ne 200 ]; then
+      if [ "${httpStatusCode:-0}" != "200" ]; then
         fail "Error: failed to download $DOWNLOAD_URL (HTTP $httpStatusCode)"
       fi
     fi
@@ -213,9 +231,12 @@ sha256Of() {
 
 # verifyChecksum checks a downloaded artifact against the checksums.txt published
 # with the same release. It fails closed: an unreachable checksums.txt, a missing
-# entry, no SHA-256 tool, or a mismatch all abort the install. The checksums come
-# from github.com directly (the Scarf download gateway does not serve them), so a
-# tampered artifact from the gateway would not match.
+# entry, no SHA-256 tool, or a mismatch all abort the install.
+#
+# What this does and does not buy: the artifact comes through the Scarf download
+# gateway and the checksum comes from github.com, so corruption or substitution
+# on the download path is caught. checksums.txt is itself unsigned, so this is
+# not a signature — it does not defend against a compromised GitHub release.
 verifyChecksum() {
   local file="$1"
   local name="$2"
@@ -228,7 +249,7 @@ verifyChecksum() {
   printf "\nVerifying SHA-256 checksum of %s\n" "$name"
   checksumsFile=$(mktemp)
   statusCode=$(getFile "$checksumsURL" "$checksumsFile")
-  if [ "$statusCode" -ne 200 ]; then
+  if [ "${statusCode:-0}" != "200" ]; then
     rm -f "$checksumsFile"
     fail "Error: could not download $checksumsURL (HTTP $statusCode).\nRefusing to install an unverified artifact."
   fi
@@ -313,7 +334,11 @@ installWithRPM() {
   verifyChecksum "$CONDUIT_TMP_FILE" "$CONDUIT_DIST"
 
   printf "\nRunning rpm...\n"
-  runAsRoot rpm -i "$CONDUIT_TMP_FILE"
+  # -U rather than -i so an existing install is upgraded rather than refused, and
+  # --replacepkgs so re-running the script when already on the latest version is
+  # a no-op instead of "package conduit-x.y.z is already installed". Both were
+  # failures before, because -i also never ran as root.
+  runAsRoot rpm -U --replacepkgs "$CONDUIT_TMP_FILE"
   rm -f "$CONDUIT_TMP_FILE"
   CONDUIT_BIN="$(command -v "$PROJECT_NAME" || true)"
 }
@@ -340,6 +365,7 @@ installWithTarball() {
   verifyChecksum "$CONDUIT_TMP_FILE" "$CONDUIT_DIST"
 
   extractDir=$(mktemp -d)
+  CONDUIT_EXTRACT_DIR="$extractDir" # so the EXIT trap reclaims it on a signal
   if ! tar -xzf "$CONDUIT_TMP_FILE" -C "$extractDir"; then
     rm -rf "$extractDir"
     rm -f "$CONDUIT_TMP_FILE"
@@ -414,6 +440,7 @@ runInstall() {
 bye() {
   result=$?
   [ -n "${CONDUIT_TMP_DIR:-}" ] && rm -rf "$CONDUIT_TMP_DIR"
+  [ -n "${CONDUIT_EXTRACT_DIR:-}" ] && rm -rf "$CONDUIT_EXTRACT_DIR"
   if [ "$result" != "0" ]; then
     echo -e "${red}Failed to install Conduit${reset}"
   fi
