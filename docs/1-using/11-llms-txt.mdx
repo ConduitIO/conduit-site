@@ -59,14 +59,24 @@ would have failed the build.
 
 ## Where to find them
 
-Both files are committed at the **root of the [`ConduitIO/conduit`](https://github.com/ConduitIO/conduit)
-repository**, next to `go.mod`:
+The `llms.txt` convention puts the file at a site's root, so that is where Conduit serves it — no
+repository checkout, no API call, just a `GET`:
 
-- `llms.txt`
-- `llms-full.txt`
+```text
+https://conduitdata.io/llms.txt
+https://conduitdata.io/llms-full.txt
+```
 
-Read them from the tag of the release you're running so the schema, connector list, and error codes
-match the binary you're actually driving — for example:
+Both are served as `text/plain; charset=utf-8`, and the link from `llms.txt` to `llms-full.txt`
+resolves, so an agent can start at the index and follow it to the detail.
+
+Those two URLs track the **latest Conduit release**. They are copies of the files generated at the
+root of the [`ConduitIO/conduit`](https://github.com/ConduitIO/conduit) repository (next to
+`go.mod`), re-synced daily by a scheduled job that opens a pull request whenever they drift, so the
+served copies cannot quietly fall behind a release.
+
+If you're running an older version, read the files from that tag instead, so the schema, connector
+list, and error codes match the binary you're actually driving:
 
 ```text
 https://raw.githubusercontent.com/ConduitIO/conduit/<tag>/llms.txt
