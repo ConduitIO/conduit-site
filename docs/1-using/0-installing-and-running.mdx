@@ -16,8 +16,34 @@ curl https://conduitdata.io/install.sh | bash
 ```
 
 :::info
-This script contains the logic to detect your OS and architecture, download the latest Conduit release, and install it using your system's package manager (like `brew`, `dpkg`, or `rpm`). It also handles errors gracefully and provides feedback on the installation process.
+The script detects your OS and architecture, downloads the latest Conduit release, and installs it
+with your system's package manager when there is one — `brew` on macOS, `dpkg` on Debian/Ubuntu,
+`rpm` on RedHat/Fedora. Anywhere else (Arch, Alpine, SUSE, or a Mac without Homebrew) it falls back
+to the generic release tarball.
+
+Every download is checked against the SHA-256 in the release's `checksums.txt` before anything is
+installed. A checksum that does not match, a `checksums.txt` the script cannot fetch, or a machine
+with no SHA-256 tool all abort the install rather than continuing. The artifact comes through the
+download gateway and the checksum comes from GitHub, so this catches corruption or substitution on
+the download path. `checksums.txt` is not itself signed, so it is an integrity check, not a
+signature — it does not protect against a compromised release.
 :::
+
+Two environment variables let you override what the script decides:
+
+| Variable | Effect |
+| --- | --- |
+| `CONDUIT_INSTALL_METHOD` | Force `brew`, `dpkg`, `rpm` or `tarball` instead of detecting one. |
+| `CONDUIT_INSTALL_DIR` | Where the tarball method puts the binary. Defaults to `/usr/local/bin` when it is writable, otherwise `$HOME/.local/bin`. |
+
+When the tarball method is used, the script prints where the binary landed and whether that
+directory is on your `PATH`. It only reaches for `sudo` when the target directory is not writable,
+and says so before it does.
+
+```shell
+# install into a directory you own, no sudo
+curl https://conduitdata.io/install.sh | CONDUIT_INSTALL_DIR="$HOME/.local/bin" bash
+```
 
 Alternatively, you can install Conduit directly using your system's package manager:
 
