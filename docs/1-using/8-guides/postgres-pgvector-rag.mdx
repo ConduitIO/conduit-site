@@ -39,13 +39,24 @@ Three of the four plugins are not compiled into `conduit` (only `builtin:postgre
 
 | Plugin | Kind | Install |
 |---|---|---|
-| `standalone:pgvector` (destination) | Standalone Go connector ([conduit-connector-pgvector](https://github.com/ConduitIO/conduit-connector-pgvector)) | **Not yet in the registry** — the repo has no tagged release, so there is no version to pass to `conduit connectors install`. Build it: clone the repo, `go build -o conduit-connector-pgvector ./cmd/connector`, and place the binary under `--connectors.path`. Switch to the registry install once a tagged release ships. |
+| `standalone:pgvector` (destination) | Standalone Go connector ([conduit-connector-pgvector](https://github.com/ConduitIO/conduit-connector-pgvector)) | Published to the signed registry at **v0.1.0**. Install it with `conduit connectors install pgvector`, which places it under the directory `--connectors.path` points at (defaults to `connectors/` next to `conduit.yaml`). Offline or air-gapped: build it from source instead — clone github.com/conduitio/conduit-connector-pgvector, run `go build -o conduit-connector-pgvector ./cmd/connector`, and place the binary under `--connectors.path`. |
 | `standalone:ai.chunk` (processor) | Standalone WASM processor ([conduit-processor-ai](https://github.com/ConduitIO/conduit-processor-ai)) | Published to the signed registry at **0.1.0** — install with `conduit processor-plugins install ai.chunk`. Requires Conduit **0.20.0** or later (`minConduitVersion`); v0.19.0 is refused as too old. On an older Conduit, build it yourself: clone `conduit-processor-ai`, `GOOS=wasip1 GOARCH=wasm go build -tags wasm -o ai-chunk.wasm ./cmd/chunking`, and place the `.wasm` under `--processors.path`. |
 | `standalone:ai.embed` (processor) | Standalone WASM processor ([conduit-processor-ai](https://github.com/ConduitIO/conduit-processor-ai)) | Published to the signed registry at **0.1.0** — install with `conduit processor-plugins install ai.embed`, same 0.20.0 requirement as `ai.chunk`. On an older Conduit, build it the same way (`./cmd/embedding`). |
 
+```shell
+conduit connectors install pgvector
+conduit processor-plugins install ai.chunk
+conduit processor-plugins install ai.embed
+```
+
+`ai.embed`'s install prints a note that the processor needs network egress to reach its provider;
+see [Reaching the embedding provider](#reaching-the-embedding-provider).
+
 `--bundle` applies the same version rules offline, so it is not a way around the 0.20.0
-requirement. See [Installing standalone processors](/docs/using/processors/installing) for the
-install commands and their error codes.
+requirement for `ai.chunk` and `ai.embed`; the pgvector connector has no such requirement
+(`minConduitVersion` 0.15.0). See [Installing connectors](/docs/using/connectors/installing) and
+[Installing standalone processors](/docs/using/processors/installing) for the install commands
+and their error codes.
 
 You also need:
 
