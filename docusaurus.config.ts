@@ -72,7 +72,7 @@ const config: Config = {
         { to: 'https://meroxa.io', label: 'Conduit Platform', position: 'right', className: 'navbar__link navbar__item conduit-platform' },
         { to: 'https://meroxa.com/blog/?type=Conduit', position: 'right', label: 'Blog' },
         { to: 'https://github.com/ConduitIO', position: 'right', label: 'GitHub', className: 'svg-background github' },
-        { to: 'https://discord.meroxa.com', position: 'right', label: 'Discord', className: 'svg-background discord' },
+        { to: 'https://github.com/ConduitIO/conduit/discussions', position: 'right', label: 'Discussions' },
       ],
     },
     algolia: { // https://docusaurus.io/docs/search#using-algolia-docsearch
