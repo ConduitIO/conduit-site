@@ -66,25 +66,82 @@ You also need:
   CREATE INDEX ON document_chunks (source_key);
   ```
 
-- **An embedding provider.** The template uses a local [Ollama](https://ollama.com) server with
-  `nomic-embed-text` (`ollama pull nomic-embed-text`), so it needs no cloud credentials.
+- **An embedding provider.** The template uses a local [Ollama](https://ollama.com) server at
+  `127.0.0.1:11434` with `nomic-embed-text` (`ollama pull nomic-embed-text`), so it needs no cloud
+  credentials. Reaching it needs network egress; see the next section.
 
 ## Reaching the embedding provider
 
-{/* TODO(v0.20.0): placeholder. The template on ConduitIO/conduit main does not yet opt
-    ai.embed into host egress, and its ollama.baseURL (http://localhost:11434) is refused by the
-    egress policy (loopback needs an exact 127.0.0.1:port entry). A fix is in progress on
-    branch fix/rag-template-egress. Replace this section with the exact settings that fix
-    ships (per-processor sdk.egress.* keys, ollama.baseURL, and the processors.egress.* engine
-    ceiling) before this page is merged. */}
+`ai.embed` is a WASM processor, and WASM processors have no network access unless both the
+pipeline and the operator allow it. Egress is off by default
+([how egress works](/docs/developing/processors/network-egress)).
 
-:::caution
-`ai.embed` reaches the embedding provider through Conduit's host-mediated network egress, which
-is **off by default** on every Conduit instance. The exact settings this template needs are
-being finalized for v0.20.0 and will be listed here. Until then, see
-[Network egress for standalone processors](/docs/developing/processors/network-egress) for how
-egress is enabled.
+1. **Pipeline opt-in (already in the template).** The embed processor carries:
+
+   ```yaml
+             ollama.baseURL: http://127.0.0.1:11434
+             sdk.egress.allow: http://127.0.0.1:11434
+   ```
+
+2. **Engine ceiling (you set this).** Engine egress is deny-all by default, and a template cannot
+   change that: it is operator config by design. Start Conduit with:
+
+   ```shell
+   conduit run --preview.pipeline-arch-v2 \
+     --processors.egress.enabled --processors.egress.allow http://127.0.0.1:11434
+   ```
+
+   or set the same in `conduit.yaml`:
+
+   ```yaml
+   processors:
+     egress:
+       enabled: true
+       allow:
+         - http://127.0.0.1:11434
+   ```
+
+Without the ceiling, every embed call fails with `ai.embedding_provider_error` wrapping
+`http egress is not enabled for this processor`, and the source record is nacked.
+
+Ollama must be listening on `127.0.0.1:11434` with the model pulled
+(`ollama pull nomic-embed-text`). Keep the address an IP literal in both places: loopback is only
+reachable through an exact IP:port allowlist entry, and `http://localhost:11434` is rejected as an
+allowlist entry. If Ollama runs elsewhere (another host, a container IP), change `ollama.baseURL`,
+`sdk.egress.allow` and `--processors.egress.allow` together.
+
+A pipeline scaffolded from a v0.20.0 nightly before this was fixed lacks those two embed-processor
+lines: add them (replacing its `ollama.baseURL: http://localhost:11434`), or re-scaffold.
+
+### Using a hosted provider (OpenAI)
+
+:::note
+This configuration is not exercised in CI.
 :::
+
+Replace the embed processor's `provider`, `model`, `ollama.baseURL` and `sdk.egress.allow`
+settings with:
+
+```yaml
+          provider: openai
+          model: text-embedding-3-small    # 1536 dimensions: update the destination's dimension and the vector(N) column
+          openai.authSecretRef: openai_key
+          sdk.egress.allow: api.openai.com
+          sdk.egress.secretRefs: openai_key
+```
+
+Then start Conduit with the matching ceiling and the key in its environment:
+
+```shell
+export CONDUIT_SECRET_OPENAI_KEY="Bearer sk-..."
+conduit run --preview.pipeline-arch-v2 \
+  --processors.egress.enabled --processors.egress.allow api.openai.com \
+  --processors.egress.secret-refs openai_key
+```
+
+The host injects the key into the request as the `Authorization` header; it never appears in the
+pipeline file and never reaches the processor. Change the destination's `dimension` and the
+`vector(N)` column to 1536 to match the model.
 
 ## Edit the placeholders
 
@@ -100,7 +157,8 @@ egress is enabled.
 | | `outputField` | Left at its default (`.Payload.After.text`), which is what `ai.embed` reads by default. |
 | `standalone:ai.embed` | `provider` | `ollama` — local, no API key. |
 | | `model` | `nomic-embed-text` (768 dimensions). Change it and the destination's `dimension` together. |
-| | `ollama.baseURL` | The Ollama server address. |
+| | `ollama.baseURL` | `http://127.0.0.1:11434`, Ollama's default port as a loopback IP literal (`localhost` cannot pass the egress gate). |
+| | `sdk.egress.allow` | This processor's egress opt-in: exactly the `ollama.baseURL` target. Needs the engine ceiling as well (see [Reaching the embedding provider](#reaching-the-embedding-provider)). |
 | `standalone:pgvector` (destination) | `url` | Connection string for the pgvector-enabled Postgres. **Placeholder — must be replaced.** |
 | | `table` | Target table; must already exist (see above). |
 | | `dimension` | **Must match the embedding model's output dimension.** Checked when the connector starts; a mismatch refuses to run. |
@@ -111,14 +169,20 @@ egress is enabled.
 ## Run it
 
 ```shell
-conduit run --preview.pipeline-arch-v2
+conduit run --preview.pipeline-arch-v2 \
+  --processors.egress.enabled --processors.egress.allow http://127.0.0.1:11434
 ```
 
-or set it in `conduit.yaml`:
+or set both in `conduit.yaml`:
 
 ```yaml
 preview:
   pipeline-arch-v2: true
+processors:
+  egress:
+    enabled: true
+    allow:
+      - http://127.0.0.1:11434
 ```
 
 `--preview.pipeline-arch-v2`, as `conduit run --help` describes it:
