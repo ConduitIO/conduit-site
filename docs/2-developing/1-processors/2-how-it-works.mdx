@@ -33,6 +33,8 @@ interface defined in [WASI preview 1](https://github.com/WebAssembly/WASI/blob/m
 Because the processor has access to a limited set of system calls, it is not
 possible to use all the features of the host system. For example, the processor
 cannot access the file system, network, or any other system resource directly.
+For outbound HTTP, Conduit provides an operator-controlled host function; see
+[Network egress](/docs/developing/processors/network-egress).
 
 :::
 
@@ -204,6 +206,18 @@ If the allocated memory buffer is smaller than the returned response size, the p
 should reallocate a larger buffer and call `get_schema` again.
 If getting the schema fails, an [error code](#error-codes) will be returned instead.
 
+### `http_request`
+
+Performs an outbound HTTP call on the processor's behalf (Conduit v0.20.0 and later). The
+memory buffer should contain an `HTTPRequest` (`procutils.v1`); Conduit checks it against the
+processor's egress policy, performs the call and writes an `HTTPResponse` into the buffer. As
+with `get_schema`, if the buffer is too small the function returns the required size and the
+processor should reallocate and call again. If the call is refused or fails, an
+[error code](#error-codes) is returned instead.
+
+Egress is off unless the operator enables it. Processors written with the Go SDK call
+[`egress.Do`](/docs/developing/processors/network-egress) instead of this function directly.
+
 ## Error codes
 
 The last 100 numbers at the end of an `uin32` (between 4,294,967,195 and
@@ -233,6 +247,10 @@ running.
   the Schema with this Version does not exist.
 - `4,294,967,287` - Invalid schema, an internal Conduit error where
   the Schema provided is invalid.
+- `4,294,967,286` to `4,294,967,280` - returned by `http_request`: egress
+  disabled, forbidden by policy, invalid request, DNS failure, timeout, response
+  too large, transport error. See
+  [network egress error codes](/docs/developing/processors/network-egress#error-codes).
 
 ## Logging
 

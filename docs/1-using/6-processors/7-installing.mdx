@@ -1,0 +1,132 @@
+---
+title: 'Installing standalone processors'
+sidebar_label: 'Installing standalone processors'
+---
+
+Standalone processors are WebAssembly (WASM) modules that Conduit loads from
+`--processors.path`. Published ones, such as `ai.chunk` and `ai.embed` from
+[conduit-processor-ai](https://github.com/ConduitIO/conduit-processor-ai), are listed in the
+same signed registry index as connectors, and `conduit processor-plugins install` puts them in
+place for you.
+
+```shell
+conduit processor-plugins install ai.embed
+conduit run
+```
+
+After that, reference the processor in a pipeline as `standalone:ai.embed`.
+
+## Offline commands
+
+`install` and `uninstall` are **offline** commands: they read and write `--processors.path`
+on disk and never talk to a running Conduit. The engine discovers new processors when it
+starts, so install first, then (re)start `conduit run`. This is the same split as
+`conduit connectors install`. `processor-plugins list` and `describe`, on the other hand,
+query a running engine.
+
+`install` resolves `--processors.path` the same way `conduit run` does (flag,
+`CONDUIT_PROCESSORS_PATH`, or `conduit.yaml`), so both agree on the directory.
+
+## `install <name>[@version]`
+
+`install`:
+
+1. fetches the registry index and verifies its signature,
+2. looks up `<name>` by exact match and picks the newest version compatible with this
+   Conduit (or the version you pinned with `@version`),
+3. downloads the single, architecture-neutral `.wasm` artifact and checks its SHA-256,
+4. verifies the artifact's signature and SLSA provenance against the processor's pinned
+   publisher identity,
+5. compiles the module to confirm it is a loadable standalone processor whose name matches,
+6. atomically writes it to `--processors.path` as `conduit-processor-<name>_<version>.wasm`
+   and records it in the install manifest.
+
+```shell
+conduit processor-plugins install ai.embed            # newest compatible version
+conduit processor-plugins install ai.embed@0.1.0      # an exact version
+conduit processor-plugins install ai.embed --dry-run  # resolve only, write nothing
+conduit processor-plugins install ai.embed --json
+```
+
+`ai.chunk` and `ai.embed` 0.1.0 declare a minimum Conduit version of 0.20.0; an older Conduit
+refuses them with `registry.incompatible_version`.
+
+| Flag | Description |
+|---|---|
+| `--dry-run` | Resolve and select the artifact; report what would be installed without downloading or writing anything. |
+| `--index-url <url>` | Registry index URL. Default `https://registry.conduitdata.io/index.json`. |
+| `--index-file <path>` | Read the index from a local file instead of `--index-url`. The file is still signature-verified. |
+| `--bundle <path>` | Install fully offline from a signed processor bundle (see below). The positional argument is ignored. |
+| `--allow-unsigned` | Skip signature and provenance verification (the SHA-256 check still runs). Needs interactive confirmation, or `CONDUIT_ALLOW_UNSIGNED_INSTALL=I_UNDERSTAND` in a non-interactive context, and can be disabled by operator policy (`install.allow-unsigned`). |
+| `--allow-stale-bundle` | With `--bundle`, accept an index snapshot older than the maximum staleness. Same gating as `--allow-unsigned`; env `CONDUIT_ALLOW_STALE_BUNDLE=I_UNDERSTAND`; operator policy `install.allow-stale-bundle`. |
+| `--lock-timeout <duration>` | How long to wait for the per-processor install lock. Default `30s`. |
+| `--json` | Emit the result as JSON. |
+
+The trust model is the one connectors use: see
+[Trust model](/docs/using/connectors/trust-model).
+
+## Installing without the hosted index
+
+There are two offline paths, both verified exactly like a normal install:
+
+- **`--index-file <index.json>`** reads the index from a local file instead of fetching it.
+  The index signature is still checked, and the artifact is still downloaded from the URL the
+  index lists, so the machine needs access to the artifact host but not to
+  `registry.conduitdata.io`.
+- **`--bundle <path>`** installs from a signed bundle tarball with no network call at all.
+  Everything (index snapshot, artifact, signature, provenance) is re-verified from the bundle's
+  contents. A bundle applies the same version rules as an online install, so it does not get
+  around a `minConduitVersion` requirement.
+
+  `conduit connectors bundle` packages connectors only. Conduit does not yet have a command
+  that produces a processor bundle, so `--bundle` is for bundles your registry tooling
+  provides.
+
+If you cannot use the registry at all, you can build a processor yourself and copy the `.wasm`
+file into `--processors.path`; see [Building a processor](/docs/developing/processors/building).
+A file placed by hand is not in the install manifest, so `uninstall` does not know about it.
+
+## `uninstall <name>[@version]`
+
+Removes an installed processor's `.wasm` file and its manifest entry.
+
+```shell
+conduit processor-plugins uninstall ai.embed
+conduit processor-plugins uninstall ai.embed@0.1.0
+conduit processor-plugins uninstall ai.embed --force
+```
+
+- If more than one version of `<name>` is installed, you must name the version; a bare name
+  is refused with `registry.ambiguous_uninstall` rather than guessing.
+- Before removing anything, `uninstall` scans every pipeline configuration under
+  `--pipelines.path` for a `standalone:<name>` processor. If one still uses it, it refuses with
+  `registry.processor_in_use` and lists the pipelines. `--force` removes it anyway; the result
+  still names the affected pipelines as a warning.
+
+| Flag | Description |
+|---|---|
+| `--force` | Remove the processor even if a pipeline still references it. |
+| `--json` | Emit the result as JSON. |
+
+## Error codes
+
+The codes you are most likely to see, with the exit code each maps to
+([exit codes](/docs/using/other-features/exit-codes)):
+
+| Code | Exit | When |
+|---|---|---|
+| `registry.processor_not_found` | 2 | The index has no processor with that name. |
+| `registry.version_not_found` | 2 | The pinned `@version` does not exist. |
+| `registry.incompatible_version` | 2 | No version is compatible with this Conduit (for example `ai.embed` 0.1.0 on Conduit 0.19). |
+| `registry.version_yanked` | 2 | The version was yanked from the index. |
+| `registry.index_stale` | 2 | The verified index is older than the maximum staleness (`install.max-staleness`, 7 days by default). The index has to be re-signed upstream; retry later or report it on [GitHub Discussions](https://github.com/ConduitIO/conduit/discussions). |
+| `registry.index_unreachable` / `registry.download_failed` | 3 | The index or artifact could not be fetched. |
+| `registry.install_locked` | 3 | Another install of the same processor holds the lock. |
+| `registry.corrupt_download` | 1 | The downloaded artifact does not match the index's SHA-256. |
+| `registry.identity_mismatch` / `registry.provenance_invalid` / `registry.identity_revoked` | 3 | Signature or provenance verification failed, or the publisher was revoked. |
+| `registry.invalid_processor_artifact` | 2 | The artifact is not a loadable standalone processor, or its name does not match. |
+| `registry.processor_not_installed` | 2 | `uninstall` of something that is not installed. |
+| `registry.ambiguous_uninstall` | 2 | Several versions are installed and no `@version` was given. |
+| `registry.processor_in_use` | 2 | A pipeline still references the processor and `--force` was not given. |
+
+![scarf pixel conduit-site-docs-using-processors](https://static.scarf.sh/a.png?x-pxid=53743422-c614-4e45-acaa-f1f9f604321e)

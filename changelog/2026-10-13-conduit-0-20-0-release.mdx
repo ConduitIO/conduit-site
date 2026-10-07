@@ -1,0 +1,25 @@
+---
+slug: '2026-10-13-conduit-0-20-0-release'
+title: Conduit v0.20.0 release
+draft: false
+tags: [conduit, release, conduit-release]
+---
+
+[Conduit v0.20.0](https://github.com/ConduitIO/conduit/releases/tag/v0.20.0) adds `conduit generate`, a Postgres-to-pgvector RAG pipeline you can scaffold in one command, network access for WASM processors behind an operator-controlled policy, and signed release artifacts.
+
+<!--truncate-->
+
+### Key highlights
+
+- **`conduit generate`.** Describe a pipeline in plain language and get a pipeline configuration file. Each candidate is checked with the same offline validator as `conduit pipelines validate` (including that every plugin it names exists) and with a deterministic intent check, and retried with the findings when it fails. It works with Anthropic, OpenAI or a local Ollama server, and it never deploys anything: it writes a file, and you deploy it the usual way. It is new, so review what it writes. See [Generate a pipeline from a description](/docs/using/pipelines/generate).
+- **A RAG sync pipeline, from a template.** `conduit pipelines init --template postgres-pgvector-rag` scaffolds Postgres (snapshot + CDC) → `ai.chunk` → `ai.embed` → pgvector, with idempotent upserts and deletes that remove every chunk derived from a row. **It requires the preview pipeline engine (`--preview.pipeline-arch-v2`)**: chunking turns one record into many, and the default engine stops such pipelines with `pipeline.fanout_requires_arch_v2`. Graduation of the preview engine to the default is evaluated in v0.21. The pgvector connector is not in the registry yet and has to be built from source. See the [Postgres to pgvector guide](/docs/using/guides/postgres-pgvector-rag).
+- **Network egress for WASM processors.** Standalone processors built with [conduit-processor-sdk v0.6.0](https://github.com/ConduitIO/conduit-processor-sdk/releases/tag/v0.6.0) can make HTTP calls with `egress.Do`. Conduit makes the call for them, off by default, through an allowlist that both the pipeline and the instance operator must open. It checks the resolved IP of every connection (blocking metadata, loopback and private addresses unless explicitly allowed), ignores proxy settings, does not follow redirects, and caps response size and time. API keys come from `CONDUIT_SECRET_*` environment variables and are injected by the host, so the processor never sees them. See [Network egress](/docs/developing/processors/network-egress).
+- **`conduit processor-plugins install` / `uninstall`.** Install published WASM processors such as `ai.chunk` and `ai.embed` from the signed registry, with the same signature and SLSA provenance checks as connectors, or offline from a local index file or a signed bundle. See [Installing standalone processors](/docs/using/processors/installing).
+
+### Also in this release
+
+- **Signed releases.** `checksums.txt` and the Docker image are signed with keyless cosign, and releases ship SBOMs. See [Verifying a release](https://github.com/ConduitIO/conduit/blob/main/docs/releases.md#verifying-a-release).
+- **Stricter CI gates.** A SIGKILL/crash-recovery chaos suite runs on every pull request and blocks merges, and `govulncheck` runs on every pull request and fails when a change makes a new known vulnerability reachable from Conduit's code.
+- The pipeline engine v2 now runs pipelines with several sources and destinations; [its docs](/docs/core-concepts/architecture#pipeline-engine-architecture-v2) list the known limits.
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)

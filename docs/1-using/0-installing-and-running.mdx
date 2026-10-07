@@ -25,8 +25,11 @@ Every download is checked against the SHA-256 in the release's `checksums.txt` b
 installed. A checksum that does not match, a `checksums.txt` the script cannot fetch, or a machine
 with no SHA-256 tool all abort the install rather than continuing. The artifact comes through the
 download gateway and the checksum comes from GitHub, so this catches corruption or substitution on
-the download path. `checksums.txt` is not itself signed, so it is an integrity check, not a
-signature — it does not protect against a compromised release.
+the download path. The script does not check a signature, so on its own this is an integrity
+check, not a signature — it does not protect against a compromised release. From v0.20.0,
+`checksums.txt` and the Docker image are signed with keyless cosign and releases ship SBOMs; to
+verify a download yourself, follow
+[Verifying a release](https://github.com/ConduitIO/conduit/blob/main/docs/releases.md#verifying-a-release).
 :::
 
 Two environment variables let you override what the script decides:
@@ -89,12 +92,12 @@ First, download
 the [latest Conduit release](https://github.com/ConduitIO/conduit/releases/latest)
 for your platform.
 
-Let's say you downloaded `conduit_0.14.0_Windows_x86_64.zip`.
+Let's say you downloaded `conduit_0.20.0_Windows_x86_64.zip`.
 
 ### Unzip the archive
 
 ```shell
-tar -xf conduit_0.14.0_Windows_x86_64.zip
+tar -xf conduit_0.20.0_Windows_x86_64.zip
 ```
 
 ### Run
@@ -148,13 +151,13 @@ Before you can build Conduit from source, you need to have the latest version of
 1. Start by downloading the source code from the latest stable release on the Conduit [Releases Page](https://github.com/ConduitIO/conduit/releases/latest). Alternatively, you can run this command to automatically download the latest stable source to your current directory:
 
 ```shell
-$ TAG=v0.14.0; curl -o conduit.tar.gz -L https://github.com/ConduitIO/conduit/archive/refs/tags/$TAG.tar.gz
+$ TAG=v0.20.0; curl -o conduit.tar.gz -L https://github.com/ConduitIO/conduit/archive/refs/tags/$TAG.tar.gz
 ```
 
-A file called `conduit.tgz` will be in your current directory. The next step is to expand the source:
+A file called `conduit.tar.gz` will be in your current directory. The next step is to expand the source:
 
 ```shell
-$ tar zxvf conduit.tgz
+$ tar zxvf conduit.tar.gz
 ```
 
 Then change directories to the appropriate folder. Keep in mind that the folder
@@ -162,7 +165,7 @@ name might be different between releases since it's tied to the latest git sha
 for the commit.
 
 ```shell
-$ cd conduit-0.14.0
+$ cd conduit-0.20.0
 ```
 
 Now build the project:
@@ -192,7 +195,7 @@ on port 8080:
  `::::::::          ::::::::‘
       `::::        ::::‘
        `:::::....:::::‘
-         `::::::::::‘        Conduit v0.14.0 linux/amd64
+         `::::::::::‘        Conduit v0.20.0 linux/amd64
              ‘‘‘‘
 2025-01-10T09:40:07+00:00 INF All 0 tables opened in 0s component=badger.DB
 2025-01-10T09:40:07+00:00 INF Discard stats nextEmptySlot: 0 component=badger.DB

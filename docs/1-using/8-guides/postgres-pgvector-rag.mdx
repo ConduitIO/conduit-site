@@ -1,0 +1,152 @@
+---
+title: "How to sync Postgres into pgvector for RAG"
+sidebar_label: "Postgres to pgvector (RAG)"
+toc_max_heading_level: 3
+---
+
+The `postgres-pgvector-rag` template keeps a vector store in sync with a Postgres table. It
+takes an initial snapshot of the table, then follows ongoing changes (CDC). Each row's text is
+**chunked**, each chunk is **embedded**, and the vectors are **upserted into pgvector**. Writes
+are keyed so that redelivery and in-place updates converge to one row per chunk, and deleting a
+source row removes every chunk ever derived from it.
+
+```text
+builtin:postgres  ->  standalone:ai.chunk  ->  standalone:ai.embed  ->  standalone:pgvector
+   (snapshot + CDC)      (split into chunks)      (embedding vectors)       (upsert vectors)
+```
+
+:::warning[Requires the preview pipeline engine]
+`ai.chunk` turns one record into many. Only the preview engine, pipeline architecture v2, can
+run that, so this pipeline must run with `--preview.pipeline-arch-v2`. On the default engine it
+stops at the chunk step with `pipeline.fanout_requires_arch_v2`. See
+[Run it](#run-it) and [Pipeline engine (architecture) v2](/docs/core-concepts/architecture#pipeline-engine-architecture-v2).
+:::
+
+## Scaffold it
+
+```shell
+conduit pipelines init --template postgres-pgvector-rag
+```
+
+This writes the pipeline file and prints a **prerequisite note** (`result.prerequisites` with
+`--json`) listing what has to be installed first. It is the first template in the gallery that
+uses plugins not built into `conduit`: the file is written, but the pipeline will not run until
+they are in place.
+
+## Prerequisites
+
+Three of the four plugins are not compiled into `conduit` (only `builtin:postgres` is):
+
+| Plugin | Kind | Install |
+|---|---|---|
+| `standalone:pgvector` (destination) | Standalone Go connector ([conduit-connector-pgvector](https://github.com/ConduitIO/conduit-connector-pgvector)) | **Not yet in the registry** — the repo has no tagged release, so there is no version to pass to `conduit connectors install`. Build it: clone the repo, `go build -o conduit-connector-pgvector ./cmd/connector`, and place the binary under `--connectors.path`. Switch to the registry install once a tagged release ships. |
+| `standalone:ai.chunk` (processor) | Standalone WASM processor ([conduit-processor-ai](https://github.com/ConduitIO/conduit-processor-ai)) | Published to the signed registry at **0.1.0** — install with `conduit processor-plugins install ai.chunk`. Requires Conduit **0.20.0** or later (`minConduitVersion`); v0.19.0 is refused as too old. On an older Conduit, build it yourself: clone `conduit-processor-ai`, `GOOS=wasip1 GOARCH=wasm go build -tags wasm -o ai-chunk.wasm ./cmd/chunking`, and place the `.wasm` under `--processors.path`. |
+| `standalone:ai.embed` (processor) | Standalone WASM processor ([conduit-processor-ai](https://github.com/ConduitIO/conduit-processor-ai)) | Published to the signed registry at **0.1.0** — install with `conduit processor-plugins install ai.embed`, same 0.20.0 requirement as `ai.chunk`. On an older Conduit, build it the same way (`./cmd/embedding`). |
+
+`--bundle` applies the same version rules offline, so it is not a way around the 0.20.0
+requirement. See [Installing standalone processors](/docs/using/processors/installing) for the
+install commands and their error codes.
+
+You also need:
+
+- **Postgres** for the source, set up for logical replication if you want CDC
+  (see the [Postgres connector](/docs/using/connectors/list/postgres)).
+- **A pgvector-enabled Postgres** for the destination (it can be the same database). Create the
+  target table first, matching the embedding model's dimension (768 for the template's default
+  `nomic-embed-text`):
+
+  ```sql
+  CREATE EXTENSION IF NOT EXISTS vector;
+  CREATE TABLE document_chunks (
+      id text PRIMARY KEY,
+      embedding vector(768),
+      metadata jsonb,
+      source_key text
+  );
+  CREATE INDEX ON document_chunks (source_key);
+  ```
+
+- **An embedding provider.** The template uses a local [Ollama](https://ollama.com) server with
+  `nomic-embed-text` (`ollama pull nomic-embed-text`), so it needs no cloud credentials.
+
+## Reaching the embedding provider
+
+{/* TODO(v0.20.0): placeholder. The template on ConduitIO/conduit main does not yet opt
+    ai.embed into host egress, and its ollama.baseURL (http://localhost:11434) is refused by the
+    egress policy (loopback needs an exact 127.0.0.1:port entry). A fix is in progress on
+    branch fix/rag-template-egress. Replace this section with the exact settings that fix
+    ships (per-processor sdk.egress.* keys, ollama.baseURL, and the processors.egress.* engine
+    ceiling) before this page is merged. */}
+
+:::caution
+`ai.embed` reaches the embedding provider through Conduit's host-mediated network egress, which
+is **off by default** on every Conduit instance. The exact settings this template needs are
+being finalized for v0.20.0 and will be listed here. Until then, see
+[Network egress for standalone processors](/docs/developing/processors/network-egress) for how
+egress is enabled.
+:::
+
+## Edit the placeholders
+
+| Component | Setting | Meaning |
+|---|---|---|
+| `builtin:postgres` (source) | `url` | Postgres connection string. **Placeholder — must be replaced.** |
+| | `tables` | Comma-separated table name(s), or `*` for all tables. **Placeholder — must be replaced.** |
+| | `snapshotMode` | `initial` — sync existing rows immediately, not just future changes. |
+| | `cdcMode` | `auto` — logical replication if available, otherwise long-polling. |
+| `standalone:ai.chunk` | `strategy` | `recursive` — try progressively finer separators until each chunk fits `chunkSize`. |
+| | `chunkSize` / `overlap` | Target chunk size and overlap, in Unicode runes. |
+| | `inputField` | The field read as the text to chunk. **Placeholder (`.Payload.After.content`) — point it at your table's text column.** |
+| | `outputField` | Left at its default (`.Payload.After.text`), which is what `ai.embed` reads by default. |
+| `standalone:ai.embed` | `provider` | `ollama` — local, no API key. |
+| | `model` | `nomic-embed-text` (768 dimensions). Change it and the destination's `dimension` together. |
+| | `ollama.baseURL` | The Ollama server address. |
+| `standalone:pgvector` (destination) | `url` | Connection string for the pgvector-enabled Postgres. **Placeholder — must be replaced.** |
+| | `table` | Target table; must already exist (see above). |
+| | `dimension` | **Must match the embedding model's output dimension.** Checked when the connector starts; a mismatch refuses to run. |
+| | `vectorColumn` / `keyColumn` / `metadataColumn` | Column names (defaults `embedding`, `id`, `metadata`). |
+| | `vectorField` | The record payload field carrying the vector — default `vector`, matching `ai.embed`'s default output. |
+| | `sourceKeyColumn` / `sourceKeyMetadataKey` | What lets a source-row delete remove every chunk derived from it, even after the chunk count changed. Do not disable these for a RAG sync. |
+
+## Run it
+
+```shell
+conduit run --preview.pipeline-arch-v2
+```
+
+or set it in `conduit.yaml`:
+
+```yaml
+preview:
+  pipeline-arch-v2: true
+```
+
+`--preview.pipeline-arch-v2`, as `conduit run --help` describes it:
+
+> enables the preview pipeline engine (architecture v2). Required for pipelines with a processor
+> that splits one record into several (record fan-out, e.g. ai.chunk, split, clone), including
+> the postgres-pgvector-rag template: the classic default engine cannot run them and stops with
+> pipeline.fanout_requires_arch_v2. Known limit: a split record whose pieces are cut across a
+> multi-destination fan-out fails with pipeline.split_run_straddles_fanout. Graduation to the
+> default engine is evaluated in v0.21 against a written gate
+
+Architecture v2 is a preview engine. Review its status before relying on it for production data.
+
+## Delivery semantics
+
+- **At-least-once, not exactly-once.** A source row is acknowledged upstream (advancing the
+  Postgres position) only after pgvector has durably upserted every chunk derived from it.
+  `ai.embed` does not return until every chunk it was given is embedded or has definitively
+  failed.
+- **Idempotent upserts.** Each chunk's `id` is `<source_row_key>:<chunk_index>` and the write is
+  a single `INSERT ... ON CONFLICT ... DO UPDATE`, so a redelivered chunk converges to the same
+  row.
+- **No orphaned chunks.** An update or delete removes every chunk row with that row's
+  `source_key`, so a document that shrinks to fewer chunks does not leave stale rows behind.
+- **No silent data changes.** A bad `inputField` path or a provider error is a processor error,
+  handled by the pipeline's [DLQ / error policy](/docs/using/other-features/dead-letter-queue),
+  never silent truncation.
+- **Ordering** is per table (Postgres CDC), then by chunk index within one source row's chunks.
+  Chunks from different rows are not ordered relative to each other.
+
+![scarf pixel conduit-site-docs-using-guides](https://static.scarf.sh/a.png?x-pxid=76d5981f-cd63-422b-8cf7-eab9e99f0cd3)
