@@ -9,9 +9,67 @@ Understanding the different statuses of your pipeline is crucial for effective m
 | Status         | Description                                                                                 |
 |----------------|---------------------------------------------------------------------------------------------|
 | **Running**    | The pipeline is actively processing data and functioning as expected.                       |
-| **Stopped**    | The pipeline has been stopped by the system or manually by a user shutting down gracefully. |
-| **Degraded**   | The pipeline has been stopped due to an error or force-stopped by a user.                   |
-| **Recovering** | The pipeline is in the process of recovering from a degraded state or error.                |
+| **Stopped**    | The pipeline was stopped, by a user (`UserStopped`) or by Conduit shutting down (`SystemStopped`). It may carry an error if the drain did not end cleanly. |
+| **Degraded**   | The pipeline stopped because of an error it hit on its own: a fatal error, or a transient error after recovery gave up. |
+| **Recovering** | The pipeline hit a transient error and Conduit is restarting it, waiting out a backoff, or checking that a restart is healthy. |
+
+In the API, both kinds of stop are reported as `STATUS_STOPPED`; `State.stopped_reason`
+(`STOPPED_REASON_USER` or `STOPPED_REASON_SYSTEM`) tells them apart. `State.error` holds the
+pipeline's error message for any status, and `conduit pipelines inspect` and
+`conduit pipelines describe` print it.
+
+## What a stop does to the status
+
+Since Conduit v0.20.0, a pipeline that a stop was requested for is never sent into
+[recovery](/docs/using/other-features/pipeline-recovery) and never restarted automatically. Its
+final status follows who stopped it:
+
+| Case | Status | Error recorded | Starts on next boot |
+|------|--------|----------------|---------------------|
+| User stop (graceful), drain ends cleanly | `UserStopped` | none | no |
+| User stop (graceful), error during the drain | `UserStopped` | the drain error | no |
+| User stop with `--force` | `UserStopped` | `force stop` | no |
+| User stop while the pipeline waits out a recovery backoff | `UserStopped` | the error it was recovering from | no |
+| Shutdown (`SIGTERM`, `Ctrl+C`, or any other shutdown), drain ends cleanly | `SystemStopped` | none | yes |
+| Shutdown, error during the drain | `SystemStopped` | the drain error | yes |
+| Shutdown caused by a runtime error or [`exit-on-degraded`](#exit-on-degraded) | `SystemStopped` | the shutdown reason | yes |
+| Fatal error the pipeline hit on its own, before any stop | `Degraded` | the error | no |
+| Transient error, no stop requested | `Recovering`, then restarted | the error | n/a |
+
+A stopped pipeline is not a failure: OnFailure handling does not run for it, so a user stop
+(graceful or forced) never trips `exit-on-degraded`. A **non-empty error on a stopped pipeline
+means the drain did not end cleanly**: the records in flight were not acknowledged and are
+delivered again when the pipeline next starts (at-least-once). Clients that treated `Degraded`
+as the only signal that something went wrong should also check the error of stopped pipelines.
+
+This applies to both the default engine and the preview engine (`--preview.pipeline-arch-v2`).
+
+:::info Changed in v0.20.0
+Before v0.20.0, a force stop left the pipeline `Degraded`, and under `exit-on-degraded` it shut
+Conduit down. A transient error during a user stop or a shutdown could send the pipeline into
+recovery and restart it. Pipelines caught in a shutdown caused by a fatal error ended `Degraded`
+and needed a manual start.
+:::
+
+### Shutdown
+
+When Conduit shuts down, it stops every pipeline that is still running and waits for them to
+drain before it flushes positions and closes its database. From the moment shutdown begins:
+
+- No pipeline is started. A `Start` request (API, `conduit pipelines start`, or the MCP `start`
+  tool) and any recovery restart are refused with the error code `pipeline.shutting_down`
+  (gRPC `Unavailable`). Retry against the instance after it restarts.
+- A pipeline waiting out a recovery backoff does not wait for the backoff to end; it is stopped
+  right away and ends `SystemStopped`.
+
+On the next boot, `SystemStopped` pipelines start again and resume from their last persisted
+position. `UserStopped` and `Degraded` pipelines stay stopped until you start them.
+
+### exit-on-degraded
+
+With `pipelines.exit-on-degraded` enabled, a pipeline that ends `Degraded` shuts Conduit down.
+Only that pipeline is `Degraded`. The other pipelines the shutdown stops end `SystemStopped`,
+with the shutdown reason recorded as their error, and start again on the next boot.
 
 ## Status Descriptions
 
@@ -20,15 +78,15 @@ Understanding the different statuses of your pipeline is crucial for effective m
 -  **Implication**: All systems are functioning normally, and data is flowing as expected.
 
 ### Stopped
--  **Definition**: The pipeline has been halted by the system, or manually stopped by a user.
--  **Implication**: The pipeline gracefully stopped, any in-flight records were flushed, acks were delivered back to the source, no error was encountered while stopping the pipeline. The pipeline could be restarted.
+-  **Definition**: The pipeline was stopped by a user (`UserStopped`) or by Conduit during shutdown (`SystemStopped`).
+-  **Implication**: Without an error, the pipeline stopped gracefully: in-flight records were flushed and acks were delivered back to the source. With an error, the drain was interrupted (or the stop was forced) and unacknowledged records are delivered again on the next start. Either way the pipeline can be started again, and a `SystemStopped` pipeline starts on the next boot.
 
 ### Degraded
--  **Definition**: The pipeline stopped due to an error that couldn't be recovered, or force-stopped by the user.
+-  **Definition**: The pipeline stopped because of an error it could not recover from: a fatal error, or a transient error after recovery reached its retry limit.
 -  **Implication**: Any in-flight records were dropped, not all acks might have been delivered back to the source. Starting a degraded pipeline again could potentially result in duplicated data (depending on how the destination connector handles records), since some data might get re-delivered.
 
 ### Recovering
--  **Definition**: The pipeline is in the process of recovering from a degraded state or error.
--  **Implication**: The system is attempting to restore normal operations. Monitor the status to ensure recovery is successful.
+-  **Definition**: The pipeline is recovering from a transient error: Conduit is restarting it, waiting out a backoff before the restart, or checking that the restarted pipeline is healthy.
+-  **Implication**: The system is attempting to restore normal operations. Monitor the status to ensure recovery is successful. A stop requested while a pipeline is recovering ends the recovery; the pipeline is not restarted. In the preview engine, a user stop during the backoff takes effect when the backoff ends, so the status stays `Recovering` until then.
 
 ![scarf pixel conduit-site-docs-using-pipelines](https://static.scarf.sh/a.png?x-pxid=4f41012a-be75-4b82-8112-86a7cb40f98a)

@@ -142,6 +142,8 @@ fallback and refuse with `common.unavailable` unless `--api-address` was set at 
 `inspect`. `stop`'s `force` argument skips the graceful drain (immediate stop), but is not a
 data-loss escape hatch: positions are crash-safe and delivery is at-least-once, so a forced stop
 behaves like a recoverable crash, not silent loss.
+The pipeline ends `UserStopped` with `force stop` recorded as its error, not `Degraded`. `start` is
+also refused with `pipeline.shutting_down` once Conduit has begun shutting down.
 :::
 
 ## Flags

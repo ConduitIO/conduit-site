@@ -190,4 +190,9 @@ should stop running as soon as possible. Messages that are in the pipeline won't
 and will be requested from the source again once the pipeline is restarted. The error returned from the first node
 that failed will be stored in the pipeline and can be retrieved through the API.
 
+A user can also force-stop a pipeline (`conduit pipelines stop --force`), which skips the drain the same way. A pipeline
+that was stopped, by a user or by Conduit shutting down, is never restarted by error recovery, and an error during its
+drain is recorded on the pipeline without marking it degraded. See
+[Statuses](/docs/using/pipelines/statuses#what-a-stop-does-to-the-status).
+
 ![scarf pixel conduit-site-docs-what-is-core-concepts](https://static.scarf.sh/a.png?x-pxid=8d2e502f-e2dd-43ab-a1c1-7a00ac3b0d68)

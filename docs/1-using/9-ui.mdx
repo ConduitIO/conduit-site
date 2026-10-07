@@ -122,6 +122,9 @@ states collapse to these on the API):
 A stopped pipeline additionally carries a stopped-reason that distinguishes an
 operator stop from an engine stop, so the fleet view can tell "someone stopped
 this on purpose" from "this is waiting to be resumed."
+Since v0.20.0 a stopped pipeline can also carry an error: it means the drain
+was interrupted or the stop was forced. See
+[Statuses](/docs/using/pipelines/statuses#what-a-stop-does-to-the-status).
 
 ## How it fits together
 
