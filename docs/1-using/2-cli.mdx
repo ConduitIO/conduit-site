@@ -210,7 +210,8 @@ Turns a plain-language description into a pipeline configuration file. Every can
 checked with the offline validate engine (including that each referenced plugin exists) and
 with a deterministic intent check before it is shown or written; failures are retried with the
 findings, up to `--max-retries`. It never deploys: it writes a file, and deploying it is the
-usual `conduit pipelines deploy` step. New in v0.20 — review what it writes.
+usual `conduit pipelines deploy` step. Preview in v0.20: it picks connectors reliably but often
+leaves out requested processor steps, so review what it writes.
 
 Needs a provider: `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, or a local Ollama server
 (`OLLAMA_HOST`, default `http://localhost:11434`). With more than one available, choose with

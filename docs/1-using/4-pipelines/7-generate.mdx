@@ -1,6 +1,6 @@
 ---
-title: 'Generate a pipeline from a description'
-sidebar_label: 'Generate from a description'
+title: 'Generate a pipeline from a description (preview)'
+sidebar_label: 'Generate from a description (preview)'
 ---
 
 `conduit generate` turns a plain-language description of a pipeline into a pipeline
@@ -12,11 +12,27 @@ it does what you asked, and writes it to a file. It never deploys anything.
 conduit generate "read from postgres and write new rows to s3 as json"
 ```
 
-:::caution[New in v0.20 — review what it writes]
-`conduit generate` is new. Treat its output as a first draft: read the file, fill in real
-connection values, and run it through `validate` and `dry-run` before you deploy it. A
-configuration that passes validation can still be wrong for your data. No accuracy
-numbers are published for this command yet.
+:::caution[Preview — review what it writes]
+`conduit generate` is a preview in v0.20. It is reliable at choosing connectors but often
+leaves out processor steps you asked for (a filter, a field rename, an encoding). Treat its
+output as a first draft: read the file, fill in real connection values, and run it through
+`validate` and `dry-run` before you deploy it.
+
+Measured with Claude Sonnet 5 (`claude-sonnet-5`) on the 28-request benchmark corpus, three
+passes, medians:
+
+| Measure | Result |
+|---|---|
+| Generated configs that pass validation | 100% |
+| Configs that match the request's intent | 64–68% (target: 70%) |
+| Requests that need only connectors | 45/45 match (15 requests × 3 passes) |
+| Requests that need at least one processor | 8/39 match (13 requests × 3 passes) |
+
+These numbers come from one model on a small corpus; other models and other requests will
+differ. From v0.20.1 a weekly evaluation tracks them. The corpus is described in
+[the benchmark doc](https://github.com/ConduitIO/conduit/blob/main/docs/generate-benchmark.md);
+the per-request results are in
+[ConduitIO/conduit#2928](https://github.com/ConduitIO/conduit/pull/2928).
 :::
 
 ## What it does
