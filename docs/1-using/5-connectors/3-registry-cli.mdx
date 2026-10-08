@@ -30,9 +30,12 @@ The registry commands use Conduit's deterministic [exit codes](/docs/using/other
 | Code | Category | Meaning |
 |---|---|---|
 | `0` | — | Success. |
-| `1` | Runtime | Internal error, or (for `audit`) an index-integrity/tampering failure. |
-| `2` | Validation | Not found, incompatible version, yanked/revoked, ambiguous request. |
-| `3` | Environment | Index unreachable, download/lock failure, or connector in use. |
+| `1` | Runtime | Internal error; corrupt download (`registry.corrupt_download`, sha256 mismatch); malformed artifact archive (`registry.archive_invalid`); index integrity failure (`registry.index_integrity`); this build's trust anchors could not be loaded (`registry.trust_anchors_unavailable`). |
+| `2` | Validation | Connector, version or platform artifact not found; incompatible version; yanked version; stale, rolled-back or too-new index; stale bundle; index signed by a key this build does not know (`registry.trust_anchor_expired`); ambiguous uninstall; connector still used by a pipeline (`registry.connector_in_use`). |
+| `3` | Environment | Index unreachable, download failed, install lock held; index or bundle over its size cap; artifact trust rejections: unsigned or mis-signed, invalid provenance, revoked or too-loosely-pinned publisher identity (`registry.identity_revoked`, ...), or `--allow-unsigned` refused by policy. |
+
+The bucket comes from each error code's category, so read the error `code`, not just the exit
+code. `audit` reports the worst finding across all installed connectors.
 
 ## `install`
 
