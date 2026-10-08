@@ -125,22 +125,10 @@ function CommunitySection() {
                         <span className='ml-2'>View the Repository</span>
                     </a>
 
-                    <a href="http://discord.meroxa.com/"
+                    <a href="https://github.com/ConduitIO/conduit/discussions"
                        className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-800 hover:text-white hover:bg-orange-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
-                        <svg aria-hidden="true" width="33" height="25" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <g clipPath="url(#a)">
-                                <path
-                                    d="M27.32 2.226A26.612 26.612 0 0 0 20.751.19a.1.1 0 0 0-.105.05 18.547 18.547 0 0 0-.818 1.68 24.569 24.569 0 0 0-7.378 0 17.016 17.016 0 0 0-.831-1.68.104.104 0 0 0-.106-.05 26.54 26.54 0 0 0-6.569 2.037.094.094 0 0 0-.043.037C.717 8.514-.429 14.611.133 20.633a.11.11 0 0 0 .042.075 26.763 26.763 0 0 0 8.059 4.074.104.104 0 0 0 .113-.038 19.126 19.126 0 0 0 1.649-2.681.102.102 0 0 0-.056-.142 17.618 17.618 0 0 1-2.518-1.2.103.103 0 0 1-.01-.172c.17-.127.339-.258.5-.392a.1.1 0 0 1 .104-.014c5.282 2.412 11 2.412 16.22 0a.1.1 0 0 1 .105.013c.162.133.33.266.501.393a.103.103 0 0 1-.009.172c-.804.47-1.64.867-2.518 1.198a.103.103 0 0 0-.055.144 21.476 21.476 0 0 0 1.647 2.68.103.103 0 0 0 .113.039 26.675 26.675 0 0 0 8.072-4.074.104.104 0 0 0 .042-.074c.673-6.962-1.127-13.009-4.772-18.37a.082.082 0 0 0-.042-.038Zm-16.535 14.74c-1.59 0-2.9-1.46-2.9-3.253 0-1.793 1.284-3.252 2.9-3.252 1.628 0 2.925 1.472 2.9 3.252 0 1.793-1.285 3.253-2.9 3.253Zm10.723 0c-1.59 0-2.9-1.46-2.9-3.253 0-1.793 1.284-3.252 2.9-3.252 1.628 0 2.926 1.472 2.9 3.252 0 1.793-1.272 3.253-2.9 3.253Z"
-                                    fill="currentColor"/>
-                            </g>
-                            <defs>
-                                <clipPath id="a">
-                                    <path fill="currentColor" d="M0 0h32.273v25H0z"/>
-                                </clipPath>
-                            </defs>
-                        </svg>
-                        <span className='ml-2'>Join our Discord</span>
+                        <span>Ask on GitHub Discussions</span>
                     </a>
                 </div>
             </div>

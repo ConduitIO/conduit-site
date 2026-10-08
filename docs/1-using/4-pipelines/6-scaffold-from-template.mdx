@@ -26,10 +26,16 @@ machine-readable list an agent can consume). The current templates:
 | `generator-file` | Generates synthetic structured records and appends each one as newline-delimited JSON to a local file. | None |
 | `postgres-s3` | Reads a Postgres table (initial snapshot, then ongoing CDC) and writes each record as a JSON object to an S3 bucket. | Postgres + S3 |
 | `postgres-cdc-kafka` | Streams Postgres change data capture (logical replication, no initial snapshot) to a Kafka topic. | Postgres + Kafka |
+| `postgres-pgvector-rag` | Syncs a Postgres table into pgvector for RAG: chunks each row's text, embeds it, and upserts the vectors. | Postgres + pgvector + an embedding provider; standalone plugins; `--preview.pipeline-arch-v2` |
 
-The two `generator`-sourced templates run immediately after scaffolding. The two
+The two `generator`-sourced templates run immediately after scaffolding. The
 `postgres`-sourced templates land placeholder connection values you must replace before
 `conduit run` (the connection string, bucket, or Kafka servers/topic).
+
+`postgres-pgvector-rag` needs more than placeholders: three of its plugins are not built into
+`conduit`, and it only runs on the preview pipeline engine (`--preview.pipeline-arch-v2`).
+`pipelines init` prints the prerequisites when you scaffold it; the
+[Postgres to pgvector guide](/docs/using/guides/postgres-pgvector-rag) walks through them.
 
 ## Scaffold, edit, run
 

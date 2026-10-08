@@ -118,10 +118,19 @@ as possible without draining the pipeline.
 #### Pipeline engine (architecture) v2
 
 :::warning
-Pipeline architecture v2 is currently in preview and is not yet the default
-architecture. It can be enabled with the `--preview.pipeline-arch-v2` flag when running Conduit. 
+Pipeline architecture v2 is in preview and is not the default architecture.
+Enable it with the `--preview.pipeline-arch-v2` flag (or
+`preview.pipeline-arch-v2: true` in `conduit.yaml`). The flag's description in
+`conduit run --help`:
 
-Once we implement the remaining features and gather sufficient data on the new architecture's stability—both on the Conduit Platform and from community feedback—it will become the default architecture.
+> enables the preview pipeline engine (architecture v2). Required for pipelines
+> with a processor that splits one record into several (record fan-out, e.g.
+> ai.chunk, split, clone), including the postgres-pgvector-rag template: the
+> classic default engine cannot run them and stops with
+> pipeline.fanout_requires_arch_v2. Known limit: a split record whose pieces are
+> cut across a multi-destination fan-out fails with
+> pipeline.split_run_straddles_fanout. Graduation to the default engine is
+> evaluated in v0.21 against a written gate
 :::
 
 An engine with pipeline architecture v2 is composed of multiple _tasks_ that
@@ -142,18 +151,20 @@ The major differences between v1 and v2 are the following:
     - v2 collects batches of records from a source. The whole batch is moved as
       a single unit through the whole pipeline.
 
-##### Benefits
+##### Record fan-out
 
-Pipeline architecture v2 has shown significant performance improvements when
-compared to v1 that has been
-described [here](https://meroxa.com/blog/optimizing-conduit-5x-the-throughput/).
-It's also easier to maintain and troubleshoot due to its simplicity.
+v2 can run processors that turn one record into several (`ai.chunk`, `split`,
+`clone`). The pieces of a split record travel together and the source record is
+acknowledged only after every piece has been handled downstream. The v1 engine is
+one-record-in, one-record-out and refuses such a pipeline with
+`pipeline.fanout_requires_arch_v2`.
 
 ##### Limitations
 
-Currently, only pipelines with a single source and a single destination are
-supported. We plan to add support for multiple destinations, followed by support
-for multiple sources.
+- v2 is a preview. Graduation to the default engine is evaluated in v0.21 against a
+  written gate; review its status before relying on it for production data.
+- A split record whose pieces are cut across a multi-destination fan-out fails with
+  `pipeline.split_run_straddles_fanout`.
 
 ## Persistence layer
 

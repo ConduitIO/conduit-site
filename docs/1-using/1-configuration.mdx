@@ -18,15 +18,31 @@ each configuration option based on the following priorities:
 ```text
 Starts the Conduit server and runs the configured pipelines.
 
+With --dev, additionally watches pipelines.path and hot-reloads changes into the running engine as
+you save: a processor-only edit applies in place (no restart); a source/destination/topology edit
+applies via a labeled graceful restart; a bad edit (parse/validation failure) is reported and never
+touches the running pipeline. Every apply --dev drives is authorized by the fact that you ran
+--dev and are watching it — it does not set --api.allow-live-restart-apply, which stays
+independently gated for the gRPC/HTTP/MCP surface. See
+docs/design-documents/20260712-pipeline-dev-hot-reload.md and docs/operations/dev-hot-reload.md.
+
 Usage:
   conduit run [flags]
 
+Examples:
+conduit run
+conduit run --dev
+conduit run --dev --pipelines.path ./pipelines --dev.json
+
 Flags:
+      --api.allow-live-restart-apply                           allow ApplyPipeline to apply a restart-class change to a running pipeline (Tier-1 operator authorization; see docs/operations/live-restart-apply.md)
       --api.enabled                                            enable HTTP and gRPC API (default true)
       --api.grpc.address string                                address for serving the gRPC API (default ":8084")
       --api.http.address string                                address for serving the HTTP API (default ":8080")
+      --api.http.cors.allowed-origins strings                  allowed browser CORS origins for the HTTP API and websocket streams; repeatable; exact scheme://host[:port] (no trailing slash). '*' allows any origin but is refused on a non-loopback bind (unauthenticated network-wide access); use exact origins for network deployments
+      --api.http.ui.enabled                                    serve the built-in web UI at '/' (observe + operate); the SPA is always embedded in the binary, this only gates the route — disabling removes the surface, not the binary size (default true)
       --config.path string                                     global conduit configuration file (default "/Users/username/repo/conduit/conduit.yaml")
-      --connectors.max-receive-record-size int                 maximum size of a processed record in bytes for standalone connectors. (default 4194304)
+      --connectors.max-receive-record-size int                 maximum size of a processed record in bytes for standalone connectors (default 4194304)
       --connectors.path string                                 path to standalone connectors' directory (default "/Users/username/repo/conduit/connectors")
       --db.badger.path string                                  path to badger DB (default "/Users/username/repo/conduit/conduit.db")
       --db.postgres.connection-string string                   postgres connection string, may be a database URL or in PostgreSQL keyword/value format
@@ -34,22 +50,38 @@ Flags:
       --db.sqlite.path string                                  path to sqlite3 DB (default "/Users/username/repo/conduit/conduit.db")
       --db.sqlite.table string                                 sqlite3 table in which to store data (will be created if it does not exist) (default "conduit_kv_store")
       --db.type string                                         database type; accepts badger,postgres,inmemory,sqlite (default "badger")
+      --dev                                                    alias for --dev.enabled: watch pipelines.path and hot-reload changes into the running engine
       --dev.blockprofile string                                write block profile to file
       --dev.cpuprofile string                                  write CPU profile to file
+      --dev.enabled                                            watch pipelines.path and hot-reload changes into the running engine (see 'conduit run --dev')
+      --dev.json                                               emit dev-watcher apply events as JSON lines instead of human-readable text
       --dev.memprofile string                                  write memory profile to file
   -h, --help                                                   help for run
+      --install.allow-stale-bundle                             operator policy: permit --allow-stale-bundle offline connector installs at all (false hard-disables regardless of flag/TTY/env var)
+      --install.allow-unsigned                                 operator policy: permit --allow-unsigned connector installs at all (false hard-disables regardless of flag/TTY/env var)
+      --install.max-staleness duration                         maximum age of a verified registry index before it is considered stale
       --log.format string                                      sets the format of the logging; accepts json, cli (default "cli")
       --log.level string                                       sets logging level; accepts debug, info, warn, error, trace (default "info")
+      --pipelines string                                       alias for --pipelines.path: path to a pipelines' directory or a pipeline configuration file (default "/Users/username/repo/conduit/pipelines")
       --pipelines.error-recovery.backoff-factor int            backoff factor applied to the last delay (default 2)
       --pipelines.error-recovery.max-delay duration            maximum delay before restart (default 10m0s)
       --pipelines.error-recovery.max-retries int               maximum number of retries (default -1)
       --pipelines.error-recovery.max-retries-window duration   amount of time running without any errors after which a pipeline is considered healthy (default 5m0s)
       --pipelines.error-recovery.min-delay duration            minimum delay before restart (default 1s)
       --pipelines.exit-on-degraded                             exit Conduit if a pipeline is degraded
-      --pipelines.path string                                  path to pipelines' directory (default "/Users/username/repo/conduit/pipelines")
-      --preview.pipeline-arch-v2                               enables experimental pipeline architecture v2 (note that the new architecture currently supports only 1 source and 1 destination per pipeline)
+      --pipelines.path string                                  path to a pipelines' directory or a pipeline configuration file (default "/Users/username/repo/conduit/pipelines")
+      --preview.pipeline-arch-v2                               enables the preview pipeline engine (architecture v2). Required for pipelines with a processor that splits one record into several (record fan-out, e.g. ai.chunk, split, clone), including the postgres-pgvector-rag template: the classic default engine cannot run them and stops with pipeline.fanout_requires_arch_v2. Known limit: a split record whose pieces are cut across a multi-destination fan-out fails with pipeline.split_run_straddles_fanout. Graduation to the default engine is evaluated in v0.21 against a written gate
       --preview.pipeline-arch-v2-disable-metrics               disables metrics about amount of data (in bytes) moved in pipeline architecture v2 (increases performance)
+      --processors.egress.allow strings                        engine-level egress allowlist: host[:port] or scheme://host[:port] entries (repeatable); empty with enabled=true means unrestricted (single-tenant)
+      --processors.egress.enabled                              open the engine-level host-egress ceiling for standalone processors (default false = deny-all; no pipeline can exceed this ceiling)
+      --processors.egress.max-response-bytes int               engine-level upper bound on the buffered egress response body in bytes (0 = no ceiling cap)
+      --processors.egress.secret-refs strings                  engine-level egress secret grants: secret names a pipeline may reference for host-injected Authorization (repeatable)
+      --processors.egress.timeout duration                     engine-level upper bound on the per-call egress timeout (0 = no ceiling cap)
       --processors.path string                                 path to standalone processors' directory (default "/Users/username/repo/conduit/processors")
+      --schema-registry.confluent.auth.basic.password string   schema registry basic authentication password
+      --schema-registry.confluent.auth.basic.username string   schema registry basic authentication username
+      --schema-registry.confluent.auth.bearer.token string     schema registry authentication bearer token
+      --schema-registry.confluent.auth.type string             schema registry authentication type; accepts none,basic,bearer
       --schema-registry.confluent.connection-string string     confluent schema registry connection string
       --schema-registry.type string                            schema registry type; accepts builtin,confluent (default "builtin")
 ```
@@ -65,12 +97,23 @@ db.sqlite.path: /Users/username/repo/conduit/conduit.db
 db.sqlite.table: conduit_kv_store
 api.enabled: true
 api.http.address: :8080
+api.http.cors.allowed-origins: []
+api.http.ui.enabled: true
 api.grpc.address: :8084
+api.allow-live-restart-apply: false
 log.level: info
 log.format: cli
 connectors.path: /Users/username/repo/conduit/connectors
 connectors.max-receive-record-size: 4194304
+install.allow-unsigned: false
+install.max-staleness: 0s
+install.allow-stale-bundle: false
 processors.path: /Users/username/repo/conduit/processors
+processors.egress.enabled: false
+processors.egress.allow: []
+processors.egress.secret-refs: []
+processors.egress.timeout: 0s
+processors.egress.max-response-bytes: 0
 pipelines.path: /Users/username/repo/conduit/pipelines
 pipelines.exit-on-degraded: false
 pipelines.error-recovery.min-delay: 1s
@@ -79,8 +122,11 @@ pipelines.error-recovery.backoff-factor: 2
 pipelines.error-recovery.max-retries: -1
 pipelines.error-recovery.max-retries-window: 5m0s
 schema-registry.type: builtin
+schema-registry.confluent.auth.type: none
 preview.pipeline-arch-v2: false
 preview.pipeline-arch-v2-disable-metrics: false
+dev.enabled: false
+dev.json: false
 ```
 
 ## Environment variables
@@ -148,6 +194,25 @@ $ conduit run --pipelines ./my-pipelines
 This is equivalent to `conduit run --pipelines.path ./my-pipelines`. The argument
 can be a directory of pipeline configuration files or a single pipeline
 configuration file.
+
+## Preview pipeline engine (architecture v2)
+
+`--preview.pipeline-arch-v2` (env `CONDUIT_PREVIEW_PIPELINE_ARCH_V2`, or
+`preview.pipeline-arch-v2: true` in `conduit.yaml`) switches Conduit to the preview
+pipeline engine. You need it for any pipeline with a processor that splits one record
+into several (`ai.chunk`, `split`, `clone`), including the
+[`postgres-pgvector-rag` template](/docs/using/guides/postgres-pgvector-rag): the
+default engine stops those pipelines with `pipeline.fanout_requires_arch_v2`. See
+[Pipeline engine (architecture) v2](/docs/core-concepts/architecture#pipeline-engine-architecture-v2)
+for what the preview engine is and its known limit.
+
+## Network egress for standalone processors
+
+The `processors.egress.*` options are the operator-level ceiling for network access
+from standalone (WASM) processors. Egress is off by default. See
+[Network egress for standalone processors](/docs/developing/processors/network-egress)
+for how the ceiling combines with a processor's own `sdk.egress.*` settings and how
+credentials are injected.
 
 ## Secrets in logs
 

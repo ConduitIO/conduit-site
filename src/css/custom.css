@@ -183,12 +183,4 @@
    }
  }
  
- .svg-background.discord {
-   background-image: url('/img/logos/discord-logo.svg');
-   margin-right: 20px;
- 
-   &:hover {
-     background-image: url('/img/logos/discord-logo-hover.svg');
-   }
- }
  
