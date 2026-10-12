@@ -1,0 +1,206 @@
+---
+title: 'Network egress for standalone processors'
+sidebar_label: 'Network egress'
+---
+
+A standalone processor runs as WebAssembly under WASI preview 1, which has no socket API. To
+call an external service (an embedding provider, for example) it asks Conduit to make the HTTP
+call for it. Conduit checks the request against a policy the operator controls, performs it
+with its own HTTP client, and hands back the response. The processor never gets a socket and
+never sees the credentials.
+
+Egress is **off by default**, at two levels. A processor can reach a host only if both the
+pipeline (per processor) and the Conduit instance (engine-wide) allow it.
+
+Requirements: [conduit-processor-sdk](https://github.com/ConduitIO/conduit-processor-sdk)
+v0.6.0 or later in the processor, and Conduit v0.20.0 or later, which provides the
+`http_request` host function.
+
+The full design and threat model is in the
+[host-egress design document](https://github.com/ConduitIO/conduit/blob/main/docs/design-documents/20260726-wasm-host-egress-capability.md).
+
+## In the processor: `egress.Do`
+
+```go
+import (
+	"errors"
+
+	"github.com/conduitio/conduit-processor-sdk/egress"
+)
+
+resp, err := egress.Do(ctx, egress.Request{
+	Method:        "POST",
+	URL:           "https://api.openai.com/v1/embeddings",
+	Headers:       map[string][]string{"Content-Type": {"application/json"}},
+	Body:          body,
+	AuthSecretRef: "openai_api_key", // a secret NAME; Conduit injects the value
+})
+switch {
+case errors.Is(err, egress.ErrForbidden), errors.Is(err, egress.ErrEgressDisabled):
+	// policy refusal: retrying will not help
+case errors.Is(err, egress.ErrTimeout), errors.Is(err, egress.ErrDNS), errors.Is(err, egress.ErrTransport):
+	// transient: a retry may succeed
+case err != nil:
+	// ErrInvalidRequest, ErrResponseTooLarge, ...
+}
+// resp.StatusCode, resp.Headers, resp.Body
+```
+
+What the processor can and cannot do:
+
+- The call is buffered request/response, not streaming. `Do` returns when the whole response
+  is available.
+- `Host`, `Authorization` and `Accept-Encoding` (and connection-control headers such as
+  `Connection`, `Transfer-Encoding`, `Content-Length`) are reserved for the host. Setting one
+  fails with `ErrInvalidRequest`. There is no way for the processor to supply a credential
+  itself.
+- `AuthSecretRef` names a secret. Conduit looks it up and sets the `Authorization` header just
+  before sending. Leave it empty for an unauthenticated call.
+- Redirects are not followed. Conduit returns `ErrForbidden` for a 3xx response rather than
+  following it outside the allowlist.
+- Only `https` URLs are allowed, except `http` to an explicitly allowlisted loopback or private
+  IP address (a local Ollama server, for example).
+- Outside a standalone processor (built-in processors, unit tests) `egress.Do` always returns
+  `ErrEgressDisabled`. A built-in processor already has a socket and should use `net/http`. In
+  tests, replace `egress.HTTPService` with a stub.
+
+## In the pipeline: per-processor opt-in
+
+The pipeline author opts a processor in with keys under the reserved `sdk.egress.` prefix in
+that processor's `settings`. Conduit reads them when it opens the processor and removes them
+before the processor's own `Configure` sees its settings, so the processor cannot read or
+change its policy.
+
+| Key | Default | Meaning |
+|---|---|---|
+| `sdk.egress.allow` | _(unset: no egress)_ | Comma- or space-separated allowlist entries (syntax below). Setting it opts the processor in. |
+| `sdk.egress.timeout` | `30s` | Per-call timeout (dial, TLS, headers and body). |
+| `sdk.egress.maxResponseBytes` | `4194304` (4 MiB) | Cap on the response body, measured after decompression. |
+| `sdk.egress.secretRefs` | _(none)_ | Comma- or space-separated secret names this processor may use as `AuthSecretRef`. |
+
+```yaml
+processors:
+  - id: embed
+    plugin: "standalone:ai.embed"
+    settings:
+      provider: openai
+      model: text-embedding-3-small
+      openai.authSecretRef: openai_api_key
+      sdk.egress.allow: api.openai.com
+      sdk.egress.secretRefs: openai_api_key
+```
+
+## On the Conduit instance: the engine ceiling
+
+The operator sets an upper bound no pipeline can exceed, with `processors.egress.*` (CLI flag,
+`CONDUIT_PROCESSORS_EGRESS_*` environment variable, or `conduit.yaml`):
+
+| Option | Default | Meaning |
+|---|---|---|
+| `processors.egress.enabled` | `false` | Open the ceiling. While `false`, every processor is denied, whatever its pipeline asks for. |
+| `processors.egress.allow` | _(empty)_ | Allowlist entries (repeatable). Empty with `enabled: true` means any host a pipeline lists (single-tenant use). |
+| `processors.egress.secret-refs` | _(empty)_ | Secret names pipelines may use (repeatable). |
+| `processors.egress.timeout` | `0` (no cap) | Upper bound on a processor's `sdk.egress.timeout`. Larger values are clamped down. |
+| `processors.egress.max-response-bytes` | `0` (no cap) | Upper bound on a processor's `sdk.egress.maxResponseBytes`. Larger values are clamped down. |
+
+```yaml
+processors:
+  egress:
+    enabled: true
+    allow:
+      - api.openai.com
+    secret-refs:
+      - openai_api_key
+```
+
+A malformed entry in the engine config (a wildcard, for example) stops Conduit at startup with
+an error. Egress is never silently turned off.
+
+### How the two levels combine
+
+- Ceiling closed (`enabled: false`): no egress for anyone.
+- Processor has no `sdk.egress.allow`: no egress for that processor; calls fail with
+  `ErrEgressDisabled`.
+- Ceiling open with an allowlist: the processor gets the **intersection** of its list and the
+  ceiling's. Entries outside the ceiling are dropped and Conduit logs a warning when it opens the
+  processor. If nothing is left, calls fail with `ErrForbidden`. Secret names are intersected the
+  same way: with a restricted ceiling, a secret must be listed in `processors.egress.secret-refs`
+  too.
+- Ceiling open without an allowlist: the processor's own list applies. If the ceiling lists
+  secret names, the processor's secret names are still limited to those.
+
+### Allowlist entries
+
+| Form | Meaning |
+|---|---|
+| `api.example.com` | `https`, port 443 |
+| `api.example.com:8443` | `https`, port 8443 |
+| `https://api.example.com[:port]` | same, scheme spelled out |
+| `http://127.0.0.1:11434` | `http` to a loopback or private **IP literal** only |
+
+Matching is exact on scheme, host and port. Wildcards (`*.example.com`) and paths are rejected.
+`http://localhost:11434` is rejected: plain `http` needs an IP address, and the URL the processor
+calls must use that same address (`http://127.0.0.1:11434`, not `localhost`).
+
+## Credentials: `CONDUIT_SECRET_*`
+
+A secret name resolves to an environment variable of the Conduit process: `CONDUIT_SECRET_`
+followed by the name upper-cased, with every character other than `A-Z` and `0-9` replaced by
+`_`. `openai_api_key` reads `CONDUIT_SECRET_OPENAI_API_KEY`; `openai.key` reads
+`CONDUIT_SECRET_OPENAI_KEY`.
+
+The value is used **verbatim** as the `Authorization` header, so include the scheme:
+
+```shell
+export CONDUIT_SECRET_OPENAI_API_KEY="Bearer sk-..."
+conduit run
+```
+
+- A name the processor was not granted fails with `ErrForbidden` before any lookup.
+- A granted name whose variable is unset or empty fails the call (`ErrInvalidRequest`); Conduit
+  never sends an empty or missing `Authorization` header in its place.
+- Only `CONDUIT_SECRET_*` variables can be read this way, never an arbitrary environment
+  variable.
+- The value never goes into processor config, never enters the WASM module's memory, and is
+  never logged.
+
+## What Conduit enforces
+
+- **Allowlist check** on the request URL's scheme, host and port.
+- **Resolved-IP check on every connection.** Just before each connect, for plain and TLS
+  connections alike, Conduit checks the IP address the hostname actually resolved to. Loopback,
+  private, link-local (including the cloud metadata address `169.254.169.254`), CGNAT, reserved
+  and IPv4-embedding IPv6 ranges (v4-mapped, NAT64, 6to4, Teredo) are refused unless that exact
+  IP **and port** is an allowlist entry. This is what stops an allowlisted name that resolves to
+  an internal address (DNS rebinding). Allowlisting `127.0.0.1:11434` does not open
+  `127.0.0.1:6379`.
+- **No proxy.** `HTTP_PROXY`, `HTTPS_PROXY` and `ALL_PROXY` are ignored for egress, so a proxy
+  cannot be used to get around the IP check.
+- **No redirects** (see above).
+- **Size cap** on the decompressed response body; a larger body fails with
+  `ErrResponseTooLarge` and no partial body is returned.
+- **Timeout** per call, which the processor cannot extend.
+- **Audit log.** Every allowed call is logged at `info` (method, host, status, size, latency) and
+  every refused one at `warn` with a reason (`allowlist_miss`, `ip_refused_*`, `redirect_blocked`,
+  `size_cap`, `timeout`, ...). Bodies and `Authorization` are never logged.
+
+What it does not prevent: if you allowlist a host, a processor can send it any data the
+processor sees, including your records. Only allowlist hosts you trust with that data.
+
+## Error codes
+
+`egress.Do` returns one of these sentinel errors (compare with `errors.Is`). The numbers are the
+values the `http_request` host function returns, in the same reserved range as the
+[other host-function error codes](/docs/developing/processors/how-it-works#error-codes).
+
+| Error | Code | When |
+|---|---|---|
+| `ErrEgressDisabled` | 4,294,967,286 | The processor was not opted in, or the engine ceiling is closed. |
+| `ErrForbidden` | 4,294,967,285 | Host, scheme or resolved IP not allowed; secret not granted; redirect. |
+| `ErrInvalidRequest` | 4,294,967,284 | Bad URL or scheme, reserved or malformed header, secret not set. |
+| `ErrDNS` | 4,294,967,283 | Name resolution failed. |
+| `ErrTimeout` | 4,294,967,282 | The per-call timeout expired. |
+| `ErrResponseTooLarge` | 4,294,967,281 | The response body exceeded the size cap. |
+| `ErrTransport` | 4,294,967,280 | Connection reset, TLS failure or another transport error. |
+
+![scarf pixel conduit-site-docs-developing-processors](https://static.scarf.sh/a.png?x-pxid=3108abd7-7971-40bd-a92e-87c4f2562fe6)

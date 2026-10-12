@@ -48,6 +48,7 @@ This page is the exhaustive command reference. For narrower how-tos, see:
 | `conduit quickstart` | | — | Run an ephemeral demo pipeline, no config needed |
 | `conduit doctor` | | offline (optional) | Preflight checks: would `conduit run` succeed here? |
 | `conduit mcp` | | — | Run Conduit's MCP server for AI agents |
+| `conduit generate` | | offline (calls an LLM provider) | Generate a pipeline config file from a plain-language description |
 | `conduit open docs` | `docs` | offline | Open the Conduit documentation in a browser |
 | `conduit config` | | offline | Show the resolved configuration |
 | `conduit version` | | offline | Print the Conduit version |
@@ -78,6 +79,8 @@ This page is the exhaustive command reference. For narrower how-tos, see:
 | `conduit processors new` | | offline | Scaffold a new Go processor repository |
 | `conduit processor-plugins list` | `ls` | yes | List processor plugins available to pipelines |
 | `conduit processor-plugins describe` | `desc` | yes | Detail of one processor plugin |
+| `conduit processor-plugins install` | | offline | Install a standalone WASM processor from the registry |
+| `conduit processor-plugins uninstall` | | offline | Remove an installed standalone WASM processor |
 
 "Needs a running server" means the command dials the API of a `conduit run`
 process. "offline" commands never do. `deploy`/`apply` are hybrid: they dial a
@@ -200,6 +203,40 @@ conduit mcp --http :8443 --token-file token.txt --tls-cert cert.pem --tls-key ke
 
 See `docs/operations/mcp-server.md` in the conduit repo for the full transport
 and hardening reference.
+
+### `conduit generate`
+
+Turns a plain-language description into a pipeline configuration file. Every candidate is
+checked with the offline validate engine (including that each referenced plugin exists) and
+with a deterministic intent check before it is shown or written; failures are retried with the
+findings, up to `--max-retries`. It never deploys: it writes a file, and deploying it is the
+usual `conduit pipelines deploy` step. Preview in v0.20: it picks connectors reliably but often
+leaves out requested processor steps, so review what it writes.
+
+Needs a provider: `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, or a local Ollama server
+(`OLLAMA_HOST`, default `http://localhost:11434`). With more than one available, choose with
+`--provider` or `CONDUIT_GENERATE_PROVIDER`.
+
+| Flag | Description |
+|---|---|
+| `--provider <name>` | `anthropic`, `openai` or `ollama`. Auto-detected when exactly one is configured. |
+| `--model <id>` | Provider-specific model. The provider's default when unset. |
+| `--out <path>` | Output file. Defaults to a name derived from the pipeline id, in the working directory. |
+| `--max-retries <n>` | Provider calls allowed per run, including the first. Default `3`. |
+| `--force` | Overwrite an existing output file. |
+| `--json` | Emit the result as JSON. |
+| `--no-color` | Disable colored output. |
+
+```shell
+conduit generate "read from postgres and write new rows to s3 as json"
+conduit generate "stream orders from postgres into kafka, only orders over 100" --out orders.yaml
+conduit generate "sync kafka into postgres" --provider anthropic --json
+```
+
+Error codes include `generate.no_provider_configured`, `generate.validate_failed`,
+`generate.semantic_mismatch` and `generate.destination_exists`. See
+[Generate a pipeline from a description](/docs/using/pipelines/generate) for the full list and
+how provider selection works.
 
 ### `conduit open docs` (alias: `conduit docs`)
 
@@ -448,7 +485,9 @@ conduit pipelines start orders --json
 ```
 
 Starting an already-running pipeline is refused with `pipeline.running`
-(exit 2); nothing is mutated.
+(exit 2); nothing is mutated. Once the server has begun shutting down, a start
+is refused with `pipeline.shutting_down` (gRPC `Unavailable`, exit 3); start it
+again after the server restarts.
 
 ### `stop PIPELINE_ID`
 
@@ -469,6 +508,13 @@ This command does not wait for the drain to fully settle before returning —
 it reports the pipeline's status immediately after the transition RPC
 returns, which may still be transitional. Stopping an already-stopped
 pipeline is refused with `pipeline.not_running` (exit 2).
+
+A stopped pipeline stays `UserStopped` and is never restarted by error
+recovery. If an error interrupts the drain, or the stop is forced (recorded as
+`force stop`), the error is kept on the pipeline and shown by
+`conduit pipelines inspect`; it does not make the pipeline `Degraded` and does
+not trip `pipelines.exit-on-degraded`. See
+[Statuses](/docs/using/pipelines/statuses#what-a-stop-does-to-the-status).
 
 ### `dev [dir]`
 
@@ -645,6 +691,26 @@ parameter.
 conduit processor-plugins describe builtin:base64.decode@v0.1.0
 ```
 
+### `install <name>[@version]`, `uninstall <name>[@version]`
+
+Offline commands that install and remove standalone WASM processors under
+`--processors.path`. They never dial a running Conduit; restart `conduit run` to pick up a
+change.
+
+| Command | One-line summary |
+|---|---|
+| `install` | Resolve the processor in the signed registry index, download the `.wasm`, verify its signature and SLSA provenance, check it loads, and place it under `--processors.path`. `--dry-run`, `--index-file`, `--bundle`, `--allow-unsigned`, `--json`. |
+| `uninstall` | Remove an installed processor and its manifest entry. Refuses if a pipeline under `--pipelines.path` still references it, unless `--force`; needs `@version` when several versions are installed. |
+
+```shell
+conduit processor-plugins install ai.embed
+conduit processor-plugins install ai.embed@0.1.0 --dry-run
+conduit processor-plugins uninstall ai.embed --force
+```
+
+See [Installing standalone processors](/docs/using/processors/installing) for every flag, the
+offline paths, and the error codes.
+
 ---
 
 ## JSON output
@@ -655,7 +721,8 @@ a running Conduit (`pipelines list`/`describe`/`inspect`, `connectors list`/
 `processor-plugins list`/`describe`) emit the same shape as the
 [HTTP API](/docs/using/other-features/api). Newer (v0.17+) commands
 (`validate`, `lint`, `dry-run`, `doctor`, `deploy`, `apply`, `repair`,
-`install`/`uninstall`/`audit`/`bundle`, `connectors new`/`processors new`)
+`install`/`uninstall`/`audit`/`bundle`, `processor-plugins install`/`uninstall`,
+`connectors new`/`processors new`, `generate`)
 emit the shared `{command, ok, summary, result, error}` envelope described
 above.
 

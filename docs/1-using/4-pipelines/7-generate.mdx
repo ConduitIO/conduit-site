@@ -1,0 +1,186 @@
+---
+title: 'Generate a pipeline from a description (preview)'
+sidebar_label: 'Generate from a description (preview)'
+---
+
+`conduit generate` turns a plain-language description of a pipeline into a pipeline
+configuration file. It asks an LLM provider you configure for a candidate, checks the
+candidate with the same offline validator `conduit pipelines validate` uses, checks that
+it does what you asked, and writes it to a file. It never deploys anything.
+
+```shell
+conduit generate "read from postgres and write new rows to s3 as json"
+```
+
+:::caution[Preview — review what it writes]
+`conduit generate` is a preview in v0.20. It is reliable at choosing connectors but often
+leaves out processor steps you asked for (a filter, a field rename, an encoding). Treat its
+output as a first draft: read the file, fill in real connection values, and run it through
+`validate` and `dry-run` before you deploy it.
+
+Measured with Claude Sonnet 5 (`claude-sonnet-5`) on the 28-request benchmark corpus, three
+passes, medians:
+
+| Measure | Result |
+|---|---|
+| Generated configs that pass validation | 100% |
+| Configs that match the request's intent | 64–68% (target: 70%) |
+| Requests that need only connectors | 45/45 match (15 requests × 3 passes) |
+| Requests that need at least one processor | 8/39 match (13 requests × 3 passes) |
+
+These numbers come from one model on a small corpus; other models and other requests will
+differ. From v0.20.1 a weekly evaluation tracks them. The corpus is described in
+[the benchmark doc](https://github.com/ConduitIO/conduit/blob/main/docs/generate-benchmark.md);
+the per-request results are in
+[ConduitIO/conduit#2928](https://github.com/ConduitIO/conduit/pull/2928).
+:::
+
+## What it does
+
+1. **Picks a provider** (see [Providers](#providers)).
+2. **Sends your request** to the provider, verbatim, together with a description of
+   Conduit's built-in connectors read from this binary's own connector specifications.
+3. **Validates the candidate** with the offline validate engine, with plugin resolution
+   on: a candidate that references a connector or processor that does not exist fails
+   validation. A candidate that does not pass is never shown or written.
+4. **Checks intent.** A deterministic check (not a second model call) compares the
+   candidate with your request: is the source and destination what you named, is the
+   direction right, is there a processor for a filter you asked for. It catches the
+   obvious wrong-connector and swapped-direction cases, not every subtle mismatch.
+5. **Retries with the findings** when validation or the intent check fails, up to
+   `--max-retries` provider calls in total (default `3`, including the first). Every
+   retry is a real provider call you pay for.
+6. **Writes the file** and prints it with the next steps: `validate`, `dry-run`,
+   `repair`, `deploy`.
+
+There is no `--deploy`, `--apply` or `--yes` flag. Deploying a generated pipeline is the
+same explicit [`conduit pipelines deploy`](/docs/using/pipelines/deploy-apply) step a
+hand-written one needs.
+
+The candidate is grounded in **built-in** connectors. A pipeline that needs a standalone
+connector or processor can still reference one (`standalone:<name>`), but the command
+cannot check that it is installed; `conduit pipelines validate` and `conduit run` will.
+
+## Providers
+
+| Provider | How it becomes available | Default model |
+|---|---|---|
+| `anthropic` | `ANTHROPIC_API_KEY` is set | `claude-sonnet-5` |
+| `openai` | `OPENAI_API_KEY` is set | `gpt-4o` |
+| `ollama` | an Ollama server answers at `OLLAMA_HOST` (default `http://localhost:11434`) | `llama3.1` |
+
+Override the model with `--model <id>`; the value is passed to the provider unchanged.
+For Ollama, pull the model first (`ollama pull llama3.1`).
+
+The provider is chosen in this order:
+
+1. `--provider anthropic|openai|ollama`
+2. the `CONDUIT_GENERATE_PROVIDER` environment variable
+3. auto-detection, **only** when exactly one provider is available
+
+If none is available the command fails with `generate.no_provider_configured`. If more
+than one is available (for example an API key is set and Ollama is running) it fails with
+`generate.ambiguous_provider_configuration` instead of picking one for you; choose with
+`--provider` or `CONDUIT_GENERATE_PROVIDER`. An explicitly chosen provider is used as is,
+without a reachability check: if it is down, you get the provider's own error.
+
+API keys are read from the environment and are never written to the output file, the
+`--json` output, or the logs. Your request text is sent to the provider as written, so do
+not put credentials in it.
+
+## Output file
+
+Without `--out`, the file is named after the generated pipeline's id and written to the
+current directory (`pipeline.yaml` if the id is unusable). A name that comes from the model
+is reduced to a bare file name, so it cannot point outside the working directory. A path
+you pass with `--out` is used as given.
+
+A new file is created with mode `0600`, since it usually ends up holding connection
+strings. If the file already exists the command refuses with
+`generate.destination_exists`; pass `--force` to overwrite it or `--out` to write
+somewhere else.
+
+## Flags
+
+| Flag | Description |
+|---|---|
+| `--provider <name>` | `anthropic`, `openai` or `ollama`. Auto-detected when exactly one is configured. |
+| `--model <id>` | Provider-specific model identifier. The provider's default when unset. |
+| `--out <path>` | Where to write the pipeline. Defaults to a file named after the pipeline id, in the working directory. |
+| `--max-retries <n>` | How many provider calls one run may make, including the first. Default `3`. |
+| `--force` | Overwrite the output file if it exists. |
+| `--json` | Emit the result as JSON (see below). |
+| `--no-color` | Disable colored output. |
+
+## JSON output
+
+With `--json` the command prints the standard `{command, ok, summary, result, error}`
+envelope. On success:
+
+```json
+{
+  "command": "generate",
+  "ok": true,
+  "summary": {"attempts": 1, "maxRetries": 3, "connectors": 2, "processors": 0, "tokensUsed": 1834},
+  "result": {"provider": "anthropic", "model": "", "path": "postgres-to-s3.yaml", "pipeline": "version: \"2.2\"\n..."},
+  "error": null
+}
+```
+
+`tokensUsed` is what the provider reported, summed over all attempts, or `0` when it
+reported nothing. It is never estimated. `model` is empty when you did not pass `--model`.
+(The values above are illustrative.)
+
+On failure, `ok` is `false` and `error` carries the code and a suggestion:
+
+```json
+{
+  "command": "generate",
+  "ok": false,
+  "summary": null,
+  "result": null,
+  "error": {
+    "code": "generate.no_provider_configured",
+    "message": "no generation provider configured",
+    "suggestion": "set one of ANTHROPIC_API_KEY or OPENAI_API_KEY, run a local Ollama server (http://localhost:11434), or select one explicitly with --provider"
+  }
+}
+```
+
+## Error codes
+
+Every failure means no file was written. Branch on the code, not the message.
+
+| Code | Exit | Meaning | What to do |
+|---|---|---|---|
+| `generate.no_provider_configured` | 3 | No provider is available. | Set `ANTHROPIC_API_KEY` or `OPENAI_API_KEY`, start Ollama, or pass `--provider`. |
+| `generate.ambiguous_provider_configuration` | 2 | More than one provider is available and none was chosen. | Pass `--provider` or set `CONDUIT_GENERATE_PROVIDER`. |
+| `generate.provider_error` | 3 | The provider call failed: network, timeout, rate limit, or an auth rejection. | Check the key, the network, or the Ollama server; retry. |
+| `generate.parse_failed` | 1 | The provider replied, but no reply contained a readable pipeline configuration within the retry budget. | Retry, or try another model or provider. |
+| `generate.validate_failed` | 2 | A candidate parsed but never passed validation within the retry budget. | Read the findings in the error; rephrase the request or write the missing part by hand. |
+| `generate.semantic_mismatch` | 2 | A candidate validated but did not match the request (wrong connector, swapped direction, missing filter). | Say more precisely what the source, destination and filter are. |
+| `generate.ambiguous_prompt` | 2 | The request is empty, names one role for two different connectors, or the result's connectors could not be traced to anything in the request. | Name the source and the destination. |
+| `generate.destination_exists` | 2 | The output file already exists. | Re-run with `--force` or a different `--out`. |
+
+An unknown `--provider` value is `common.invalid_argument` (exit 2). Exit codes follow the
+[standard mapping](/docs/using/other-features/exit-codes).
+
+## Examples
+
+```shell
+# Let the command pick the one configured provider
+conduit generate "read from postgres and write new rows to s3 as json"
+
+# Choose the output file
+conduit generate "stream orders from postgres into kafka, only orders over 100" --out orders.yaml
+
+# Choose the provider and get machine-readable output
+conduit generate "sync kafka into postgres" --provider anthropic --json
+
+# Then check and deploy it like any other pipeline
+conduit pipelines validate orders.yaml
+conduit pipelines dry-run orders.yaml
+conduit pipelines deploy orders.yaml
+```
+
+![scarf pixel conduit-site-docs-using-pipelines](https://static.scarf.sh/a.png?x-pxid=76d5981f-cd63-422b-8cf7-eab9e99f0cd3)

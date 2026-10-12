@@ -91,14 +91,6 @@ html[data-theme="dark"] {
     }
   }
 
-  .svg-background.discord {
-    background-image: url('/img/logos/discord-logo-dark.svg');
-    margin-right: 20px;
-
-    &:hover {
-      background-image: url('/img/logos/discord-logo-dark-hover.svg');
-    }
-  }
 
   #connectors-list * {
     border-color: var(--color-border);

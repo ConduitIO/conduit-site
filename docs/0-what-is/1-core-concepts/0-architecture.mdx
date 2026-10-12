@@ -118,10 +118,16 @@ as possible without draining the pipeline.
 #### Pipeline engine (architecture) v2
 
 :::warning
-Pipeline architecture v2 is currently in preview and is not yet the default
-architecture. It can be enabled with the `--preview.pipeline-arch-v2` flag when running Conduit. 
+Pipeline architecture v2 is a preview and is not the default architecture.
+Enable it with the `--preview.pipeline-arch-v2` flag (or
+`preview.pipeline-arch-v2: true` in `conduit.yaml`). You need it for pipelines
+with a processor that turns one record into several, such as `ai.chunk`, and for
+the `postgres-pgvector-rag` template. We don't recommend it for pipelines that
+don't need fan-out.
 
-Once we implement the remaining features and gather sufficient data on the new architecture's stability—both on the Conduit Platform and from community feedback—it will become the default architecture.
+Conduit is moving to a single pipeline engine that supports one-to-many
+processors, fan-out, and multiple sources and destinations, so you won't have to
+choose an engine. Until that engine is the default, record fan-out needs this flag.
 :::
 
 An engine with pipeline architecture v2 is composed of multiple _tasks_ that
@@ -142,18 +148,23 @@ The major differences between v1 and v2 are the following:
     - v2 collects batches of records from a source. The whole batch is moved as
       a single unit through the whole pipeline.
 
-##### Benefits
+##### Record fan-out
 
-Pipeline architecture v2 has shown significant performance improvements when
-compared to v1 that has been
-described [here](https://meroxa.com/blog/optimizing-conduit-5x-the-throughput/).
-It's also easier to maintain and troubleshoot due to its simplicity.
+v2 can run processors that turn one record into several (`ai.chunk`, `split`,
+`clone`). The pieces of a split record travel together and the source record is
+acknowledged only after every piece has been handled downstream. The v1 engine is
+one-record-in, one-record-out and refuses such a pipeline with
+`pipeline.fanout_requires_arch_v2`.
 
 ##### Limitations
 
-Currently, only pipelines with a single source and a single destination are
-supported. We plan to add support for multiple destinations, followed by support
-for multiple sources.
+- v2 is a preview.
+- A split record whose pieces are cut across a multi-destination fan-out fails with
+  `pipeline.split_run_straddles_fanout`.
+- A destination with `sdk.batch.size` above 1 can stop delivering, or slow to about
+  one batch delay per record when `sdk.batch.delay` is set
+  ([#2979](https://github.com/ConduitIO/conduit/issues/2979)). Don't set
+  `sdk.batch.size` on destinations when running v2. The RAG template doesn't set it.
 
 ## Persistence layer
 

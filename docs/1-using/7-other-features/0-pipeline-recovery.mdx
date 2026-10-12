@@ -73,6 +73,29 @@ possible for connectors to define what errors they consider as fatal.
 **Non-fatal errors** are all the other errors, i.e. errors for which it makes
 sense to restart a pipeline and retry the data streaming.
 
+## Stopped pipelines are never recovered
+
+Since Conduit v0.20.0, recovery only applies to a pipeline that failed on its
+own. Once a stop has been requested, by a user (`conduit pipelines stop`, with
+or without `--force`, or the API) or by Conduit shutting down, the pipeline is
+never sent into recovery and never restarted, even if an error interrupts the
+drain:
+
+- A user stop ends `UserStopped`. A shutdown ends `SystemStopped`, and the
+  pipeline starts again on the next boot.
+- Any error during the drain is recorded as the pipeline's error (visible in
+  the API, `conduit pipelines inspect` and the UI) instead of being treated as a
+  failure. It does not trip `pipelines.exit-on-degraded`.
+- A stop requested while the pipeline waits out a recovery backoff abandons the
+  restart. A shutdown during a backoff completes immediately instead of waiting
+  for the backoff to end.
+- Once shutdown has begun, recovery restarts and `Start` requests are refused
+  with `pipeline.shutting_down`.
+
+This holds for both the default engine and the preview engine. See
+[Statuses](/docs/using/pipelines/statuses#what-a-stop-does-to-the-status) for
+the status and error each case ends with.
+
 ## Algorithm
 
 Pipeline Recovery restarts a pipeline using a linear backoff algorithm. One
