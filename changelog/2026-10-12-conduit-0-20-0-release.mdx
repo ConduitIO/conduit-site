@@ -1,0 +1,91 @@
+---
+slug: '2026-10-12-conduit-0-20-0-release'
+title: Conduit v0.20.0 release
+draft: false
+tags: [conduit, release, conduit-release]
+---
+
+[Conduit v0.20.0](https://github.com/ConduitIO/conduit/releases/tag/v0.20.0) adds `conduit generate`, a Postgres-to-pgvector RAG pipeline template, outbound HTTP for WASM processors (closed by default), and signed release artifacts. It fixes a SEV-0 bug in v0.19.0 where the Postgres snapshot-to-CDC handoff could stall silently, and a gRPC server panic. It also changes how stopped pipelines are reported; read [Behavior changes](/changelog/2026-10-12-conduit-0-20-0-release#behavior-changes) before you upgrade.
+
+<!--truncate-->
+
+### Upgrading
+
+Upgrade if you run v0.19.0:
+
+- **SEV-0 snapshot-to-CDC stall ([#2707](https://github.com/ConduitIO/conduit/issues/2707)).** In v0.19.0 the Postgres source could stop after its snapshot without starting CDC. Later changes were not delivered, there was no error, and the pipeline still showed running.
+- **gRPC panic, GO-2026-6443.** v0.19.0 ships grpc v1.82.1, which can panic on a request with no `:authority` or `Host` header. v0.20.0 ships v1.83.2.
+- **Connector state write errors were ignored ([#2925](https://github.com/ConduitIO/conduit/issues/2925)).** Since 2023, a failed connector state write could let a source ack upstream without a saved position. The failure now fails the pipeline.
+
+Check these before you upgrade:
+
+- **Go 1.26 for source builds and embedding.** v0.20.0 builds with Go 1.26.9 to fix four HTTP/2 server advisories (GO-2026-6603, -6611, -6612, -6617) that have no Go 1.25 fix. Building Conduit from source or [embedding it](/docs/developing/embedding-go) now requires Go 1.26 or newer. Release binaries and the Docker image are unaffected.
+- **Stop and shutdown statuses.** A force stop is now `UserStopped`, not `Degraded`. A stopped pipeline can carry an error. See the table below.
+- **Error text.** Fan-out on the default engine fails with `pipeline.fanout_requires_arch_v2`, and `Start` during shutdown fails with `pipeline.shutting_down`. Update anything that matches on error text.
+- **Postgres CDC.** Two known issues can lose rows on restart (see [Known issues](#known-issues)). Both are fixed in the built-in Postgres connector v0.14.3, which ships in v0.20.1.
+- **Mirrors.** If you mirror releases, also copy `checksums.txt.sigstore.json` and the `.sbom.json` files.
+
+### Highlights
+
+- **`conduit generate` (preview).** Describe a pipeline in plain language and get a pipeline config file, using Anthropic, OpenAI or a local Ollama server. Every candidate passes the same offline check as `conduit pipelines validate` before it is written, and the command never deploys. With Claude Sonnet 5 on our 28-request corpus, every config validated and 64–68% matched the request; it picks connectors reliably and often leaves out a requested processor step. Review the file before you deploy it. See [Generate a pipeline from a description](/docs/using/pipelines/generate).
+- **RAG pipeline template.** `conduit pipelines init --template postgres-pgvector-rag` scaffolds Postgres (snapshot, then CDC) → `ai.chunk` → `ai.embed` → pgvector, with keyed upserts and deletes that remove every chunk made from a row. It needs the preview engine (`--preview.pipeline-arch-v2`), because chunking turns one record into many, and an open egress ceiling for the embedding provider. See the [Postgres to pgvector guide](/docs/using/guides/postgres-pgvector-rag).
+- **Network egress for WASM processors.** Processors built with [conduit-processor-sdk v0.6.0](https://github.com/ConduitIO/conduit-processor-sdk/releases/tag/v0.6.0) can make HTTP calls through the host. Egress is off by default: the operator opens a ceiling (`processors.egress.*`), the pipeline opts a processor in (`sdk.egress.allow`), and only the overlap is allowed. Credentials are injected by the host and never reach the processor. See [Network egress](/docs/developing/processors/network-egress).
+- **`conduit processor-plugins install` / `uninstall`.** Installs WASM processors from the signed registry with the same signature and provenance checks as connectors, or offline with `--index-file` or `--bundle`. See [Installing standalone processors](/docs/using/processors/installing).
+- **Signed releases.** Every release and nightly is signed with Sigstore keyless signing. `checksums.txt` is signed, each archive has an SPDX SBOM, and the GHCR image is signed by digest. Releases up to v0.19.0 are not signed.
+
+### Behavior changes
+
+A pipeline that a stop was requested for, by you or by shutdown, is never sent into recovery or restarted. Applies to both engines. Details in [Statuses](/docs/using/pipelines/statuses#what-a-stop-does-to-the-status) and [ADR 20261007](https://github.com/ConduitIO/conduit/blob/main/docs/architecture-decision-records/20261007-stop-requested-never-recovers.md).
+
+| Case | v0.19.0 | v0.20.0 |
+| --- | --- | --- |
+| User stop, clean drain | `UserStopped` | `UserStopped` |
+| User stop, error during drain | default engine: recovered and restarted; arch-v2: `UserStopped`, error dropped | `UserStopped`, error kept |
+| User force stop | `Degraded`, runs OnFailure | `UserStopped`, error `force stop` |
+| User stop during recovery backoff | restarted after the backoff | `UserStopped`, original error kept |
+| Shutdown, clean drain | `SystemStopped` | `SystemStopped` |
+| Shutdown with an error (drain, runtime, exit-on-degraded) | restarted during shutdown, or `Degraded` | `SystemStopped`, error kept, starts on next boot |
+| Fatal error before any stop | `Degraded` | `Degraded` |
+| `Start` during shutdown | could start | refused, `pipeline.shutting_down` |
+
+A non-empty error on a stopped pipeline means the drain did not end cleanly; the affected records were nacked and replay on the next start. If you alert only on `Degraded`, also alert on the error field of stopped pipelines. Force stops no longer trigger `pipelines.exit-on-degraded`.
+
+Also changed: connector, processor and DLQ settings come back from the API redacted as `"***"`, and the built-in connectors moved to postgres v0.14.2, kafka v0.12.5, file v0.10.8 and log v0.7.5 (dependency updates and signed re-releases, no feature changes).
+
+### Known issues
+
+- **arch-v2: destination batching can stall ([#2979](https://github.com/ConduitIO/conduit/issues/2979)).** On `--preview.pipeline-arch-v2`, a destination with `sdk.batch.size` above 1 can stop delivering, or slow to about one batch delay per record when `sdk.batch.delay` is set. The defaults and the RAG template are not affected. Don't set `sdk.batch.size` on destinations on arch-v2. v0.20.1 refuses that configuration at start.
+- **Shutdown can hang if a source fails at the same moment ([#2969](https://github.com/ConduitIO/conduit/issues/2969)).** Default engine, also in v0.19.0. No data is lost: kill the process and the unacked records replay on restart. Fix planned for v0.20.1.
+- **Postgres CDC can lose rows on restart.** Two cases, both present in v0.19.0 and earlier: a long-running transaction that commits after the last checkpoint while others commit in between ([conduit-connector-postgres#331](https://github.com/ConduitIO/conduit-connector-postgres/issues/331)), and rows from one statement (`COPY`, multi-row insert) when Conduit restarts partway through them. Fixed in v0.20.1 (built-in Postgres connector v0.14.3).
+- **Sending redacted settings back stores `"***"` ([#2913](https://github.com/ConduitIO/conduit/issues/2913)).** An API update that echoes settings read from the API overwrites the real secret. Send real values.
+- **Avro decoder advisories GO-2026-5046, -5047, -5048** in the archived `hamba/avro`, reachable when decoding untrusted Avro. v0.20.1 caps array and map sizes; v0.21 moves to a maintained fork.
+
+The full list is in the [release notes](https://github.com/ConduitIO/conduit/releases/tag/v0.20.0).
+
+### Verify the release
+
+With [cosign](https://docs.sigstore.dev/cosign/system_config/installation/) v3 or later, download `checksums.txt`, `checksums.txt.sigstore.json` and the files you want into one directory, then:
+
+```sh
+cosign verify-blob \
+  --certificate-identity 'https://github.com/ConduitIO/conduit/.github/workflows/release.yml@refs/tags/v0.20.0' \
+  --certificate-oidc-issuer 'https://token.actions.githubusercontent.com' \
+  --bundle checksums.txt.sigstore.json \
+  checksums.txt
+
+# only once the signature verifies (on macOS: shasum -a 256 --check --ignore-missing)
+sha256sum --check --ignore-missing checksums.txt
+```
+
+The Docker image:
+
+```sh
+cosign verify \
+  --certificate-identity 'https://github.com/ConduitIO/conduit/.github/workflows/release.yml@refs/tags/v0.20.0' \
+  --certificate-oidc-issuer 'https://token.actions.githubusercontent.com' \
+  ghcr.io/conduitio/conduit:v0.20.0
+```
+
+See [Verifying a release](https://github.com/ConduitIO/conduit/blob/main/docs/releases.md#verifying-a-release) for details.
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)

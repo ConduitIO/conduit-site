@@ -65,6 +65,12 @@ drain before it flushes positions and closes its database. From the moment shutd
 On the next boot, `SystemStopped` pipelines start again and resume from their last persisted
 position. `UserStopped` and `Degraded` pipelines stay stopped until you start them.
 
+:::note Known issue
+On the default engine, shutdown can hang if a source fails at the same moment
+([#2969](https://github.com/ConduitIO/conduit/issues/2969)). No data is lost: kill the process,
+and the unacknowledged records are replayed on restart. A fix is planned for v0.20.1.
+:::
+
 ### exit-on-degraded
 
 With `pipelines.exit-on-degraded` enabled, a pipeline that ends `Degraded` shuts Conduit down.

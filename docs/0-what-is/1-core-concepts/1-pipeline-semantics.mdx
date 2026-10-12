@@ -190,9 +190,21 @@ should stop running as soon as possible. Messages that are in the pipeline won't
 and will be requested from the source again once the pipeline is restarted. The error returned from the first node
 that failed will be stored in the pipeline and can be retrieved through the API.
 
-A user can also force-stop a pipeline (`conduit pipelines stop --force`), which skips the drain the same way. A pipeline
-that was stopped, by a user or by Conduit shutting down, is never restarted by error recovery, and an error during its
-drain is recorded on the pipeline without marking it degraded. See
-[Statuses](/docs/using/pipelines/statuses#what-a-stop-does-to-the-status).
+A user can also force-stop a pipeline (`conduit pipelines stop --force`), which skips the drain the same way. Since
+v0.20.0, a pipeline that was stopped, by a user or by Conduit shutting down, is never restarted by error recovery:
+
+- A user stop, graceful or forced, ends `UserStopped`. A force stop no longer leaves the pipeline `Degraded`.
+- A shutdown ends `SystemStopped`, and the pipeline starts again on the next boot from its last persisted position.
+- An error during the drain is recorded on the stopped pipeline instead of marking it `Degraded`. The affected records
+  were nacked and are replayed on the next start, so alert on the error field of stopped pipelines, not only on
+  `Degraded`.
+
+See [Statuses](/docs/using/pipelines/statuses#what-a-stop-does-to-the-status).
+
+:::note Known issue
+On the default engine, if a source fails at the moment Conduit is shutting down, shutdown can hang
+([#2969](https://github.com/ConduitIO/conduit/issues/2969)). No data is lost: kill the process, and the unacknowledged
+records are replayed on restart. A fix is planned for v0.20.1.
+:::
 
 ![scarf pixel conduit-site-docs-what-is-core-concepts](https://static.scarf.sh/a.png?x-pxid=8d2e502f-e2dd-43ab-a1c1-7a00ac3b0d68)

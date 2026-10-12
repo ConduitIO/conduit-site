@@ -161,7 +161,7 @@ const config: Config = {
     },
     announcementBar: {
       id: 'announcement-bar-20-0', // increment on change
-      content: `Conduit v0.20.0 is here! <a class='cta' href='/changelog/2026-10-13-conduit-0-20-0-release' target='_blank' rel='noreferrer noopener'>See what's new</a>.`,
+      content: `Conduit v0.20.0 is out: <code>conduit generate</code>, a Postgres-to-pgvector RAG template, and signed releases. <a class='cta' href='/changelog/2026-10-12-conduit-0-20-0-release' target='_blank' rel='noreferrer noopener'>See what's new</a>.`,
       isCloseable: true,
     },
     colorMode: {
