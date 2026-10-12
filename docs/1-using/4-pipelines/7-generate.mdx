@@ -33,6 +33,13 @@ differ. From v0.20.1 a weekly evaluation tracks them. The corpus is described in
 [the benchmark doc](https://github.com/ConduitIO/conduit/blob/main/docs/generate-benchmark.md);
 the per-request results are in
 [ConduitIO/conduit#2928](https://github.com/ConduitIO/conduit/pull/2928).
+
+**Correction (2026-10-12):** the semantic-match and processor figures above understate
+`conduit generate`. Our scorer did not accept processor names written with the `builtin:` prefix,
+which is the form the prompt tells the model to use, so some correct pipelines were scored as
+missing a processor. Rescoring the same recorded outputs with the fixed scorer moves the corpus from
+18 to 22 of 28 matched requests. The validation result is unaffected. Corrected numbers, measured
+on fresh runs, will be in the v0.20.1 release notes.
 :::
 
 ## What it does
