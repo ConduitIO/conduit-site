@@ -28,6 +28,14 @@ Check these before you upgrade:
 ### Highlights
 
 - **`conduit generate` (preview).** Describe a pipeline in plain language and get a pipeline config file, using Anthropic, OpenAI or a local Ollama server. Every candidate passes the same offline check as `conduit pipelines validate` before it is written, and the command never deploys. With Claude Sonnet 5 on our 28-request corpus, every config validated and 64–68% matched the request; it picks connectors reliably and often leaves out a requested processor step. Review the file before you deploy it. See [Generate a pipeline from a description](/docs/using/pipelines/generate).
+
+  > **Correction (2026-10-12):** the semantic-match and processor figures in this entry understate
+  > `conduit generate`. Our scorer did not accept processor names written with the `builtin:` prefix,
+  > which is the form the prompt tells the model to use, so some correct pipelines were scored as
+  > missing a processor. Rescoring the same recorded outputs with the fixed scorer moves the corpus from
+  > 18 to 22 of 28 matched requests. The validation result is unaffected. Corrected numbers, measured
+  > on fresh runs, will be in the v0.20.1 release notes.
+
 - **RAG pipeline template.** `conduit pipelines init --template postgres-pgvector-rag` scaffolds Postgres (snapshot, then CDC) → `ai.chunk` → `ai.embed` → pgvector, with keyed upserts and deletes that remove every chunk made from a row. It needs the preview engine (`--preview.pipeline-arch-v2`), because chunking turns one record into many, and an open egress ceiling for the embedding provider. See the [Postgres to pgvector guide](/docs/using/guides/postgres-pgvector-rag).
 - **Network egress for WASM processors.** Processors built with [conduit-processor-sdk v0.6.0](https://github.com/ConduitIO/conduit-processor-sdk/releases/tag/v0.6.0) can make HTTP calls through the host. Egress is off by default: the operator opens a ceiling (`processors.egress.*`), the pipeline opts a processor in (`sdk.egress.allow`), and only the overlap is allowed. Credentials are injected by the host and never reach the processor. See [Network egress](/docs/developing/processors/network-egress).
 - **`conduit processor-plugins install` / `uninstall`.** Installs WASM processors from the signed registry with the same signature and provenance checks as connectors, or offline with `--index-file` or `--bundle`. See [Installing standalone processors](/docs/using/processors/installing).
