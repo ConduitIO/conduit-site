@@ -1,0 +1,46 @@
+---
+title: 'Deploying Conduit'
+sidebar_label: 'Deploying'
+slug: '/using/deploying'
+---
+
+The [`deploy/`](https://github.com/ConduitIO/conduit/tree/main/deploy) directory in the Conduit repository has
+worked examples for running Conduit outside a laptop. They are **examples, not supported products**: Conduit does not
+ship or version a systemd package, an ECS module or a Nomad pack. Read them, then adapt them. Only the Docker Compose
+quickstart is run in CI.
+
+## Docker Compose quickstart
+
+```shell
+git clone https://github.com/ConduitIO/conduit.git
+cd conduit/deploy/docker-compose
+docker compose up -d --wait
+docker compose exec conduit tail -n 3 /data/records.ndjson
+docker compose down            # keeps the state volume; add -v to delete it
+```
+
+This starts a pinned, signed release image (`ghcr.io/conduitio/conduit:v0.20.0`) with a pipeline already running: the
+built-in generator writes records to the built-in file destination. Conduit's state is on a named volume, so a
+restart resumes the pipeline from its saved position. The API and web UI are on `http://localhost:8080`, published on
+loopback only. Replace `pipelines/quickstart.yaml` with your own pipeline to go further.
+
+## Other examples
+
+| Example | Notes |
+| --- | --- |
+| [systemd](https://github.com/ConduitIO/conduit/tree/main/deploy/systemd) | A sandboxed unit with its state in `StateDirectory`. |
+| [ECS](https://github.com/ConduitIO/conduit/tree/main/deploy/ecs) | A Fargate task definition. State is in Postgres, since container disk is ephemeral. |
+| [Nomad](https://github.com/ConduitIO/conduit/tree/main/deploy/nomad) | A service job with a readiness check and the allocation's sticky disk for state. |
+
+## What every example gets right
+
+- **Pin the image by version** and [verify its signature](https://github.com/ConduitIO/conduit/blob/main/docs/releases.md#verifying-a-release).
+  Do not run `latest`.
+- **Stop timeout above 30 seconds.** On `SIGTERM` Conduit drains in-flight records and saves its position, and gives
+  up after 30 seconds. The examples set 45 seconds so the orchestrator does not `SIGKILL` a drain in progress. A
+  `SIGKILL` loses nothing already acknowledged (records replay from the last saved position), but it is the fallback.
+- **Keep state on durable storage.** Pipeline positions live in Conduit's database. On an ephemeral filesystem a
+  restart replays from the start of the source.
+- **Probe `/healthz` for liveness and `/readyz` for readiness.** See [health and readiness](/docs/using/other-features/health-and-readiness).
+- **Do not expose the API directly.** The HTTP and gRPC APIs have no authentication. Bind to loopback or put an
+  authenticating proxy in front.
