@@ -383,6 +383,10 @@ connector's methods, such as:
 An example of implemented acceptance tests can be found in
 the [Kafka connector](https://github.com/ConduitIO/conduit-connector-kafka/blob/3233c37392e7249e9d64c9cae0374a0b47ca840f/acceptance_test.go).
 
+Version 2 of the suite (`sdk.AcceptanceTestV2`, SDK v0.16.0 and later) drives the connector the way Conduit
+does, with pipelined batches, asynchronous acks and crash and replay. It is the bar for Conduit Certified. See
+[Acceptance suite v2](/docs/developing/connectors/acceptance-suite-v2).
+
 ### Debugging the connector
 
 The steps for debugging a standalone connector have been

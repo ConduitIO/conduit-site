@@ -1,0 +1,188 @@
+---
+title: "Acceptance Suite v2"
+---
+
+# Acceptance suite v2
+
+The Connector SDK ships an acceptance suite that checks a connector the way Conduit uses it. Version 2 of that
+suite is the bar for **Conduit Certified**. It is in [Connector SDK v0.16.0](https://github.com/ConduitIO/conduit-connector-sdk/releases/tag/v0.16.0)
+and later, as revision **2.0.0**.
+
+A connector is tested against whatever suite revision its pinned SDK version contains. To get the newest
+revision, upgrade the SDK.
+
+## What v2 adds over v1
+
+The v1 suite (`sdk.AcceptanceTest`) checks a connector's methods one at a time. The v2 suite drives the
+connector through the plugin interface instead, the same way Conduit does: batches are pipelined and acks
+come back asynchronously, and `Stop` and `Teardown` are called. That lets it catch problems v1 can't see:
+
+- a record that was acked but never stored;
+- records lost when a connector crashes and is replayed;
+- deadlocks under slow acks;
+- trouble with large batches or large records;
+- a hang on cancellation or shutdown.
+
+v1 is unchanged. Existing connectors keep passing it without any change.
+
+## Running the suite
+
+Upgrade the SDK:
+
+```shell
+go get github.com/conduitio/conduit-connector-sdk@v0.16.0
+```
+
+Add a test:
+
+```go
+func TestAcceptanceV2(t *testing.T) {
+	sdk.AcceptanceTestV2(t, sdk.ConfigurableAcceptanceTestDriver{
+		Config: sdk.ConfigurableAcceptanceTestDriverConfig{
+			Connector:         Connector,
+			SourceConfig:      map[string]string{ /* … */ },
+			DestinationConfig: map[string]string{ /* … */ },
+			Capabilities: sdk.AcceptanceCapabilities{
+				Destination: sdk.DestinationCapabilities{Idempotence: sdk.IdempotenceYes},
+			},
+		},
+	})
+}
+```
+
+Run it with the race detector. To get a report, give it a path, and delete any old report first:
+
+```shell
+rm -f acceptance-report.json
+CONDUIT_ACCEPTANCE_REPORT=acceptance-report.json go test -race -run TestAcceptanceV2 ./...
+```
+
+`AcceptanceTestV2` runs in two groups:
+
+- `Core` is the v1 specification and configuration tests, `CORE-01` to `CORE-13`.
+- `V2` is the v2 cases.
+
+A connector has passed suite v2 only when both groups pass. A run that skips cases the suite didn't decide to
+skip is marked incomplete and doesn't count as a pass. That covers a `-run` filter that selects only some
+cases, and a skip in the driver.
+
+## Capabilities
+
+Some cases only make sense if a connector has a certain property. You declare those properties in
+`AcceptanceCapabilities`:
+
+- A claimed property is verified.
+- A claim the suite can't verify fails its case rather than being skipped.
+- With no claims, only the baseline cases run, and the report lists what was skipped and why.
+
+| Claim | Effect |
+| --- | --- |
+| `Destination.Idempotence = IdempotenceYes` | runs DST-05 (replay leaves no duplicates) |
+| `Destination.OrdersByKey` | runs DST-06 |
+| `Destination.SchemaEvolution` | runs DST-07 |
+| `Source.OrdersByKey` | runs SRC-04 |
+| `Source.SchemaEvolution = SchemaEvolutionEvolve` | runs SRC-05 |
+| `Source.ExactResume` | SRC-03 allows no redelivery after a restart |
+| `Source.MaxRedelivery` | the redelivery bound for SRC-03: 10 by default, at most 1000 |
+| `Source.Synthetic`, `Destination.WriteOnly` | for source-only and sink-only connectors, listed as exceptions in the report |
+
+If the target system has hard limits, you can lower `MaxBatchSize` (default 10000) and `MaxRecordBytes`
+(default 1 MiB). The suite then runs at the lower values, and the report records that the certification
+floor isn't met.
+
+## Cases
+
+Case IDs are stable and are never renumbered or reused.
+
+| ID | Case | Checks |
+| --- | --- | --- |
+| DST-01 | `pipelined_writes` | 20 batches in flight before the first ack is read; each position acked once; stored data matches what was sent |
+| DST-02 | `slow_acks` | the host reads acks slowly; no deadlock, no loss |
+| DST-03 | `mixed_batch_sizes` | batches of 1, 100 and 10000 records, all acked and stored once |
+| DST-04 | `crash_replay_at_least_once` | crashes at four points; every acked record is stored; replay loses nothing |
+| DST-05 | `crash_replay_idempotent` | as DST-04, with no duplicates after replay (claim) |
+| DST-06 | `ordering_per_key` | records with the same key are stored in order, also across a restart (claim) |
+| DST-07 | `schema_evolution` | a new field is stored, or the record is nacked; never silently dropped (claim) |
+| DST-08 | `large_record` | a 1 MiB record is stored intact |
+| DST-09 | `graceful_stop_drains_in_flight` | `Stop` returns only after every queued record is acked and stored |
+| DST-10 | `context_cancellation` | cancelling ends `Run` within 15 seconds; acked data is stored |
+| DST-11 | `throughput_smoke` | records/s for 3 seconds, recorded only |
+| SRC-01 | `pipelined_and_lagging_acks` | acks lag reads by 50 records; no deadlock or loss |
+| SRC-02 | `mixed_batch_sizes` | 1, 100 and 10000 records, snapshot then CDC, each delivered once |
+| SRC-03 | `crash_resume_no_gap` | seven kills across snapshot and CDC; nothing acked is lost; redelivery stays within the bound |
+| SRC-04 | `ordering_per_key` | records with the same key arrive in order, also across a restart (claim) |
+| SRC-05 | `schema_evolution` | a field added while the source runs arrives intact (claim) |
+| SRC-06 | `large_record` | a 1 MiB record arrives intact |
+| SRC-07 | `graceful_stop_with_unacked` | `Stop` with unacked records reports the right position; resume leaves no gap |
+| SRC-08 | `context_cancellation` | an idle `Read` returns when its context is cancelled |
+| SRC-09 | `throughput_smoke` | records/s reading 2000 records, recorded only |
+
+Every case except DST-02 has a deliberately broken reference connector in the SDK's own tests, and the case is
+required to fail it. That proves the case can fail. DST-02 has no such connector because the acks it exercises
+are sent by the SDK, not by the connector, so a connector has no way to break them.
+
+### The throughput checks are not benchmarks
+
+DST-11 and SRC-09 fail only if the connector stalls or rejects records. The records/s they measure go into the
+report so there is a history, but they are never compared to a threshold. They are not a performance claim and
+shouldn't be quoted as one. Conduit's performance numbers come from
+[benchi](https://github.com/ConduitIO/benchi).
+
+### What the crash cases don't cover
+
+DST-04, DST-05 and SRC-03 stop the connector inside the test process, without calling `Teardown`. They catch
+acks sent before the data is durable, where the data is only flushed later, on a timer or in `Teardown`. They
+don't catch a connector that flushes on context cancellation, and they can't produce torn writes. A `kill -9`
+of a real process belongs in each connector's own chaos tests.
+
+## The report
+
+When `CONDUIT_ACCEPTANCE_REPORT` is set, the suite writes a JSON report. The file is first written as
+unfinished when the run starts, then rewritten when the run ends. It contains:
+
+- `suite_version` (2) and `suite_revision` (2.0.0);
+- `expected_case_ids`, `case_set_hash`, `case_content_hash` and `suite_source_hash`, which together identify
+  exactly which cases ran;
+- the claims, `certification_floor_met`, `below_floor`, and `exceptions`, which lists anything that weakens
+  the run;
+- each case's outcome, with a skip kind and reason where it was skipped;
+- `complete`, `finished` and the throughput metrics.
+
+In CI, delete the report before the run, and read it only if `finished` is true. A missing report is a failed
+run.
+
+## What "Conduit Certified" means today
+
+A connector version is Certified when all of these hold:
+
+- its suite v2 report for revision 2.0.0 is complete;
+- every case that applies passed;
+- the floors are met, or a maintainer waived them;
+- the core delivery claims are stated: idempotence (either value), bounded resume, ordering for connectors
+  that read or write an ordered log, and a schema evolution policy for schema-aware connectors.
+
+`Synthetic` and `WriteOnly` need a maintainer's approval for each connector.
+
+The report is written by whoever runs the tests, so it is **evidence, not proof**. The registry doesn't yet
+re-run the suite itself. Until it does:
+
+- the report is informational;
+- Certified rests on a maintainer reviewing the report;
+- the registry's Certified check runs in **warning mode**.
+
+## Suite revisions
+
+The suite revision has the form `major.minor.patch`:
+
+- **major** is the bar. A new major adds baseline cases or tightens what they check.
+- **minor** adds cases that run only when a capability is claimed. A connector that passed 2.0.x passes 2.1.x
+  without changes.
+- **patch** fixes the harness without changing what a connector has to do.
+
+Once a revision is released, it is pinned in the SDK's tests: any change to the cases or to the suite's source
+fails the SDK build until the revision is bumped. The registry keeps its own table of the hashes it accepts.
+
+The full reference is
+[`docs/acceptance-tests-v2.md`](https://github.com/ConduitIO/conduit-connector-sdk/blob/v0.16.0/docs/acceptance-tests-v2.md)
+in the SDK repository. The reasoning behind each case is in the
+[design document](https://github.com/ConduitIO/conduit/pull/3036).
