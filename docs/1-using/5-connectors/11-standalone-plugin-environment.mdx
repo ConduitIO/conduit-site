@@ -1,0 +1,85 @@
+---
+title: "Standalone Plugin Environment"
+sidebar_label: "Standalone plugin environment"
+---
+
+# Standalone plugin environment
+
+Standalone connector plugins run as separate processes. When Conduit starts one, the plugin
+receives Conduit's own environment variables as well as the `CONDUIT_CONNECTOR_*` variables
+Conduit sets for it. The host environment is appended after Conduit's values, so when a host
+variable has the same name as one Conduit sets, the plugin sees the host value.
+
+Starting with v0.20.2, Conduit warns about this at startup. The environment plugins receive is
+unchanged.
+
+## The warning
+
+When `connectors.path` contains at least one standalone connector, Conduit logs one warning per
+process:
+
+```text
+WRN host environment variables are passed to standalone plugin processes; a future release will
+    restrict the plugin environment to an allowlist (...) code=plugin.standalone_env_passed
+    env_names=["AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY","DATABASE_URL"]
+```
+
+It lists variable **names** only. Values are never logged.
+
+`conduit doctor` reports the same condition as a `warn` finding named `plugins.standalone_env`,
+with the code `plugin.standalone_env_passed`:
+
+```bash
+conduit doctor --check plugins.standalone_env --json
+```
+
+Doctor counts any non-directory file in `connectors.path`, so a stray file there can produce the
+finding while the engine, which counts plugins that loaded, stays quiet. The MCP `doctor` tool
+reports only a count, never names, because its result goes back to the MCP client.
+
+## What is listed
+
+Host variables that standalone plugins will receive and whose names look like credentials.
+Matching is case-insensitive. Among others, a name is listed when it contains `PASSWORD`,
+`PASSWD`, `PASSPHRASE`, `TOKEN` or `SECRET`; starts with `AWS_`, `AZURE_`, `GOOGLE_` or `GCP_`;
+ends with `_KEY`, `_CREDENTIALS`, `_DSN`, `_CONNECTION_STRING`, `_JAAS_CONFIG` or `_PROXY`; or is
+a database or broker URL such as `DATABASE_URL`, `PGURI` or `KAFKA_URL`. The full rules are in
+the [operator runbook](https://github.com/ConduitIO/conduit/blob/main/docs/operations/standalone-plugin-environment.md).
+
+`PWD`, `OLDPWD`, `NO_PROXY` and boolean switches such as `SKIP_AUTH` are never listed.
+`CONDUIT_*` names are listed only when they also match a rule. The list is advisory: every
+variable is passed, and the rules only pick out the ones that look like secrets.
+
+## What to do
+
+1. Install only plugins you trust. A standalone plugin is native code that runs as the same OS
+   user as Conduit, with this environment.
+2. Start Conduit with a minimal environment, for example through your service manager's
+   environment settings or `env -i PATH=... conduit run`. Prefer a secrets mechanism your
+   connectors read directly over exporting credentials into the Conduit process.
+3. Once you have reviewed the list and accept it, silence the warning with any of:
+
+   ```yaml
+   # conduit.yaml
+   connectors:
+     standalone:
+       env-warning: false
+   ```
+
+   - the flag `--connectors.standalone.env-warning=false`;
+   - the environment variable `CONDUIT_CONNECTORS_STANDALONE_ENV_WARNING=false`;
+   - `Options.SilenceStandalonePluginEnvWarning` when you embed Conduit.
+
+   This silences the warning and the doctor finding. It does not change what plugins receive.
+
+## What changes in a future release
+
+A future release will restrict the plugin environment to an allowlist: the minor release after
+the first release that carries this warning. Its release notes will say so. Plugins that read
+variables from the host environment will then need those variables listed explicitly. Use the
+names in this warning as the starting point for that list.
+
+## Alerting
+
+Alert on the log field `code=plugin.standalone_env_passed`, or on the doctor finding with the
+same code.
