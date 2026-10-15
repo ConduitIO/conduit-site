@@ -217,7 +217,8 @@ What Conduit enforces when a pipeline sets no static keys:
   registrable. Access-point ARNs and aliases are always refused.
 - A custom endpoint (from `aws.endpoint`, `AWS_ENDPOINT_URL_S3`,
   `AWS_ENDPOINT_URL` or a shared-config profile) must be https and an exact
-  `allow-endpoints` entry. There is no suffix matching:
+  `allow-endpoints` entry. Entries are plain `https://host[:port]`: user info, a
+  query, a leading dot and link-local or metadata addresses are startup errors. There is no suffix matching:
   `https://x.execute-api.us-east-1.amazonaws.com` is refused unless listed. With
   no custom endpoint, the SDK's regional AWS endpoint is used.
 - Redirects to another host or to http are refused. Link-local and metadata
