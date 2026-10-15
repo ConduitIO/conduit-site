@@ -42,6 +42,10 @@ Flags:
       --api.http.cors.allowed-origins strings                  allowed browser CORS origins for the HTTP API and websocket streams; repeatable; exact scheme://host[:port] (no trailing slash). '*' allows any origin but is refused on a non-loopback bind (unauthenticated network-wide access); use exact origins for network deployments
       --api.http.ui.enabled                                    serve the built-in web UI at '/' (observe + operate); the SPA is always embedded in the binary, this only gates the route — disabling removes the surface, not the binary size (default true)
       --config.path string                                     global conduit configuration file (default "/Users/username/repo/conduit/conduit.yaml")
+      --connectors.ambient-credentials.allow-endpoints strings  the only custom endpoints that may receive ambient-credential-signed requests: exact https://host[:port] entries (repeatable)
+      --connectors.ambient-credentials.allow-proxy             allow ambient credentials while HTTP_PROXY/HTTPS_PROXY/ALL_PROXY is set; the link-local address refusal then cannot apply
+      --connectors.ambient-credentials.allow-resources strings exact resource names (for s3, bucket names) the ambient identity may use; required when enabled, wildcards are refused (repeatable)
+      --connectors.ambient-credentials.enabled                 allow built-in connectors to use this process's ambient cloud credentials (for example the AWS default credential chain) when a pipeline sets no static keys (default false)
       --connectors.max-receive-record-size int                 maximum size of a processed record in bytes for standalone connectors (default 4194304)
       --connectors.path string                                 path to standalone connectors' directory (default "/Users/username/repo/conduit/connectors")
       --db.badger.path string                                  path to badger DB (default "/Users/username/repo/conduit/conduit.db")
@@ -105,6 +109,10 @@ log.level: info
 log.format: cli
 connectors.path: /Users/username/repo/conduit/connectors
 connectors.max-receive-record-size: 4194304
+connectors.ambient-credentials.enabled: false
+connectors.ambient-credentials.allow-endpoints: []
+connectors.ambient-credentials.allow-resources: []
+connectors.ambient-credentials.allow-proxy: false
 install.allow-unsigned: false
 install.max-staleness: 0s
 install.allow-stale-bundle: false
@@ -179,6 +187,67 @@ line overrides the same setting exported in your environment. See
     postgres:
       connection-string: postgres://localhost:5432/conduitdb # -db.postgres.connection-string or CONDUIT_DB_POSTGRES_CONNECTION_STRING
   ```
+
+## Ambient cloud credentials
+
+_Available from Conduit v0.21._
+
+A built-in connector given no static keys can fall back to the cloud identity of
+the process running Conduit. For S3 that is the AWS default credential chain:
+environment variables, shared config and SSO, web identity (IRSA on EKS), the ECS
+task role and the EC2 instance role. Conduit's API is unauthenticated by default,
+so a pipeline using that identity would act as the Conduit host. That is why it is
+an operator setting, off by default, that no pipeline config can turn on:
+
+```yaml
+connectors:
+  ambient-credentials:
+    enabled: true                                    # CONDUIT_CONNECTORS_AMBIENT_CREDENTIALS_ENABLED
+    allow-resources: ["acme-ingest-prod"]            # exact bucket names; required
+    allow-endpoints: ["https://minio.internal:9000"] # only for custom endpoints
+    allow-proxy: false                               # see below
+```
+
+What Conduit enforces when a pipeline sets no static keys:
+
+- Off: the connector fails at configure time with
+  `connector.ambient_credentials_disabled`, before it loads any credentials.
+- The bucket must be an exact `allow-resources` entry. Wildcards are a startup
+  error (`config.ambient_resource_wildcard`), because bucket names are globally
+  registrable. Access-point ARNs and aliases are always refused.
+- A custom endpoint (from `aws.endpoint`, `AWS_ENDPOINT_URL_S3`,
+  `AWS_ENDPOINT_URL` or a shared-config profile) must be https and an exact
+  `allow-endpoints` entry. There is no suffix matching:
+  `https://x.execute-api.us-east-1.amazonaws.com` is refused unless listed. With
+  no custom endpoint, the SDK's regional AWS endpoint is used.
+- Redirects to another host or to http are refused. Link-local and metadata
+  addresses such as `169.254.169.254` are never dialed.
+- With a proxy variable set, startup fails (`config.ambient_proxy_env`) unless
+  `allow-proxy: true`. Through a proxy, Conduit cannot see where a connection
+  really goes, so the metadata-address refusal does not apply.
+- Setting only one of the two static keys is an error
+  (`connector.credentials_incomplete`). It never falls back to the host identity.
+
+Static keys in a pipeline work as before, with any endpoint.
+
+The policy reaches only built-in connectors, so name them with the prefix:
+`builtin:s3`. A bare `s3` picks an installed standalone copy first, and
+standalone plugins never get the policy. IAM least privilege on the host role
+remains the real boundary; scope it to the listed buckets.
+
+Check the effective policy before starting:
+
+```shell
+$ conduit doctor --check connectors.ambient_credentials --json
+```
+
+Each connector that uses ambient credentials logs `ambient credentials in use`
+(component `connector.AmbientCredentials`), and each refusal logs
+`ambient credentials denied` with the error code as `reason`. The metric
+`conduit_connector_ambient_credentials_total{plugin, outcome}` counts both.
+Changes take effect on the next start. The
+[operator runbook](https://github.com/ConduitIO/conduit/blob/main/docs/operations/ambient-credentials.md)
+lists every error code with its fix.
 
 ## Pointing Conduit at a pipelines directory
 
