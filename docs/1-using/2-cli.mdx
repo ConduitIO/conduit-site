@@ -67,6 +67,7 @@ This page is the exhaustive command reference. For narrower how-tos, see:
 | `conduit pipelines dev` | | — | `run --dev` sugar: hot-reload watcher |
 | `conduit connectors list` | `ls` | yes (see `--installed`) | List pipeline connector instances, or installed plugin artifacts |
 | `conduit connectors describe` | `desc` | yes | Detail of one connector instance |
+| `conduit connectors delete` | | yes | Delete a connector instance (its delete hook runs first) |
 | `conduit connectors new` | | offline | Scaffold a new Go connector repository |
 | `conduit connectors install` | | offline | Install a standalone connector from the registry |
 | `conduit connectors uninstall` | | offline | Remove an installed standalone connector |
@@ -556,6 +557,29 @@ Detail of one connector instance and its attached processors.
 ```shell
 conduit connectors describe connector:source
 ```
+
+### `delete CONNECTOR_ID`
+
+Deletes a connector instance from a running Conduit (v0.21+). Its pipeline must
+not be running. The connector's delete hook runs first: it releases what the
+connector created outside Conduit, such as a Postgres replication slot. If the
+hook fails, the connector is kept and the command fails with
+`connector.delete_hook_failed` (exit 2); fix the cause and delete again.
+
+| Flag | Description |
+|---|---|
+| `--force` | Delete the connector even if its delete hook fails. Prints a `connector.orphaned_resources` warning naming what may be left behind; `conduit doctor` reports it (check `connectors.orphaned_resources`) until acknowledged. |
+| `--acknowledge-orphan` | After you removed what a forced delete left behind, clear its doctor finding. Only valid once the connector is deleted. |
+
+```shell
+conduit connectors delete my-connector
+conduit connectors delete my-connector --force --json
+conduit connectors delete my-connector --acknowledge-orphan
+```
+
+Connectors created from a pipeline config file can't be deleted here; remove
+them from the file instead. A failing delete hook then keeps the pipeline, and
+Conduit retries the delete at every start.
 
 ### `new [name]`
 
