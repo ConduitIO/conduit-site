@@ -44,6 +44,7 @@ Flags:
       --config.path string                                     global conduit configuration file (default "/Users/username/repo/conduit/conduit.yaml")
       --connectors.max-receive-record-size int                 maximum size of a processed record in bytes for standalone connectors (default 4194304)
       --connectors.path string                                 path to standalone connectors' directory (default "/Users/username/repo/conduit/connectors")
+      --connectors.standalone.env-warning                      warn at startup about sensitive host environment variables passed to standalone connector plugins (default true)
       --db.badger.path string                                  path to badger DB (default "/Users/username/repo/conduit/conduit.db")
       --db.postgres.connection-string string                   postgres connection string, may be a database URL or in PostgreSQL keyword/value format
       --db.postgres.table string                               postgres table in which to store data (will be created if it does not exist) (default "conduit_kv_store")
