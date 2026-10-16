@@ -1,0 +1,20 @@
+---
+slug: '2026-10-15-conduit-0-20-2-release'
+title: Conduit v0.20.2 release
+draft: false
+tags: [conduit, release, conduit-release]
+---
+
+[Conduit v0.20.2](https://github.com/ConduitIO/conduit/releases/tag/v0.20.2) is a patch release. It fixes a bug where `avro.encode` could silently write wrong data when two pipelines in one process use schemas that share type names, plus four security issues, and adds a guard that refuses to run pipelines stored by a newer minor.
+
+<!--truncate-->
+
+### Key Highlights
+
+- **`avro.encode` could write records with another schema's encoder** ([GHSA-hx9g-59x7-9h4x](https://github.com/ConduitIO/conduit-commons/security/advisories/GHSA-hx9g-59x7-9h4x)). Affected v0.7.0 through v0.20.1 when one process encodes with two schemas that both define a named type with different definitions — the second schema was encoded with the first's encoder, silently. There was no error and the records were acked. Fixed.
+- **Four security fixes**, including a schema-registry client cache-key issue.
+- **Downgrade guard.** v0.20.2 refuses to run pipelines whose stored state was written by v0.21, instead of misreading it.
+
+Embedded libraries bumped: conduit-commons v0.7.0 → v0.7.1, conduit-schema-registry v0.2.6 → v0.2.7. Built-in connectors unchanged.
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)

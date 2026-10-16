@@ -1,0 +1,17 @@
+---
+slug: '2026-10-16-conduit-0-20-3-release'
+title: Conduit v0.20.3 release
+draft: false
+tags: [conduit, release, conduit-release]
+---
+
+[Conduit v0.20.3](https://github.com/ConduitIO/conduit/releases/tag/v0.20.3) is a patch release. It fixes a panic in the `split` processor and a 60-second stall on graceful shutdown with destination SDK batching.
+
+<!--truncate-->
+
+### Key Highlights
+
+- **`split` no longer panics on a nested field.** A discarded resolve error after `Record.Clone` could crash the engine; the panic is fixed and the resolve error is surfaced.
+- **Graceful shutdown exits promptly with SDK batching.** When the last record of a drain exactly filled an SDK batch, shutdown could stall for its full 60-second timeout (invariant 7). Fixed by bumping the connector SDK to v0.14.4.
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)
