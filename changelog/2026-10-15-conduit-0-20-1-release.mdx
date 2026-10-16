@@ -1,0 +1,26 @@
+---
+slug: '2026-10-15-conduit-0-20-1-release'
+title: Conduit v0.20.1 release
+draft: false
+tags: [conduit, release, conduit-release]
+---
+
+[Conduit v0.20.1](https://github.com/ConduitIO/conduit/releases/tag/v0.20.1) is a patch release. It fixes data-loss bugs in the built-in Postgres, S3 and Kafka connectors, plus lifecycle bugs where a failed status write could leave a pipeline that could not be stopped or let one run twice.
+
+<!--truncate-->
+
+### Key Highlights
+
+- **Postgres CDC could lose rows on restart** (since 2022): interleaved transactions and rows sharing one log position (`COPY`, multi-row inserts). Fixed in the embedded `postgres` connector.
+- **Kafka destination could ack a record that failed to write** in a multi-record batch. Fixed.
+- **Postgres destination acked a batch whose COMMIT failed** (since v0.6.0). Fixed.
+- **Postgres `DELETE` stopped Avro pipelines** (since v0.11.0): the pipeline restarted on the same record forever while the slot kept WAL. Fixed; upgrading alone unsticks it.
+- **Lifecycle:** a failed status write no longer leaves a live run degraded and unstoppable, and no longer lets one pipeline start twice.
+
+Embedded connectors bumped: postgres v0.14.2 → v0.14.4, s3 v0.9.3 → v0.9.5, kafka v0.12.5 → v0.12.6.
+
+:::caution
+Some Postgres pipelines now stop on purpose after upgrading, and the first restart can re-deliver records (at-least-once). Read the [release notes](https://github.com/ConduitIO/conduit/releases/tag/v0.20.1) for the downgrade warnings before you upgrade.
+:::
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)

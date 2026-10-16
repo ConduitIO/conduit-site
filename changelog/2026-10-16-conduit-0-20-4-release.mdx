@@ -1,0 +1,19 @@
+---
+slug: '2026-10-16-conduit-0-20-4-release'
+title: Conduit v0.20.4 release
+draft: false
+tags: [conduit, release, conduit-release]
+---
+
+[Conduit v0.20.4](https://github.com/ConduitIO/conduit/releases/tag/v0.20.4) is a patch release. It fixes a source read that ignored its context, gives a malformed `conduit.yaml` a stable error code, and documents every exit code in `connectors bundle --help`.
+
+<!--truncate-->
+
+### Key Highlights
+
+- **`Source.Read` now honours its context.** An idle read blocked in the gRPC stream ignored caller cancellation; it now returns `context.Canceled` promptly, without dropping records the plugin sent in the meantime.
+- **Malformed `conduit.yaml` gets a stable error code.** A bad config file used to surface as `internal.unknown` with exit code 1; it now reports `config.parse_error` with the file path, line and column, and exits 2 (validation).
+- **`connectors bundle --help` is complete.** The help now lists the index integrity, freshness, rollback, schema-too-new, trust-anchor and trust rejection codes the command can actually raise.
+- **CI stability.** The flaky concurrent-processors chaos test and the provisioning test teardown were hardened, so the required test check no longer flakes.
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)
