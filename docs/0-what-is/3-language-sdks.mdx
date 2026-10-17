@@ -1,0 +1,67 @@
+---
+title: 'Language SDKs'
+sidebar_position: 3
+description: 'Build Conduit connectors and processors in Go, Python, TypeScript, Rust, Java, or C#. The tier and maturity of each official SDK, with links to get started.'
+keywords: ['sdk', 'language sdk', 'python sdk', 'go sdk', 'typescript', 'rust', 'java', 'c#', 'connector', 'processor']
+---
+
+# Language SDKs
+
+Conduit connectors and processors speak a stable
+[gRPC protocol](https://github.com/ConduitIO/conduit-connector-protocol)
+(processors can also [compile to WASM](/docs/developing/processors/building)),
+so plugins are not limited to one language. Six languages have official SDKs,
+maintained in two tiers. Every other language can build against the same open
+protocol plus a conformance kit.
+
+## Python — the next SDK (pre-alpha)
+
+If the system you are integrating already has a mature Python client — a database
+driver, `boto3`, `httpx`, a vector-store SDK — you can reach for it directly
+instead of reimplementing it. That makes Python a natural fit for the data- and
+AI-adjacent edges of a pipeline.
+
+The Python connector SDK is **pre-alpha and in active development**: the API is
+real and usable today, but nothing has shipped to PyPI yet. The distribution is
+`conduitio`; the import package is `conduit`, exposing two namespaces:
+
+- `conduit.connector` — the connector SDK. Subclass `Source` or `Destination` and
+  call `serve(...)` to run a standalone plugin.
+- `conduit.client` — a gRPC control client for driving a running Conduit instance.
+
+[Write a connector in Python →](/docs/developing/connectors/python-connectors)
+
+## Full tier — Go, Python, TypeScript, Rust
+
+Full-tier languages get connectors over gRPC, processors (WASM in-process and/or
+gRPC out-of-process), the processor state API, and an embedded client.
+
+- **Go (GA)** — the mature, recommended route. A
+  [connector SDK](https://github.com/ConduitIO/conduit-connector-sdk), a
+  [processor SDK](https://github.com/ConduitIO/conduit-processor-sdk), a
+  [connector template](/docs/developing/connectors/conduit-connector-template),
+  and [`conduit connector new --lang go`](/docs/developing/connectors/scaffold-new).
+  Go is also the only language that can
+  [embed Conduit in-process](/docs/developing/embedding-go).
+- **Python (pre-alpha)** — connector SDK, see above.
+- **TypeScript (roadmap)** — connectors over gRPC and an embedded client.
+- **Rust (roadmap)** — gRPC connectors and WASM processors.
+
+## Enterprise tier — Java, C#
+
+Enterprise-tier languages get connectors over gRPC and processors on the gRPC
+out-of-process runtime (including the state API), with an embedded client
+generated from gRPC bindings.
+
+- **Java (roadmap)** — the native path for Kafka Connect connector authors.
+  Existing Kafka Connect JARs already run through the
+  [Kafka Connect connector](/docs/using/connectors/kafka-connect-connector).
+- **C# (roadmap)** — gRPC connectors, processors, and the state API.
+
+## Every other language
+
+Community-tier languages build against the same open protocol, with a conformance
+kit. SDKs that pass the kit are listed as community-maintained.
+
+The full plan — phases, parity, and the two processor runtimes — is on the
+[roadmap](/docs/future/roadmap).
