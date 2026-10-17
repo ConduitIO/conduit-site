@@ -1,0 +1,126 @@
+---
+title: "Migrating from Kafka Connect"
+---
+
+`conduit migrate kafka-connect` turns Kafka Connect connector configs into
+Conduit pipeline configs plus a compatibility report. It is offline and
+read-only: it reads its inputs and writes an output directory, and never
+connects to a database, Kafka, or a Connect worker.
+
+The rule that shapes everything the command does: **every key in the input
+ends up in the report exactly once**, as _translated_, _approximated_ (with the
+difference), or _unsupported_ (with the reason and a fix). The command never
+drops a key, never invents a value, never writes a secret, and never produces
+a pipeline that quietly behaves differently from the connector it replaces.
+Where Conduit cannot match Kafka Connect behavior, the pipeline is written
+but held in `status: stopped` until you accept the gap.
+
+## Concept mapping
+
+| Kafka Connect | Conduit | Notes |
+| --- | --- | --- |
+| Worker | Conduit instance | Worker-level keys become `conduit.yaml` fragments or are inherited into each pipeline. Keys with no equivalent (`group.id`, the storage topics, `rest.*`) are reported as translated no-ops rather than hidden. |
+| Connector + its tasks | One pipeline | A source connector becomes `<db> source` + `builtin:kafka` destination; a sink becomes `builtin:kafka` source + `<target>` destination. `tasks.max` greater than 1 is approximated — a Conduit pipeline reads a source with one reader. |
+| SMT chain | Connector-level processors | Source SMTs attach to the source connector, sink SMTs to the destination, preserving order. An SMT is emitted only where its behavior matches exactly; otherwise it is reported unsupported. |
+| Predicate | Processor `condition` | A Go template yielding a bool. |
+| Converter | Schema/format configuration | Avro/JSON/String/ByteArray converters map to schema and record-format settings; the Schema Registry config feeds the engine's registry. |
+| DLQ (`errors.*`) | `dead-letter-queue` | | 
+
+## Covered connectors
+
+The classes this release migrates are fixed by the rule set compiled into the
+binary:
+
+- **Debezium Postgres** (`io.debezium.connector.postgresql.PostgresConnector`)
+  → `builtin:postgres` source and `builtin:kafka` destination.
+- **S3 sink** (`io.confluent.connect.s3.S3SinkConnector`)
+  → `builtin:kafka` source and `builtin:s3` destination.
+- **Kafka→Kafka** (MirrorMaker 2 — `MirrorSourceConnector`,
+  `MirrorCheckpointConnector`, `MirrorHeartbeatConnector`)
+  → `builtin:kafka` source and destination.
+- **Worker and shared keys** — converters, Kafka client security, and error
+  handling supplied by a `--worker` file or present on every connector.
+
+Debezium MySQL, the JDBC source/sink, and the Elasticsearch/OpenSearch sink are
+not yet covered: their connector classes are reported `unsupported`, with every
+key listed and no pipeline written. Each family gains coverage as its rule file
+lands.
+
+## Compatibility report
+
+`report.json` (and a human-readable `REPORT.md`) record the outcome. One entry
+per input key, each with a status:
+
+- **translated** — the Conduit config is behaviorally equivalent.
+- **approximated** — Conduit does something close, and the difference is
+  documented. Non-blocking approximations do not fail the run.
+- **unsupported** — no Conduit equivalent in this release; `fix` states what to
+  do.
+- **blocking** — the unmigrated or approximated behavior could change what lands
+  downstream. A blocking entry makes the run fail and the pipeline `stopped`.
+
+The report also carries a summary (`connectors`, `keys`, `translated`,
+`approximated`, `unsupported`, `blocking`), a provenance hash so a pipeline can
+be traced back to the exact report that generated it, and a per-connector
+`target` naming the Conduit source and destination plugins.
+
+## Usage
+
+```shell
+conduit migrate kafka-connect connectors/orders.json
+conduit migrate kafka-connect --worker connect-distributed.properties ./connectors --dry-run
+curl -s localhost:8083/connectors?expand=info | conduit migrate kafka-connect - --json
+```
+
+Inputs are files, directories (their `.json` and `.properties` files), or `-`
+for standard input, in any of these forms: a `.properties` file, a connector as
+the Connect REST API takes or returns it, a bare config map, or the output of
+`GET /connectors?expand=info&expand=status`. Input format is detected;
+`--format {properties,json,rest-export}` overrides detection.
+
+### Flags
+
+| Flag | Meaning |
+| --- | --- |
+| `--out DIR` | Output directory. Default `./conduit-migration`. Refuses to overwrite without `--force`. |
+| `--force` | Write into a non-empty `--out`, overwriting the migration files of an earlier run. |
+| `--dry-run` | Produce the report only and write no files. |
+| `--worker FILE` | Worker properties that supply defaults (converters, client security). |
+| `--format FORMAT` | Input format instead of detection: `properties`, `json` or `rest-export`. |
+| `--strict` | Also fail on approximated entries and accepted gaps. |
+| `--accept-gaps` | Write blocking pipelines as `running` instead of `stopped`; record them in the report. |
+| `--verbose` | Also list keys that were translated with no remark. |
+| `--quiet` / `-q` | Print only findings and the summary. |
+| `--no-color` | Disable colored/glyph output. |
+
+Every command also accepts `--json`, emitting the shared
+`{command, ok, summary, result, error}` envelope; the compatibility report is
+the `result`.
+
+### Output
+
+```text
+conduit-migration/
+  report.json            the compatibility report (also the --json result)
+  REPORT.md              human rendering of the same report
+  pipelines/<name>.yaml  one pipeline per Kafka Connect connector
+  secrets.env.template   names of the env vars the pipelines reference, no values
+```
+
+### Exit codes
+
+`0` when no entry blocks · `2` when one blocks (or on bad input) · `3` when an
+output file cannot be written · `1` on an internal error. With `--dry-run` it
+writes nothing and exits the same way.
+
+## Not yet in this release
+
+The rest of the migration surface lands in later releases: `conduit kc lint`
+(lint Kafka Connect configs) and `conduit kc diff` (diff connector-config
+versions), plus the cutover and offset-import flags (`--import-offset`,
+`--cutover`, `--from-rest`, `--registry-url`, `--slot-strategy`). Offset import
+— resuming a migrated Postgres pipeline from Debezium's offsets without a
+re-snapshot — is delivered by the Postgres connector; see the
+[Postgres](/docs/using/connectors/list/postgres) page.
+
+![scarf pixel conduit-site-docs-using-guides](https://static.scarf.sh/a.png?x-pxid=53743422-c614-4e45-acaa-f1f9f604321e)
