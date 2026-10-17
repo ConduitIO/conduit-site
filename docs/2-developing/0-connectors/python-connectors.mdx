@@ -1,0 +1,311 @@
+---
+title: "Python Connectors"
+sidebar_position: 6.5
+---
+
+Conduit connectors speak a language-neutral
+[gRPC protocol](https://github.com/ConduitIO/conduit-connector-protocol), so a
+connector does not have to be written in Go. The Python SDK lets you build a
+source or destination in Python and run it as a first-class standalone plugin —
+the same handshake, record model, and lifecycle Conduit uses for a Go
+connector.
+
+:::warning Pre-alpha
+The Python SDK is **pre-alpha and under active development.** No release has
+shipped and it is **not yet on PyPI.** The public API can change without a
+deprecation notice. Install it from the repository and pin a commit. It is
+documented here so you can try it and give feedback — not as a stable
+foundation for production connectors yet.
+:::
+
+## Why Python
+
+A Python connector is not a lesser connector. Conduit launches it exactly the
+way it launches a standalone Go connector: as a subprocess that serves the same
+`conduit-connector-protocol` over gRPC. What Python adds is its ecosystem — if
+the system you are integrating already has a mature Python client (a database
+driver, `boto3`, `httpx`, a vector-store SDK), you can reach for it directly
+instead of reimplementing it. That makes Python a natural fit for the data- and
+AI-adjacent edges of a pipeline.
+
+The trade-off is honest: the SDK is pre-alpha, and a standalone plugin runs as a
+subprocess, so this is not the path for a built-in, in-process connector on
+Conduit's hottest data path. For those, the
+[Go SDK](/docs/developing/connectors) remains the recommended route.
+
+## Install
+
+The distribution is `conduitio`; the import package is `conduit`, a
+[PEP 420 namespace package](https://peps.python.org/pep-0420/) exposing two
+namespaces: `conduit.connector` (the connector SDK) and `conduit.client` (a gRPC
+control client). Connector authors use `conduit.connector`.
+
+Because it is not on PyPI yet, install it straight from the repository:
+
+```shell
+pip install "conduitio @ git+https://github.com/ConduitIO/conduit-connector-sdk-python.git"
+```
+
+Or, in a project managed with `uv`:
+
+```shell
+uv add "conduitio @ git+https://github.com/ConduitIO/conduit-connector-sdk-python.git"
+```
+
+You need **Python 3.11+** and a Conduit binary to run the result (see
+[Installing and running](/docs/installing-and-running)).
+
+## Project layout
+
+`conduit connector new --lang python` is on the roadmap but **not wired up yet**
+— the CLI currently generates Go only and rejects `--lang python` with
+`--lang "python" is not supported yet`. Until it lands, create the project by
+hand. The layout below is the one the scaffolder will generate, so nothing you
+write is throwaway:
+
+```text
+counter-source/
+├── pyproject.toml
+└── main.py
+```
+
+```toml title="pyproject.toml"
+[project]
+name = "counter-source"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = ["conduitio"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+```
+
+## A minimal source
+
+A source is a config model, a `Source` subclass, and a call to `serve(...)`.
+This one emits `count` records (as `CREATE` operations) and then idles:
+
+```python title="main.py"
+from __future__ import annotations
+
+from conduit.connector import BackoffRetry, Change, Operation, Record, Source, serve
+from conduit.connector.config import BaseConfig, Field, Specification
+
+
+class Config(BaseConfig):
+    count: int = Field(default=10, description="Records to emit before idling.")
+
+
+class CounterSource(Source[Config]):
+    async def open(self, position: bytes | None) -> None:
+        # Resume after the last acknowledged position, or start from 0.
+        self._n = int(position.decode()) if position else 0
+
+    async def read(self) -> Record:
+        if self._n >= self.config.count:
+            # Nothing new right now. Do NOT sleep here — raising BackoffRetry
+            # lets the SDK's read loop pace retries; sleeping too would
+            # double the backoff.
+            raise BackoffRetry()
+        self._n += 1
+        return Record(
+            position=str(self._n).encode(),
+            operation=Operation.CREATE,
+            key={"id": self._n},
+            payload=Change(after={"value": self._n}),
+        )
+
+
+if __name__ == "__main__":
+    serve(Specification(name="counter", version="0.1.0", author="you"), source=CounterSource)
+```
+
+A few things to notice:
+
+- **`Config(BaseConfig)` is a pydantic model.** Field types, defaults, and
+  constraints (`description=...`, `ge=...`) are introspected into the connector's
+  parameter specification automatically — no code generation step. A field with
+  no default becomes a required parameter, and invalid config is rejected at
+  configure time with a per-field error.
+- **`Source[Config]` is generic over your config class.** Inside your methods,
+  `self.config` is the validated `Config` instance.
+- **`read()` is the one method you must implement.** It returns the next
+  `Record`, or raises `BackoffRetry` when nothing is available right now. The
+  SDK owns the retry pacing.
+- **`serve(...)` is the entry point.** Pass a `Specification` and exactly one of
+  `source=` or `destination=`.
+
+## A minimal destination
+
+A destination follows the same shape, but you implement `write()` instead of
+`read()`:
+
+```python title="main.py"
+from __future__ import annotations
+
+from conduit.connector import Destination, Record, serve
+from conduit.connector.config import BaseConfig, Field, Specification
+
+
+class Config(BaseConfig):
+    path: str = Field(description="File to append records to.")
+
+
+class FileDestination(Destination[Config]):
+    async def open(self) -> None:
+        self._file = open(self.config.path, "ab")
+
+    async def write(self, records: list[Record]) -> None:
+        # Returning without raising means the whole batch was durably written,
+        # and Conduit acks every record in it.
+        for record in records:
+            self._file.write(repr(record.payload.after).encode() + b"\n")
+        self._file.flush()
+
+    async def teardown(self) -> None:
+        if getattr(self, "_file", None) is not None:
+            self._file.close()
+
+
+if __name__ == "__main__":
+    serve(Specification(name="file-out", version="0.1.0", author="you"), destination=FileDestination)
+```
+
+For `write()`, "returns without raising" means the entire batch was durably
+written and every record is acked. A partial-batch failure is expressed by
+raising `BatchWriteError.partial(len(records), written=N, cause=exc)` with an
+exhaustive per-index accounting; any other exception nacks the whole batch. The
+SDK never assumes an unaccounted record succeeded — that would break Conduit's
+at-least-once guarantee.
+
+## How the pieces fit
+
+Every method except `read()` (source) / `write()` (destination) has a working
+default, so you override only what you need:
+
+| Method | When it runs | Default |
+| --- | --- | --- |
+| `configure(config)` | After config is parsed and validated. | Stores `self.config`. |
+| `open(position)` *(source)* / `open()` *(destination)* | Before records flow — open clients/connections here. | No-op. |
+| `read()` *(source)* | Repeatedly, to produce the next record. | **Required.** |
+| `write(records)` *(destination)* | Per incoming batch, to write records durably. | **Required.** |
+| `ack(position)` *(source)* | After Conduit confirms a record was durably handled downstream. | No-op. |
+| `on_created` / `on_updated` / `on_deleted` | Lifecycle hooks for first-run, config-change, and delete. | No-op. |
+| `teardown()` | Once, after the record loop stops, before exit. | No-op. |
+
+`ack()` is **optional.** Conduit's own position tracking — via what `read()`
+returns and what `open(position)` resumes from — is enough for most sources.
+Override `ack()` only when you also need to acknowledge against the *source
+system* itself (commit a Kafka offset, delete a queue message).
+
+A `Record` carries a `position` (`bytes`), an `operation`
+(`Operation.CREATE` / `UPDATE` / `DELETE` / `SNAPSHOT`), a `key` and
+`payload` (each `bytes` or a structured `dict`), and string `metadata`. Use
+`Change(before=..., after=...)` for the payload and `Metadata.set_*` for
+well-known keys such as `opencdc.collection` and `opencdc.readAt`. See
+[OpenCDC Record](/docs/using/opencdc-record) for the field semantics.
+
+## Build a standalone artifact
+
+You cannot hand Conduit a `.py` file. Conduit launches a standalone connector as
+a subprocess with a **clean environment and no inherited `PATH`**, so there is
+nothing for a shebang's `env` to search for an interpreter. The SDK's `build`
+command closes that gap — it produces one self-contained, directly executable
+file with an absolute interpreter path and every third-party dependency
+vendored in:
+
+```shell
+conduit-connector-sdk build . -o counter-source
+./counter-source
+```
+
+Run `build` from an environment where your connector's own dependencies are
+already installed — it vendors what is resolved, it does not run a fresh
+`pip install`.
+
+## Run it in a pipeline
+
+Move the built artifact into the `connectors` directory next to your Conduit
+binary, then confirm it was discovered (standalone connectors are prefixed
+`standalone:`):
+
+```shell
+mv counter-source /path/to/conduit/connectors/
+./conduit connector-plugins list | grep counter
+# standalone:counter@0.1.0   ...
+```
+
+Reference it from a pipeline configuration file by that plugin name:
+
+```yaml title="pipeline.yaml"
+version: 2.2
+pipelines:
+  - id: python-counter
+    connectors:
+      - id: source
+        type: source
+        plugin: "standalone:counter@0.1.0"
+        settings:
+          count: "10"
+      - id: destination
+        type: destination
+        plugin: "builtin:log"
+```
+
+See [Using a Custom Connector](/docs/developing/connectors/using-a-custom-connector)
+for the full discovery and pipeline flow, which is identical to the Go
+standalone path.
+
+## Acceptance tests
+
+The SDK ships a versioned acceptance suite — the same "what makes it a
+connector" bar the Go SDK enforces. Subclass `AcceptanceTestSuite` in your own
+`pytest` module and return a driver describing your connector:
+
+```python title="tests/test_acceptance.py"
+from conduit.connector.config import Specification
+from conduit.connector.testing.acceptance import (
+    AcceptanceTestSuite,
+    ConfigurableAcceptanceTestDriver,
+)
+
+from main import CounterSource  # your connector module
+
+
+class TestAcceptance(AcceptanceTestSuite):
+    def driver(self) -> ConfigurableAcceptanceTestDriver:
+        return ConfigurableAcceptanceTestDriver(
+            spec=Specification(name="counter", version="0.1.0", author="you"),
+            source_cls=CounterSource,
+            source_cfg={"count": "10"},
+        )
+```
+
+The suite runs in-process — it drives your `Source`/`Destination` through the
+same servicer adapters `serve()` uses, without a real gRPC socket. It verifies
+your specification, config validation, resume-at-position behavior, the
+read/write round trip, and record shapes (raw, structured, tombstone). The
+suite's test methods are `async def`, so add `pytest-asyncio` with auto mode:
+
+```toml title="pyproject.toml"
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+```
+
+The current contract version is `CONTRACT_VERSION` (`2026-08.v2`); your CI
+output states which contract you passed. For a fuller, dependency-carrying
+example — including a real HTTP client and `teardown()` guarded against an
+early SIGTERM — see the SDK's
+[`examples/http-poll-source`](https://github.com/ConduitIO/conduit-connector-sdk-python/tree/main/examples/http-poll-source).
+
+## Next steps
+
+- [Connector Specification](/docs/developing/connectors/connector-specification) —
+  the specification every connector returns, and how Conduit uses it.
+- [Using a Custom Connector](/docs/developing/connectors/using-a-custom-connector) —
+  running a standalone build in a real pipeline.
+- [Connector Lifecycle](/docs/developing/connectors/connector-lifecycle) — the
+  full lifecycle the methods above hook into.
+
+![scarf pixel conduit-site-docs-developing-connectors-python](https://static.scarf.sh/a.png?x-pxid=3ada0949-fa61-40d6-a44a-76447ea4e39f)

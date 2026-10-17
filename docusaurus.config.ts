@@ -282,6 +282,10 @@ const config: Config = {
             from: '/docs/features/stream-inspector',
             to: '/docs/using/other-features/stream-inspector'
           },
+          {
+            from: '/docs/developing/connectors/writing-a-connector-in-python',
+            to: '/docs/developing/connectors/python-connectors',
+          },
         ]
       },
     ],
