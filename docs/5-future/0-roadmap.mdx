@@ -6,6 +6,40 @@ title: 'Roadmap'
 
 Conduit works in the open and we're always looking for feedback from the community. Our roadmap is publicly available at GitHub [on this project](https://github.com/orgs/ConduitIO/projects/3/views/9).
 
+## v0.21 release train
+
+v0.21 ships the first part of the Kafka Connect migration story: a
+`conduit migrate kafka-connect` command, a certified connector for every output
+it emits, and a migrated Postgres pipeline that resumes from Debezium offsets
+without a re-snapshot.
+
+Shipped in v0.21:
+
+- [x] `conduit migrate kafka-connect` — translates Kafka Connect connector
+      configs into Conduit pipelines plus a compatibility report. Covers
+      Debezium Postgres, S3 sink and Kafka→Kafka (MirrorMaker 2); more families
+      land as their rules ship
+- [x] Protobuf decode for Confluent Schema Registry
+- [x] Secrets at rest — `${VAR}` references are stored as references and
+      resolved at provision time
+- [x] Python GA — one merged distribution and `conduit connector new --lang python`
+- [x] Public connector quality tiers and a catalog scorecard
+- [x] The benchi regression gate, live in CI
+- [x] Acceptance suite v2, and the Go 1.26 + Avro library move across the
+      connector fleet
+- [x] Processor batch API (`ProcessBatch`) and the `stateless` declaration
+- [x] Postgres v0.15.0 with Debezium offset import
+
+Still to come:
+
+- [ ] Certifying every connector `migrate` emits (the v0.21 release bar)
+- [ ] `conduit kc lint` and `conduit kc diff`
+- [ ] Migrate coverage for Debezium MySQL, JDBC source/sink and the
+      Elasticsearch/OpenSearch sink; offset import for those connectors
+- [ ] The SMT compatibility pack
+- [ ] The default engine flip (arch-v2 becomes the only engine; the v1 engine is
+      removed)
+
 ### Need a connector
 
 If you need support for a particular data store that doesn't exist on the Connector list, check out the list of

@@ -66,6 +66,17 @@ import Tooltip from '@mui/material/Tooltip';
   />
 </Box>
 
+:::note v0.21
+
+The built-in Postgres connector is v0.15.0 and ships Debezium offset import:
+set `logrepl.import.debeziumOffset` to resume a migrated Debezium Postgres
+pipeline without a re-snapshot. Debezium-compatible output mode (the
+`debezium.enabled` source setting plus the `debezium.encode` processor) is part
+of the v0.21 release train. Certification against acceptance-suite v2 is
+targeting v0.21.
+
+:::
+
 ## Latest release
 
 - [conduit-connector-postgres_0.14.0_Darwin_arm64.tar.gz](https://conduit.gateway.scarf.sh/connector/download/ConduitIO/conduit-connector-postgres/releases/download/v0.14.0/conduit-connector-postgres_0.14.0_Darwin_arm64.tar.gz)

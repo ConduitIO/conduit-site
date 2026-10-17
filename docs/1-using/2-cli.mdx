@@ -49,6 +49,7 @@ This page is the exhaustive command reference. For narrower how-tos, see:
 | `conduit doctor` | | offline (optional) | Preflight checks: would `conduit run` succeed here? |
 | `conduit mcp` | | — | Run Conduit's MCP server for AI agents |
 | `conduit generate` | | offline (calls an LLM provider) | Generate a pipeline config file from a plain-language description |
+| `conduit migrate kafka-connect` | | offline | Translate Kafka Connect connector configs into Conduit pipelines plus a compatibility report |
 | `conduit open docs` | `docs` | offline | Open the Conduit documentation in a browser |
 | `conduit config` | | offline | Show the resolved configuration |
 | `conduit version` | | offline | Print the Conduit version |
@@ -237,6 +238,23 @@ Error codes include `generate.no_provider_configured`, `generate.validate_failed
 `generate.semantic_mismatch` and `generate.destination_exists`. See
 [Generate a pipeline from a description](/docs/using/pipelines/generate) for the full list and
 how provider selection works.
+
+### `conduit migrate kafka-connect`
+
+Offline: reads Kafka Connect worker and connector configs and writes, per
+connector, a Conduit pipeline plus a compatibility report. Never drops a key it
+can't translate. See the
+[Migrating from Kafka Connect](/docs/using/guides/migrate-kafka-connect) guide
+for the concept mapping, covered connectors, the report contract, and every
+flag.
+
+```shell
+conduit migrate kafka-connect connectors/orders.json
+conduit migrate kafka-connect --worker connect-distributed.properties ./connectors --dry-run
+```
+
+Exit codes: `0` no entry blocks · `2` an entry blocks or input is invalid · `3`
+an output file cannot be written · `1` internal error.
 
 ### `conduit open docs` (alias: `conduit docs`)
 

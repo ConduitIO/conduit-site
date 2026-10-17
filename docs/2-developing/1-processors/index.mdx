@@ -60,6 +60,13 @@ func main() {
     ))
 ```
 
+### Batch processing and stateless processors
+
+The SDK has two opt-in surfaces for hot-path processors:
+
+- **`sdk.BatchProcessor`** — implement `ProcessBatch(ctx, []opencdc.Record) ([]ProcessedRecord, error)` to process a whole batch at once instead of one record per `Process` call. The result slice must be the same length as the input (a 1:1 index contract), and `ProcessBatch` must be idempotent. A processor that doesn't implement it runs unchanged — the engine falls back to `Process`.
+- **`Specification.Stateless`** — set `Stateless: true` on the specification to declare the processor keeps no state between calls, which lets the engine run it in parallel. A processor that declares `Stateless` but does keep state is a bug; a stateful processor that doesn't declare it is treated as stateful and run serially.
+
 After that, you'd need to compile it, and locate its `.wasm` file into the desired `processors` directory as previously mentioned:
 
 

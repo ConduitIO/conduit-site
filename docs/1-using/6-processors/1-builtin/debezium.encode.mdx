@@ -1,0 +1,188 @@
+---
+title: 'debezium.encode'
+sidebar_position: 8.5
+---
+
+import Chip from '@mui/material/Chip';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# `debezium.encode`
+
+Encodes records into the messages Debezium would have produced.
+
+## Description
+
+The `debezium.encode` processor is the envelope, naming, and tombstone half of
+Conduit's Debezium-compatible output mode for Postgres CDC. It takes each
+OpenCDC record the Postgres source emits in its Debezium mode and turns it into
+the messages Debezium would have produced:
+
+- an insert or snapshot read becomes one create/read message;
+- an update becomes one update message, or, when the key changes, a delete, a
+  tombstone and a create;
+- a delete becomes a delete message and, with `tombstones.on.delete`, a
+  tombstone (same key, null value).
+
+Each message carries its serialized key, value and headers, and the ordered
+list is written as a versioned frame into the payload. The Kafka destination
+produces every message of the frame and acknowledges the record only when all
+of them succeeded, so positions and change keys stay one-record-per-change.
+
+This revision implements the JsonConverter (`schemas.enable` true and false,
+`decimal.format` BASE64 and NUMERIC). The Confluent AvroConverter is the
+design's default and the next revision; selecting `avro` fails at configure
+time with `debezium.avro_unsupported` rather than emitting half-encoded
+messages.
+
+The processor works together with the Postgres source's Debezium mode. The
+`debezium.compat` setting must match the source's setting, and `migrate` sets
+both identically when it emits a Debezium Postgres pipeline.
+
+## Configuration parameters
+
+<Tabs groupId="config-params">
+  <TabItem value="yaml" label="YAML">
+```yaml
+version: 2.2
+pipelines:
+  - id: example
+    status: running
+    connectors:
+      # define source and destination ...
+    processors:
+      - id: example
+        plugin: "debezium.encode"
+        settings:
+          # Selects the key converter. The Debezium-compatible output design
+          # makes "avro" the default; this revision implements the JsonConverter
+          # first and defaults to "json" until the Confluent AvroConverter port
+          # lands.
+          # Type: string
+          key.converter: "json"
+          # Selects the value converter. See key.converter.
+          # Type: string
+          value.converter: "json"
+          # Mirrors key.converter.schemas.enable: when true the JsonConverter
+          # includes the schema next to the key payload.
+          # Type: bool
+          key.json.schemas.enable: "true"
+          # Mirrors value.converter.schemas.enable: when true the JsonConverter
+          # includes the schema next to the value payload.
+          # Type: bool
+          value.json.schemas.enable: "true"
+          # Mirrors decimal.format: "BASE64" writes the unscaled decimal as
+          # base64, "NUMERIC" as a JSON number.
+          # Type: string
+          json.decimal.format: "BASE64"
+          # Mirrors tombstones.on.delete: a delete expands into a delete event
+          # followed by a tombstone (same key, null value).
+          # Type: bool
+          tombstones.on.delete: "true"
+          # Selects the Debezium source-schema shape. It must match the
+          # source's debezium.compat.
+          # Type: string
+          debezium.compat: "3.5"
+```
+  </TabItem>
+  <TabItem value="table" label="Table">
+  <table class="no-margin-table">
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td>`key.converter`</td>
+        <td>string</td>
+        <td>`json`</td>
+        <td>
+  Selects the key converter. The Debezium-compatible output design makes `avro` the default; this revision implements the JsonConverter first and defaults to `json` until the Confluent AvroConverter port lands.
+        </td>
+      </tr>
+      <tr>
+        <td>`value.converter`</td>
+        <td>string</td>
+        <td>`json`</td>
+        <td>
+  Selects the value converter. See `key.converter`.
+        </td>
+      </tr>
+      <tr>
+        <td>`key.json.schemas.enable`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Mirrors `key.converter.schemas.enable`: when true the JsonConverter includes the schema next to the key payload.
+        </td>
+      </tr>
+      <tr>
+        <td>`value.json.schemas.enable`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Mirrors `value.converter.schemas.enable`: when true the JsonConverter includes the schema next to the value payload.
+        </td>
+      </tr>
+      <tr>
+        <td>`json.decimal.format`</td>
+        <td>string</td>
+        <td>`BASE64`</td>
+        <td>
+  Mirrors `decimal.format`: `BASE64` writes the unscaled decimal as base64, `NUMERIC` as a JSON number.
+        </td>
+      </tr>
+      <tr>
+        <td>`tombstones.on.delete`</td>
+        <td>bool</td>
+        <td>`true`</td>
+        <td>
+  Mirrors `tombstones.on.delete`: a delete expands into a delete event followed by a tombstone (same key, null value).
+        </td>
+      </tr>
+      <tr>
+        <td>`debezium.compat`</td>
+        <td>string</td>
+        <td>`3.5`</td>
+        <td>
+  Selects the Debezium source-schema shape. It must match the source's `debezium.compat`.
+        </td>
+      </tr>
+    </table>
+  </TabItem>
+</Tabs>
+
+## Examples
+
+The processor is used as part of a Debezium Postgres → Kafka pipeline, where the
+Postgres source runs in Debezium mode and `debezium.encode` sits on the source
+connector before the Kafka destination:
+
+```yaml
+version: 2.2
+pipelines:
+  - id: pg-debezium-to-kafka
+    status: running
+    connectors:
+      - id: pg
+        type: source
+        plugin: builtin:postgres
+        settings:
+          url: "postgres://user:pass@localhost:5432/db?sslmode=disable"
+          tables: "inventory.orders"
+          debezium.enabled: "true"
+        processors:
+          - id: encode
+            plugin: debezium.encode
+            settings:
+              debezium.compat: "3.5"
+      - id: kafka
+        type: destination
+        plugin: builtin:kafka
+        settings:
+          servers: "localhost:9092"
+          topic: '{{ index .Metadata "debezium.topic" }}'
+```
+
+![scarf pixel conduit-site-docs-using-processors](https://static.scarf.sh/a.png?x-pxid=02ff4382-6501-4410-b523-fa8e7f879b00)
