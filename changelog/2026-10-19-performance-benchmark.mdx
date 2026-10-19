@@ -1,0 +1,20 @@
+---
+slug: '2026-10-19-performance-benchmark'
+title: Performance sweep and CDC benchmark
+draft: false
+tags: [conduit, performance, benchmark]
+---
+
+Conduit v0.21 ships a connector write-path performance sweep and a reproducible
+CDC benchmark against Kafka Connect + Debezium.
+
+<!--truncate-->
+
+### Key Highlights
+
+- **A reproducible benchmark is now in the repo.** [`benchi/v021-cdc-parity`](https://github.com/ConduitIO/conduit/tree/main/benchi/v021-cdc-parity) compares Conduit, Kafka Connect + Debezium, and Redpanda Connect on the same Postgres CDC workload, with an A/A noise floor and ground-truth metrics (`wc -l`, `SELECT count(*)`, topic offsets) instead of engine instrumentation. Run it yourself with `terraform apply` + `bash run.sh`.
+- **Postgres destination: +36.4% at parity defaults.** Conduit's default config (memoized SQL, a schema-guarded `cache_statement` exec mode, and a 3000-row destination batch) beats Debezium → JDBC sink on the `CDC→Postgres` workload, where the pre-fix defaults were ~47% behind.
+- **File sink: +6.8%**, where the sink is the bottleneck.
+- **Every certified connector swept for write-path overhead** — postgres, mysql, kafka, s3, elasticsearch, and the connector SDK — with fixes for per-record SQL/request rebuilds, missing default batching, and suboptimal client defaults, so the *defaults* are fast, not just a tuned config.
+
+Full numbers and methodology on the [performance page](/performance).
