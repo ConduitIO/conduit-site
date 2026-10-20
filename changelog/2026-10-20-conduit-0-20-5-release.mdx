@@ -1,0 +1,23 @@
+---
+slug: '2026-10-20-conduit-0-20-5-release'
+title: Conduit v0.20.5 release
+draft: false
+tags: [conduit, release, conduit-release]
+---
+
+[Conduit v0.20.5](https://github.com/ConduitIO/conduit/releases/tag/v0.20.5) is a patch release that fixes three ways records could be changed without an error: copies of a record sharing nested data, Avro decoding dropping map keys, and Avro encoding rewriting the values it was given. It also stops a self-referencing Avro schema from hanging the pipeline and fixes a silent value conversion in the built-in Postgres destination. **Every v0.20.x user should upgrade.** These fixes were planned for v0.20.3; v0.20.3 and v0.20.4 do not have them. Two conduit-commons advisories cover the Avro fixes: [GHSA-fhm8-v27h-q65j](https://github.com/ConduitIO/conduit-commons/security/advisories/GHSA-fhm8-v27h-q65j) and [GHSA-2cr9-8q6v-733r](https://github.com/ConduitIO/conduit-commons/security/advisories/GHSA-2cr9-8q6v-733r).
+
+<!--truncate-->
+
+### Key Highlights
+
+- **Record copies no longer share nested data** (conduit-commons#336, affected v0.8.0 through v0.20.4). Conduit copies a record when a pipeline has two or more destinations, and the `clone` and `split` processors copy records too. Those copies shared nested arrays and objects, so a processor that edited one in place (most often a `custom.javascript` processor on one destination's branch) changed every copy, with no error. You are affected if a pipeline fans out or uses `clone`/`split` **and** a later processor changes a nested value in place. Records written before the upgrade are not repaired.
+- **Avro decode and encode no longer change data silently.** Decoding a union whose branch contains another union, such as `["null", map<["null","int"]>]`, could drop map keys or flatten a nested map ([GHSA-2cr9-8q6v-733r](https://github.com/ConduitIO/conduit-commons/security/advisories/GHSA-2cr9-8q6v-733r), conduit-commons#312). Encoding wrapped union values in place inside the record's own maps and arrays, so a second encode of the same data could fail or write the wrapper instead of the value ([GHSA-fhm8-v27h-q65j](https://github.com/ConduitIO/conduit-commons/security/advisories/GHSA-fhm8-v27h-q65j), conduit-commons#342). Standalone connectors and processors carry their own conduit-commons and need a rebuild once SDK releases on the fixed version are out.
+- **Self-referencing Avro schemas no longer hang the pipeline** (conduit-commons#314). A schema that refers to itself, like a linked list or a tree, made parsing recurse until the process ran out of memory. Such schemas now parse, encode and decode.
+- **Built-in Postgres destination v0.14.5** ([conduit-connector-postgres#367](https://github.com/ConduitIO/conduit-connector-postgres/issues/367)). After `ALTER COLUMN ... TYPE` on a table a running destination writes, Postgres converted new values to the new type without an error (5/2 into a column changed from `numeric` to `integer` was stored as 3). The destination now defaults to pgx `describe_exec`, so a value the new column cannot hold fails the write and is nacked. This adds a round trip per statement. To keep the old behaviour, add `default_query_exec_mode=cache_statement` to the `url`, but only on a direct connection to tables that never change type while the pipeline runs.
+- **Behaviour change: ambiguous Avro union values now fail to encode.** A value that fits more than one branch of a union (for example a map that is also a valid record of another branch) is now an `ErrSchemaValueMismatch` error instead of being written as whichever branch was guessed. The record is nacked and follows your DLQ settings. Pass the value in its named form (`{"<branch name>": value}`) or make the union's branches distinguishable.
+- **Known issue: nested-path processors fail after fan-out on v0.20.x.** `field.set`, `field.exclude`, `field.rename` and other processors that use a nested reference such as `.Payload.After.a.b` fail on a record copied by fan-out, `clone` or `split`. The record is nacked; nothing changes silently. Move those processors before the fan-out, as pipeline-level processors. This is fixed in v0.21.
+
+Read the [full release notes](https://github.com/ConduitIO/conduit/releases/tag/v0.20.5) before upgrading. They cover how to check whether you were affected and what changes on upgrade.
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)
