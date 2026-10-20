@@ -19,7 +19,7 @@ docker compose exec conduit tail -n 3 /data/records.ndjson
 docker compose down            # keeps the state volume; add -v to delete it
 ```
 
-This starts a pinned, signed release image (`ghcr.io/conduitio/conduit:v0.20.0`) with a pipeline already running: the
+This starts a pinned, signed release image (the tag is set in `compose.yaml`; set `CONDUIT_IMAGE` to use another) with a pipeline already running: the
 built-in generator writes records to the built-in file destination. Conduit's state is on a named volume, so a
 restart resumes the pipeline from its saved position. The API and web UI are on `http://localhost:8080`, published on
 loopback only. Replace `pipelines/quickstart.yaml` with your own pipeline to go further.
