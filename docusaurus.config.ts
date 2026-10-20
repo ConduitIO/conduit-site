@@ -160,8 +160,8 @@ const config: Config = {
       copyright: `Copyright © ${new Date().getFullYear()} Meroxa, Inc.`,
     },
     announcementBar: {
-      id: 'announcement-bar-20-0', // increment on change
-      content: `Conduit v0.20.0 is out: <code>conduit generate</code>, a Postgres-to-pgvector RAG template, and signed releases. <a class='cta' href='/changelog/2026-10-12-conduit-0-20-0-release' target='_blank' rel='noreferrer noopener'>See what's new</a>.`,
+      id: 'announcement-bar-20-5', // increment on change
+      content: `Conduit v0.20.5 fixes record copies sharing nested data and two Avro bugs that changed values without an error. Every v0.20.x user should upgrade. <a class='cta' href='/changelog/2026-10-20-conduit-0-20-5-release' target='_blank' rel='noreferrer noopener'>Read the release post</a>.`,
       isCloseable: true,
     },
     colorMode: {
