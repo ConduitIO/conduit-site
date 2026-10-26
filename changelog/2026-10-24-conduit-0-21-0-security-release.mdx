@@ -1,0 +1,37 @@
+---
+slug: '2026-10-24-conduit-0-21-0-security-release'
+title: Conduit v0.21.0 security release
+draft: false
+tags: [conduit, release, security, conduit-release]
+---
+
+Conduit v0.21.0 is a security release. It closes exposures found in an internal
+audit — an unauthenticated API, environment and file exfiltration, server-side
+request forgery, plaintext SASL credentials, and record values in logs and
+errors — and backports the same fixes to v0.20.6.
+
+<!--truncate-->
+
+### What changed
+
+- **The API binds to localhost by default**, and requires a token on any
+  non-loopback listener.
+- **`${VAR}` expansion is allowlisted** (`env.allow`), so plugins no longer read
+  the whole environment.
+- **File and JavaScript paths are allowlisted**, and **outbound HTTP is guarded**
+  at dial time, closing server-side request forgery.
+- **The log connector is metadata-only**, and a pipeline with **no recoverable
+  DLQ refuses to start**.
+- **Kafka refuses SASL without TLS** unless `saslAllowPlaintext` is set, and
+  `conduit migrate kafka-connect` blocks `SASL_PLAINTEXT`.
+- **Postgres v0.17.5** refuses a replaced replication slot and detects restores,
+  with new error codes rather than silent data loss.
+- **Errors and logs no longer echo record values**, and positions are logged as
+  salted hashes. The toolchain moves to Go 1.26.10 (GO-2026-6809).
+
+Most fixes change a default, so read the
+[release notes](https://github.com/ConduitIO/conduit/releases/tag/v0.21.0) before
+upgrading. A security advisory accompanies the release; links will be added here
+when it is published.
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)

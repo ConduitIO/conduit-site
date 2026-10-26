@@ -1,0 +1,152 @@
+---
+title: Performance
+description: Conduit vs Kafka Connect + Debezium — a reproducible CDC throughput comparison, with the methodology and caveats stated up front.
+---
+
+# Performance
+
+Arch-v2 at shipped defaults matches Kafka Connect + Debezium on CDC throughput
+across all four destinations at 20,000 ops/s — **parity everywhere** — and holds
+it at 40,000 ops/s except the Postgres destination, which saturates at **0.77x**
+Connect because of a per-statement round trip that the tuned phase shows is
+fixable.
+
+We publish this because a benchmark is only as good as its reproducibility. Every
+number below comes from a committed, re-runnable benchmark
+([`benchi/v021-cdc-parity`](https://github.com/ConduitIO/conduit/tree/main/benchi/v021-cdc-parity),
+results in
+[`results-arch-v2.md`](https://github.com/ConduitIO/conduit/blob/main/benchi/v021-cdc-parity/results-arch-v2.md)),
+with the setup, the ground-truth method, and the caveats stated up front. If you
+distrust a marketing number, good — here is the recipe to produce it yourself.
+
+## Methodology
+
+**Workload.** One Postgres table (`id bigint PRIMARY KEY`, `payload text`)
+receiving a steady **20,000 operations/s** — 70% INSERT, 20% UPDATE, 10% DELETE
+— from a committed loader. Each system captures the same logical-replication
+stream and delivers it to a destination whose accumulated count is the measured
+quantity. A labelled **40,000 ops/s saturation phase** probes the capacity of the
+Postgres and Kafka destinations.
+
+**Hardware.** AWS `c6i.2xlarge` (8 vCPU / 16 GB), Ubuntu 24.04, Postgres 17 on a
+separate volume, Kafka (KRaft) and Kafka Connect co-located. Both systems run on
+the same instance against the same database.
+
+**Measurement.** The metric is **ground truth**, not engine instrumentation: the
+sink's own count (`wc -l` on the file sink, `SELECT count(*)` on the Postgres
+destination, MinIO object lines, Kafka end offsets). We report the **median of 5
+measured rounds after a discarded warmup round**, never a best run.
+
+**Noise floor.** We run an A/A control — Conduit against itself (`-aa`, the same
+image, pipeline, and compose) — interleaved with the A/B arms, with the rounds
+rotated in Latin-square order. Any Conduit-vs-Debezium delta smaller than the
+per-arm A/A spread is treated as noise. Measured floors: file 0.10%, Postgres
+0.02%, S3 1.03%, Kafka 0.03% (median per-round |delta|).
+
+**Versions.** Conduit `main` at `9e6be91` (v0.21.0-nightly, arch-v2 with bundled
+kafka v0.14.2, s3 v0.11.1, postgres v0.17.2), Kafka Connect 4.0.0 with Debezium
+Postgres 3.2.4, Postgres 17, Kafka 4.0.0. The exact pins are in the benchmark's
+`terraform/`, `tools/`, and `environment.txt`.
+
+## Results
+
+### Shipped defaults, 20,000 ops/s
+
+Arch-v2 at shipped defaults, every Conduit arm with its own A/A twin. Parity on
+all four destinations:
+
+| destination | unit | Conduit | Connect | Conduit / Connect |
+| --- | --- | --- | --- | --- |
+| file | events/s | 19,780 | 19,811 | 0.998 |
+| Postgres | net rows/s | 11,835 | 11,845 | 0.999 |
+| S3 | events/s | 17,646 | 17,591 | 1.003 |
+| Kafka | events/s | 19,769 | 19,798 | 0.998 |
+
+Parity means "sustains the offered load": file, Postgres and Kafka lag stay flat
+for both systems. Both S3 arms saturate near 17.6k ev/s at 20k (its A/A floor is
+the noisiest, 1.0% median / 3.4% max), so the +0.3% is not a difference. At the
+same delivered rate Conduit uses less CPU — as a share of one core, file (57% vs
+97%), Postgres (58% vs 110%) and S3 (66% vs 130%), and about the same on Kafka
+(61% vs 54%) — with Conduit's Avro work included.
+
+### Saturation, 40,000 ops/s
+
+20k hides headroom, so a labelled saturation phase offers 40,000 ops/s. File and
+Kafka deliver the full 39.1k the loader produces; the Postgres destination does
+not.
+
+| destination | median /s | vs Connect |
+| --- | --- | --- |
+| file | 39,096 | 1.002 |
+| Kafka | 39,096 | 1.000 |
+| Postgres | 14,798 | **0.769** |
+
+### The Postgres gap, and its cause
+
+The Postgres destination saturates at 14.8k net rows/s against Connect's 19.1k
+(0.77x). The diagnostic profile shows this is **not a compute limit**: Conduit is
+at about 0.9 of one core, and the destination backend is idle on `ClientRead` in
+a third of the samples while the walsender waits on Conduit in three-quarters of
+them — a round-trip-bound loop.
+
+The lever is the destination's default `describe_exec` query mode, which issues a
+Parse/Describe round trip per statement. Changing only that to `cache_statement`
+(a **tuned** phase, not a default) lifts the same arm to 23.4k net rows/s —
+1.23x Connect, and past the offered load. The tuned number is evidence of the
+ceiling, not a claim that `cache_statement` is safe as a default.
+
+## Non-equivalences we disclose
+
+A fair comparison is not an identical one, and hiding the differences is how
+benchmarks lose trust. These are the places the arms differ, and why:
+
+- **Kafka hop.** The Connect arms (Debezium) write through a Kafka broker; Conduit
+  reads the source directly. This is inherent to Kafka Connect's architecture, not
+  a handicap we added — but it means the Connect arms carry a broker round-trip
+  Conduit's do not.
+- **Debezium envelope.** The Connect arms use Debezium's `unwrap` transform to
+  flatten the record envelope, and the JDBC sink requires `schemas.enable=true`,
+  which adds a per-message schema — both are Debezium's documented defaults, not
+  Conduit choices.
+- **Avro asymmetry.** Conduit encodes Avro and registers schemas at its defaults;
+  Debezium sends schemaless JSON. This costs Conduit work Connect does not do, so
+  it favours Connect.
+- **Resources are not normalized.** Each system gets the machine with its own
+  defaults (JVM heap for Connect, GOMAXPROCS for Conduit). We did not tune either
+  side; we ran both out of the box.
+- **Sinks differ in object/row layout.** Conduit's S3 sink writes one JSON line per
+  event under flat `<timestamp>.json` keys; the Confluent S3 sink uses its own
+  partitioner and bare-value lines. We count lines, so the comparison is
+  record-for-record, but a reader that depends on exact object keys would notice.
+
+The full per-arm equivalence table is in the
+[benchmark README](https://github.com/ConduitIO/conduit/tree/main/benchi/v021-cdc-parity).
+
+## Reproduce it
+
+```bash
+git clone https://github.com/ConduitIO/conduit
+cd conduit/benchi/v021-cdc-parity
+terraform apply                     # one c6i.2xlarge + Postgres 17
+CONDUIT_ENGINE=v2 bash run.sh 5 conduit conduit-aa connect \
+  conduit-pg conduit-pg-aa connect-pg \
+  conduit-s3 conduit-s3-aa connect-s3 \
+  conduit-kafka conduit-kafka-aa connect-kafka
+```
+
+Results land in `results/<run>/runs.csv` as per-round ground-truth deltas; medians
+and the A/A spread are computed from those, not from any Conduit metric. Regenerate
+any table with `python3 scripts/summarize.py results-aws/<run dir>`.
+
+## What these numbers do not say
+
+The result is regime-dependent: at the offered load all four destinations are
+parity, and at saturation the only gap is the Postgres destination's default exec
+mode, which the tuned phase shows is fixable. There is no single universal
+"Conduit is N× faster." We do not claim Conduit replaces every system or wins
+every workload — only that on this CDC workload, measured this way, it matches
+Kafka Connect + Debezium at parity, with a known and profiled gap at the Postgres
+destination's saturation point.
+
+The connector-level sweep that produced the defaults is described in the
+[benchmark README](https://github.com/ConduitIO/conduit/tree/main/benchi/v021-cdc-parity).
