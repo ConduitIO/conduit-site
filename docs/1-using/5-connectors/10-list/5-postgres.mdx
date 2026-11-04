@@ -68,12 +68,11 @@ import Tooltip from '@mui/material/Tooltip';
 
 :::note v0.21
 
-The built-in Postgres connector is v0.15.0 and ships Debezium offset import:
-set `logrepl.import.debeziumOffset` to resume a migrated Debezium Postgres
-pipeline without a re-snapshot. Debezium-compatible output mode (the
-`debezium.enabled` source setting plus the `debezium.encode` processor) is part
-of the v0.21 release train. Certification against acceptance-suite v2 is
-targeting v0.21.
+The built-in Postgres connector is certified in v0.21 against acceptance-suite
+v2. `conduit migrate kafka-connect` does not read Debezium offsets, so a
+migrated Debezium Postgres pipeline starts with a fresh snapshot; offset import
+is planned for v0.22. A Debezium-compatible output mode for the Postgres source
+did not ship in v0.21.
 
 :::
 

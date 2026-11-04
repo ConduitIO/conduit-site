@@ -68,9 +68,10 @@ import Tooltip from '@mui/material/Tooltip';
 
 :::note v0.21
 
-MySQL CDC is in beta in the v0.21 release train, targeting certification
-against acceptance-suite v2. Debezium-compatible output and offset import for
-MySQL land later; v0.21 migrations re-snapshot.
+MySQL CDC is in beta and is certified in v0.21 against acceptance-suite v2.
+`conduit migrate kafka-connect` has no rules for Debezium MySQL in v0.21 (the
+connector class is reported as unsupported); they are planned for v0.22. There
+is no offset import, so a MySQL migration re-snapshots.
 
 :::
 
