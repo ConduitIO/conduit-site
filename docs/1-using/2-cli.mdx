@@ -579,7 +579,8 @@ conduit connectors describe connector:source
 
 Scaffolds a full connector repository from `ConduitIO/conduit-connector-template`
 — SDK wiring, tests, CI, release workflow, acceptance test harness — ready to
-build with no edits. Only `--lang go` is available today.
+build with no edits. `--lang go` (default) and `--lang python` are available;
+the generated Python project's `conduitio` dependency does not install from PyPI yet.
 
 | Flag | Description |
 |---|---|
@@ -674,7 +675,7 @@ conduit processors describe pipeline-processor
 Scaffolds a full processor repository from `ConduitIO/conduit-processor-template`
 — SDK wiring, tests, CI, release workflow — ready to build with no edits. Same
 flags as `connectors new` (`--module`, `--path`, `--git`/`--no-git`, `--force`).
-Only `--lang go` is available today.
+Processors are Go only; `--lang python` is rejected.
 
 ```shell
 conduit processors new uppercase --module github.com/you/conduit-processor-uppercase

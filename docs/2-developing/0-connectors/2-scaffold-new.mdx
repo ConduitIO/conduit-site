@@ -11,12 +11,13 @@ flow works today, and how they relate to the
 repository.
 
 :::info
-Scaffolding targets **Go only** today. `--lang python` is accepted on the command
-line but currently fails with an explicit "not supported yet" error — the CLI does
-not generate a Python project yet. A Python connector SDK *does* now exist
-([`conduit-connector-sdk-python`](https://github.com/ConduitIO/conduit-connector-sdk-python),
-**pre-alpha**); until scaffolding wires it in, start a Python connector by hand — see
-[Python Connectors](/docs/developing/connectors/python-connectors). For the full
+`conduit connector new --lang python` scaffolds a Python **connector** (processors
+are Go only and `--lang python` is rejected for them). The Python SDK is not GA, and
+the generated `pyproject.toml` depends on `conduitio>=0.1.0.dev0`, which does not
+resolve on PyPI yet: the `conduitio` package there is only a `0.0.0` placeholder, so
+the generated project's dependencies do not install until the merged distribution is
+published. The older single-package SDK is on PyPI as `conduit-connector-sdk`
+`0.1.0.dev1`. See [Python Connectors](/docs/developing/connectors/python-connectors). For the full
 set of official language SDKs and their tiers, see
 [Language SDKs](/docs/what-is/language-sdks).
 :::
@@ -103,7 +104,7 @@ conduit processor new uppercase --module github.com/you/conduit-processor-upperc
 
 | Flag | Description |
 | --- | --- |
-| `--lang` | Target language. Only `go` produces a scaffold; any other value (including `python`) fails with an explicit "not supported yet" error. A Python SDK exists ([pre-alpha](/docs/developing/connectors/python-connectors)); the scaffolder just doesn't generate for it yet. Default: `go`. |
+| `--lang` | Target language: `go` or `python`. `python` scaffolds connectors only, and the generated project's `conduitio` dependency does not install from PyPI yet ([details](/docs/developing/connectors/python-connectors)). Default: `go`. |
 | `--module` | Go module path, e.g. `github.com/<you>/conduit-connector-<name>`. **Required.** Must end in `conduit-connector-<name>` (or `conduit-processor-<name>`), matching the positional name argument. |
 | `--path` | Destination directory. Default: `./conduit-connector-<name>` (or `./conduit-processor-<name>`). |
 | `--sdk-version` | Overrides the SDK version pinned in the embedded template snapshot. |
