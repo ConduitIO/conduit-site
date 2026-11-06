@@ -70,8 +70,10 @@ import Tooltip from '@mui/material/Tooltip';
 
 The S3 connector gains the AWS default credential chain: with the Conduit
 operator policy, ambient AWS credentials are used so `aws.accessKeyId` and
-`aws.secretAccessKey` can be omitted. Certification against acceptance-suite
-v2 is targeting v0.21.
+`aws.secretAccessKey` can be omitted. The connector is certified against
+acceptance-suite v2 in v0.21. `conduit migrate kafka-connect` does not use its
+Kafka Connect style formats and partitioners yet: an S3 sink migration is
+blocked on `kc.output_shape_differs` unless you pass `--accept-gaps`.
 
 :::
 

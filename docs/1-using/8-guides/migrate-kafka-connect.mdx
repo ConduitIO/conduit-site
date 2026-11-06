@@ -44,7 +44,19 @@ binary:
 Debezium MySQL, the JDBC source/sink, and the Elasticsearch/OpenSearch sink are
 not yet covered: their connector classes are reported `unsupported`, with every
 key listed and no pipeline written. Each family gains coverage as its rule file
-lands.
+lands. Rules for those classes are planned for v0.22.
+
+Three limits apply to the classes that are covered:
+
+- **Offsets are not imported.** The report carries `kc.offsets_not_migrated` on
+  every migration. A migrated Postgres pipeline re-snapshots, and a Kafka
+  pipeline reads from the beginning.
+- **Kafka→Kafka keeps key, value and topic name** but not partition, headers or
+  timestamp, even though the Kafka connector can preserve them. The report says
+  so.
+- **S3 sink migrations are blocked** on `kc.output_shape_differs` unless you
+  pass `--accept-gaps`, because `migrate` does not yet use the S3 connector's
+  Kafka Connect style formats and partitioners.
 
 ## Compatibility report
 
@@ -120,7 +132,6 @@ The rest of the migration surface lands in later releases: `conduit kc lint`
 versions), plus the cutover and offset-import flags (`--import-offset`,
 `--cutover`, `--from-rest`, `--registry-url`, `--slot-strategy`). Offset import
 — resuming a migrated Postgres pipeline from Debezium's offsets without a
-re-snapshot — is delivered by the Postgres connector; see the
-[Postgres](/docs/using/connectors/list/postgres) page.
+re-snapshot — is planned for v0.22. Until then every migration re-snapshots.
 
 ![scarf pixel conduit-site-docs-using-guides](https://static.scarf.sh/a.png?x-pxid=53743422-c614-4e45-acaa-f1f9f604321e)

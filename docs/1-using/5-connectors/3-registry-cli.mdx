@@ -176,7 +176,7 @@ initializes git.
 | Flag | Description |
 |---|---|
 | `--module` | Go module path, e.g. `github.com/you/conduit-connector-<name>` (required). |
-| `--lang` | Target language. Only `go` is available today. |
+| `--lang` | Target language: `go` (default) or `python`. `python` scaffolds connectors only, and the generated `conduitio` dependency does not install from PyPI yet. |
 | `--path` | Destination directory. Default `./conduit-connector-<name>`. |
 | `--sdk-version` | Override the SDK version pinned in the embedded template. |
 | `--git` / `--no-git` | Initialize a git repository and first commit (`--git` is the default). |

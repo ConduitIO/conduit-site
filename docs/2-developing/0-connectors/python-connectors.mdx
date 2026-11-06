@@ -13,8 +13,9 @@ the same handshake, record model, and lifecycle Conduit uses for a Go
 connector.
 
 :::warning Pre-alpha
-The Python SDK is **pre-alpha and under active development.** No release has
-shipped and it is **not yet on PyPI.** The public API can change without a
+The Python SDK is **pre-alpha and under active development.** The merged
+`conduitio` distribution is **not yet published to PyPI** (the name holds only a
+`0.0.0` placeholder). The public API can change without a
 deprecation notice. Install it from the repository and pin a commit. It is
 documented here so you can try it and give feedback — not as a stable
 foundation for production connectors yet.
@@ -59,11 +60,14 @@ You need **Python 3.11+** and a Conduit binary to run the result (see
 
 ## Project layout
 
-`conduit connector new --lang python` is on the roadmap but **not wired up yet**
-— the CLI currently generates Go only and rejects `--lang python` with
-`--lang "python" is not supported yet`. Until it lands, create the project by
-hand. The layout below is the one the scaffolder will generate, so nothing you
-write is throwaway:
+`conduit connector new --lang python` scaffolds a Python connector (connectors
+only, not processors). The generated `pyproject.toml` depends on
+`conduitio>=0.1.0.dev0`, but the `conduitio` package on PyPI is only a `0.0.0`
+placeholder, so that dependency does not resolve and the generated project's
+dependencies do not install yet. The older single-package SDK is published as
+`conduit-connector-sdk` `0.1.0.dev1`. Until the merged `conduitio` distribution
+is published, install the SDK from the repository. The layout below is the one
+the scaffolder generates:
 
 ```text
 counter-source/

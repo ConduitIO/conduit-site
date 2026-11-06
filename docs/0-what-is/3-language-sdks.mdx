@@ -22,7 +22,9 @@ instead of reimplementing it. That makes Python a natural fit for the data- and
 AI-adjacent edges of a pipeline.
 
 The Python connector SDK is **pre-alpha and in active development**: the API is
-real and usable today, but nothing has shipped to PyPI yet. The distribution is
+real and usable today, but the merged `conduitio` distribution is not published to PyPI yet (the name
+holds only a `0.0.0` placeholder; the older `conduit-connector-sdk` is there as
+`0.1.0.dev1`). The distribution is
 `conduitio`; the import package is `conduit`, exposing two namespaces:
 
 - `conduit.connector` — the connector SDK. Subclass `Source` or `Destination` and
@@ -43,7 +45,7 @@ gRPC out-of-process), the processor state API, and an embedded client.
   and [`conduit connector new --lang go`](/docs/developing/connectors/scaffold-new).
   Go is also the only language that can
   [embed Conduit in-process](/docs/developing/embedding-go).
-- **Python (pre-alpha)** — connector SDK, see above.
+- **Python (pre-alpha)** — connector SDK, see above. `conduit connector new --lang python` scaffolds a connector.
 - **TypeScript (roadmap)** — connectors over gRPC and an embedded client.
 - **Rust (roadmap)** — gRPC connectors and WASM processors.
 

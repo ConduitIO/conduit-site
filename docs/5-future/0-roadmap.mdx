@@ -8,37 +8,50 @@ Conduit works in the open and we're always looking for feedback from the communi
 
 ## v0.21 release train
 
-v0.21 ships the first part of the Kafka Connect migration story: a
-`conduit migrate kafka-connect` command, a certified connector for every output
-it emits, and a migrated Postgres pipeline that resumes from Debezium offsets
-without a re-snapshot.
+v0.21.0 shipped the first slice of the Kafka Connect migration story: a
+`conduit migrate kafka-connect` command with rules for Debezium Postgres, the S3
+sink and MirrorMaker 2, and five certified connectors. It did not deliver the
+whole plan. No migrated pipeline resumes from imported offsets yet: every
+migration re-snapshots until v0.22.
 
 Shipped in v0.21:
 
 - [x] `conduit migrate kafka-connect` — translates Kafka Connect connector
-      configs into Conduit pipelines plus a compatibility report. Covers
-      Debezium Postgres, S3 sink and Kafka→Kafka (MirrorMaker 2); more families
-      land as their rules ship
+      configs into Conduit pipelines plus a compatibility report. Rules for
+      Debezium Postgres, the S3 sink and MirrorMaker 2; other connector classes
+      are reported as unsupported
+- [x] Certified connectors: Postgres CDC, MySQL CDC (beta), Elasticsearch, Kafka
+      and S3. `migrate` emits only the Postgres, Kafka and S3 connectors
+- [x] Protocol v3 with lossless structured values
 - [x] Protobuf decode for Confluent Schema Registry
 - [x] Secrets at rest — `${VAR}` references are stored as references and
       resolved at provision time
-- [x] Python GA — one merged distribution and `conduit connector new --lang python`
-- [x] Public connector quality tiers and a catalog scorecard
+- [x] Public connector quality tiers in the registry index
 - [x] The benchi regression gate, live in CI
-- [x] Acceptance suite v2, and the Go 1.26 + Avro library move across the
-      connector fleet
-- [x] Processor batch API (`ProcessBatch`) and the `stateless` declaration
-- [x] Postgres v0.15.0 with Debezium offset import
+- [x] Acceptance suite v2
 
-Still to come:
+Planned for v0.22:
 
-- [ ] Certifying every connector `migrate` emits (the v0.21 release bar)
+- [ ] `migrate` rules for Debezium MySQL, JDBC source/sink and the
+      Elasticsearch/OpenSearch sink
+- [ ] Debezium offset import for Postgres, so a migrated Postgres pipeline
+      resumes without a re-snapshot
 - [ ] `conduit kc lint` and `conduit kc diff`
-- [ ] Migrate coverage for Debezium MySQL, JDBC source/sink and the
-      Elasticsearch/OpenSearch sink; offset import for those connectors
-- [ ] The SMT compatibility pack
 - [ ] The default engine flip (arch-v2 becomes the only engine; the v1 engine is
       removed)
+
+Not shipped in v0.21 and not yet scheduled:
+
+- [ ] Debezium-compatible output for Postgres
+- [ ] The processor batch API and the `stateless` declaration (designed; the
+      implementation is open)
+- [ ] Python connector SDK GA and a published Python distribution (the SDK is
+      pre-alpha)
+- [ ] Kafka-to-Kafka partition, header and timestamp preservation, and S3 sink
+      format parity, through `migrate`
+- [ ] OpenSearch certification
+
+Still to come later: the SMT compatibility pack.
 
 ### Need a connector
 

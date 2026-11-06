@@ -11,6 +11,16 @@ import TabItem from '@theme/TabItem';
 
 Encodes records into the messages Debezium would have produced.
 
+:::warning Not usable in v0.21
+
+This processor is in the Conduit repository but is not registered as a built-in
+processor in v0.21, the Postgres source has no Debezium output mode, and the
+Kafka destination cannot write the messages this processor produces. The
+configuration below documents the design, not a working pipeline. Debezium-compatible
+output for Postgres did not ship in v0.21 and is not scheduled.
+
+:::
+
 ## Description
 
 The `debezium.encode` processor is the envelope, naming, and tombstone half of
