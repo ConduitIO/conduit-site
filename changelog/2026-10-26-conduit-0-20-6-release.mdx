@@ -1,0 +1,27 @@
+---
+slug: '2026-10-26-conduit-0-20-6-release'
+title: Conduit v0.20.6 — do not use
+draft: false
+tags: [conduit, release, conduit-release]
+---
+
+**Do not use [Conduit v0.20.6](https://github.com/ConduitIO/conduit/releases/tag/v0.20.6).** It brings back data-integrity bugs that v0.20.5 had already fixed. Stay on v0.20.5, or move to [v0.20.7](https://github.com/ConduitIO/conduit/releases/tag/v0.20.7), which fixes all four regressions.
+
+<!--truncate-->
+
+### What went wrong
+
+v0.20.6 was meant to be a dependency bump of the built-in log and file connectors. That bump also moved `conduit-commons` from v0.7.2 to v0.8.0 and the connector SDK from v0.14.4 to v0.15.0, and both of those releases predate fixes v0.20.5 already carried. Four regressions came back with them:
+
+- **Fan-out branches can see each other's changes.** `StructuredData.Clone` is shallow again (conduit-commons#336). When a pipeline fans a record out to several destinations and a processor on one branch modifies a nested value, the other branches can receive the modified value.
+- **Avro encoding can produce wrong output.** `Serde.Marshal` mutates its input (conduit-commons#342), and named Avro types are shared between subjects (conduit-commons#309), so two subjects that reuse a type name with different definitions can encode with the wrong one.
+- **SIGTERM can hang** with a batching standalone destination (conduit#3092). `kill -9` stays safe.
+- **Every pipeline without a `dead-letter-queue` block is refused at start**, with `pipeline.dlq_not_recoverable`.
+
+Two of these change record data without reporting an error. If you ran v0.20.6 with fan-out and processors that modify nested values, or with Avro encoding across subjects that share values or type names, check what those destinations received.
+
+### What to do
+
+Upgrade to [v0.20.7](/changelog/2026-11-27-conduit-0-20-7-release), or go back to v0.20.5. Nothing in v0.20.6 is worth the exposure.
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)

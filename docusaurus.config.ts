@@ -160,8 +160,8 @@ const config: Config = {
       copyright: `Copyright © ${new Date().getFullYear()} Meroxa, Inc.`,
     },
     announcementBar: {
-      id: 'announcement-bar-20-5', // increment on change
-      content: `Conduit v0.20.5 fixes record copies sharing nested data and two Avro bugs that changed values without an error. Every v0.20.x user should upgrade. <a class='cta' href='/changelog/2026-10-20-conduit-0-20-5-release' target='_blank' rel='noreferrer noopener'>Read the release post</a>.`,
+      id: 'announcement-bar-0-22-0', // increment on change
+      content: `Conduit v0.22.0 is out. <a class='cta' href='/changelog/2026-11-25-conduit-0-22-0-release' target='_blank' rel='noreferrer noopener'>Read the release post</a>.`,
       isCloseable: true,
     },
     colorMode: {

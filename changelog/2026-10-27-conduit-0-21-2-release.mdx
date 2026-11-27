@@ -1,0 +1,25 @@
+---
+slug: '2026-10-27-conduit-0-21-2-release'
+title: Conduit v0.21.2 release
+draft: false
+tags: [conduit, release, conduit-release]
+---
+
+[Conduit v0.21.2](https://github.com/ConduitIO/conduit/releases/tag/v0.21.2) is a patch release on the v0.21 line. **If you run v0.21.0, upgrade:** it refuses to start any pipeline that has no `dead-letter-queue` block, with `pipeline.dlq_not_recoverable`. v0.21.2 also replaces v0.21.1, which was tagged but never built.
+
+<!--truncate-->
+
+### Key Highlights
+
+- **Pipelines that use the default DLQ start again.** v0.20.6 and v0.21.0 refused every pipeline whose DLQ was `builtin:log` without `payload: true` — which is the default. A log DLQ without `payload: true` is now refused only when it can actually receive a record (`window-nack-threshold` above 0, or `window-size: 0`). With the default settings the DLQ never receives one: the first nack stops the pipeline and the record is redelivered after a restart.
+- **v0.21.1 does not exist as a release.** Its tag was created, but the release workflow failed on a compile error, so there are no binaries, no images and no GitHub release for it. Everything v0.21.1 was meant to carry is in v0.21.2, except one arch-v2 boot-path status change that was reverted because it broke the build.
+
+### Upgrading from an older line
+
+If you run v0.20.6, read its [notice](/changelog/2026-10-26-conduit-0-20-6-release) first — it has data regressions as well as this refusal. Go back to v0.20.5 or move to [v0.20.7](/changelog/2026-11-27-conduit-0-20-7-release).
+
+If you are moving to v0.21 from v0.20, read the breaking changes in the [v0.21.0 notes](https://github.com/ConduitIO/conduit/blob/main/docs/releases/v0.21.0.md) first: the API binds to localhost and needs a token off loopback, and `env.allow`, file, JavaScript and egress allowlists all arrived in that release.
+
+Read the [full release notes](https://github.com/ConduitIO/conduit/blob/main/docs/releases/v0.21.2.md) before upgrading.
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)

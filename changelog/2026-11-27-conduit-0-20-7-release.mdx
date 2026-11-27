@@ -1,0 +1,22 @@
+---
+slug: '2026-11-27-conduit-0-20-7-release'
+title: Conduit v0.20.7 release
+draft: false
+tags: [conduit, release, conduit-release]
+---
+
+[Conduit v0.20.7](https://github.com/ConduitIO/conduit/releases/tag/v0.20.7) is a patch release on the v0.20 line. **If you run v0.20.6, upgrade.** v0.20.6 had four regressions that v0.20.5 did not, two of which can change record data without an error. v0.20.7 also fixes two older bugs that v0.20.5 had, so upgrade from v0.20.5 too.
+
+<!--truncate-->
+
+### Key Highlights
+
+- **The four v0.20.6 regressions are fixed.** v0.20.6's dependency bump also moved `conduit-commons` from v0.7.2 to v0.8.0 and the connector SDK from v0.14.4 to v0.15.0, both of which predate fixes v0.20.5 already carried. That brought back shallow record copies (fan-out branches seeing each other's nested changes), Avro encoding that mutates its input and shares named types between subjects, a SIGTERM hang with a batching standalone destination, and the refusal of every pipeline without an explicit `dead-letter-queue` block. See the [v0.20.6 notice](/changelog/2026-10-26-conduit-0-20-6-release) for how to tell whether you were affected.
+- **Pipelines that use the default DLQ start again**, the same fix that v0.21.2 carries on the v0.21 line.
+- **Five accepted `govulncheck` findings ship with this release**, each written up in the release notes with why it is accepted.
+
+This is a back-line patch: v0.22.0 had already shipped when v0.20.7 was tagged from `release/v0.20.x`. It does not change the latest release, and `latest` tags still point at v0.22.0.
+
+Read the [full release notes](https://github.com/ConduitIO/conduit/blob/v0.20.7/docs/releases/v0.20.7.md) before upgrading.
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)

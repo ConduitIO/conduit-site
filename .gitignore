@@ -32,3 +32,6 @@ src/connectorgen/connectors
 src/connectorgen/docs
 
 .vscode
+
+# Python bytecode from scripts/
+__pycache__/

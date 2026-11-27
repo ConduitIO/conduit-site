@@ -1,0 +1,34 @@
+---
+slug: '2026-11-25-conduit-0-22-0-release'
+title: Conduit v0.22.0 release
+draft: false
+tags: [conduit, release, conduit-release]
+---
+
+[Conduit v0.22.0](https://github.com/ConduitIO/conduit/releases/tag/v0.22.0) makes source batching the default, adds four processors and processor features, and refuses three cases that used to change or lose data quietly. **Four changes alter the behavior of a pipeline you already run** — read the upgrade notes before you upgrade.
+
+<!--truncate-->
+
+### Behavior changes to read first
+
+- **Sources batch by default.** A source that sets no `sdk.batch.*` now reads in batches of up to 100. Connector SDK v0.18 defaults `sdk.batch.size` to 100 and `sdk.batch.delay` to 0, which is adaptive drain: the SDK waits for the first record, takes whatever the connector has already read ahead, and returns with no timer. A busy source delivers batches; a sparse source delivers one record with no added wait. The built-in generator, file and kafka sources are rebuilt on the new SDK, so the default arrives when you upgrade. Postgres and S3 sources are unchanged. No config, state or protocol format changes. Opt out per pipeline with `sdk.batch.size: 0` and `sdk.batch.delay: 0`. This release makes **no throughput claim** for the new default — the benchi runs that would back one are not committed yet.
+- **A processor that excludes a field from `.Payload.After` only now fails updates carrying a `Before` image.** On a schema-attached record (Postgres with `REPLICA IDENTITY FULL`), `field.exclude .Payload.After.x` and equivalent `custom.javascript` deletions return `ErrFieldNotInSchema`. With default DLQ settings the pipeline stops at the first such record. Before upgrading, exclude the field from both parts: `.Payload.Before.x,.Payload.After.x`.
+- **Deleting a connector now refuses when the plugin's deletion hook does not succeed.** `DeleteConnector` runs the hook before removing the record and returns `connector.delete_hook_failed` with the cause and the fix; nothing is removed and the delete can be retried. Before, the record was removed first and the hook's error was logged and discarded — so a Postgres source whose replication slot could not be dropped reported a successful delete and left the slot retaining WAL with no way to clean it up through Conduit. This is a behavior change on an API that shipped in v0.21.0.
+- **An Avro `decimal` that does not fit its schema is refused instead of written wrong.** `avro.encode` and every `conduit-commons` Avro path return `CodeSchemaMismatch` naming the field. Before, a value with more fractional digits than the schema's scale was silently truncated, and a negative value was rounded toward negative infinity (`-1.5` against `decimal(5,0)` became `-2`). Widen the schema, or round upstream to its scale.
+
+### New in processors
+
+- **`flatten` and `field.hoist`** processors.
+- **`field.set`** takes typed values and gains a `from` copy mode.
+- **`avro.encode` gains `schema.strategy: fromRecord`**, which keeps the source's Avro types instead of inferring new ones, and pairs with the SDK extend strategy.
+
+### Durability and correctness
+
+- **The file destination leaves no torn line when killed** (file connector v0.13.0), and acknowledged records are durable.
+- **Postgres connector v0.21.0 and v0.21.1**: Avro schemas match the table, CDC relations are named by schema and table, and `snapshot.fetchSize` works.
+- **Arch-v2**: the engine owns destination batching including connector defaults, `sdk.batch.delay` bounds how long a partial batch waits, a destination write that fails while the source is idle now fails the pipeline, and destination writes are capped by estimated wire size.
+- **`conduit migrate kafka-connect`** translates a Debezium Postgres `table.include.list` exactly, and reports where Kafka Connect's converters wrote a column's schema default in place of NULL.
+
+Read the [full release notes](https://github.com/ConduitIO/conduit/blob/v0.22.0/docs/releases/v0.22.0.md) before upgrading. They cover every behavior change, how to opt out of batching, and what changes on a dashboard.
+
+![scarf pixel conduit-site-changelog](https://static.scarf.sh/a.png?x-pxid=b43cda70-9a98-4938-8857-471cc05e99c5)
