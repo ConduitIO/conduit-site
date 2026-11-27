@@ -1,0 +1,118 @@
+name: "Sync Conduit version"
+
+# The install page, the quickstart guide and the announcement bar all name a
+# specific Conduit version. They were last bumped by hand for v0.20.5 and were
+# two minor releases behind by the time anyone looked, so the front page was
+# telling visitors to upgrade to a version three releases old. Conduit releases
+# monthly, so this cannot depend on someone remembering.
+#
+# This asks GitHub for the latest STABLE release once a day (a pre-release is
+# never GitHub's "Latest", and scripts/sync_conduit_version.py refuses one
+# anyway) and opens a PR when a slot has drifted. It is the same shape as
+# sync-llms-txt.yaml, deliberately: one mechanism for "the site has copies of
+# things that live in ConduitIO/conduit".
+#
+# The PR is NOT auto-merged, for the same reason that one is not: `main` is
+# unprotected, has no required checks and no `on: pull_request` workflow, and
+# merging deploys straight to conduitdata.io. A human reads the diff.
+#
+# It will not write a changelog post. Release prose is not something to
+# generate; when there is no post for the new version the bar links to the
+# GitHub release notes instead and the PR body says a post is missing.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release to point at (e.g. v0.22.0); empty asks GitHub for the latest
+        required: false
+        default: ''
+  schedule:
+    - cron: '30 7 * * *'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync-conduit-version:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # The script's own tests, first. The patterns are anchored so that the
+      # install page's statements about the past ("From v0.20.0, release
+      # archives carry a checksum") are not rewritten into falsehoods, and that
+      # property is only true for as long as the tests say it is.
+      - name: Test the sync script
+        working-directory: scripts
+        run: python3 -m unittest -v test_sync_conduit_version
+
+      - name: Point the version slots at the latest release
+        id: sync
+        env:
+          # Through the environment, not the command line: a workflow_dispatch
+          # input is outside input, and the script checks it is a version.
+          REQUESTED: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          if [ -n "$REQUESTED" ]; then
+            set -- --version "$REQUESTED"
+          else
+            set --
+          fi
+          TAG=$(gh release view --repo ConduitIO/conduit --json tagName --jq .tagName)
+          {
+            echo "TAG<<__CONDUIT_TAG__"
+            echo "$TAG"
+            echo "__CONDUIT_TAG__"
+          } >>"$GITHUB_ENV"
+          # The notes go in the PR body: "no changelog post for v0.22.0" is the
+          # one thing this job finds that it cannot fix itself.
+          python3 scripts/sync_conduit_version.py "$@" | tee "$RUNNER_TEMP/notes.txt"
+          {
+            echo "notes<<__NOTES__"
+            cat "$RUNNER_TEMP/notes.txt"
+            echo "__NOTES__"
+          } >>"$GITHUB_OUTPUT"
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v7.0.8
+        with:
+          title: "Point the site at ConduitIO/conduit ${{ inputs.version || env.TAG }}"
+          body: |
+            The install page, the quickstart guide and the announcement bar name a specific Conduit
+            version. They had drifted from `${{ inputs.version || env.TAG }}`, so this pull request was
+            opened automatically to bring them back in line.
+
+            What the job reported:
+
+            ```
+            ${{ steps.sync.outputs.notes }}
+            ```
+
+            Two things it does **not** do, by design:
+
+            - It does not touch sentences that are statements of history, such as "From v0.20.0, release
+              archives carry a checksum" or "Building Conduit v0.20.0 or later from source requires Go
+              1.26". Those stay true about the version they name. `scripts/test_sync_conduit_version.py`
+              asserts it.
+            - It does not write a changelog post. If the output above says a post is missing, the
+              announcement bar links to the GitHub release notes until someone writes one, and the next
+              run picks the post up.
+
+            The announcement bar is replaced with a neutral sentence rather than having its version
+            patched, because its old text described a particular release's fixes and patching the number
+            through would leave a confident false statement on the front page. Add editorial emphasis in
+            this PR if you want it — a security release deserves it.
+
+            Not auto-merged: merging deploys to conduitdata.io, so please read the diff.
+          branch: sync-conduit-version
+          commit-message: "[automated] Point the site at ConduitIO/conduit ${{ inputs.version || env.TAG }}"
+          # Without this the action commits anything else dirty in the tree.
+          add-paths: |
+            docs/1-using/0-installing-and-running.mdx
+            docs/1-using/8-guides/build-generator-to-log-pipeline.mdx
+            docusaurus.config.ts
