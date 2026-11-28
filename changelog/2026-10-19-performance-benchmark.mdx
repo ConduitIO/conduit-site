@@ -10,11 +10,32 @@ CDC benchmark against Kafka Connect + Debezium.
 
 <!--truncate-->
 
+:::warning Corrected 2026-11-27
+
+Two figures in the original version of this post — "+36.4%" on the Postgres
+destination and "+6.8%" on the file sink — **are withdrawn**. Neither is
+reproducible from any result committed to the repository, and the first
+described a connector setting that was removed as a default because it can
+silently change values. The numbers this post should have carried are below,
+with what they do and do not establish. Our rule is that a performance claim
+without a committed, reproducible result behind it is not a claim, and these
+two did not meet it.
+
+:::
+
 ### Key Highlights
 
 - **A reproducible benchmark is now in the repo.** [`benchi/v021-cdc-parity`](https://github.com/ConduitIO/conduit/tree/main/benchi/v021-cdc-parity) compares Conduit, Kafka Connect + Debezium, and Redpanda Connect on the same Postgres CDC workload, with an A/A noise floor and ground-truth metrics (`wc -l`, `SELECT count(*)`, topic offsets) instead of engine instrumentation. Run it yourself with `terraform apply` + `bash run.sh`.
-- **Postgres destination: +36.4% at parity defaults.** Conduit's default config (memoized SQL, a schema-guarded `cache_statement` exec mode, and a 3000-row destination batch) beats Debezium → JDBC sink on the `CDC→Postgres` workload, where the pre-fix defaults were ~47% behind.
-- **File sink: +6.8%**, where the sink is the bottleneck.
-- **Every certified connector swept for write-path overhead** — postgres, mysql, kafka, s3, elasticsearch, and the connector SDK — with fixes for per-record SQL/request rebuilds, missing default batching, and suboptimal client defaults, so the *defaults* are fast, not just a tuned config.
+- **Parity with Kafka Connect + Debezium on all four destinations**, at 20,000 operations/s offered: file 0.998, S3 0.999, Postgres 1.003, Kafka 0.998 — every one of them inside the A/A noise floor measured in the same session. This is the headline result, and "parity" is the honest word for it: at that rate both systems sustained the offered load, so the measurement shows neither was the limiter rather than showing the two are equal in capacity.
+- **At 40,000 operations/s, the Postgres destination saturates at 0.77x Kafka Connect** — 14.8k against 19.1k net rows/s — because its default query execution mode pays a round trip per statement. A tuned run with `default_query_exec_mode=cache_statement` reaches 1.23x, but **that is not a setting we recommend and not a default**: it was the default in postgres connector v0.17.0 and v0.17.1 and was removed in v0.17.2 ([#436](https://github.com/ConduitIO/conduit-connector-postgres/issues/436)) because behind a statement-sharing connection pooler a cached statement can outlive a column type change and silently convert a value. The fix we are pursuing instead collapses the per-statement round trip without caching across schema changes.
+- **The file and Kafka ceilings were not measured.** Both systems ran at the load generator's own limit of about 39.1k operations/s, so that phase establishes that both sustain 39.1k, and nothing about which is faster at saturation. Raising the generator is in progress.
+- **At the same delivered rate, Conduit used less CPU** — as a share of one core: file 57% against 97%, Postgres 58% against 110%, S3 66% against 130% — while encoding Avro and registering schemas, which the Debezium arm, running schemaless JSON, did not do.
+- **Every certified connector swept for write-path overhead** — postgres, mysql, kafka, s3, elasticsearch, and the connector SDK — fixing per-record SQL and request rebuilds, missing default batching, and client defaults that left throughput unclaimed.
+
+One more thing worth stating plainly, because the original post did not: the
+benchmarked engine was arch-v2, enabled with `--preview.pipeline-arch-v2`. The
+shipped engine default in v0.21 is still the v1 engine, which is slower. A
+figure measured behind a preview flag is not a statement about what you get out
+of the box, and we will not describe one as such again.
 
 Full numbers and methodology on the [performance page](/performance).
